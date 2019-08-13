@@ -1,6 +1,6 @@
 {
   "name": "itee-plugin-three",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "This itee plugin allow to use three js content from end to end in an itee client-server-database architecture",
   "keywords": [
     "itee",

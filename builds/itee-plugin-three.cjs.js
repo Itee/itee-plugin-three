@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v0.0.0 - CommonJs')
+console.log('Itee.Plugin.Three v1.0.0 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');
@@ -183,8 +183,8 @@ Object.assign( DBFLoader.prototype, {
 
             case DBFVersion.dBASE_III_plus:
             case DBFVersion.dBASE_III_plus_memo:
-            //                header = this._parseHeaderV2_5()
-            //                break;
+                header = this._parseHeaderV2_5();
+                break
 
             case DBFVersion.dBASE_IV_memo:
             case DBFVersion.dBASE_IV_memo_SQL_table:
@@ -200,8 +200,7 @@ Object.assign( DBFLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid version parameter: ${version}`, 'DBFLoader' )
-                break
+                throw new RangeError( `Invalid version parameter: ${version}` )
 
         }
 
@@ -485,18 +484,19 @@ Object.assign( DBFLoader.prototype, {
         const numberOfRecords = header.numberOfRecords;
         const fields          = header.fields;
 
-        let properties = undefined;
-        if ( version === DBFVersion.dBase_v_7 ) {
-            properties = this._parseFieldProperties();
-        }
+        // Todo: use it
+        //        let properties = null
+        //        if ( version === DBFVersion.dBase_v_7 ) {
+        //            properties = this._parseFieldProperties()
+        //        }
 
         let records = [];
-        let record  = undefined;
-        let field   = undefined;
+        let record  = null;
+        let field   = null;
         for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
 
             record              = {};
-            record[ 'deleted' ] = ( this.reader.getUInt8() === DBFLoader.DeletedRecord );
+            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
 
             for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
 
@@ -504,26 +504,30 @@ Object.assign( DBFLoader.prototype, {
 
                 switch ( field.type ) {
 
-                    case DataType.Binary:
+                    case DataType.Binary: {
                         const binaryString   = this.reader.getString( field.length );
                         record[ field.name ] = parseInt( binaryString );
+                    }
                         break
 
-                    case DataType.Numeric:
+                    case DataType.Numeric: {
                         const numericString  = this.reader.getString( field.length );
                         record[ field.name ] = parseInt( numericString );
+                    }
                         break
 
-                    case DataType.Character:
+                    case DataType.Character: {
                         record[ field.name ] = this.reader.getString( field.length );
+                    }
                         break
 
-                    case DataType.Date:
+                    case DataType.Date: {
                         // YYYYMMDD
                         record[ field.name ] = this.reader.getString( field.length );
+                    }
                         break
 
-                    case DataType.Logical:
+                    case DataType.Logical: {
                         const logical = this.reader.getChar().toLowerCase();
                         if ( logical === 't' || logical === 'y' ) {
                             record[ field.name ] = true;
@@ -532,45 +536,50 @@ Object.assign( DBFLoader.prototype, {
                         } else {
                             record[ field.name ] = null;
                         }
+                    }
                         break
 
-                    case DataType.Memo:
+                    case DataType.Memo: {
                         record[ field.name ] = this.reader.getString( field.length );
+                    }
                         break
 
+                    // 8 bytes - two longs, first for date, second for time.
+                    // The date is the number of days since  01/01/4713 BC.
+                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
                     case DataType.Timestamp:
-                        // 8 bytes - two longs, first for date, second for time.
-                        // The date is the number of days since  01/01/4713 BC.
-                        // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
-
                         break
 
-                    case DataType.Long:
-                        // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    case DataType.Long: {
                         record[ field.name ] = this.reader.getInt32();
+                    }
                         break
 
-                    case DataType.Autoincrement:
-                        // Same as a Long
+                    // Same as a Long
+                    case DataType.Autoincrement: {
                         record[ field.name ] = this.reader.getInt32();
+                    }
                         break
 
-                    case DataType.Float:
+                    case DataType.Float: {
                         const floatString    = this.reader.getString( field.length );
                         record[ field.name ] = parseInt( floatString );
+                    }
                         break
 
-                    case DataType.Double:
-                        record[ field.name ] = this.reader.getDouble();
+                    case DataType.Double: {
+                        record[ field.name ] = this.reader.getFloat64();
+                    }
                         break
 
-                    case DataType.OLE:
+                    case DataType.OLE: {
                         record[ field.name ] = this.reader.getString( field.length );
+                    }
                         break
 
                     default:
-                        throw new RangeError( `Invalid data type parameter: ${field.type}`, '_parseDatas' )
-                        break
+                        throw new RangeError( `Invalid data type parameter: ${field.type}` )
 
                 }
 
@@ -932,12 +941,17 @@ function ringClockwise ( ring ) {
  */
 function ringContainsSome ( ring, hole ) {
 
-    var i = -1, n = hole.length, c;
-    while ( ++i < n ) {
-        if ( c = ringContains( ring, hole[ i ] ) ) {
-            return c > 0
+    let i = 0;
+    let n = hole.length;
+
+    do {
+
+        if ( ringContains( ring, hole[ i ] ) > 0 ) {
+            return true
         }
-    }
+
+    } while ( ++i < n )
+
     return false
 
 }
@@ -949,18 +963,30 @@ function ringContainsSome ( ring, hole ) {
  * @return {number}
  */
 function ringContains ( ring, point ) {
-    var x = point[ 0 ], y = point[ 1 ], contains = -1;
-    for ( var i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-        var pi = ring[ i ], xi = pi[ 0 ], yi = pi[ 1 ],
-            pj                               = ring[ j ], xj = pj[ 0 ], yj = pj[ 1 ];
+
+    let x        = point[ 0 ];
+    let y        = point[ 1 ];
+    let contains = -1;
+
+    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
+
+        const pi = ring[ i ];
+        const xi = pi[ 0 ];
+        const yi = pi[ 1 ];
+        const pj = ring[ j ];
+        const xj = pj[ 0 ];
+        const yj = pj[ 1 ];
+
         if ( segmentContains( pi, pj, point ) ) {
-            return 0
-        }
-        if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
+            contains = 0;
+        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
             contains = -contains;
         }
+
     }
+
     return contains
+
 }
 
 /**
@@ -1233,7 +1259,7 @@ Object.assign( SHPLoader.prototype, {
                     break
 
                 default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${shapeType}` );
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${header.shapeType}` );
                     break
 
             }
@@ -1598,7 +1624,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         const self                 = this;
         const parentId             = parameters.parentId;
         const disableRootNode      = ( parameters.disableRootNode === 'true' );
-        const dataToParse          = ( disableRootNode ) ? data.children : ( Array.isArray( data ) ) ? data : [ data ];
+        const dataToParse          = ( disableRootNode ) ? data.children : ( iteeValidators.isArray( data ) ) ? data : [ data ];
         const errors               = [];
         const numberOfRootChildren = dataToParse.length;
         let processedRootChildren  = 0;
@@ -1667,7 +1693,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                             let childId = childrenIds[ childIndex ];
 
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error, success ) => {
+                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error ) => {
 
                                 if ( error ) {
                                     errors.push( error );
@@ -1766,9 +1792,11 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         let userData = {};
 
         for ( let prop in jsonUserData ) {
-            if ( jsonUserData.hasOwnProperty( prop ) ) {
-                userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ];
-            }
+
+            if ( !Object.prototype.hasOwnProperty.call( jsonUserData, prop ) ) { continue }
+
+            userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ];
+
         }
 
         return userData
@@ -2110,7 +2138,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // Object3D
 
-    _checkIfObject3DAlreadyExist ( object ) {
+    _checkIfObject3DAlreadyExist ( /*object*/ ) {
 
         // Todo
         return null
@@ -2166,7 +2194,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                             childId = savedChildrenIds[ childIndex ];
 
                             const Objects3DModelBase = self._driver.model( 'Objects3D' );
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error, success ) => {
+                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error ) => {
 
                                 if ( error ) {
                                     errors.push( error );
@@ -2204,7 +2232,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // Curve
 
-    _checkIfCurveAlreadyExist ( curve ) {
+    _checkIfCurveAlreadyExist ( /*curve*/ ) {
 
         // Todo
         return null
@@ -2238,7 +2266,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // Geometry
 
-    _checkIfGeometryAlreadyExist ( geometry ) {
+    _checkIfGeometryAlreadyExist ( /*geometry*/ ) {
 
         // Todo
         return null
@@ -2272,7 +2300,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // BufferGeometry
 
-    _checkIfBufferGeometryAlreadyExist ( bufferGeometry ) {
+    _checkIfBufferGeometryAlreadyExist ( /*bufferGeometry*/ ) {
 
         // Todo
         return null
@@ -2306,7 +2334,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // Material
 
-    _checkIfMaterialAlreadyExist ( materials ) {
+    _checkIfMaterialAlreadyExist ( /*materials*/ ) {
 
         // Todo
         return null
@@ -2323,8 +2351,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
-        const self = this;
-        if ( Array.isArray( materials ) ) {
+        if ( iteeValidators.isArray( materials ) ) {
 
             const numberOfMaterials    = materials.length;
             let materialIds            = new Array( numberOfMaterials );
@@ -2347,11 +2374,11 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 } else {
 
-                    ( function closeIndex () {
+                    ( () => {
 
                         const materialLocalIndex = materialIndex;
 
-                        self._getMaterialModel( material )
+                        this._getMaterialModel( material )
                             .save()
                             .then( savedMaterial => {
 
@@ -2400,7 +2427,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     // Texture
 
-    _checkIfTextureAlreadyExist ( texture ) {
+    _checkIfTextureAlreadyExist ( /*texture*/ ) {
 
         // Todo
         return null
@@ -2507,12 +2534,12 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 schemaName: 'Objects3D'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -2534,12 +2561,12 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 schemaName: 'Curves'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -2561,12 +2588,12 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 schemaName: 'Geometries'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -2588,12 +2615,12 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 schemaName: 'Materials'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -2615,12 +2642,12 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 schemaName: 'Textures'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -2649,7 +2676,7 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
                     MtlToThree:  new MtlToThree(),
                     ObjToThree:  new Obj2ToThree()
                 },
-                rules:      [
+                rules: [
                     {
                         on:  '.json',
                         use: 'JsonToThree'
@@ -2679,9 +2706,9 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
                         use: [ 'MtlToThree', 'ObjToThree' ]
                     }
                 ],
-                inserter:   ThreeToMongoDB
+                inserter: ThreeToMongoDB
             },
-            can:     {
+            can: {
                 processFiles: {
                     on:   'post',
                     over: '/'
@@ -2691,3 +2718,4 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
     } );
 
 module.exports = MongoDBThreePlugin;
+//# sourceMappingURL=itee-plugin-three.cjs.js.map

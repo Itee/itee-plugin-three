@@ -1,8 +1,8 @@
-console.log('Itee.Plugin.Three v0.0.0 - EsModule')
+console.log('Itee.Plugin.Three v1.0.0 - EsModule')
 import { DefaultLogger, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
 import { toEnum, degreesToRadians } from 'itee-utils';
 import { isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isArray, isDefined, isNotArray, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
-import { Vector3, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, Box3, MeshBasicMaterial, DoubleSide, PlaneBufferGeometry, Mesh, Line, OctahedronBufferGeometry, Raycaster, Euler, TorusBufferGeometry, ConeBufferGeometry, BufferGeometry, Float32BufferAttribute, CylinderBufferGeometry, Scene, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, CurvePath, EllipseCurve, LineCurve, LineCurve3, Path, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Shape, SphereBufferGeometry, MeshPhongMaterial, BoxGeometry, CircleGeometry, CylinderGeometry, ConeGeometry, DodecahedronGeometry, ExtrudeGeometry, Geometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry, SphereGeometry, WireframeGeometry, Face3, CircleBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, ParametricBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry, InstancedBufferGeometry, BufferAttribute, ImageLoader, TextureLoader, MeshLambertMaterial, PointsMaterial, Color, LinearFilter, Fog, FogExp2, PerspectiveCamera, OrthographicCamera, AmbientLight, DirectionalLight, PointLight, RectAreaLight, SpotLight, HemisphereLight, SkinnedMesh, LOD, LineLoop, Points, Sprite, Group, VertexColors } from 'three-full';
+import { Vector3, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, Box3, MeshBasicMaterial, DoubleSide, Mesh, BufferGeometry, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, CurvePath, EllipseCurve, LineCurve, LineCurve3, Path, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Shape, MeshPhongMaterial, BoxGeometry, CircleGeometry, CylinderGeometry, ConeGeometry, DodecahedronGeometry, ExtrudeGeometry, Geometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PlaneGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry, SphereGeometry, WireframeGeometry, Face3, CircleBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, ParametricBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry, InstancedBufferGeometry, BufferAttribute, ImageLoader, TextureLoader, MeshLambertMaterial, PointsMaterial, Color, LinearFilter, Fog, FogExp2, PerspectiveCamera, OrthographicCamera, AmbientLight, DirectionalLight, PointLight, RectAreaLight, SpotLight, HemisphereLight, SkinnedMesh, LOD, LineLoop, Points, Sprite, Group, VertexColors } from 'three-full';
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -196,15 +196,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate:           [ Mouse.LEFT.value ],
-            pan:              [ Mouse.MIDDLE.value ],
-            roll:             {
+            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate: [ Mouse.LEFT.value ],
+            pan:    [ Mouse.MIDDLE.value ],
+            roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -1012,7 +1012,7 @@ class CameraControls extends EventDispatcher {
 
             switch ( this._mode ) {
 
-                case CameraControlMode.FirstPerson:
+                case CameraControlMode.FirstPerson: {
 
                     //        const normalizedX = (delta.x / this._domElement.clientWidth) - 1.0
                     //        const normalizedY = (delta.y / this._domElement.clientHeight) - 1.0
@@ -1042,10 +1042,10 @@ class CameraControls extends EventDispatcher {
                     const lockedTargetPostion = cameraToTargetDirection.multiplyScalar( 1.0 ) // Todo: option
                                                                        .add( cameraPosition );
                     this.setTargetPosition( lockedTargetPostion );
-
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
 
                     // restrict theta and phi between desired limits
                     const spherical = new Spherical().setFromVector3( targetToCamera );
@@ -1060,7 +1060,7 @@ class CameraControls extends EventDispatcher {
                                                      .add( targetPosition );
 
                     this.setCameraPosition( newPosition );
-
+                }
                     break
 
                 default:
@@ -1068,7 +1068,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        }
+        } /*else {
+
+         // Todo: ...
+
+         }*/
 
         this.dispatchEvent( { type: 'rotate' } );
         this.dispatchEvent( { type: 'change' } );
@@ -1129,7 +1133,7 @@ class CameraControls extends EventDispatcher {
 
             switch ( this._mode ) {
 
-                case CameraControlMode.FirstPerson:
+                case CameraControlMode.FirstPerson: {
 
                     if ( delta > 0 ) {
                         this._camera.fov--;
@@ -1138,10 +1142,10 @@ class CameraControls extends EventDispatcher {
                     }
 
                     this._camera.updateProjectionMatrix();
-
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
 
                     const cameraPosition                 = this._camera.position;
                     const targetPosition                 = this._target.position;
@@ -1167,7 +1171,7 @@ class CameraControls extends EventDispatcher {
                     }
 
                     this._camera.position.copy( cameraNextPosition );
-
+                }
                     break
 
                 default:
@@ -1175,7 +1179,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        }
+        } /*else {
+
+         // Todo: ...
+
+         }*/
 
         this.dispatchEvent( { type: 'zoom' } );
         this.dispatchEvent( { type: 'change' } );
@@ -1195,16 +1203,18 @@ class CameraControls extends EventDispatcher {
 
             switch ( this.mode ) {
 
-                case CameraControlMode.FirstPerson:
-                    // The result is inverted in front of Orbit type but is correct in FP mode except up and down so invert y axis
+                // The result is inverted in front of Orbit type but is correct in FP mode except up and down so invert y axis
+                case CameraControlMode.FirstPerson: {
                     _direction.y            = -( _direction.y );
                     const newTargetPosition = _direction.multiplyScalar( distanceTo ).add( cameraPosition );
                     this.setTargetPosition( newTargetPosition );
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
                     const newCameraPosition = _direction.multiplyScalar( distanceTo ).add( targetPosition );
                     this.setCameraPosition( newCameraPosition );
+                }
                     break
 
                 default:
@@ -1212,7 +1222,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        }
+        }/* else {
+
+         // Todo: ...
+
+         }*/
 
         this.dispatchEvent( { type: 'lookAt' } );
         this.dispatchEvent( { type: 'change' } );
@@ -1242,7 +1256,7 @@ class CameraControls extends EventDispatcher {
 
         switch ( this._mode ) {
 
-            case CameraControlMode.FirstPerson:
+            case CameraControlMode.FirstPerson: {
 
                 if ( this._lockedTarget ) {
 
@@ -1255,10 +1269,10 @@ class CameraControls extends EventDispatcher {
                     this.setCameraPosition( this._currentPathPosition );
 
                 }
-
+            }
                 break
 
-            case CameraControlMode.Orbit:
+            case CameraControlMode.Orbit: {
 
                 if ( this._lockedTarget ) {
 
@@ -1271,7 +1285,7 @@ class CameraControls extends EventDispatcher {
                     this.setTargetPosition( this._currentPathPosition );
 
                 }
-
+            }
                 break
 
             default:
@@ -1781,7 +1795,7 @@ function CameraPathController ( parameters = {} ) {
             camera:     null,
             target:     new Object3D(),
             mode:       CameraControlMode.Orbit,
-            domElement: window
+            domElement: document
         }, ...parameters
     };
 
@@ -1798,7 +1812,7 @@ function CameraPathController ( parameters = {} ) {
     this.currentPathIndex    = -1;
     this.currentPathPosition = 0;
 
-    this.domElement      = ( domElement !== undefined ) ? domElement : document;
+    this.domElement      = _parameters.domElement;
     this.forwardControl  = this.domElement.children[ 0 ].children[ 0 ].children[ 0 ];
     this.backwardControl = this.domElement.children[ 0 ].children[ 1 ].children[ 0 ];
     this.timeoutId       = undefined;
@@ -1932,7 +1946,7 @@ function CameraPathController ( parameters = {} ) {
             pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize();
         }
 
-        var cameraDirection = camera.getWorldDirection().normalize();
+        var cameraDirection = self.camera.getWorldDirection().normalize();
         var dotProduct      = cameraDirection.dot( pathDirection );
 
         if ( dotProduct > 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
@@ -2681,6 +2695,24 @@ class OctahedricalHitbox extends AbstractHitbox {
 
 }
 
+class SphericalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isSphericalHitbox = true;
+        this.type              = 'SphericalHitbox';
+
+    }
+
+}
+
 class TorusHitbox extends AbstractHitbox {
 
     constructor ( parameters = {} ) {
@@ -2812,6 +2844,7 @@ class AbstractHandle extends Object3D {
 
     }
 
+    // eslint-disable-next-line no-unused-vars
     update ( cameraDirection ) {}
 
 }
@@ -2992,6 +3025,26 @@ class ScaleHandle extends AbstractHandle {
 
         this.direction = this._direction.negate();
 
+    }
+
+}
+
+class RotateHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{}, ...parameters
+        };
+
+        super( _parameters );
+        this.isRotateHandle = true;
+        this.type           = 'RotateHandle';
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection );
     }
 
 }
@@ -3916,7 +3969,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode:   {
+            setMode: {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -3929,7 +3982,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale:     {
+            scale: {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -3937,7 +3990,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate:    {
+            rotate: {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]
@@ -4200,12 +4253,14 @@ class ClippingControls extends Object3D {
 
         const actionMap   = this.actionsMap;
         const key         = keyEvent.keyCode;
-        const altActive   = keyEvent.altKey;
+//        const altActive   = keyEvent.altKey
         const ctrlActive  = keyEvent.ctrlKey;
-        const metaActive  = keyEvent.metaKey;
-        const shiftActive = keyEvent.shiftKey;
+//        const metaActive  = keyEvent.metaKey
+//        const shiftActive = keyEvent.shiftKey
 
-        if ( altActive ) ; else if ( ctrlActive ) {
+       /* if ( altActive ) {
+
+        } else */if ( ctrlActive ) {
 
             switch ( this._mode ) {
 
@@ -4314,7 +4369,9 @@ class ClippingControls extends Object3D {
 
             }
 
-        } else if ( metaActive ) ; else if ( shiftActive ) ; else if ( actionMap.setMode.translate.includes( key ) ) {
+//        } else if ( metaActive ) {
+//        } else if ( shiftActive ) {
+        } else if ( actionMap.setMode.translate.includes( key ) ) {
 
             this.setMode( ClippingModes.Translate );
             this.updateClipping();
@@ -4499,9 +4556,15 @@ class ClippingControls extends Object3D {
                     break
 
                 case ClippingModes.Rotate:
+/*
+                    if ( currentHandle.isRotateHandle ) {
 
-                    if ( currentHandle.isRotateHandle ) ; else if ( currentHandle.isPlaneHandle ) ; else if ( currentHandle.isOmnidirectionalHandle ) ;
+                    } else if ( currentHandle.isPlaneHandle ) {
 
+                    } else if ( currentHandle.isOmnidirectionalHandle ) {
+
+                    }
+*/
                     break
 
                 case ClippingModes.Scale:
@@ -4556,7 +4619,6 @@ class ClippingControls extends Object3D {
 
                 default:
                     throw new RangeError( `Invalid switch parameter: ${this._mode}` )
-                    break
 
             }
 
@@ -4659,6 +4721,7 @@ class ClippingControls extends Object3D {
     }
 
     /// Utils
+    // eslint-disable-next-line no-unused-vars
     getActiveHandle ( pointer ) {
 
     }
@@ -4743,18 +4806,25 @@ class ClippingControls extends Object3D {
     }
 
     // Rotating
+    // eslint-disable-next-line no-unused-vars
     _rotateX ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateY ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXY ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateYZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXYZ ( delta ) {}
 
     // Scaling
@@ -4841,14 +4911,13 @@ BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManag
 
     /**
      *
-     * @param jsonData
-     * @param onError
-     * @return {*}
+     * @param data
+     * @returns {Scene|Object3D}
      */
-    convert ( data, onError ) {
+    convert ( data/*, onError */) {
 
         const textureType = data.type;
-        let texture       = undefined;
+        let texture       = null;
 
         switch ( textureType ) {
 
@@ -4861,6 +4930,12 @@ BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManag
                 break
 
         }
+
+        // Common object properties
+
+        //        if ( textureType === 'Line' ) {
+        //
+        //        }
 
         return texture
 
@@ -5002,7 +5077,6 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
 
             default:
                 throw new Error( `TCurvesManager: Unknown curve of type: ${curveType}` )
-                break
 
         }
 
@@ -5556,7 +5630,6 @@ class GeometriesManager extends TDataBaseManager {
 
             default:
                 throw new Error( `TGeometriesManager: Unknown geometry of type: ${geometryType}` )
-                break
 
         }
 
@@ -5978,17 +6051,19 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
         }
 
         const textureType = data.type;
-        let texture       = undefined;
+        //        let texture       = undefined
 
         switch ( textureType ) {
 
             default:
                 throw new Error( `TTexturesManager: Unknown texture of type: ${textureType}` )
-                break
 
         }
 
-        return texture
+        // Common object properties
+
+        //        if ( textureType === 'Line' ) { }
+        //        return texture
 
     }
 
@@ -6366,8 +6441,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.morphNormals = morphNormals;
                 }
 
-                break
             }
+                break
 
             case 'MeshLambertMaterial': {
                 material = new MeshLambertMaterial();
@@ -6483,8 +6558,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.morphNormals = morphNormals;
                 }
 
-                break
             }
+                break
 
             case 'LineBasicMaterial': {
                 material = new LineBasicMaterial();
@@ -6495,8 +6570,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.color = this._setColor( color );
                 }
 
-                break
             }
+                break
 
             case 'PointsMaterial': {
                 material = new PointsMaterial();
@@ -6527,12 +6602,11 @@ class MaterialsManager extends TDataBaseManager {
                     material.sizeAttenuation = sizeAttenuation;
                 }
 
-                break
             }
+                break
 
             default:
                 throw new Error( `TMaterialsManager: Unmanaged material of type: ${type}` )
-                break
 
         }
 
@@ -6744,7 +6818,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    fillTextures ( materials, onSuccess, onProgress, onError ) {
+    fillTextures ( materials, onSuccess/*, onProgress, onError */) {
 
         const texturesMap = this._retrieveTexturesOf( materials );
 
@@ -7008,10 +7082,13 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
+    // eslint-disable-next-line no-unused-vars
     _onArrayBuffer ( data, onSuccess, onProgress, onError ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _onBlob ( data, onSuccess, onProgress, onError ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _onText ( data, onSuccess, onProgress, onError ) {}
 
     /**
@@ -7194,7 +7271,6 @@ class ObjectsManager extends TDataBaseManager {
 
             default:
                 throw new Error( `TObjectsManager: Unknown object of type: ${objectType}` )
-                break
 
         }
 
@@ -7710,7 +7786,6 @@ class ObjectsManager extends TDataBaseManager {
 
             console.error( 'Invalid material ids, expected string or array of string' );
 
-
         }
 
     }
@@ -7882,5 +7957,5 @@ class OrbitControlsHelper extends LineSegments {
 
 }
 
-export { AbstractGizmo, BufferGeometriesManager, CameraControlMode, CameraControls, CameraPathController, ClippingBox, ClippingControls, ClippingModes, CurvesManager, FilairesManager, GeometriesManager, HighlightableLineMaterial, HighlightableMaterial, MaterialsManager, ObjectsManager, OrbitControlsHelper, RotateGizmo, ScaleGizmo, TexturesManager, TranslateGizmo };
+export { AbstractGizmo, AbstractHandle, AbstractHitbox, BufferGeometriesManager, CameraControlMode, CameraControls, CameraPathController, ClippingBox, ClippingControls, ClippingModes, CurvesManager, CylindricaHitbox, FilairesManager, GeometriesManager, HighlightableLineMaterial, HighlightableMaterial, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, RotateGizmo, RotateHandle, ScaleGizmo, ScaleHandle, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle };
 //# sourceMappingURL=itee-plugin-three.esm.js.map
