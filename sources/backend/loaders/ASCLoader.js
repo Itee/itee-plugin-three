@@ -23,13 +23,13 @@
  *
  */
 
-import { DefaultLogger } from 'itee-client'
 /* eslint-env browser */
+
+import { DefaultLogger } from 'itee-client'
 import {
     Box3,
     BufferAttribute,
     BufferGeometry,
-    Color,
     DefaultLoadingManager,
     FileLoader,
     Group,
@@ -37,37 +37,33 @@ import {
     PointsMaterial
 }                        from 'three-full'
 
-/**
- *
- * @param manager
- * @constructor
- */
-function ASCLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+class ASCLoader {
 
-    this.manager = manager
-    this.logger  = logger
+    constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
-    this._boundingBox    = new Box3()
-    this._points         = []
-    this._numberOfPoints = 0
-    this._coloredPoints  = false
-    this._autoOffset     = false // Only for tiny files !!!!!!!
-    this._offset         = {
-        x: 600200,
-        y: 131400,
-        z: 60
+        this.manager = manager
+        this.logger  = logger
+
+        this._boundingBox    = new Box3()
+        this._points         = []
+        this._numberOfPoints = 0
+        this._coloredPoints  = false
+        this._autoOffset     = false // Only for tiny files !!!!!!!
+        this._offset         = {
+            x: 600200,
+            y: 131400,
+            z: 60
+        }
+
+        this._positions   = null
+        this._bufferIndex = 0
+
+        this._positionsC   = null
+        this._bufferIndexC = 0
+
+        this.wrongPoints = 0
+
     }
-
-    this._positions   = null
-    this._bufferIndex = 0
-
-    this._positionsC   = null
-    this._bufferIndexC = 0
-
-    this.wrongPoints = 0
-}
-
-Object.assign( ASCLoader.prototype, {
 
     /**
      *
@@ -91,7 +87,7 @@ Object.assign( ASCLoader.prototype, {
 
         }.bind( this ), onProgress, onError )
 
-    },
+    }
 
     /**
      *
@@ -104,7 +100,7 @@ Object.assign( ASCLoader.prototype, {
         this._offset     = offset
         this._autoOffset = false
 
-    },
+    }
 
     /**
      *
@@ -128,15 +124,15 @@ Object.assign( ASCLoader.prototype, {
 
         reader.onabort = function ( abortEvent ) {
 
-            // this.logger.log("abortEvent:");
-            // this.logger.log(abortEvent);
+            this.logger.log( 'abortEvent:' )
+            this.logger.log( abortEvent )
 
         }
 
         reader.onerror = function ( errorEvent ) {
 
-            // this.logger.log("errorEvent:");
-            // this.logger.log(errorEvent);
+            this.logger.log( 'errorEvent:' )
+            this.logger.log( errorEvent )
 
             if ( onError ) {
                 onError( errorEvent )
@@ -146,15 +142,15 @@ Object.assign( ASCLoader.prototype, {
 
         reader.onloadstart = function ( loadStartEvent ) {
 
-            // this.logger.log("loadStartEvent:");
-            // this.logger.log(loadStartEvent);
+            this.logger.log( 'loadStartEvent:' )
+            this.logger.log( loadStartEvent )
 
         }
 
         reader.onprogress = function ( progressEvent ) {
 
-            // this.logger.log("progressEvent:");
-            // this.logger.log(progressEvent);
+            this.logger.log( 'progressEvent:' )
+            this.logger.log( progressEvent )
 
             // // By lines
             // var lines = this.result.split('\n');
@@ -170,8 +166,8 @@ Object.assign( ASCLoader.prototype, {
 
         reader.onload = function ( loadEvent ) {
 
-            // this.logger.log("loadEvent:");
-            // this.logger.log(loadEvent);
+            this.logger.log( 'loadEvent:' )
+            this.logger.log( loadEvent )
 
             // By lines
             const lines         = this.result.split( '\n' )
@@ -215,8 +211,8 @@ Object.assign( ASCLoader.prototype, {
 
         reader.onloadend = function ( loadEndEvent ) {
 
-            // this.logger.log("loadEndEvent");
-            // this.logger.log(loadEndEvent);
+            this.logger.log( 'loadEndEvent' )
+            this.logger.log( loadEndEvent )
 
             if ( self._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
 
@@ -275,7 +271,7 @@ Object.assign( ASCLoader.prototype, {
             reader.readAsText( slice )
         }
 
-    },
+    }
 
     /**
      *
@@ -380,7 +376,7 @@ Object.assign( ASCLoader.prototype, {
             this.logger.error( 'Invalid data line: ' + line )
         }
 
-    },
+    }
 
     /**
      *
@@ -424,7 +420,7 @@ Object.assign( ASCLoader.prototype, {
             this.logger.error( 'Invalid data line: ' + lines )
         }
 
-    },
+    }
 
     /**
      *
@@ -446,7 +442,7 @@ Object.assign( ASCLoader.prototype, {
             } )
         }
 
-    },
+    }
 
     /**
      *
@@ -471,7 +467,7 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
@@ -498,7 +494,7 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
@@ -512,9 +508,18 @@ Object.assign( ASCLoader.prototype, {
 
             words = lines[ lineIndex ].split( ' ' )
 
+            this._points.push( {
+                x:  parseFloat( words[ 0 ] ),
+                y:  parseFloat( words[ 1 ] ),
+                z:  parseFloat( words[ 2 ] ),
+                nx: parseFloat( words[ 7 ] ),
+                ny: parseFloat( words[ 8 ] ),
+                nz: parseFloat( words[ 9 ] )
+            } )
+
         }
 
-    },
+    }
 
     /**
      *
@@ -542,7 +547,7 @@ Object.assign( ASCLoader.prototype, {
             } )
         }
 
-    },
+    }
 
     /**
      *
@@ -555,9 +560,20 @@ Object.assign( ASCLoader.prototype, {
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
             words = lines[ lineIndex ].split( ' ' )
+
+            this._points.push( {
+                x:  parseFloat( words[ 0 ] ),
+                y:  parseFloat( words[ 1 ] ),
+                z:  parseFloat( words[ 2 ] ),
+                i:  parseFloat( words[ 3 ] ),
+                nx: parseFloat( words[ 7 ] ),
+                ny: parseFloat( words[ 8 ] ),
+                nz: parseFloat( words[ 9 ] )
+            } )
+
         }
 
-    },
+    }
 
     /**
      *
@@ -588,7 +604,7 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
@@ -620,7 +636,7 @@ Object.assign( ASCLoader.prototype, {
             } )
 
         }
-    },
+    }
 
     /**
      *
@@ -644,14 +660,14 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
      * @param line
      * @private
      */
-    _parseLineC: function ( line ) {
+    _parseLineC ( line ) {
 
         const values        = line.split( ' ' )
         const numberOfWords = values.length
@@ -668,7 +684,7 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
@@ -688,7 +704,7 @@ Object.assign( ASCLoader.prototype, {
 
         }
 
-    },
+    }
 
     /**
      *
@@ -701,9 +717,9 @@ Object.assign( ASCLoader.prototype, {
         // var group = new Group();
         const numberOfPoints     = this._points.length
         const numberOfSplit      = Math.ceil( numberOfPoints / SPLIT_LIMIT )
-        let splice               = undefined
+        let splice               = null
         let numberOfPointInSplit = 0
-        let cloud                = undefined
+        let cloud                = null
 
         for ( let splitIndex = 0 ; splitIndex < numberOfSplit ; ++splitIndex ) {
 
@@ -713,9 +729,8 @@ Object.assign( ASCLoader.prototype, {
             const geometry  = new BufferGeometry()
             const positions = new Float32Array( numberOfPointInSplit * 3 )
             const colors    = new Float32Array( numberOfPointInSplit * 3 )
-            const color     = new Color()
             let bufferIndex = 0
-            let point       = undefined
+            let point       = null
 
             for ( let i = 0 ; i < numberOfPointInSplit ; ++i ) {
 
@@ -757,7 +772,7 @@ Object.assign( ASCLoader.prototype, {
 
         // return group;
 
-    },
+    }
 
     /**
      *
@@ -770,9 +785,8 @@ Object.assign( ASCLoader.prototype, {
         const geometry       = new BufferGeometry()
         const positions      = new Float32Array( numberOfPoints * 3 )
         const colors         = new Float32Array( numberOfPoints * 3 )
-        const color          = new Color()
         let bufferIndex      = 0
-        let point            = undefined
+        let point            = null
 
         for ( let i = 0 ; i < numberOfPoints ; ++i ) {
 
@@ -802,12 +816,13 @@ Object.assign( ASCLoader.prototype, {
         geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) )
         geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) )
 
-        var material = new PointsMaterial( {
+        const material = new PointsMaterial( {
             size:         0.005,
             vertexColors: true
         } )
 
-        var cloud = new Points( geometry, material )
+        const cloud = new Points( geometry, material )
+
         //Todo: Apply import coordinates syteme here !
         cloud.rotation.x -= Math.PI / 2
 
@@ -818,6 +833,6 @@ Object.assign( ASCLoader.prototype, {
 
     }
 
-} )
+}
 
 export { ASCLoader }

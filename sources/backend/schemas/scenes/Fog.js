@@ -37,8 +37,8 @@ function _createSchema ( Mongoose ) {
             y: Number,
             z: Number
         },
-        thumbnail:   Buffer,
-        path:        String
+        thumbnail: Buffer,
+        path:      String
     }, {
         _id: false,
         id:  false
@@ -48,6 +48,6 @@ function _createSchema ( Mongoose ) {
 
 module.exports = {
     getSchemaFrom:   getSchemaFrom,
-    getModelFrom:    Mongoose => null,
+    getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 }

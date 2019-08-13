@@ -212,10 +212,13 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
+    // eslint-disable-next-line no-unused-vars
     _onArrayBuffer ( data, onSuccess, onProgress, onError ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _onBlob ( data, onSuccess, onProgress, onError ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _onText ( data, onSuccess, onProgress, onError ) {}
 
     /**
@@ -398,7 +401,6 @@ class ObjectsManager extends TDataBaseManager {
 
             default:
                 throw new Error( `TObjectsManager: Unknown object of type: ${objectType}` )
-                break
 
         }
 

@@ -8,6 +8,7 @@
  */
 
 import {
+    isArray,
     isDefined,
     isFunction
 }                         from 'itee-validators'
@@ -19,11 +20,11 @@ import {
     MeshPhongMaterial,
     ShapeBufferGeometry
 }                         from 'three-full'
+import { AscToThree }     from './AscToThree'
 import { DbfToThree }     from './DbfToThree'
 import { JsonToThree }    from './JsonToThree'
 import { MtlToThree }     from './MtlToThree'
 import { Obj2ToThree }    from './Obj2ToThree'
-import { ObjToThree }     from './ObjToThree'
 import { ShpToThree }     from './ShpToThree'
 import { ThreeToMongoDB } from './ThreeToMongoDB'
 
@@ -48,6 +49,7 @@ const FileFormat = Object.freeze( {
             result += formats[ index ]
             result += ( ( index === numberOfFormats - 1 ) ? ', ' : '.' )
         }
+        return result
 
     }
 } )
@@ -172,14 +174,15 @@ class FilesToDatabase {
         this._numberOfFileToProcess = 0
         this._errors                = []
 
+        this._ascToThree  = new AscToThree()
         this._jsonToThree = new JsonToThree()
         this._shpToThree  = new ShpToThree()
         this._dbfToThree  = new DbfToThree()
         this._mtlToThree  = new MtlToThree()
-        this._objToThree  = ( true ) ? new ObjToThree() : new Obj2ToThree()
+        this._objToThree  = new Obj2ToThree()
 
-        this._parentId        = undefined
-        this._disableRootNode = undefined
+        this._parentId        = null
+        this._disableRootNode = null
         this._threeToMongo    = new ThreeToMongoDB( Mongoose )
 
     }
@@ -293,11 +296,9 @@ class FilesToDatabase {
 
         for ( let field in files ) {
 
-            if ( files.hasOwnProperty( field ) ) {
+            if ( !Object.prototype.hasOwnProperty.call( files, field ) ) { continue }
 
-                fileArray.push( files[ field ] )
-
-            }
+            fileArray.push( files[ field ] )
 
         }
 
@@ -405,7 +406,13 @@ class FilesToDatabase {
 
     _saveAsc ( file, parameters, response ) {
 
-        AscFile.parse( file, parameters, this._fileConversionErrorCallback.bind( this, response ) )
+        this._ascToThree.convert(
+            file,
+            parameters,
+            this._fileConversionSuccessCallback.bind( this, response, null ),
+            this._fileConversionProgressCallback.bind( this, response ),
+            this._fileConversionErrorCallback.bind( this, response )
+        )
 
     }
 
@@ -522,8 +529,6 @@ class FilesToDatabase {
     }
 
     _saveShpDbfCouple ( shpFile, dbfFile, parameters, response ) {
-
-        const self = this
 
         this._shpToThree.convert(
             shpFile,

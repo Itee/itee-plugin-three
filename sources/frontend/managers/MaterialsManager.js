@@ -367,8 +367,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.morphNormals = morphNormals
                 }
 
-                break
             }
+                break
 
             case 'MeshLambertMaterial': {
                 material = new MeshLambertMaterial()
@@ -484,8 +484,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.morphNormals = morphNormals
                 }
 
-                break
             }
+                break
 
             case 'LineBasicMaterial': {
                 material = new LineBasicMaterial()
@@ -496,8 +496,8 @@ class MaterialsManager extends TDataBaseManager {
                     material.color = this._setColor( color )
                 }
 
-                break
             }
+                break
 
             case 'PointsMaterial': {
                 material = new PointsMaterial()
@@ -528,12 +528,11 @@ class MaterialsManager extends TDataBaseManager {
                     material.sizeAttenuation = sizeAttenuation
                 }
 
-                break
             }
+                break
 
             default:
                 throw new Error( `TMaterialsManager: Unmanaged material of type: ${type}` )
-                break
 
         }
 
@@ -745,7 +744,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    fillTextures ( materials, onSuccess, onProgress, onError ) {
+    fillTextures ( materials, onSuccess/*, onProgress, onError */) {
 
         const texturesMap = this._retrieveTexturesOf( materials )
 

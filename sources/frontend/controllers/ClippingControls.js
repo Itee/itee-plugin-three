@@ -8,8 +8,6 @@
  *
  */
 
-/* global Math */
-
 import {
     Keys,
     Mouse
@@ -531,6 +529,7 @@ class AbstractHandle extends Object3D {
 
     }
 
+    // eslint-disable-next-line no-unused-vars
     update ( cameraDirection ) {}
 
 }
@@ -1655,7 +1654,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode:   {
+            setMode: {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -1668,7 +1667,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale:     {
+            scale: {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -1676,7 +1675,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate:    {
+            rotate: {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]
@@ -1939,14 +1938,14 @@ class ClippingControls extends Object3D {
 
         const actionMap   = this.actionsMap
         const key         = keyEvent.keyCode
-        const altActive   = keyEvent.altKey
+//        const altActive   = keyEvent.altKey
         const ctrlActive  = keyEvent.ctrlKey
-        const metaActive  = keyEvent.metaKey
-        const shiftActive = keyEvent.shiftKey
+//        const metaActive  = keyEvent.metaKey
+//        const shiftActive = keyEvent.shiftKey
 
-        if ( altActive ) {
+       /* if ( altActive ) {
 
-        } else if ( ctrlActive ) {
+        } else */if ( ctrlActive ) {
 
             switch ( this._mode ) {
 
@@ -2055,8 +2054,8 @@ class ClippingControls extends Object3D {
 
             }
 
-        } else if ( metaActive ) {
-        } else if ( shiftActive ) {
+//        } else if ( metaActive ) {
+//        } else if ( shiftActive ) {
         } else if ( actionMap.setMode.translate.includes( key ) ) {
 
             this.setMode( ClippingModes.Translate )
@@ -2242,7 +2241,7 @@ class ClippingControls extends Object3D {
                     break
 
                 case ClippingModes.Rotate:
-
+/*
                     if ( currentHandle.isRotateHandle ) {
 
                     } else if ( currentHandle.isPlaneHandle ) {
@@ -2250,7 +2249,7 @@ class ClippingControls extends Object3D {
                     } else if ( currentHandle.isOmnidirectionalHandle ) {
 
                     }
-
+*/
                     break
 
                 case ClippingModes.Scale:
@@ -2305,7 +2304,6 @@ class ClippingControls extends Object3D {
 
                 default:
                     throw new RangeError( `Invalid switch parameter: ${this._mode}` )
-                    break
 
             }
 
@@ -2408,6 +2406,7 @@ class ClippingControls extends Object3D {
     }
 
     /// Utils
+    // eslint-disable-next-line no-unused-vars
     getActiveHandle ( pointer ) {
 
     }
@@ -2492,18 +2491,25 @@ class ClippingControls extends Object3D {
     }
 
     // Rotating
+    // eslint-disable-next-line no-unused-vars
     _rotateX ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateY ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXY ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateYZ ( delta ) {}
 
+    // eslint-disable-next-line no-unused-vars
     _rotateXYZ ( delta ) {}
 
     // Scaling
@@ -2561,13 +2567,27 @@ class ClippingControls extends Object3D {
 }
 
 export {
-    ClippingBox,
-    HighlightableMaterial,
-    HighlightableLineMaterial,
     AbstractGizmo,
-    TranslateGizmo,
-    RotateGizmo,
-    ScaleGizmo,
+    AbstractHandle,
+    AbstractHitbox,
+    ClippingBox,
+    ClippingControls,
     ClippingModes,
-    ClippingControls
+    CylindricaHitbox,
+    HighlightableLineMaterial,
+    HighlightableMaterial,
+    LozengeHandle,
+    LozengeHitbox,
+    OctahedricalHandle,
+    OctahedricalHitbox,
+    PlanarHitbox,
+    PlaneHandle,
+    RotateGizmo,
+    RotateHandle,
+    ScaleGizmo,
+    ScaleHandle,
+    SphericalHitbox,
+    TorusHitbox,
+    TranslateGizmo,
+    TranslateHandle,
 }

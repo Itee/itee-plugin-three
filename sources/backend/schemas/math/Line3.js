@@ -39,6 +39,6 @@ function _createSchema ( Mongoose ) {
 
 module.exports = {
     getSchemaFrom:   getSchemaFrom,
-    getModelFrom:    Mongoose => null,
+    getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 }

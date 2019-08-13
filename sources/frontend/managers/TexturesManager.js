@@ -41,23 +41,19 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
         }
 
         const textureType = data.type
-        let texture       = undefined
+        //        let texture       = undefined
 
         switch ( textureType ) {
 
             default:
                 throw new Error( `TTexturesManager: Unknown texture of type: ${textureType}` )
-                break
 
         }
 
         // Common object properties
 
-        if ( textureType === 'Line' ) {
-
-        }
-
-        return texture
+        //        if ( textureType === 'Line' ) { }
+        //        return texture
 
     }
 

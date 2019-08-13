@@ -61,19 +61,16 @@ Object.assign( RZMLLoader.prototype, {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load: function ( url, onLoad, onProgress, onError ) {
 
         //this.logger.time( "RZMLLoader" )
 
-        var filePath = url.replace( /[^\/]*$/, '' )
-
-        var scope = this
-
-        var loader = new FileLoader( scope.manager )
+        const filePath = url.replace( /[^/]*$/, '' )
+        const loader   = new FileLoader( this.manager )
         loader.setResponseType( 'text/plain' )
-        loader.load( url, function ( text ) {
+        loader.load( url, text => {
 
-            onLoad( scope._parse( text, filePath ) )
+            onLoad( this._parse( text, filePath ) )
 
         }, onProgress, onError )
 
@@ -88,30 +85,31 @@ Object.assign( RZMLLoader.prototype, {
      */
     _parse ( text, filePath ) {
 
-        var document = null
+        let document = null
 
         if ( window.DOMParser ) {
-            var parser = new DOMParser()
+            const parser = new DOMParser()
             document   = parser.parseFromString( text, 'text/xml' )
         } else // Internet Explorer
         {
-            document       = new ActiveXObject( 'Microsoft.XMLDOM' )
+            document       = new window.ActiveXObject( 'Microsoft.XMLDOM' )
             document.async = false
             document.loadXML( text )
         }
 
-        var shots              = document.getElementsByTagName( 'SHOT' )
-        var shot               = undefined
-        var cfrmElement        = undefined
-        var translationElement = undefined
-        var rotationElement    = undefined
-        var iplnElement        = undefined
-        for ( var i = 0, numberOfShots = shots.length ; i < numberOfShots ; ++i ) {
+        const shots              = document.getElementsByTagName( 'SHOT' )
+        let shot               = null
+        let cfrmElement        = null
+        let translationElement = null
+        let rotationElement    = null
+//        let iplnElement        = null
+
+        for ( let i = 0, numberOfShots = shots.length ; i < numberOfShots ; ++i ) {
             shot               = shots[ i ]
             cfrmElement        = shot.children[ 0 ]
+            //            iplnElement        = shot.children[ 1 ]
             translationElement = cfrmElement.children[ 0 ]
             rotationElement    = cfrmElement.children[ 1 ]
-            iplnElement        = shot.children[ 1 ]
 
             // Todo: consider using array and/or create directly floating images from there
             this.imagesShotData.push( {
@@ -122,7 +120,7 @@ Object.assign( RZMLLoader.prototype, {
                     y: parseFloat( translationElement.attributes[ 'y' ].value ),
                     z: parseFloat( translationElement.attributes[ 'z' ].value )
                 },
-                rotation:  {
+                rotation: {
                     x: parseFloat( rotationElement.attributes[ 'x' ].value ),
                     y: parseFloat( rotationElement.attributes[ 'y' ].value ),
                     z: parseFloat( rotationElement.attributes[ 'z' ].value )

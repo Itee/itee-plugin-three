@@ -35,14 +35,13 @@ BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManag
 
     /**
      *
-     * @param jsonData
-     * @param onError
-     * @return {*}
+     * @param data
+     * @returns {Scene|Object3D}
      */
-    convert ( data, onError ) {
+    convert ( data/*, onError */) {
 
         const textureType = data.type
-        let texture       = undefined
+        let texture       = null
 
         switch ( textureType ) {
 
@@ -58,9 +57,9 @@ BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManag
 
         // Common object properties
 
-        if ( textureType === 'Line' ) {
-
-        }
+        //        if ( textureType === 'Line' ) {
+        //
+        //        }
 
         return texture
 
