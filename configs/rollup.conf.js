@@ -83,8 +83,8 @@ function CreateRollupConfigs ( options ) {
             const outputPath = ( isProd ) ? path.join( output, `${fileName}.${format}.min.js` ) : path.join( output, `${fileName}.${format}.js` )
 
             configs.push( {
-                input:     input,
-                external:  ( format === 'cjs' ) ? [
+                input:    input,
+                external: ( format === 'cjs' ) ? [
                     'itee-client',
                     'itee-database',
                     'itee-utils',
@@ -99,7 +99,7 @@ function CreateRollupConfigs ( options ) {
                     'itee-validators',
                     'three-full'
                 ],
-                plugins:   [
+                plugins: [
                     replace( {
                         defines: {
                             IS_REMOVE_ON_BACKEND_BUILD:  ( format !== 'cjs' ),
@@ -114,7 +114,7 @@ function CreateRollupConfigs ( options ) {
                     } ),
                     isProd && terser()
                 ],
-                onwarn:    ( { loc, frame, message } ) => {
+                onwarn: ( { loc, frame, message } ) => {
 
                     // Ignore some errors
                     if ( message.includes( 'Circular dependency' ) ) { return }

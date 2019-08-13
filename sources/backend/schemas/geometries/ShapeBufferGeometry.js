@@ -33,7 +33,7 @@ function _createSchema ( Mongoose ) {
 
     const NestedCurveSchema = new Schema(
         {
-            type:               {
+            type: {
                 type:    String,
                 default: 'Curve'
             },

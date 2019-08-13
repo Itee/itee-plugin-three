@@ -184,8 +184,8 @@ Object.assign( DBFLoader.prototype, {
 
             case DBFVersion.dBASE_III_plus:
             case DBFVersion.dBASE_III_plus_memo:
-            //                header = this._parseHeaderV2_5()
-            //                break;
+                header = this._parseHeaderV2_5()
+                break
 
             case DBFVersion.dBASE_IV_memo:
             case DBFVersion.dBASE_IV_memo_SQL_table:
@@ -201,8 +201,7 @@ Object.assign( DBFLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid version parameter: ${version}`, 'DBFLoader' )
-                break
+                throw new RangeError( `Invalid version parameter: ${version}` )
 
         }
 
@@ -486,18 +485,19 @@ Object.assign( DBFLoader.prototype, {
         const numberOfRecords = header.numberOfRecords
         const fields          = header.fields
 
-        let properties = undefined
-        if ( version === DBFVersion.dBase_v_7 ) {
-            properties = this._parseFieldProperties()
-        }
+        // Todo: use it
+        //        let properties = null
+        //        if ( version === DBFVersion.dBase_v_7 ) {
+        //            properties = this._parseFieldProperties()
+        //        }
 
         let records = []
-        let record  = undefined
-        let field   = undefined
+        let record  = null
+        let field   = null
         for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
 
             record              = {}
-            record[ 'deleted' ] = ( this.reader.getUInt8() === DBFLoader.DeletedRecord )
+            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord )
 
             for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
 
@@ -505,26 +505,30 @@ Object.assign( DBFLoader.prototype, {
 
                 switch ( field.type ) {
 
-                    case DataType.Binary:
+                    case DataType.Binary: {
                         const binaryString   = this.reader.getString( field.length )
                         record[ field.name ] = parseInt( binaryString )
+                    }
                         break
 
-                    case DataType.Numeric:
+                    case DataType.Numeric: {
                         const numericString  = this.reader.getString( field.length )
                         record[ field.name ] = parseInt( numericString )
+                    }
                         break
 
-                    case DataType.Character:
+                    case DataType.Character: {
                         record[ field.name ] = this.reader.getString( field.length )
+                    }
                         break
 
-                    case DataType.Date:
+                    case DataType.Date: {
                         // YYYYMMDD
                         record[ field.name ] = this.reader.getString( field.length )
+                    }
                         break
 
-                    case DataType.Logical:
+                    case DataType.Logical: {
                         const logical = this.reader.getChar().toLowerCase()
                         if ( logical === 't' || logical === 'y' ) {
                             record[ field.name ] = true
@@ -533,45 +537,50 @@ Object.assign( DBFLoader.prototype, {
                         } else {
                             record[ field.name ] = null
                         }
+                    }
                         break
 
-                    case DataType.Memo:
+                    case DataType.Memo: {
                         record[ field.name ] = this.reader.getString( field.length )
+                    }
                         break
 
+                    // 8 bytes - two longs, first for date, second for time.
+                    // The date is the number of days since  01/01/4713 BC.
+                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
                     case DataType.Timestamp:
-                        // 8 bytes - two longs, first for date, second for time.
-                        // The date is the number of days since  01/01/4713 BC.
-                        // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
-
                         break
 
-                    case DataType.Long:
-                        // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    case DataType.Long: {
                         record[ field.name ] = this.reader.getInt32()
+                    }
                         break
 
-                    case DataType.Autoincrement:
-                        // Same as a Long
+                    // Same as a Long
+                    case DataType.Autoincrement: {
                         record[ field.name ] = this.reader.getInt32()
+                    }
                         break
 
-                    case DataType.Float:
+                    case DataType.Float: {
                         const floatString    = this.reader.getString( field.length )
                         record[ field.name ] = parseInt( floatString )
+                    }
                         break
 
-                    case DataType.Double:
-                        record[ field.name ] = this.reader.getDouble()
+                    case DataType.Double: {
+                        record[ field.name ] = this.reader.getFloat64()
+                    }
                         break
 
-                    case DataType.OLE:
+                    case DataType.OLE: {
                         record[ field.name ] = this.reader.getString( field.length )
+                    }
                         break
 
                     default:
-                        throw new RangeError( `Invalid data type parameter: ${field.type}`, '_parseDatas' )
-                        break
+                        throw new RangeError( `Invalid data type parameter: ${field.type}` )
 
                 }
 

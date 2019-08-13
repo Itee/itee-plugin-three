@@ -9,7 +9,10 @@
  */
 
 import { TAbstractDataInserter } from 'itee-database'
-import { isNotDefined }          from 'itee-validators'
+import {
+    isArray,
+    isNotDefined
+}                                from 'itee-validators'
 
 class ThreeToMongoDB extends TAbstractDataInserter {
 
@@ -24,7 +27,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         const self                 = this
         const parentId             = parameters.parentId
         const disableRootNode      = ( parameters.disableRootNode === 'true' )
-        const dataToParse          = ( disableRootNode ) ? data.children : ( Array.isArray( data ) ) ? data : [ data ]
+        const dataToParse          = ( disableRootNode ) ? data.children : ( isArray( data ) ) ? data : [ data ]
         const errors               = []
         const numberOfRootChildren = dataToParse.length
         let processedRootChildren  = 0
@@ -95,7 +98,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                             let childId = childrenIds[ childIndex ]
 
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error, success ) => {
+                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error ) => {
 
                                 if ( error ) {
                                     errors.push( error )
@@ -194,9 +197,11 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         let userData = {}
 
         for ( let prop in jsonUserData ) {
-            if ( jsonUserData.hasOwnProperty( prop ) ) {
-                userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ]
-            }
+
+            if ( !Object.prototype.hasOwnProperty.call( jsonUserData, prop ) ) { continue }
+
+            userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ]
+
         }
 
         return userData
@@ -566,7 +571,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // Object3D
 
-    _checkIfObject3DAlreadyExist ( object ) {
+    _checkIfObject3DAlreadyExist ( /*object*/ ) {
 
         // Todo
         return null
@@ -622,7 +627,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                             childId = savedChildrenIds[ childIndex ]
 
                             const Objects3DModelBase = self._driver.model( 'Objects3D' )
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error, success ) => {
+                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error ) => {
 
                                 if ( error ) {
                                     errors.push( error )
@@ -660,7 +665,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // Curve
 
-    _checkIfCurveAlreadyExist ( curve ) {
+    _checkIfCurveAlreadyExist ( /*curve*/ ) {
 
         // Todo
         return null
@@ -694,7 +699,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // Geometry
 
-    _checkIfGeometryAlreadyExist ( geometry ) {
+    _checkIfGeometryAlreadyExist ( /*geometry*/ ) {
 
         // Todo
         return null
@@ -728,7 +733,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // BufferGeometry
 
-    _checkIfBufferGeometryAlreadyExist ( bufferGeometry ) {
+    _checkIfBufferGeometryAlreadyExist ( /*bufferGeometry*/ ) {
 
         // Todo
         return null
@@ -762,7 +767,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // Material
 
-    _checkIfMaterialAlreadyExist ( materials ) {
+    _checkIfMaterialAlreadyExist ( /*materials*/ ) {
 
         // Todo
         return null
@@ -779,8 +784,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     _saveMaterialInDatabase ( materials, onError, onSuccess ) {
 
-        const self = this
-        if ( Array.isArray( materials ) ) {
+        if ( isArray( materials ) ) {
 
             const numberOfMaterials    = materials.length
             let materialIds            = new Array( numberOfMaterials )
@@ -803,11 +807,11 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 } else {
 
-                    ( function closeIndex () {
+                    ( () => {
 
                         const materialLocalIndex = materialIndex
 
-                        self._getMaterialModel( material )
+                        this._getMaterialModel( material )
                             .save()
                             .then( savedMaterial => {
 
@@ -856,7 +860,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     // Texture
 
-    _checkIfTextureAlreadyExist ( texture ) {
+    _checkIfTextureAlreadyExist ( /*texture*/ ) {
 
         // Todo
         return null

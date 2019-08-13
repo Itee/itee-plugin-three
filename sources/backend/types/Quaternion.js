@@ -8,7 +8,7 @@
  *
  */
 
-const { isNotDefined, isNotNumber, isNotObject } = require( 'itee-validators' )
+const { isNotDefined, isNotNumber } = require( 'itee-validators' )
 
 function registerSchemaTypeFor ( Mongoose ) {
     'use strict'

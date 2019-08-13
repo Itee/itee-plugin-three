@@ -225,8 +225,7 @@ Object.assign( TUniversalLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid file extension: ${fileExtension}. Supported formats are: ${FileFormat.toString()}`, 'TUniversalLoader' )
-                break
+                throw new RangeError( `Invalid file extension: ${fileExtension}. Supported formats are: ${FileFormat.toString()}` )
 
         }
 

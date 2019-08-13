@@ -39,18 +39,6 @@ function CreateTestsRollupConfigs ( /*options*/ ) {
                 name:   'Itee.Benchs',
                 file:   `tests/builds/${packageInfos.name}.benchs.js`
             }
-        },
-        {
-            input:     `tests/utils/${packageInfos.name}.tests-utils.js`,
-            plugins:   [],
-            treeshake: true,
-            output:    {
-                indent: '\t',
-                format: 'iife',
-                name:   'Itee',
-                file:   `tests/builds/${packageInfos.name}.tests-utils.js`,
-                extend: true
-            }
         }
     ]
 

@@ -77,12 +77,17 @@ function ringClockwise ( ring ) {
  */
 function ringContainsSome ( ring, hole ) {
 
-    var i = -1, n = hole.length, c
-    while ( ++i < n ) {
-        if ( c = ringContains( ring, hole[ i ] ) ) {
-            return c > 0
+    let i = 0
+    let n = hole.length
+
+    do {
+
+        if ( ringContains( ring, hole[ i ] ) > 0 ) {
+            return true
         }
-    }
+
+    } while ( ++i < n )
+
     return false
 
 }
@@ -94,18 +99,30 @@ function ringContainsSome ( ring, hole ) {
  * @return {number}
  */
 function ringContains ( ring, point ) {
-    var x = point[ 0 ], y = point[ 1 ], contains = -1
-    for ( var i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-        var pi = ring[ i ], xi = pi[ 0 ], yi = pi[ 1 ],
-            pj                               = ring[ j ], xj = pj[ 0 ], yj = pj[ 1 ]
+
+    let x        = point[ 0 ]
+    let y        = point[ 1 ]
+    let contains = -1
+
+    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
+
+        const pi = ring[ i ]
+        const xi = pi[ 0 ]
+        const yi = pi[ 1 ]
+        const pj = ring[ j ]
+        const xj = pj[ 0 ]
+        const yj = pj[ 1 ]
+
         if ( segmentContains( pi, pj, point ) ) {
-            return 0
-        }
-        if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
+            contains = 0
+        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
             contains = -contains
         }
+
     }
+
     return contains
+
 }
 
 /**
@@ -378,7 +395,7 @@ Object.assign( SHPLoader.prototype, {
                     break
 
                 default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${shapeType}` )
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${header.shapeType}` )
                     break
 
             }

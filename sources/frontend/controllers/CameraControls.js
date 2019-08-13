@@ -215,15 +215,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate:           [ Mouse.LEFT.value ],
-            pan:              [ Mouse.MIDDLE.value ],
-            roll:             {
+            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate: [ Mouse.LEFT.value ],
+            pan:    [ Mouse.MIDDLE.value ],
+            roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -1057,7 +1057,7 @@ class CameraControls extends EventDispatcher {
 
             switch ( this._mode ) {
 
-                case CameraControlMode.FirstPerson:
+                case CameraControlMode.FirstPerson: {
 
                     //        const normalizedX = (delta.x / this._domElement.clientWidth) - 1.0
                     //        const normalizedY = (delta.y / this._domElement.clientHeight) - 1.0
@@ -1087,10 +1087,10 @@ class CameraControls extends EventDispatcher {
                     const lockedTargetPostion = cameraToTargetDirection.multiplyScalar( 1.0 ) // Todo: option
                                                                        .add( cameraPosition )
                     this.setTargetPosition( lockedTargetPostion )
-
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
 
                     // restrict theta and phi between desired limits
                     const spherical = new Spherical().setFromVector3( targetToCamera )
@@ -1105,7 +1105,7 @@ class CameraControls extends EventDispatcher {
                                                      .add( targetPosition )
 
                     this.setCameraPosition( newPosition )
-
+                }
                     break
 
                 default:
@@ -1113,11 +1113,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        } else {
+        } /*else {
 
-            // Todo: ...
+         // Todo: ...
 
-        }
+         }*/
 
         this.dispatchEvent( { type: 'rotate' } )
         this.dispatchEvent( { type: 'change' } )
@@ -1186,7 +1186,7 @@ class CameraControls extends EventDispatcher {
 
             switch ( this._mode ) {
 
-                case CameraControlMode.FirstPerson:
+                case CameraControlMode.FirstPerson: {
 
                     if ( delta > 0 ) {
                         this._camera.fov--
@@ -1195,10 +1195,10 @@ class CameraControls extends EventDispatcher {
                     }
 
                     this._camera.updateProjectionMatrix()
-
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
 
                     const cameraPosition                 = this._camera.position
                     const targetPosition                 = this._target.position
@@ -1224,7 +1224,7 @@ class CameraControls extends EventDispatcher {
                     }
 
                     this._camera.position.copy( cameraNextPosition )
-
+                }
                     break
 
                 default:
@@ -1232,11 +1232,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        } else {
+        } /*else {
 
-            // Todo: ...
+         // Todo: ...
 
-        }
+         }*/
 
         this.dispatchEvent( { type: 'zoom' } )
         this.dispatchEvent( { type: 'change' } )
@@ -1256,16 +1256,18 @@ class CameraControls extends EventDispatcher {
 
             switch ( this.mode ) {
 
-                case CameraControlMode.FirstPerson:
-                    // The result is inverted in front of Orbit type but is correct in FP mode except up and down so invert y axis
+                // The result is inverted in front of Orbit type but is correct in FP mode except up and down so invert y axis
+                case CameraControlMode.FirstPerson: {
                     _direction.y            = -( _direction.y )
                     const newTargetPosition = _direction.multiplyScalar( distanceTo ).add( cameraPosition )
                     this.setTargetPosition( newTargetPosition )
+                }
                     break
 
-                case CameraControlMode.Orbit:
+                case CameraControlMode.Orbit: {
                     const newCameraPosition = _direction.multiplyScalar( distanceTo ).add( targetPosition )
                     this.setCameraPosition( newCameraPosition )
+                }
                     break
 
                 default:
@@ -1273,11 +1275,11 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        } else {
+        }/* else {
 
-            // Todo: ...
+         // Todo: ...
 
-        }
+         }*/
 
         this.dispatchEvent( { type: 'lookAt' } )
         this.dispatchEvent( { type: 'change' } )
@@ -1307,7 +1309,7 @@ class CameraControls extends EventDispatcher {
 
         switch ( this._mode ) {
 
-            case CameraControlMode.FirstPerson:
+            case CameraControlMode.FirstPerson: {
 
                 if ( this._lockedTarget ) {
 
@@ -1320,10 +1322,10 @@ class CameraControls extends EventDispatcher {
                     this.setCameraPosition( this._currentPathPosition )
 
                 }
-
+            }
                 break
 
-            case CameraControlMode.Orbit:
+            case CameraControlMode.Orbit: {
 
                 if ( this._lockedTarget ) {
 
@@ -1336,7 +1338,7 @@ class CameraControls extends EventDispatcher {
                     this.setTargetPosition( this._currentPathPosition )
 
                 }
-
+            }
                 break
 
             default:

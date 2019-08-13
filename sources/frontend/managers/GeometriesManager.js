@@ -398,7 +398,6 @@ class GeometriesManager extends TDataBaseManager {
 
             default:
                 throw new Error( `TGeometriesManager: Unknown geometry of type: ${geometryType}` )
-                break
 
         }
 
@@ -643,8 +642,6 @@ class GeometriesManager extends TDataBaseManager {
 
             bufferGeometry.shapes        = data.shapes.map( jsonShape => {return new Shape().fromJSON( jsonShape )} )
             bufferGeometry.curveSegments = data.curveSegments
-
-        } else {
 
         }
 

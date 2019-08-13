@@ -34,16 +34,16 @@ function _createSchema ( Mongoose ) {
     const Euler      = Types.Euler
 
     _schema = new Schema( {
-            uuid:                   String,
-            name:                   String,
-            type:                   String,
-            parent:                 ObjectId,
-            children:               [ ObjectId ],
-            up:                     Vector3,
-            position:               Vector3,
-            rotation:               Euler,
-            quaternion:             Quaternion,
-            scale:                  {
+            uuid:       String,
+            name:       String,
+            type:       String,
+            parent:     ObjectId,
+            children:   [ ObjectId ],
+            up:         Vector3,
+            position:   Vector3,
+            rotation:   Euler,
+            quaternion: Quaternion,
+            scale:      {
                 type:    Vector3,
                 default: {
                     x: 1,
@@ -61,12 +61,12 @@ function _createSchema ( Mongoose ) {
                 type: Number,
                 set:  value => ( value.mask )
             },
-            visible:                Boolean,
-            castShadow:             Boolean,
-            receiveShadow:          Boolean,
-            frustumCulled:          Boolean,
-            renderOrder:            Boolean,
-            userData:               {
+            visible:       Boolean,
+            castShadow:    Boolean,
+            receiveShadow: Boolean,
+            frustumCulled: Boolean,
+            renderOrder:   Boolean,
+            userData:      {
                 type: Mixed,
                 set:  value => {
 
@@ -75,7 +75,7 @@ function _createSchema ( Mongoose ) {
 
                         for ( let property in properties ) {
 
-                            if ( !properties.hasOwnProperty( property ) ) { continue }
+                            if ( !Object.prototype.hasOwnProperty.call( properties, property ) ) { continue }
 
                             let value = properties[ property ]
                             if ( value.constructor === Object ) {

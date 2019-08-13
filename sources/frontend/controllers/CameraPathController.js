@@ -49,7 +49,7 @@ function CameraPathController ( parameters = {} ) {
             camera:     null,
             target:     new Object3D(),
             mode:       CameraControlMode.Orbit,
-            domElement: window
+            domElement: document
         }, ...parameters
     }
 
@@ -66,7 +66,7 @@ function CameraPathController ( parameters = {} ) {
     this.currentPathIndex    = -1
     this.currentPathPosition = 0
 
-    this.domElement      = ( domElement !== undefined ) ? domElement : document
+    this.domElement      = _parameters.domElement
     this.forwardControl  = this.domElement.children[ 0 ].children[ 0 ].children[ 0 ]
     this.backwardControl = this.domElement.children[ 0 ].children[ 1 ].children[ 0 ]
     this.timeoutId       = undefined
@@ -200,7 +200,7 @@ function CameraPathController ( parameters = {} ) {
             pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize()
         }
 
-        var cameraDirection = camera.getWorldDirection().normalize()
+        var cameraDirection = self.camera.getWorldDirection().normalize()
         var dotProduct      = cameraDirection.dot( pathDirection )
 
         if ( dotProduct > 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
