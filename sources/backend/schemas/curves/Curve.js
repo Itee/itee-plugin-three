@@ -27,7 +27,7 @@ function _createSchema ( Mongoose ) {
     const Schema = Mongoose.Schema
 
     _schema = new Schema( {
-            type: {
+            type:               {
                 type:    String,
                 default: 'Curve'
             },
@@ -73,7 +73,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Curve = {
     getSchemaFrom,
     getModelFrom,
     registerModelTo

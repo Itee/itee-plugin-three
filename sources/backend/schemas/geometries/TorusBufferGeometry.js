@@ -8,7 +8,7 @@
  *
  */
 
-const BufferGeometry = require( '../core/BufferGeometry' )
+const { BufferGeometry } = require( '../core/BufferGeometry' )
 
 let _schema = undefined
 let _model  = undefined
@@ -63,7 +63,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.TorusBufferGeometry = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

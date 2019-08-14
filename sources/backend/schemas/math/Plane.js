@@ -37,7 +37,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Plane = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

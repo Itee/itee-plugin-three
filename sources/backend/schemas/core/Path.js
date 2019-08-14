@@ -8,7 +8,7 @@
  *
  */
 
-const Curve = require( '../curves/Curve' )
+const { Curve } = require( '../curves/Curve' )
 
 let _schema = undefined
 let _model  = undefined
@@ -33,7 +33,7 @@ function _createSchema ( Mongoose ) {
 
     const NestedCurveSchema = new Schema(
         {
-            type: {
+            type:               {
                 type:    String,
                 default: 'Curve'
             },
@@ -93,7 +93,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Path = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

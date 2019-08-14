@@ -7,7 +7,7 @@
  * @description Todo...
  */
 
-const Face3 = require( './Face3' )
+import { Face3 } from './Face3'
 
 let _schema = undefined
 let _model  = undefined
@@ -32,23 +32,23 @@ function _createSchema ( Mongoose ) {
     const Vector3     = Types.Vector3
 
     _schema = new Schema( {
-        uuid:          String,
-        name:          String,
-        type:          String,
-        vertices:      [ Vector3 ],
-        colors:        [ Number ],
-        faces:         [ Face3Schema ],
-        faceVertexUvs: [ [ Number ] ],
-        morphTargets:  [ Number ],
-        morphNormals:  [ Number ],
-        skinWeights:   [ Number ],
-        skinIndices:   [ Number ],
-        lineDistances: [ Number ],
-        boundingBox:   {
+        uuid:                    String,
+        name:                    String,
+        type:                    String,
+        vertices:                [ Vector3 ],
+        colors:                  [ Number ],
+        faces:                   [ Face3Schema ],
+        faceVertexUvs:           [ [ Number ] ],
+        morphTargets:            [ Number ],
+        morphNormals:            [ Number ],
+        skinWeights:             [ Number ],
+        skinIndices:             [ Number ],
+        lineDistances:           [ Number ],
+        boundingBox:             {
             min: Vector3,
             max: Vector3
         },
-        boundingSphere: {
+        boundingSphere:          {
             center: Vector3,
             radius: Number
         },
@@ -99,7 +99,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+export const Geometry = {
     getSchemaFrom,
     getModelFrom,
     registerModelTo

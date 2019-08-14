@@ -38,7 +38,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Box3 = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

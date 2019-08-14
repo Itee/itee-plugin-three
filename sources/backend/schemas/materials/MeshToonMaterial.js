@@ -8,7 +8,7 @@
  *
  */
 
-const Material = require( './Material' )
+const { Material } = require( './Material' )
 
 let _schema = undefined
 let _model  = undefined
@@ -103,7 +103,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.MeshToonMaterial = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

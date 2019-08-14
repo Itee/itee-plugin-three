@@ -7,7 +7,7 @@
  * @description Todo...
  */
 
-const BufferAttribute = require( './BufferAttribute' )
+const { BufferAttribute } = require( './BufferAttribute' )
 
 let _schema = undefined
 let _model  = undefined
@@ -34,18 +34,18 @@ function _createSchema ( Mongoose ) {
     const BufferAttributeSchema = BufferAttribute.getSchemaFrom( Mongoose )
 
     _schema = new Schema( {
-        uuid:       String,
-        name:       String,
-        type:       String,
-        index:      BufferAttributeSchema,
-        attributes: {
+        uuid:           String,
+        name:           String,
+        type:           String,
+        index:          BufferAttributeSchema,
+        attributes:     {
             position: BufferAttributeSchema,
             normal:   BufferAttributeSchema,
             color:    BufferAttributeSchema,
             uv:       BufferAttributeSchema
         },
-        groups:      Mixed,
-        boundingBox: {
+        groups:         Mixed,
+        boundingBox:    {
             min: Vector3,
             max: Vector3
         },
@@ -53,7 +53,7 @@ function _createSchema ( Mongoose ) {
             center: Vector3,
             radius: Number
         },
-        drawRange: Mixed
+        drawRange:      Mixed
     }, {
         collection:       'geometries',
         discriminatorKey: 'type'
@@ -94,7 +94,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.BufferGeometry = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -1,5 +1,5 @@
-const Object3D = require( '../core/Object3D' )
-const Fog      = require( './Fog' )
+const { Object3D } = require( '../core/Object3D' )
+const { Fog }      = require( './Fog' )
 
 let _schema = undefined
 let _model  = undefined
@@ -62,7 +62,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Scene = {
     getSchemaFrom,
     getModelFrom,
     registerModelTo

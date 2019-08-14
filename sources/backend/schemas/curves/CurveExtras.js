@@ -8,7 +8,7 @@
  *
  */
 
-const Curve = require( './Curve' )
+const { Curve } = require( './Curve' )
 
 let _schema = undefined
 let _model  = undefined
@@ -48,7 +48,7 @@ function _createModel ( Mongoose ) {
     'use strict'
 
     const CurveBaseModel = Curve.getModelFrom( Mongoose )
-    _model               = CurveBaseModel.discriminator( 'CurveExtra', getSchemaFrom( Mongoose ) )
+    _model               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom( Mongoose ) )
 
 }
 
@@ -63,7 +63,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.CurveExtras = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

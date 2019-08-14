@@ -8,7 +8,7 @@
  *
  */
 
-const Geometry = require( '../core/Geometry' )
+const { Geometry } = require( '../core/Geometry' )
 
 let _schema = undefined
 let _model  = undefined
@@ -63,7 +63,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.ShapeGeometry = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo
