@@ -107,7 +107,7 @@ function CreateRollupConfigs ( options ) {
                         }
                     } ),
                     commonjs( {
-                        include: [ 'sources/backend/converters/**', 'node_modules/**' ]
+                        include: [ 'sources/backend/**', 'node_modules/**' ]
                     } ),
                     resolve( {
                         preferBuiltins: true
