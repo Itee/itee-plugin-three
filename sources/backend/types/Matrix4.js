@@ -8,9 +8,14 @@
  *
  */
 
-const { isNotDefined, isNotArray, isNotNumber, isNaN } = require( 'itee-validators' )
+import {
+    isNaN,
+    isNotArray,
+    isNotDefined,
+    isNotNumber
+} from 'itee-validators'
 
-function registerSchemaTypeFor ( Mongoose ) {
+function Matrix4Type ( Mongoose ) {
     'use strict'
 
     const SchemaType = Mongoose.SchemaType
@@ -69,4 +74,5 @@ function registerSchemaTypeFor ( Mongoose ) {
 
 }
 
-module.exports = registerSchemaTypeFor
+export { Matrix4Type }
+
