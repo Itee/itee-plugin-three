@@ -16,9 +16,9 @@ import {
 
 class ThreeToMongoDB extends TAbstractDataInserter {
 
-    constructor ( Mongoose ) {
+    constructor ( parameters = {} ) {
 
-        super( Mongoose )
+        super( parameters )
 
     }
 

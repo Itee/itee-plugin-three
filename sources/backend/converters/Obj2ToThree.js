@@ -14,7 +14,9 @@ import { OBJLoader2 }             from 'three-full'
 class Obj2ToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.String )
+        super( {
+            dumpType: TAbstractFileConverter.DumpType.JSON
+        } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {

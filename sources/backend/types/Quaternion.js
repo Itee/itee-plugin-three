@@ -8,9 +8,12 @@
  *
  */
 
-const { isNotDefined, isNotNumber } = require( 'itee-validators' )
+import {
+    isNotDefined,
+    isNotNumber
+} from 'itee-validators'
 
-function registerSchemaTypeFor ( Mongoose ) {
+function QuaternionType ( Mongoose ) {
     'use strict'
 
     const SchemaType = Mongoose.SchemaType
@@ -58,4 +61,4 @@ function registerSchemaTypeFor ( Mongoose ) {
 
 }
 
-module.exports = registerSchemaTypeFor
+export { QuaternionType }

@@ -8,7 +8,7 @@
  *
  */
 
-const Object3D = require( '../core/Object3D' )
+const { Object3D } = require( '../core/Object3D' )
 
 let _schema = undefined
 let _model  = undefined
@@ -34,7 +34,7 @@ function _createSchema ( Mongoose ) {
     const Vector3  = Types.Vector3
 
     _schema = new Schema( {
-        lensFlares: [
+        lensFlares:     [
             {
                 texture:  ObjectId,
                 size:     Number,
@@ -84,7 +84,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.LensFlare = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

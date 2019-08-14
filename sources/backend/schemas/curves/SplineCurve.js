@@ -8,7 +8,7 @@
  *
  */
 
-const Curve = require( './Curve' )
+const { Curve } = require( './Curve' )
 
 let _schema = undefined
 let _model  = undefined
@@ -67,7 +67,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.SplineCurve = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

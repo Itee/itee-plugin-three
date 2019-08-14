@@ -215,15 +215,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate: [ Mouse.LEFT.value ],
-            pan:    [ Mouse.MIDDLE.value ],
-            roll:   {
+            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate:           [ Mouse.LEFT.value ],
+            pan:              [ Mouse.MIDDLE.value ],
+            roll:             {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -285,7 +285,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
-        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
+        //        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
 
         this._mode = value
 

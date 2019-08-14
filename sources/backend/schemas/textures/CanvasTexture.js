@@ -8,7 +8,7 @@
  *
  */
 
-const Texture = require( './Texture' )
+const { Texture } = require( './Texture' )
 
 let _schema = undefined
 let _model  = undefined
@@ -65,7 +65,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.CanvasTexture = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

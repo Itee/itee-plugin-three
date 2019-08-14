@@ -38,7 +38,7 @@ BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManag
      * @param data
      * @returns {Scene|Object3D}
      */
-    convert ( data/*, onError */) {
+    convert ( data/*, onError */ ) {
 
         const textureType = data.type
         let texture       = null

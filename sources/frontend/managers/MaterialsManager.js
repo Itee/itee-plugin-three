@@ -744,7 +744,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    fillTextures ( materials, onSuccess/*, onProgress, onError */) {
+    fillTextures ( materials, onSuccess/*, onProgress, onError */ ) {
 
         const texturesMap = this._retrieveTexturesOf( materials )
 

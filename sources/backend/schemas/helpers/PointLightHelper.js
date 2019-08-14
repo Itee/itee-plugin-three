@@ -8,7 +8,7 @@
  *
  */
 
-const Object3D = require( '../core/Object3D' )
+const { Object3D } = require( '../core/Object3D' )
 
 let _schema = undefined
 let _model  = undefined
@@ -63,7 +63,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.PointLightHelper = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

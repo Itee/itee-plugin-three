@@ -9,12 +9,12 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { DBFLoader }              from '../loaders/DBFLoader'
+import { DBFLoader }              from '../../common/loaders/DBFLoader'
 
 class DbfToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.ArrayBuffer )
+        super( { dumpType: TAbstractFileConverter.DumpType.ArrayBuffer } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {

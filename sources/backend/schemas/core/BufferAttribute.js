@@ -7,7 +7,7 @@
  * @description Todo...
  */
 
-const { isTypedArray, isFloat64Array, isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUInt64Array } = require( 'util' ).types
+const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = require( 'itee-validators' )
 
 let _schema = undefined
 
@@ -49,11 +49,11 @@ function _createSchema ( Mongoose ) {
     }
 
     _schema = new Schema( {
-        array: {
+        array:       {
             type: Buffer,
             set:  ( array ) => {
 
-                if ( !isTypedArray( array ) ) { throw new TypeError( 'Invalid array, expect a typed array.' )}
+                //                if ( !isTypedArray( array ) ) { throw new TypeError( 'Invalid array, expect a typed array.' )}
 
                 const arrayLength = array.length
                 let buffer        = null
@@ -149,7 +149,7 @@ function _createSchema ( Mongoose ) {
                         offset = buffer.writeDoubleBE( array[ index ], offset )
                     }
 
-                } else if ( isBigUInt64Array( array ) ) {
+                } else if ( isBigUint64Array( array ) ) {
 
                     buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE )
                     offset = buffer.writeUInt8( ArrayType.BigUint64Array, offset )
@@ -184,7 +184,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.BufferAttribute = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

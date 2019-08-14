@@ -36,7 +36,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-module.exports = {
+module.exports.Spherical = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

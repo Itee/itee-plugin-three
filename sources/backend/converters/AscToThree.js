@@ -9,12 +9,14 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { ASCLoader }              from '../loaders/ASCLoader'
+import { ASCLoader }              from '../../common/loaders/ASCLoader'
 
 class AscToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.String )
+        super( {
+            dumpType: TAbstractFileConverter.DumpType.String
+        } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {

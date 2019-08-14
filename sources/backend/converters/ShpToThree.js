@@ -9,12 +9,14 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { SHPLoader }              from '../loaders/SHPLoader'
+import { SHPLoader }              from '../../common/loaders/SHPLoader'
 
 class ShpToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.ArrayBuffer )
+        super( {
+            dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
+        } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {

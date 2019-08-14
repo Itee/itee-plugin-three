@@ -8,7 +8,7 @@
  *
  */
 
-const Object3D = require( '../core/Object3D' )
+import { Object3D } from '../core/Object3D'
 
 let _schema = undefined
 let _model  = undefined
@@ -63,7 +63,7 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports = {
+export const Group = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

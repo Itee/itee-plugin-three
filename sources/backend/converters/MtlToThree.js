@@ -14,7 +14,9 @@ import { MTLLoader }              from 'three-full'
 class MtlToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.String )
+        super( {
+            dumpType: TAbstractFileConverter.DumpType.String
+        } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {

@@ -2,7 +2,7 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @class TUniversalLoader
+ * @class UniversalLoader
  * @classdesc The TUniversalLoader allow to automatically select correct THREE loader for given files. (based on https://github.com/jeromeetienne/threex.universalloader)
  * @example Todo...
  *
@@ -15,13 +15,12 @@ import {
     FileFormat
 }                           from 'itee-client'
 import { degreesToRadians } from 'itee-utils'
-
 import {
     isArray,
     isFunction,
     isObject,
     isString
-} from 'itee-validators'
+}                           from 'itee-validators'
 import {
     ColladaLoader,
     DefaultLoadingManager,
@@ -35,7 +34,7 @@ import {
     OBJLoader,
     ShapeBufferGeometry,
     STLLoader
-} from 'three-full'
+}                           from 'three-full'
 
 import { ASCLoader } from './ASCLoader'
 import { DBFLoader } from './DBFLoader'
@@ -94,14 +93,14 @@ function computeUrl ( fileUrl ) {
  * @param logger
  * @constructor
  */
-function TUniversalLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+function UniversalLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
     this.manager = manager
     this.logger  = logger
 
 }
 
-Object.assign( TUniversalLoader.prototype, {
+Object.assign( UniversalLoader.prototype, {
 
     /**
      *
@@ -608,4 +607,4 @@ Object.assign( TUniversalLoader.prototype, {
 
 } )
 
-export { TUniversalLoader }
+export { UniversalLoader }

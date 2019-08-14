@@ -14,7 +14,9 @@ import { ObjectLoader }           from 'three-full'
 class JsonToThree extends TAbstractFileConverter {
 
     constructor () {
-        super( TAbstractFileConverter.DumpType.JSON )
+        super( {
+            dumpType: TAbstractFileConverter.DumpType.JSON
+        } )
     }
 
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
