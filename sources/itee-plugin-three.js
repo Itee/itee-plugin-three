@@ -9,7 +9,7 @@
  */
 
 // #if IS_REMOVE_ON_FRONTEND_BUILD
-export { default }         from './backend/MongoDBThreePlugin'
+export { default } from './backend/MongoDBThreePlugin'
 // #endif
 
 // #if IS_REMOVE_ON_BACKEND_BUILD
@@ -21,5 +21,5 @@ export {
     SHPLoader
 }                          from './common/loaders/SHPLoader'
 export { UniversalLoader } from './common/loaders/UniversalLoader'
-export * from './frontend/_frontend'
+export *                   from './frontend/_frontend'
 // #endif

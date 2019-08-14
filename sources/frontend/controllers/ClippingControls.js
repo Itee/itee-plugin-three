@@ -1654,7 +1654,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode: {
+            setMode:   {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -1667,7 +1667,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale: {
+            scale:     {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -1675,7 +1675,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate: {
+            rotate:    {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]
@@ -1936,16 +1936,17 @@ class ClippingControls extends Object3D {
         if ( !this.enabled ) { return }
         keyEvent.preventDefault()
 
-        const actionMap   = this.actionsMap
-        const key         = keyEvent.keyCode
-//        const altActive   = keyEvent.altKey
-        const ctrlActive  = keyEvent.ctrlKey
-//        const metaActive  = keyEvent.metaKey
-//        const shiftActive = keyEvent.shiftKey
+        const actionMap  = this.actionsMap
+        const key        = keyEvent.keyCode
+        //        const altActive   = keyEvent.altKey
+        const ctrlActive = keyEvent.ctrlKey
+        //        const metaActive  = keyEvent.metaKey
+        //        const shiftActive = keyEvent.shiftKey
 
-       /* if ( altActive ) {
+        /* if ( altActive ) {
 
-        } else */if ( ctrlActive ) {
+         } else */
+        if ( ctrlActive ) {
 
             switch ( this._mode ) {
 
@@ -2054,8 +2055,8 @@ class ClippingControls extends Object3D {
 
             }
 
-//        } else if ( metaActive ) {
-//        } else if ( shiftActive ) {
+            //        } else if ( metaActive ) {
+            //        } else if ( shiftActive ) {
         } else if ( actionMap.setMode.translate.includes( key ) ) {
 
             this.setMode( ClippingModes.Translate )
@@ -2241,15 +2242,15 @@ class ClippingControls extends Object3D {
                     break
 
                 case ClippingModes.Rotate:
-/*
-                    if ( currentHandle.isRotateHandle ) {
+                    /*
+                     if ( currentHandle.isRotateHandle ) {
 
-                    } else if ( currentHandle.isPlaneHandle ) {
+                     } else if ( currentHandle.isPlaneHandle ) {
 
-                    } else if ( currentHandle.isOmnidirectionalHandle ) {
+                     } else if ( currentHandle.isOmnidirectionalHandle ) {
 
-                    }
-*/
+                     }
+                     */
                     break
 
                 case ClippingModes.Scale:
@@ -2589,5 +2590,5 @@ export {
     SphericalHitbox,
     TorusHitbox,
     TranslateGizmo,
-    TranslateHandle,
+    TranslateHandle
 }

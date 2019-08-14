@@ -89,7 +89,7 @@ Object.assign( RZMLLoader.prototype, {
 
         if ( window.DOMParser ) {
             const parser = new DOMParser()
-            document   = parser.parseFromString( text, 'text/xml' )
+            document     = parser.parseFromString( text, 'text/xml' )
         } else // Internet Explorer
         {
             document       = new window.ActiveXObject( 'Microsoft.XMLDOM' )
@@ -97,12 +97,12 @@ Object.assign( RZMLLoader.prototype, {
             document.loadXML( text )
         }
 
-        const shots              = document.getElementsByTagName( 'SHOT' )
+        const shots            = document.getElementsByTagName( 'SHOT' )
         let shot               = null
         let cfrmElement        = null
         let translationElement = null
         let rotationElement    = null
-//        let iplnElement        = null
+        //        let iplnElement        = null
 
         for ( let i = 0, numberOfShots = shots.length ; i < numberOfShots ; ++i ) {
             shot               = shots[ i ]
@@ -120,7 +120,7 @@ Object.assign( RZMLLoader.prototype, {
                     y: parseFloat( translationElement.attributes[ 'y' ].value ),
                     z: parseFloat( translationElement.attributes[ 'z' ].value )
                 },
-                rotation: {
+                rotation:  {
                     x: parseFloat( rotationElement.attributes[ 'x' ].value ),
                     y: parseFloat( rotationElement.attributes[ 'y' ].value ),
                     z: parseFloat( rotationElement.attributes[ 'z' ].value )
