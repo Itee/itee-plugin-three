@@ -242,33 +242,12 @@ class ASCLoader {
         seek()
 
         function seek () {
-            if ( offset >= blob.size ) {
 
-                // //this.logger.timeEnd("Parse")
-                //                //this.logger.timeEnd( "ASCLoader" )
-
-                // // Compute bounding box in view to get his center for auto offseting the cloud point.
-                // if ( self._autoOffset ) {
-                //     //this.logger.time("Compute Points");
-                //     self._boundingBox.computePoints(self._points);
-                //     //this.logger.timeEnd("Compute Points");
-                // }
-                //
-                // //this.logger.time("Offset Points");
-                // self._offsetPoints();
-                // //this.logger.timeEnd("Offset Points");
-                //
-                // //this.logger.time("Create WorldCell");
-                // self._createCloudPoint(groupToFeed);
-                // // var cloudPoints = self._createCloudPoint();
-                // //this.logger.timeEnd("Create WorldCell");
-                // // onLoad(cloudPoints);
-
-                return
-            }
+            if ( offset >= blob.size ) { return }
 
             const slice = blob.slice( offset, offset + CHUNK_SIZE, 'text/plain' )
             reader.readAsText( slice )
+
         }
 
     }
@@ -283,7 +262,7 @@ class ASCLoader {
         const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
 
-        if ( numberOfWords === 3 ) {
+        if ( numberOfWords === 3 ) { // XYZ
 
             this._points.push( {
                 x: parseFloat( values[ 0 ] ),
@@ -291,7 +270,7 @@ class ASCLoader {
                 z: parseFloat( values[ 2 ] )
             } )
 
-        } else if ( numberOfWords === 4 ) {
+        } else if ( numberOfWords === 4 ) { // XYZI
 
             this._pointsHaveIntensity = true
 
@@ -302,7 +281,7 @@ class ASCLoader {
                 i: parseFloat( values[ 3 ] )
             } )
 
-        } else if ( numberOfWords === 6 ) {
+        } else if ( numberOfWords === 6 ) { // XYZRGB
 
             //Todo: allow to ask user if 4, 5 and 6 index are normals
             //Todo: for the moment consider it is color !
@@ -318,7 +297,7 @@ class ASCLoader {
                 b: parseFloat( values[ 5 ] )
             } )
 
-        } else if ( numberOfWords === 7 ) {
+        } else if ( numberOfWords === 7 ) { // XYZIRGB
 
             //Todo: allow to ask user if 4, 5 and 6 index are normals
             //Todo: for the moment consider it is color !
