@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.1.0 - Standalone')
+console.log('Itee.Plugin.Three v1.1.1 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -42,9 +42,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this._coloredPoints  = false;
 	        this._autoOffset     = false; // Only for tiny files !!!!!!!
 	        this._offset         = {
-	            x: 600200,
-	            y: 131400,
-	            z: 60
+	            x: 0,
+	            y: 0,
+	            z: 0
 	        };
 
 	        this._positions   = null;
@@ -114,14 +114,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        const CHUNK_SIZE = 134217728;
 	        let offset       = 0;
 
-	        reader.onabort = function ( abortEvent ) {
+	        reader.onabort = ( abortEvent ) => {
 
 	            this.logger.log( 'abortEvent:' );
 	            this.logger.log( abortEvent );
 
 	        };
 
-	        reader.onerror = function ( errorEvent ) {
+	        reader.onerror = ( errorEvent ) => {
 
 	            this.logger.log( 'errorEvent:' );
 	            this.logger.log( errorEvent );
@@ -132,14 +132,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        };
 
-	        reader.onloadstart = function ( loadStartEvent ) {
+	        reader.onloadstart = ( loadStartEvent ) => {
 
 	            this.logger.log( 'loadStartEvent:' );
 	            this.logger.log( loadStartEvent );
 
 	        };
 
-	        reader.onprogress = function ( progressEvent ) {
+	        reader.onprogress = ( progressEvent ) => {
 
 	            this.logger.log( 'progressEvent:' );
 	            this.logger.log( progressEvent );
@@ -156,13 +156,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        };
 
-	        reader.onload = function ( loadEvent ) {
+	        reader.onload = ( loadEvent ) => {
 
 	            this.logger.log( 'loadEvent:' );
 	            this.logger.log( loadEvent );
 
 	            // By lines
-	            const lines         = this.result.split( '\n' );
+	            const lines         = loadEvent.target.result.split( '\n' );
 	            const numberOfLines = lines.length;
 
 	            // /!\ Rollback offset for last line that is uncompleted in most time
@@ -201,26 +201,19 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        };
 
-	        reader.onloadend = function ( loadEndEvent ) {
+	        reader.onloadend = ( loadEndEvent ) => {
 
 	            this.logger.log( 'loadEndEvent' );
 	            this.logger.log( loadEndEvent );
 
-	            if ( self._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
-
-	                // Compute bounding box in view to get his center for auto offseting the cloud point.
-	                // if ( self._autoOffset ) {
-	                //     //this.logger.time("Compute Points");
-	                //     self._boundingBox.computePoints(self._points);
-	                //     //this.logger.timeEnd("Compute Points");
-	                // }
+	            if ( this._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
 
 	                // //this.logger.time("Offset Points");
-	                self._offsetPoints();
+	                this._offsetPoints();
 	                // //this.logger.timeEnd("Offset Points");
 
 	                // //this.logger.time("Create WorldCell");
-	                self._createSubCloudPoint( groupToFeed );
+	                this._createSubCloudPoint( groupToFeed );
 	                // //this.logger.timeEnd("Create WorldCell");
 
 	            }
@@ -234,33 +227,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        seek();
 
 	        function seek () {
-	            if ( offset >= blob.size ) {
 
-	                // //this.logger.timeEnd("Parse")
-	                //                //this.logger.timeEnd( "ASCLoader" )
-
-	                // // Compute bounding box in view to get his center for auto offseting the cloud point.
-	                // if ( self._autoOffset ) {
-	                //     //this.logger.time("Compute Points");
-	                //     self._boundingBox.computePoints(self._points);
-	                //     //this.logger.timeEnd("Compute Points");
-	                // }
-	                //
-	                // //this.logger.time("Offset Points");
-	                // self._offsetPoints();
-	                // //this.logger.timeEnd("Offset Points");
-	                //
-	                // //this.logger.time("Create WorldCell");
-	                // self._createCloudPoint(groupToFeed);
-	                // // var cloudPoints = self._createCloudPoint();
-	                // //this.logger.timeEnd("Create WorldCell");
-	                // // onLoad(cloudPoints);
-
-	                return
-	            }
+	            if ( offset >= blob.size ) { return }
 
 	            const slice = blob.slice( offset, offset + CHUNK_SIZE, 'text/plain' );
 	            reader.readAsText( slice );
+
 	        }
 
 	    }
@@ -272,10 +244,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     */
 	    _parseLine ( line ) {
 
-	        const values        = line.split( ' ' );
+	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
 
-	        if ( numberOfWords === 3 ) {
+	        if ( numberOfWords === 3 ) { // XYZ
 
 	            this._points.push( {
 	                x: parseFloat( values[ 0 ] ),
@@ -283,7 +255,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                z: parseFloat( values[ 2 ] )
 	            } );
 
-	        } else if ( numberOfWords === 4 ) {
+	        } else if ( numberOfWords === 4 ) { // XYZI
 
 	            this._pointsHaveIntensity = true;
 
@@ -294,7 +266,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                i: parseFloat( values[ 3 ] )
 	            } );
 
-	        } else if ( numberOfWords === 6 ) {
+	        } else if ( numberOfWords === 6 ) { // XYZRGB
 
 	            //Todo: allow to ask user if 4, 5 and 6 index are normals
 	            //Todo: for the moment consider it is color !
@@ -310,7 +282,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                b: parseFloat( values[ 5 ] )
 	            } );
 
-	        } else if ( numberOfWords === 7 ) {
+	        } else if ( numberOfWords === 7 ) { // XYZIRGB
 
 	            //Todo: allow to ask user if 4, 5 and 6 index are normals
 	            //Todo: for the moment consider it is color !
@@ -365,7 +337,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            } );
 
 	        } else {
-	            this.logger.error( 'Invalid data line: ' + line );
+	            this.logger.error( `Invalid data line: ${line}` );
 	        }
 
 	    }
@@ -377,7 +349,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     */
 	    _parseLines ( lines ) {
 
-	        const firstLine = lines[ 0 ].split( ' ' );
+	        const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean );
 	        const pointType = firstLine.length;
 
 	        if ( pointType === 3 ) {
@@ -409,7 +381,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            this._parseLinesAsXYZIRGBnXnYnZ( lines );
 
 	        } else {
-	            this.logger.error( 'Invalid data line: ' + lines );
+	            this.logger.error( `Invalid data line: ${lines}` );
 	        }
 
 	    }
@@ -425,7 +397,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x: parseFloat( words[ 0 ] ),
@@ -448,7 +420,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x: parseFloat( words[ 0 ] ),
@@ -473,7 +445,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x: parseFloat( words[ 0 ] ),
@@ -498,7 +470,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        let words = [];
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x:  parseFloat( words[ 0 ] ),
@@ -526,7 +498,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x: parseFloat( words[ 0 ] ),
@@ -551,7 +523,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        let words = [];
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x:  parseFloat( words[ 0 ] ),
@@ -580,7 +552,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x:  parseFloat( words[ 0 ] ),
@@ -612,7 +584,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-	            words = lines[ lineIndex ].split( ' ' );
+	            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean );
 
 	            this._points.push( {
 	                x:  parseFloat( words[ 0 ] ),
@@ -637,7 +609,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     */
 	    _parseLineB ( line ) {
 
-	        const values        = line.split( ' ' );
+	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
 	        const bufferIndex   = this._bufferIndex;
 
@@ -661,7 +633,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     */
 	    _parseLineC ( line ) {
 
-	        const values        = line.split( ' ' );
+	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
 	        const bufferIndex   = this._bufferIndexC;
 
@@ -684,15 +656,24 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     */
 	    _offsetPoints () {
 
-	        const offset         = ( this._autoOffset ) ? this._boundingBox.getCenter() : this._offset;
-	        const numberOfPoints = this._points.length;
-	        let point            = null;
-	        for ( let i = 0 ; i < numberOfPoints ; ++i ) {
+	        // Compute bounding box in view to get his center for auto offseting the cloud point.
+	        if ( this._autoOffset ) {
+	            //this.logger.time("Compute Points");
+	            this._boundingBox.setFromPoints( this._points );
+	            this.setOffset( this._boundingBox.getCenter() );
+	            //this.logger.timeEnd("Compute Points");
+	        }
+
+	        const offsetX = this._offset.x;
+	        const offsetY = this._offset.y;
+	        const offsetZ = this._offset.z;
+	        let point     = null;
+	        for ( let i = 0, numberOfPoints = this._points.length ; i < numberOfPoints ; ++i ) {
 
 	            point = this._points[ i ];
-	            point.x -= offset.x;
-	            point.y -= offset.y;
-	            point.z -= offset.z;
+	            point.x -= offsetX;
+	            point.y -= offsetY;
+	            point.z -= offsetZ;
 
 	        }
 

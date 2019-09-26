@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Itee/itee-plugin-three/compare/v1.1.0...v1.1.1) (2019-09-26)
+
+
+### Bug Fixes
+
+* **package:** update packages and fix version ([cb78622](https://github.com/Itee/itee-plugin-three/commit/cb78622))
+
 # [1.1.0](https://github.com/Itee/itee-plugin-three/compare/v1.0.0...v1.1.0) (2019-08-14)
 
 
