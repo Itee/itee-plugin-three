@@ -122,14 +122,14 @@ class ASCLoader {
         const CHUNK_SIZE = 134217728
         let offset       = 0
 
-        reader.onabort = function ( abortEvent ) {
+        reader.onabort = ( abortEvent ) => {
 
             this.logger.log( 'abortEvent:' )
             this.logger.log( abortEvent )
 
         }
 
-        reader.onerror = function ( errorEvent ) {
+        reader.onerror = ( errorEvent ) => {
 
             this.logger.log( 'errorEvent:' )
             this.logger.log( errorEvent )
@@ -140,14 +140,14 @@ class ASCLoader {
 
         }
 
-        reader.onloadstart = function ( loadStartEvent ) {
+        reader.onloadstart = ( loadStartEvent ) => {
 
             this.logger.log( 'loadStartEvent:' )
             this.logger.log( loadStartEvent )
 
         }
 
-        reader.onprogress = function ( progressEvent ) {
+        reader.onprogress = ( progressEvent ) => {
 
             this.logger.log( 'progressEvent:' )
             this.logger.log( progressEvent )
@@ -164,7 +164,7 @@ class ASCLoader {
 
         }
 
-        reader.onload = function ( loadEvent ) {
+        reader.onload = ( loadEvent ) => {
 
             this.logger.log( 'loadEvent:' )
             this.logger.log( loadEvent )
@@ -209,12 +209,11 @@ class ASCLoader {
 
         }
 
-        reader.onloadend = function ( loadEndEvent ) {
+        reader.onloadend = ( loadEndEvent ) => {
 
             this.logger.log( 'loadEndEvent' )
             this.logger.log( loadEndEvent )
 
-            if ( self._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
 
                 // Compute bounding box in view to get his center for auto offseting the cloud point.
                 // if ( self._autoOffset ) {
@@ -222,13 +221,14 @@ class ASCLoader {
                 //     self._boundingBox.computePoints(self._points);
                 //     //this.logger.timeEnd("Compute Points");
                 // }
+            if ( this._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
 
                 // //this.logger.time("Offset Points");
-                self._offsetPoints()
+                this._offsetPoints()
                 // //this.logger.timeEnd("Offset Points");
 
                 // //this.logger.time("Create WorldCell");
-                self._createSubCloudPoint( groupToFeed )
+                this._createSubCloudPoint( groupToFeed )
                 // //this.logger.timeEnd("Create WorldCell");
 
             }
@@ -373,7 +373,7 @@ class ASCLoader {
             } )
 
         } else {
-            this.logger.error( 'Invalid data line: ' + line )
+            this.logger.error( `Invalid data line: ${line}` )
         }
 
     }
@@ -417,7 +417,7 @@ class ASCLoader {
             this._parseLinesAsXYZIRGBnXnYnZ( lines )
 
         } else {
-            this.logger.error( 'Invalid data line: ' + lines )
+            this.logger.error( `Invalid data line: ${lines}` )
         }
 
     }
