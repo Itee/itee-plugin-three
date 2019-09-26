@@ -50,9 +50,9 @@ class ASCLoader {
         this._coloredPoints  = false
         this._autoOffset     = false // Only for tiny files !!!!!!!
         this._offset         = {
-            x: 600200,
-            y: 131400,
-            z: 60
+            x: 0,
+            y: 0,
+            z: 0
         }
 
         this._positions   = null
