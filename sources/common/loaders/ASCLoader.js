@@ -170,7 +170,7 @@ class ASCLoader {
             this.logger.log( loadEvent )
 
             // By lines
-            const lines         = this.result.split( '\n' )
+            const lines         = loadEvent.target.result.split( '\n' )
             const numberOfLines = lines.length
 
             // /!\ Rollback offset for last line that is uncompleted in most time
