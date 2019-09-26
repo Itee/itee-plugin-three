@@ -280,7 +280,7 @@ class ASCLoader {
      */
     _parseLine ( line ) {
 
-        const values        = line.split( ' ' )
+        const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
 
         if ( numberOfWords === 3 ) {
@@ -385,7 +385,7 @@ class ASCLoader {
      */
     _parseLines ( lines ) {
 
-        const firstLine = lines[ 0 ].split( ' ' )
+        const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean )
         const pointType = firstLine.length
 
         if ( pointType === 3 ) {
@@ -433,7 +433,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x: parseFloat( words[ 0 ] ),
@@ -456,7 +456,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x: parseFloat( words[ 0 ] ),
@@ -481,7 +481,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x: parseFloat( words[ 0 ] ),
@@ -506,7 +506,7 @@ class ASCLoader {
         let words = []
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x:  parseFloat( words[ 0 ] ),
@@ -534,7 +534,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x: parseFloat( words[ 0 ] ),
@@ -559,7 +559,7 @@ class ASCLoader {
         let words = []
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x:  parseFloat( words[ 0 ] ),
@@ -588,7 +588,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x:  parseFloat( words[ 0 ] ),
@@ -620,7 +620,7 @@ class ASCLoader {
 
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
 
-            words = lines[ lineIndex ].split( ' ' )
+            words = lines[ lineIndex ].split( /\s/g ).filter( Boolean )
 
             this._points.push( {
                 x:  parseFloat( words[ 0 ] ),
@@ -645,7 +645,7 @@ class ASCLoader {
      */
     _parseLineB ( line ) {
 
-        const values        = line.split( ' ' )
+        const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
         const bufferIndex   = this._bufferIndex
 
@@ -669,7 +669,7 @@ class ASCLoader {
      */
     _parseLineC ( line ) {
 
-        const values        = line.split( ' ' )
+        const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
         const bufferIndex   = this._bufferIndexC
 
