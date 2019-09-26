@@ -214,13 +214,6 @@ class ASCLoader {
             this.logger.log( 'loadEndEvent' )
             this.logger.log( loadEndEvent )
 
-
-                // Compute bounding box in view to get his center for auto offseting the cloud point.
-                // if ( self._autoOffset ) {
-                //     //this.logger.time("Compute Points");
-                //     self._boundingBox.computePoints(self._points);
-                //     //this.logger.timeEnd("Compute Points");
-                // }
             if ( this._points.length > 1000000 || offset + CHUNK_SIZE >= blob.size ) {
 
                 // //this.logger.time("Offset Points");
@@ -671,15 +664,24 @@ class ASCLoader {
      */
     _offsetPoints () {
 
-        const offset         = ( this._autoOffset ) ? this._boundingBox.getCenter() : this._offset
-        const numberOfPoints = this._points.length
-        let point            = null
-        for ( let i = 0 ; i < numberOfPoints ; ++i ) {
+        // Compute bounding box in view to get his center for auto offseting the cloud point.
+        if ( this._autoOffset ) {
+            //this.logger.time("Compute Points");
+            this._boundingBox.setFromPoints( this._points )
+            this.setOffset( this._boundingBox.getCenter() )
+            //this.logger.timeEnd("Compute Points");
+        }
+
+        const offsetX = this._offset.x
+        const offsetY = this._offset.y
+        const offsetZ = this._offset.z
+        let point     = null
+        for ( let i = 0, numberOfPoints = this._points.length ; i < numberOfPoints ; ++i ) {
 
             point = this._points[ i ]
-            point.x -= offset.x
-            point.y -= offset.y
-            point.z -= offset.z
+            point.x -= offsetX
+            point.y -= offsetY
+            point.z -= offsetZ
 
         }
 
