@@ -1562,10 +1562,10 @@ class ScaleGizmo extends AbstractGizmo {
 
 // Controller
 const ClippingModes = toEnum( {
-    None:      0,
-    Translate: 1,
-    Rotate:    2,
-    Scale:     3
+    None:      'None',
+    Translate: 'Translate',
+    Rotate:    'Rotate',
+    Scale:     'Scale'
 } )
 
 class ClippingControls extends Object3D {
@@ -1773,7 +1773,7 @@ class ClippingControls extends Object3D {
 
         } else {
 
-            this._currentGizmo         = this._gizmos[ this._mode.name ]
+            this._currentGizmo         = this._gizmos[ this._mode ]
             this._currentGizmo.visible = true
 
         }
