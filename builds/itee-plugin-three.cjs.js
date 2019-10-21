@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.1.1 - CommonJs')
+console.log('Itee.Plugin.Three v1.1.2 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
