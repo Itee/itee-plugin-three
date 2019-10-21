@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.1.1 - Standalone')
+console.log('Itee.Plugin.Three v1.1.2 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -6838,10 +6838,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	// Controller
 	const ClippingModes = iteeUtils.toEnum( {
-	    None:      0,
-	    Translate: 1,
-	    Rotate:    2,
-	    Scale:     3
+	    None:      'None',
+	    Translate: 'Translate',
+	    Rotate:    'Rotate',
+	    Scale:     'Scale'
 	} );
 
 	class ClippingControls extends threeFull.Object3D {
@@ -7049,7 +7049,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            this._currentGizmo         = this._gizmos[ this._mode.name ];
+	            this._currentGizmo         = this._gizmos[ this._mode ];
 	            this._currentGizmo.visible = true;
 
 	        }

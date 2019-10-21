@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/Itee/itee-plugin-three/compare/v1.1.1...v1.1.2) (2019-10-21)
+
+
+### Bug Fixes
+
+* **clippingcontrols:** use literral enum for clipping mode and fix this._mode usage ([3a4c881](https://github.com/Itee/itee-plugin-three/commit/3a4c881))
+
 ## [1.1.1](https://github.com/Itee/itee-plugin-three/compare/v1.1.0...v1.1.1) (2019-09-26)
 
 

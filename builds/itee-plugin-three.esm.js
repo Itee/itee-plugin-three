@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.1.1 - EsModule')
+console.log('Itee.Plugin.Three v1.1.2 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, FileFormat, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
 import { Box3, DefaultLoadingManager, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, TextureLoader, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, _Math, Vector3, Shape, ColladaLoader, FBXLoader, ObjectLoader, OBJLoader, ShapeBufferGeometry, MeshPhongMaterial, STLLoader, MTLLoader, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, CurvePath, EllipseCurve, LineCurve, LineCurve3, Path, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, BoxGeometry, CircleGeometry, CylinderGeometry, ConeGeometry, DodecahedronGeometry, ExtrudeGeometry, Geometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry, SphereGeometry, WireframeGeometry, Face3, CircleBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, ParametricBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry, InstancedBufferGeometry, ImageLoader, MeshLambertMaterial, Color, LinearFilter, Fog, FogExp2, PerspectiveCamera, OrthographicCamera, AmbientLight, DirectionalLight, PointLight, RectAreaLight, SpotLight, HemisphereLight, SkinnedMesh, LOD, LineLoop, Sprite, VertexColors } from 'three-full';
 import { degreesToRadians, toEnum } from 'itee-utils';
@@ -6838,10 +6838,10 @@ class ScaleGizmo extends AbstractGizmo {
 
 // Controller
 const ClippingModes = toEnum( {
-    None:      0,
-    Translate: 1,
-    Rotate:    2,
-    Scale:     3
+    None:      'None',
+    Translate: 'Translate',
+    Rotate:    'Rotate',
+    Scale:     'Scale'
 } );
 
 class ClippingControls extends Object3D {
@@ -7049,7 +7049,7 @@ class ClippingControls extends Object3D {
 
         } else {
 
-            this._currentGizmo         = this._gizmos[ this._mode.name ];
+            this._currentGizmo         = this._gizmos[ this._mode ];
             this._currentGizmo.visible = true;
 
         }
