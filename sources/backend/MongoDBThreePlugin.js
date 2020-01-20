@@ -21,6 +21,7 @@ import { ShpToThree }     from './converters/ShpToThree'
 import { FbxToThree }     from './converters/FbxToThree'
 import { ColladaToThree } from './converters/ColladaToThree'
 import { StlToThree }     from './converters/StlToThree'
+import { TdsToThree }     from './converters/TdsToThree'
 import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
 
 import { Audio }                     from './schemas/audio/Audio'
@@ -536,14 +537,15 @@ export default new TMongoDBPlugin()
             options: {
                 useNext:    true,
                 converters: {
-                    JsonToThree: new JsonToThree(),
-                    ShpToThree:  new ShpToThree(),
-                    DbfToThree:  new DbfToThree(),
-                    MtlToThree:  new MtlToThree(),
-                    ObjToThree:  new Obj2ToThree()
+                    JsonToThree:    new JsonToThree(),
+                    ShpToThree:     new ShpToThree(),
+                    DbfToThree:     new DbfToThree(),
                     FbxToThree:     new FbxToThree(),
                     ColladaToThree: new ColladaToThree(),
                     StlToThree:     new StlToThree(),
+                    TdsToThree:     new TdsToThree(),
+                    MtlToThree:     new MtlToThree(),
+                    ObjToThree:     new Obj2ToThree()
                 },
                 rules:      [
                     {
@@ -561,6 +563,10 @@ export default new TMongoDBPlugin()
                     {
                         on:  '.stl',
                         use: 'StlToThree'
+                    },
+                    {
+                        on:  '.3ds',
+                        use: 'TdsToThree'
                     },
                     {
                         on:  '.shp',
