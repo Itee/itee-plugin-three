@@ -18,6 +18,7 @@ import { JsonToThree }    from './converters/JsonToThree'
 import { MtlToThree }     from './converters/MtlToThree'
 import { Obj2ToThree }    from './converters/Obj2ToThree'
 import { ShpToThree }     from './converters/ShpToThree'
+import { ColladaToThree } from './converters/ColladaToThree'
 import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
 
 import { Audio }                     from './schemas/audio/Audio'
@@ -538,11 +539,16 @@ export default new TMongoDBPlugin()
                     DbfToThree:  new DbfToThree(),
                     MtlToThree:  new MtlToThree(),
                     ObjToThree:  new Obj2ToThree()
+                    ColladaToThree: new ColladaToThree(),
                 },
                 rules:      [
                     {
                         on:  '.json',
                         use: 'JsonToThree'
+                    },
+                    {
+                        on:  '.dae',
+                        use: 'ColladaToThree'
                     },
                     {
                         on:  '.shp',
