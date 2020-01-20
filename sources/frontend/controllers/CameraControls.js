@@ -907,6 +907,11 @@ class CameraControls extends EventDispatcher {
 
         if ( this._camera.isPerspectiveCamera ) {
 
+            const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion )
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed )
+
+            this._camera.position.add( displacement )
+            this._target.position.add( displacement )
 
         } else if ( this._camera.isOrthographicCamera ) {
 
@@ -916,9 +921,21 @@ class CameraControls extends EventDispatcher {
             this._camera.position.add( displacement )
             this._target.position.add( displacement )
 
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom += halfOffsetHeight * this.frontSpeed
+            //            this._camera.right -= halfOffsetWidth * this.frontSpeed
+            //            this._camera.left += halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.frontSpeed * this.zoomSpeed
+            this._camera.zoom += zoomDisplacement
+
+            this._camera.updateProjectionMatrix()
+
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
 
         }
 
@@ -940,9 +957,32 @@ class CameraControls extends EventDispatcher {
             this._target.position.add( displacement )
 
         } else if ( this._camera.isOrthographicCamera ) {
+
+            const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion )
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed )
+
+            this._camera.position.add( displacement )
+            this._target.position.add( displacement )
+
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top += halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.right += halfOffsetWidth * this.frontSpeed
+            //            this._camera.left -= halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.backSpeed * this.zoomSpeed
+            if ( this._camera.zoom - zoomDisplacement <= 0.0 ) {
+                this._camera.zoom = 0.01
+            } else {
+                this._camera.zoom -= zoomDisplacement
+            }
+
+            this._camera.updateProjectionMatrix()
+
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
 
         }
 
@@ -966,7 +1006,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
 
         }
 
@@ -990,7 +1030,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
 
         }
 
@@ -1014,7 +1054,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
 
         }
 
@@ -1238,9 +1278,24 @@ class CameraControls extends EventDispatcher {
 
         } else if ( this._camera.isOrthographicCamera ) {
 
-         // Todo: ...
+            const cameraPosition                 = this._camera.position
+            const targetPosition                 = this._target.position
+            const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
+            const deltaZoom = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget )
 
-         }*/
+            if ( this._camera.zoom + deltaZoom <= 0.0 ) {
+                this._camera.zoom = 0.01
+            } else {
+                this._camera.zoom += deltaZoom
+            }
+
+            this._camera.updateProjectionMatrix()
+
+        } else {
+
+            // Todo: ...
+
+        }
 
         this.dispatchEvent( { type: 'zoom' } )
         this.dispatchEvent( { type: 'change' } )
