@@ -20,6 +20,7 @@ import { Obj2ToThree }    from './converters/Obj2ToThree'
 import { ShpToThree }     from './converters/ShpToThree'
 import { FbxToThree }     from './converters/FbxToThree'
 import { ColladaToThree } from './converters/ColladaToThree'
+import { StlToThree }     from './converters/StlToThree'
 import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
 
 import { Audio }                     from './schemas/audio/Audio'
@@ -542,6 +543,7 @@ export default new TMongoDBPlugin()
                     ObjToThree:  new Obj2ToThree()
                     FbxToThree:     new FbxToThree(),
                     ColladaToThree: new ColladaToThree(),
+                    StlToThree:     new StlToThree(),
                 },
                 rules:      [
                     {
@@ -555,6 +557,10 @@ export default new TMongoDBPlugin()
                     {
                         on:  '.fbx',
                         use: 'FbxToThree'
+                    },
+                    {
+                        on:  '.stl',
+                        use: 'StlToThree'
                     },
                     {
                         on:  '.shp',
