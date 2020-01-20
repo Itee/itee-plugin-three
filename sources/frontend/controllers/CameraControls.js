@@ -905,7 +905,10 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canFront ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
+
+
+        } else if ( this._camera.isOrthographicCamera ) {
 
             const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion )
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed )
@@ -928,7 +931,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canBack ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion )
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed )
@@ -936,6 +939,7 @@ class CameraControls extends EventDispatcher {
             this._camera.position.add( displacement )
             this._target.position.add( displacement )
 
+        } else if ( this._camera.isOrthographicCamera ) {
         } else {
 
             // Todo: ...
@@ -951,7 +955,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canUp ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = UP.clone()
                                    .applyQuaternion( this._camera.quaternion )
@@ -975,7 +979,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canDown ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = DOWN.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -999,7 +1003,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canLeft ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = LEFT.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -1023,7 +1027,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canRight ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = RIGHT.clone()
                                       .applyQuaternion( this._camera.quaternion )
@@ -1047,7 +1051,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRotate ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position
             const targetPosition = this._target.position
@@ -1128,7 +1132,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canPan ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             // Take into account the distance between the camera and his target
             const cameraPosition = this._camera.position
@@ -1155,7 +1159,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRoll ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position
             const targetPosition = this._target.position
@@ -1182,7 +1186,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canZoom ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             switch ( this._mode ) {
 
@@ -1232,7 +1236,7 @@ class CameraControls extends EventDispatcher {
 
             }
 
-        } /*else {
+        } else if ( this._camera.isOrthographicCamera ) {
 
          // Todo: ...
 
@@ -1247,7 +1251,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canLookAt ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const _direction     = direction.clone()
             const cameraPosition = this._camera.position
