@@ -21,6 +21,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     constructor ( parameters = {} ) {
 
         super( parameters )
+        this.mergeStrategy = 'add'
 
     }
 
@@ -30,11 +31,23 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         if ( isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' )
             return
+        } else {
+            const names = dataToParse.map( _data => _data.name )
+            console.log( `ThreeToMongoDB: Saving ${names}` )
+        }
+
+        // Check parameters
+        if ( parameters.mergeStrategy ) {
+            this.mergeStrategy = parameters.mergeStrategy
         }
 
         try {
-            const results = await this._parseObjects( dataToParse )
-            console.log( 'ThreeToMongoDB: Done !' )
+            const results   = await this._parseObjects( dataToParse, parameters.parentId )
+            const stringIds = results.map( ( rootElement ) => {
+                return rootElement._id.toString()
+            } )
+            console.log( `ThreeToMongoDB: Saved ${stringIds}` )
+
             onSuccess( results )
         } catch ( error ) {
             onError( error )
@@ -42,7 +55,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    _parseObjects ( objects = [] ) {
+    _parseObjects ( objects = [], parentId = null ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {
@@ -63,7 +76,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    _parseObject ( object ) {
+    _parseObject ( object, parentId = null ) {
 
         if ( isNotDefined( object ) ) {
             return null
@@ -173,101 +186,98 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                 const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
 
                 const geometry    = await this._getOrCreateDocuments( objectGeometry )
-                const geometryIds = ( isDefined( geometry ) ) ? geometry.filter( child => child ).map( geometry => geometry._id ) : []
+                const geometryIds = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ) : []
 
                 const materials    = await this._getOrCreateDocuments( objectMaterials )
-                const materialsIds = ( isDefined( materials ) ) ? materials.filter( child => child ).map( material => material._id ) : []
+                const materialsIds = ( isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : []
 
                 // Check if object already exist
                 // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
                 let document = await this._readOneDocument( objectType, { uuid: object.uuid } )
                 if ( isDefined( document ) ) {
 
-                    //// Clean up current dbObject dependencies
+                    // Check merge strategie
+                    // If add, only update existing and create new objects
+                    // else if replace, remove missings children from new data, update existing and create new
+                    if ( this.mergeStrategy === 'add' ) {
 
-                    /// Clean up children
-                    // Children create and update will be perform on children iteration but remove need to be checked here !
-                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } )
-                    const childrenUuids      = objectChildren.map( child => child.uuid )
-                    const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
-
-                    for ( let childIndex = dbChildrenToRemove.length - 1 ; childIndex >= 0 ; childIndex-- ) {
-
-                        const dbChildToRemove = dbChildrenToRemove[ childIndex ]
-
-                        // Get associated geometry
-
-                        // Check if only 1 ref and delet if true else skip
-                        {
-                            const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: dbChildToRemove.geometry } )
-                            const numberOfReferences = referencingObjects.length
-
-                            if ( numberOfReferences === 1 ) {
-                                const dbGeometry = await this._readOneDocument( 'Geometries', { _id: dbChildToRemove.geometry } )
-                                await this._deleteDocument( dbGeometry )
+                        await this._updateDocument( document, {
+                            $addToSet: {
+                                children: childrenIds,
+                                geometry: geometryIds,
+                                material: materialsIds
                             }
-                        }
+                        } )
 
-                        // same for materials
-                        {
-                            const childMaterialsIds = dbChildToRemove.material || []
-                            for ( let matIndex = 0, numMats = childMaterialsIds.length ; matIndex < numMats ; matIndex++ ) {
+                    } else if ( this.mergeStrategy === 'replace' ) {
 
-                                const childMaterialsId = childMaterialsIds[ matIndex ]
+                        //// Clean up current dbObject dependencies
+                        // Children create and update will be perform on children iteration but remove need to be checked here !
+                        const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+                        const childrenUuids      = objectChildren.map( child => child.uuid )
+                        const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
 
-                                const referencingObjects = await this._readManyDocument( 'Objects3D', { material: childMaterialsId } )
+                        for ( let childIndex = dbChildrenToRemove.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+
+                            const dbChildToRemove = dbChildrenToRemove[ childIndex ]
+
+                            // Remove geometry only if current object is the last that reference it
+                            {
+                                const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: dbChildToRemove.geometry } )
                                 const numberOfReferences = referencingObjects.length
 
                                 if ( numberOfReferences === 1 ) {
-                                    const dbMaterial = await this._readOneDocument( 'Materials', { _id: childMaterialsId } )
-                                    await this._deleteDocument( dbMaterial )
+                                    const dbGeometry = await this._readOneDocument( 'Geometries', { _id: dbChildToRemove.geometry } )
+                                    await this._deleteDocument( dbGeometry )
                                 }
-
                             }
+
+                            // Remove material only if current object is the last that reference it
+                            {
+                                const childMaterialsIds = dbChildToRemove.material || []
+                                for ( let matIndex = 0, numMats = childMaterialsIds.length ; matIndex < numMats ; matIndex++ ) {
+
+                                    const childMaterialsId = childMaterialsIds[ matIndex ]
+
+                                    const referencingObjects = await this._readManyDocument( 'Objects3D', { material: childMaterialsId } )
+                                    const numberOfReferences = referencingObjects.length
+
+                                    if ( numberOfReferences === 1 ) {
+                                        const dbMaterial = await this._readOneDocument( 'Materials', { _id: childMaterialsId } )
+                                        await this._deleteDocument( dbMaterial )
+                                    }
+
+                                }
+                            }
+
+                            // finally remove the incriminated document
+                            await this._deleteDocument( dbChildToRemove )
+
                         }
 
-                        // finally remove the incriminated document
-                        await this._deleteDocument( dbChildToRemove )
+                        await this._updateDocument( document, {
+                            $set: {
+                                children: childrenIds,
+                                geometry: geometryIds,
+                                material: materialsIds
+                            }
+                        } )
 
+                    } else {
+                        console.error( `Unknown/Unmanaged merge srategy ${this.mergeStrategy}` )
                     }
-
-                    //                    await this._updateDocument( document, {
-                    //                        $set: {
-                    //                            children: childrenIds,
-                    //                            geometry: geometryIds,
-                    //                            material: materialsIds
-                    //                        }
-                    //                    } )
-
-                    //                    object.children = childrenIds;
-                    //                    object.geometry = geometryIds;
-                    //                    object.material = materialsIds;
-                    //
-                    //                    await this._driver
-                    //                              .model( document.type )
-                    //                              .update( { uuid: document.uuid }, object, {
-                    //                                  upsert:              true,
-                    //                                  setDefaultsOnInsert: true
-                    //                              } )
-                    //                              .exec();
 
                 } else {
 
-                    //                    object.parent   = null;
-                    //                    object.children = childrenIds;
-                    //                    object.geometry = geometryIds;
-                    //                    object.material = materialsIds;
-                    //                    document        = await this._createDocument( object );
+                    object.parent   = parentId
+                    object.children = childrenIds
+                    object.geometry = geometryIds
+                    object.material = materialsIds
+                    document        = await this._createDocument( object )
 
                 }
 
-                object.parent   = null
-                object.children = childrenIds
-                object.geometry = geometryIds
-                object.material = materialsIds
-                document        = await this._getOrCreateDocument( object )
-
-                // Update children referencinf parent
+                // Update children reference to parent
                 await this._updateDocuments( children, { $set: { parent: document._id } } )
                 resolve( document )
 
@@ -361,9 +371,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
             try {
 
-                const model         = this._driver
-                                          .model( data.type )
-
+                const model         = this._driver.model( data.type )
                 const savedDocument = await model( data ).save()
                 resolve( savedDocument._doc )
 
@@ -439,7 +447,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     }
 
     // Update
-    _updateDocuments ( documents = [], updateQuery ) {
+    _updateDocuments ( documents = [], updateQuery, queryOptions ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents )
         if ( isEmptyArray( _documents ) ) {
@@ -450,7 +458,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
         for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
 
-            const promise = this._updateDocument( _documents[ index ], updateQuery )
+            const promise = this._updateDocument( _documents[ index ], updateQuery, queryOptions )
             promises.push( promise )
 
         }
@@ -459,7 +467,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    _updateDocument ( document, updateQuery ) {
+    _updateDocument ( document, updateQuery, queryOptions ) {
 
         if ( isNotDefined( document ) ) {
             return null
@@ -467,7 +475,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
         return this._driver
                    .model( document.type )
-                   .findByIdAndUpdate( document._id, updateQuery )
+                   .findByIdAndUpdate( document._id, updateQuery, queryOptions )
                    .exec()
 
     }
