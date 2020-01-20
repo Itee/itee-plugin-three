@@ -18,6 +18,7 @@ import { JsonToThree }    from './converters/JsonToThree'
 import { MtlToThree }     from './converters/MtlToThree'
 import { Obj2ToThree }    from './converters/Obj2ToThree'
 import { ShpToThree }     from './converters/ShpToThree'
+import { FbxToThree }     from './converters/FbxToThree'
 import { ColladaToThree } from './converters/ColladaToThree'
 import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
 
@@ -539,6 +540,7 @@ export default new TMongoDBPlugin()
                     DbfToThree:  new DbfToThree(),
                     MtlToThree:  new MtlToThree(),
                     ObjToThree:  new Obj2ToThree()
+                    FbxToThree:     new FbxToThree(),
                     ColladaToThree: new ColladaToThree(),
                 },
                 rules:      [
@@ -549,6 +551,10 @@ export default new TMongoDBPlugin()
                     {
                         on:  '.dae',
                         use: 'ColladaToThree'
+                    },
+                    {
+                        on:  '.fbx',
+                        use: 'FbxToThree'
                     },
                     {
                         on:  '.shp',
