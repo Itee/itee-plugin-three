@@ -1842,7 +1842,7 @@ class ClippingControls extends Object3D {
             passive: false
         } )
 
-        this.dispatchEvent( { type: 'impose' } )
+        this.dispatchEvent( this._events.impose )
 
     }
 
@@ -1875,7 +1875,7 @@ class ClippingControls extends Object3D {
             passive: false
         } )
 
-        this.dispatchEvent( { type: 'dispose' } )
+        this.dispatchEvent( this._events.dispose )
 
     }
 
@@ -1962,42 +1962,42 @@ class ClippingControls extends Object3D {
                         this._translateZ( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.back.includes( key ) ) {
 
                         this._translateZ( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.right.includes( key ) ) {
 
                         this._translateX( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.left.includes( key ) ) {
 
                         this._translateX( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.up.includes( key ) ) {
 
                         this._translateY( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.down.includes( key ) ) {
 
                         this._translateY( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     }
 
@@ -2014,42 +2014,42 @@ class ClippingControls extends Object3D {
                         this._scaleZ( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.depthMinus.includes( key ) ) {
 
                         this._scaleZ( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.widthPlus.includes( key ) ) {
 
                         this._scaleX( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.widthMinus.includes( key ) ) {
 
                         this._scaleX( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.heightPlus.includes( key ) ) {
 
                         this._scaleY( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.heightMinus.includes( key ) ) {
 
                         this._scaleY( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     }
 
@@ -2315,7 +2315,7 @@ class ClippingControls extends Object3D {
 
             this.updateClipping()
             this._consumeEvent( mouseEvent )
-            this.dispatchEvent( this._events.objectChange )
+            this.dispatchEvent( this._events.change )
 
         }
 
