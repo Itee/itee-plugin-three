@@ -1600,6 +1600,20 @@ class ClippingControls extends Object3D {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         }
+
+        this._events = {
+            impose:     { type: 'impose' },
+            dispose:    { type: 'dispose' },
+            change:     { type: 'change' },
+            translate:  { type: 'translate' },
+            rotate:     { type: 'rotate' },
+            scale:      { type: 'scale' },
+            mouseEnter: { type: 'mouseEnter' },
+            mouseLeave: { type: 'mouseLeave' },
+            mouseDown:  { type: 'mouseDown' },
+            mouseUp:    { type: 'mouseUp' }
+        }
+
         // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
         this._objectsToClipBoundingBox = new Box3()
 
@@ -1642,15 +1656,6 @@ class ClippingControls extends Object3D {
         }
         this._currentGizmo  = null
         this._currentHandle = null
-
-        this._events = {
-            change:       { type: 'change' },
-            mouseEnter:   { type: 'mouseEnter' },
-            mouseLeave:   { type: 'mouseLeave' },
-            mouseDown:    { type: 'mouseDown' },
-            mouseUp:      { type: 'mouseUp' },
-            objectChange: { type: 'objectChange' }
-        }
 
         // The actions map about input events
         this.actionsMap = {
