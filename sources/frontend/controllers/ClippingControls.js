@@ -1618,6 +1618,8 @@ class ClippingControls extends Object3D {
 
         // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
         this._objectsToClipBoundingBox = new Box3()
+        this._objectsToClipSize        = new Vector3()
+        this._objectsToClipCenter      = new Vector3()
 
         this._clippingBox = new ClippingBox()
         this.add( this._clippingBox )
@@ -1702,20 +1704,7 @@ class ClippingControls extends Object3D {
         if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
 
         this._objectsToClip = value
-
-        const size = new Vector3()
-        this._objectsToClipBoundingBox
-            .makeEmpty()
-            .expandByObject( value )
-            .getSize( size )
-
-        const x = Math.round( size.x ) || 50
-        const y = Math.round( size.y ) || 22
-        const z = Math.round( size.z ) || 70
-        this.scale.set( x, y, z )
-        //        this.scale.set( 50, 22, 70 )
-
-        this._clippingBox.update()
+        this.updateClipping()
 
     }
 
@@ -1893,6 +1882,23 @@ class ClippingControls extends Object3D {
 
         this.visible = true
         this.enabled = true
+
+        // Init size and position
+        if( isDefined(this._objectsToClip)) {
+
+            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip )
+
+            this._objectsToClipBoundingBox.getSize( this._objectsToClipSize )
+            this._objectsToClipSize.divideScalar(2)
+            this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z )
+
+            this._objectsToClipBoundingBox.getCenter(this._objectsToClipCenter)
+            this.position.set(this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z)
+
+            // update...
+            this.updateMatrixWorld()
+        }
+
         this.updateClipping()
 
     }
