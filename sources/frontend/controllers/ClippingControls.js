@@ -2337,7 +2337,6 @@ class ClippingControls extends Object3D {
         // todo isActive when mouse enter
 
         mouseEvent.preventDefault()
-        this._consumeEvent( mouseEvent )
 
         this._dragging = false
         this.dispatchEvent( this._events.mouseUp )
