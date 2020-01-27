@@ -2325,7 +2325,8 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( event.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        // todo isActive when mouse enter
 
         mouseEvent.preventDefault()
         this._consumeEvent( mouseEvent )
@@ -2337,9 +2338,7 @@ class ClippingControls extends Object3D {
         const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
-            const handle = intersect.object
-
-            this._currentHandle = handle
+            this._currentHandle = intersect.object
             this._currentHandle.highlight( true )
 
             this._consumeEvent( mouseEvent )
