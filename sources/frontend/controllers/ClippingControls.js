@@ -71,6 +71,8 @@ class ClippingBox extends LineSegments {
     constructor () {
         super()
 
+        this.margin = 0.01
+
         this.geometry = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
         this.material = new LineBasicMaterial( {
             color: 0xffffff
@@ -153,7 +155,7 @@ class ClippingBox extends LineSegments {
 
         this._boundingBox.setFromObject( this )
 
-        const margin = 0.0
+        const margin = this.margin
         const min    = this._boundingBox.min
         const max    = this._boundingBox.max
 
