@@ -888,6 +888,7 @@ class CameraControls extends EventDispatcher {
         mouseEvent.preventDefault()
 
         this._state = State.None
+        this._consumeEvent( mouseEvent )
 
     }
 
