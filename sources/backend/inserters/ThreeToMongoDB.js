@@ -10,6 +10,7 @@
 
 import { TAbstractDataInserter } from 'itee-database'
 import {
+    isNull,
     isArray,
     isDefined,
     isEmptyArray,
@@ -23,6 +24,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         super( parameters )
         this.mergeStrategy = 'add'
 
+        // Addition
+        // Update
+        // Deletion
+
+        // Add objects from file if missing in database
+        // Remove objects from database if missing in file
+        // Update objects in database if existing in file
+
     }
 
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
@@ -31,48 +40,107 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         if ( isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' )
             return
-        } else {
-            const names = dataToParse.map( _data => _data.name )
-            console.log( `ThreeToMongoDB: Saving ${names}` )
         }
 
-        // Check parameters
+        const names = dataToParse.map( _data => _data.name )
+        console.log( `ThreeToMongoDB: Saving ${names}` )
+
+        // Check startegy
         if ( parameters.mergeStrategy ) {
             this.mergeStrategy = parameters.mergeStrategy
         }
 
         try {
-            const results   = await this._parseObjects( dataToParse, parameters.parentId )
-            const stringIds = results.map( ( rootElement ) => {
-                return rootElement._id.toString()
-            } )
-            console.log( `ThreeToMongoDB: Saved ${stringIds}` )
 
-            onSuccess( results )
+            // Check if parent is required
+            const parentId  = parameters.parentId
+            let children    = null
+            let childrenIds = null
+            if ( isDefined( parentId ) ) {
+
+                const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } )
+                if ( isNull( parentDocument ) ) {
+                    onError( `Unable to retrieve parent with id (${parameters.parentId}). Abort insert !` )
+                    return
+                }
+
+                // then update it
+                if ( this.mergeStrategy === 'add' ) {
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId )
+                    childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                    // Add children to given parent
+                    await this._updateDocument( parentDocument, {
+                        $addToSet: {
+                            children: childrenIds
+                        }
+                    } )
+
+                } else if ( this.mergeStrategy === 'replace' ) {
+
+                    // Merge children into parent
+                    //// Clean up current dbObject dependencies
+                    // Children create and update will be perform on children iteration but remove need to be checked here !
+                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: parentId } )
+                    const childrenUuids      = dataToParse.map( child => child.uuid )
+                    const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
+
+                    await this._removeChildrenDocuments( dbChildrenToRemove )
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId )
+                    childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                    await this._updateDocument( parentDocument, {
+                        $set: {
+                            children: childrenIds
+                        }
+                    } )
+
+                }
+
+                // Update children reference to parent
+                // await this._updateDocuments( children, { $set: { parent: parentId } } )
+
+            } else {
+
+                // If not required just create children as root objects
+                children    = await this._parseObjects( dataToParse, null )
+                childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+            }
+
+            console.log( `ThreeToMongoDB: Saved ${childrenIds}` )
+            onSuccess()
+
         } catch ( error ) {
             onError( error )
         }
 
     }
 
-    _parseObjects ( objects = [], parentId = null ) {
+    async _parseObjects ( objects = [], parentId = null  ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {
             return null
         }
 
-        const promises = []
+        return new Promise( async ( resolve, reject ) => {
 
-        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+            const documents = []
+            let document    = null
 
-            const object      = _objects[ index ]
-            const savePromise = this._parseObject( object )
-            promises.push( savePromise )
+            for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+                document = await this._parseObject( _objects[ index ], parentId )
+                documents.push( document )
+            }
 
-        }
+            resolve( documents )
 
-        return Promise.all( promises )
+        } )
 
     }
 
@@ -182,18 +250,19 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
             try {
 
-                const children    = await this._parseObjects( objectChildren )
-                const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+                // const children    = await this._parseObjects( objectChildren )
+                // const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
 
                 const geometry    = await this._getOrCreateDocuments( objectGeometry )
-                const geometryIds = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ) : []
+                const geometryId = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null
 
                 const materials    = await this._getOrCreateDocuments( objectMaterials )
                 const materialsIds = ( isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : []
 
                 // Check if object already exist
                 // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-                let document = await this._readOneDocument( objectType, { uuid: object.uuid } )
+                let document = await this._readOneDocument( objectType, { uuid: object.uuid, parent: parentId } )
+                // Todo if document.parent != parentId warn id collision !n m
                 if ( isDefined( document ) ) {
 
                     // Check merge strategie
@@ -201,11 +270,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                     // else if replace, remove missings children from new data, update existing and create new
                     if ( this.mergeStrategy === 'add' ) {
 
+                        const children    = await this._parseObjects( objectChildren, document._id )
+                        const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
                         await this._updateDocument( document, {
                             $addToSet: {
                                 children: childrenIds,
-                                geometry: geometryIds,
-                                material: materialsIds
+                                // geometry: geometryId, // Geometry is not an array !!
+                                // material: materialsIds // Should check which material still exist !!!
                             }
                         } )
 
@@ -217,48 +289,15 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                         const childrenUuids      = objectChildren.map( child => child.uuid )
                         const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
 
-                        for ( let childIndex = dbChildrenToRemove.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+                        await this._removeChildrenDocuments( dbChildrenToRemove )
 
-                            const dbChildToRemove = dbChildrenToRemove[ childIndex ]
-
-                            // Remove geometry only if current object is the last that reference it
-                            {
-                                const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: dbChildToRemove.geometry } )
-                                const numberOfReferences = referencingObjects.length
-
-                                if ( numberOfReferences === 1 ) {
-                                    const dbGeometry = await this._readOneDocument( 'Geometries', { _id: dbChildToRemove.geometry } )
-                                    await this._deleteDocument( dbGeometry )
-                                }
-                            }
-
-                            // Remove material only if current object is the last that reference it
-                            {
-                                const childMaterialsIds = dbChildToRemove.material || []
-                                for ( let matIndex = 0, numMats = childMaterialsIds.length ; matIndex < numMats ; matIndex++ ) {
-
-                                    const childMaterialsId = childMaterialsIds[ matIndex ]
-
-                                    const referencingObjects = await this._readManyDocument( 'Objects3D', { material: childMaterialsId } )
-                                    const numberOfReferences = referencingObjects.length
-
-                                    if ( numberOfReferences === 1 ) {
-                                        const dbMaterial = await this._readOneDocument( 'Materials', { _id: childMaterialsId } )
-                                        await this._deleteDocument( dbMaterial )
-                                    }
-
-                                }
-                            }
-
-                            // finally remove the incriminated document
-                            await this._deleteDocument( dbChildToRemove )
-
-                        }
+                        const children    = await this._parseObjects( objectChildren, document._id )
+                        const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
 
                         await this._updateDocument( document, {
                             $set: {
                                 children: childrenIds,
-                                geometry: geometryIds,
+                                geometry: geometryId,
                                 material: materialsIds
                             }
                         } )
@@ -270,15 +309,27 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                 } else {
 
                     object.parent   = parentId
-                    object.children = childrenIds
-                    object.geometry = geometryIds
+                    // object.parent   = null
+                    object.children = []
+                    object.geometry = geometryId
                     object.material = materialsIds
                     document        = await this._createDocument( object )
 
+                    const children    = await this._parseObjects( objectChildren, document._id )
+                    const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                    await this._updateDocument( document, {
+                        $set: {
+                            children: childrenIds,
+                            geometry: geometryId,
+                            material: materialsIds
+                        }
+                    } )
+
                 }
 
-                // Update children reference to parent
-                await this._updateDocuments( children, { $set: { parent: document._id } } )
+                // Update children reference to parent only after all stuff is done
+                // await this._updateDocuments( children, { $set: { parent: document._id } } )
                 resolve( document )
 
             } catch ( error ) {
@@ -511,6 +562,76 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                    .model( document.type )
                    .findByIdAndDelete( document._id )
                    .exec()
+
+    }
+
+    ///
+    async _removeChildrenDocuments ( documents ) {
+
+        for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+
+            const childToRemove = documents[ childIndex ]
+            this._removeChildDocument( documents[ childIndex ] )
+
+        }
+
+    }
+
+    async _removeChildDocument ( document ) {
+
+        // Remove children recursively
+        const children = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+        await this._removeChildrenDocuments( children )
+
+        // Remove geometry only if current object is the last that reference it
+        await this._removeOrphanGeometryWithId( document.geometry )
+
+        // Remove material only if current object is the last that reference it
+        await this._removeOrphanMaterialsWithIds( document.material || [] )
+
+        // finally remove the incriminated document
+        await this._deleteDocument( document )
+
+    }
+
+    // Remove orphan geometry
+    async _removeOrphanGeometryWithId ( geometryId ) {
+
+        if ( isNotDefined( geometryId ) ) { return }
+
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } )
+        if ( referencingObjects.length > 1 ) { return }
+
+        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } )
+        await this._deleteDocument( geometryDocument )
+
+    }
+
+    // Remove only orphan materials
+    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+
+        const promises = []
+
+        for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
+
+            const materialId  = materialsIds[ index ]
+            const savePromise = this._removeOrphanMaterialWithId( materialId )
+            promises.push( savePromise )
+
+        }
+
+        return Promise.all( promises )
+
+    }
+
+    // Remove only orphan material
+    async _removeOrphanMaterialWithId ( materialId ) {
+
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )
+        if ( referencingObjects.length > 1 ) { return }
+
+        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } )
+        await this._deleteDocument( materialDocument )
 
     }
 
