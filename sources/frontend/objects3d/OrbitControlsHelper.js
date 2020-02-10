@@ -130,6 +130,8 @@ class OrbitControlsHelper extends LineSegments {
 
         super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() )
 
+
+        this.matrixAutoUpdate = false
         //        this.control     = control
         this._intervalId = undefined
 
