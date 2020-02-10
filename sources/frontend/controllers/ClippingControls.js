@@ -77,6 +77,7 @@ class ClippingBox extends LineSegments {
         this.material = new LineBasicMaterial( {
             color: 0xffffff
         } )
+        this.matrixAutoUpdate = false
 
         // Planes
         this.normalPlanes = {
@@ -272,8 +273,9 @@ class AbstractHitbox extends Mesh {
         }
 
         super( _parameters.geometry, _parameters.material )
-        this.isHitbox = true
-        this.type     = 'Hitbox'
+        this.isHitbox         = true
+        this.type             = 'Hitbox'
+        this.matrixAutoUpdate = false
 
     }
 }
@@ -431,8 +433,9 @@ class AbstractHandle extends Object3D {
         }
 
         super()
-        this.isHandle = true
-        this.type     = 'Handle'
+        this.isHandle         = true
+        this.type             = 'Handle'
+        this.matrixAutoUpdate = false
 
         this.color  = _parameters.color
         this.hitbox = _parameters.hitbox
@@ -552,15 +555,17 @@ class TranslateHandle extends AbstractHandle {
         this.isTranslateHandle = true
         this.type              = 'TranslateHandle'
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) )
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } )
-        const line         = new Line( lineGeometry, lineMaterial )
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false )
         coneGeometry.translate( 0, 0.9, 0 )
-        const coneMaterial = new HighlightableMaterial( { color: _parameters.color } )
-        const cone         = new Mesh( coneGeometry, coneMaterial )
+        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const cone            = new Mesh( coneGeometry, coneMaterial )
+        cone.matrixAutoUpdate = false
         this.add( cone )
 
         this.direction = _parameters.direction
@@ -642,15 +647,17 @@ class ScaleHandle extends AbstractHandle {
         this.isScaleHandle = true
         this.type          = 'ScaleHandle'
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) )
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } )
-        const line         = new Line( lineGeometry, lineMaterial )
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 )
         boxGeometry.translate( 0, 0.94, 0 )
-        const boxMaterial = new HighlightableMaterial( { color: _parameters.color } )
-        const box         = new Mesh( boxGeometry, boxMaterial )
+        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const box            = new Mesh( boxGeometry, boxMaterial )
+        box.matrixAutoUpdate = false
         this.add( box )
 
         this.direction = _parameters.direction
@@ -760,7 +767,8 @@ class PlaneHandle extends AbstractHandle {
             color: _parameters.color
         } )
 
-        const line = new Line( lineBufferGeometry, lineMaterial )
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         // Plane
@@ -778,12 +786,13 @@ class PlaneHandle extends AbstractHandle {
         planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
         planeBufferGeometry.setIndex( planeIndexes )
 
-        const planeMaterial = new HighlightableMaterial( {
+        const planeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } )
-        const plane         = new Mesh( planeBufferGeometry, planeMaterial )
+        const plane            = new Mesh( planeBufferGeometry, planeMaterial )
+        plane.matrixAutoUpdate = false
         this.add( plane )
 
         this.xAxis = new Vector3( 1, 0, 0 )
@@ -973,7 +982,8 @@ class LozengeHandle extends AbstractHandle {
             color: _parameters.color
         } )
 
-        const line = new Line( lineBufferGeometry, lineMaterial )
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         // Lozenge
@@ -991,12 +1001,13 @@ class LozengeHandle extends AbstractHandle {
         lozengeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) )
         lozengeBufferGeometry.setIndex( lozengeIndexes )
 
-        const lozengeMaterial = new HighlightableMaterial( {
+        const lozengeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } )
-        const lozenge         = new Mesh( lozengeBufferGeometry, lozengeMaterial )
+        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial )
+        lozenge.matrixAutoUpdate = false
         this.add( lozenge )
 
         this.direction  = _parameters.direction
@@ -1144,21 +1155,23 @@ class OctahedricalHandle extends AbstractHandle {
         this.isOmnidirectionalHandle = true
         this.type                    = 'OmnidirectionalHandle'
 
-        const octahedronGeometry = new OctahedronBufferGeometry( 1, 0 )
-        const octahedronMaterial = new HighlightableMaterial( {
+        const octahedronGeometry    = new OctahedronBufferGeometry( 1, 0 )
+        const octahedronMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.55
         } )
-        const octahedron         = new Mesh( octahedronGeometry, octahedronMaterial )
+        const octahedron            = new Mesh( octahedronGeometry, octahedronMaterial )
+        octahedron.matrixAutoUpdate = false
         this.add( octahedron )
 
-        const edgesGeometry = new EdgesGeometry( octahedronGeometry )
-        const edgesMaterial = new HighlightableLineMaterial( {
+        const edgesGeometry    = new EdgesGeometry( octahedronGeometry )
+        const edgesMaterial    = new HighlightableLineMaterial( {
             color:     _parameters.color,
             linewidth: 4
         } )
-        const edges         = new LineSegments( edgesGeometry, edgesMaterial )
+        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
+        edges.matrixAutoUpdate = false
         this.add( edges )
 
     }
@@ -1176,26 +1189,31 @@ class AbstractGizmo extends Object3D {
     constructor () {
 
         super()
-        this.isGizmo = true
-        this.type    = 'AbstractGizmo'
+        this.isGizmo          = true
+        this.type             = 'AbstractGizmo'
+        this.matrixAutoUpdate = false
 
     }
 
     init () {
 
-        this.handles = new Object3D()
+        this.handles                  = new Object3D()
+        this.handles.matrixAutoUpdate = false
 
         this.add( this.handles )
 
         //// PLANES
-        const planeGeometry = new PlaneBufferGeometry( 50, 50, 2, 2 )
-        const planeMaterial = new MeshBasicMaterial( {
+        const planeGeometry                  = new PlaneBufferGeometry( 50, 50, 2, 2 )
+        const planeMaterial                  = new MeshBasicMaterial( {
             side:    DoubleSide,
             visible: false
             //            transparent: true,
             //            opacity:     0.1
         } )
-        this.intersectPlane = new Mesh( planeGeometry, planeMaterial )
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial )
+        this.intersectPlane.matrixAutoUpdate = false
+        this.intersectPlane.visible          = false
+
         this.add( this.intersectPlane )
 
         //// HANDLES
@@ -1586,7 +1604,7 @@ class ClippingControls extends Object3D {
         super()
 
         // Need to be defined before domElement to make correct binding events
-        this._handlers                 = {
+        this._handlers = {
             onMouseEnter:  this._onMouseEnter.bind( this ),
             onMouseLeave:  this._onMouseLeave.bind( this ),
             onMouseDown:   this._onMouseDown.bind( this ),
@@ -1624,13 +1642,14 @@ class ClippingControls extends Object3D {
         this._clippingBox = new ClippingBox()
         this.add( this._clippingBox )
 
-        this.camera          = _parameters.camera
-        this.domElement      = _parameters.domElement
-        this.mode            = _parameters.mode
-        this.objectsToClip   = _parameters.objectsToClip
-        this.translationSnap = 0.1
-        this.scaleSnap       = 0.1
-        this.rotationSnap    = 0.1
+        this.camera           = _parameters.camera
+        this.domElement       = _parameters.domElement
+        this.mode             = _parameters.mode
+        this.objectsToClip    = _parameters.objectsToClip
+        this.translationSnap  = 0.1
+        this.scaleSnap        = 0.1
+        this.rotationSnap     = 0.1
+        this.matrixAutoUpdate = false
 
         this.enabled = false // Should be true by default
 
@@ -1884,16 +1903,16 @@ class ClippingControls extends Object3D {
         this.enabled = true
 
         // Init size and position
-        if( isDefined(this._objectsToClip)) {
+        if ( isDefined( this._objectsToClip ) ) {
 
             this._objectsToClipBoundingBox.setFromObject( this._objectsToClip )
 
             this._objectsToClipBoundingBox.getSize( this._objectsToClipSize )
-            this._objectsToClipSize.divideScalar(2)
+            this._objectsToClipSize.divideScalar( 2 )
             this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z )
 
-            this._objectsToClipBoundingBox.getCenter(this._objectsToClipCenter)
-            this.position.set(this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z)
+            this._objectsToClipBoundingBox.getCenter( this._objectsToClipCenter )
+            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z )
 
             // update...
             this.updateMatrixWorld()
