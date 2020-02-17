@@ -1,14 +1,1519 @@
-console.log('Itee.Plugin.Three v1.1.2 - CommonJs')
+console.log('Itee.Plugin.Three v1.2.0 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var iteeDatabase = require('itee-database');
-var iteeClient = require('itee-client');
-var threeFull = require('three-full');
 var iteeValidators = require('itee-validators');
 var iteeValidators__default = _interopDefault(iteeValidators);
+var path = _interopDefault(require('path'));
+var buffer = require('buffer');
+var fs = _interopDefault(require('fs'));
+var stream = require('stream');
+var iteeUtils = require('itee-utils');
+require('mongoose');
+var threeFull = require('three-full');
+var iteeClient = require('itee-client');
 var bson = require('bson');
+
+console.log('Itee.Database.MongoDB v1.0.0 - EsModule');
+
+console.log('Itee.Database v8.0.0 - EsModule');
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @class TDatabaseController
+ * @classdesc The TDatabaseController is the base class to perform CRUD operations on the database
+ */
+
+class TAbstractDataController {
+
+    /**
+     * Check if requested params named 'dataName' exist in request.body, request.params or request.query
+     *
+     * @param dataName - The property name to looking for
+     * @param request - The _server request
+     * @param response - The _server response
+     * @returns {*} - Return the property or return error to the end user if the property doesn't exist
+     * @private
+     */
+    static __checkData ( dataName, request, response ) {
+
+        const body   = request.body;
+        const params = request.params;
+        const query  = request.query;
+
+        if ( iteeValidators.isDefined( body ) && body[ dataName ] ) {
+
+            return body[ dataName ]
+
+        } else if ( iteeValidators.isDefined( params ) && params[ dataName ] ) {
+
+            return params[ dataName ]
+
+        } else if ( iteeValidators.isDefined( query ) && query[ dataName ] ) {
+
+            return query[ dataName ]
+
+        } else {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: `${dataName} n'existe pas dans les paramètres !`
+            }, response );
+
+        }
+    }
+
+    /**
+     * Normalize error that can be in different format like single string, object, array of string, or array of object.
+     *
+     * @example <caption>Normalized error are simple literal object like:</caption>
+     * {
+     *     title: 'error',
+     *     message: 'the error message'
+     * }
+     *
+     * @param {String|Object|Array.<String>|Array.<Object>} error - The error object to normalize
+     * @returns {Array.<Object>}
+     * @private
+     */
+    static _formatError ( error ) {
+        let errorsList = [];
+
+        if ( iteeValidators.isArray( error ) ) {
+
+            for ( let i = 0, l = error.length ; i < l ; ++i ) {
+                errorsList = errorsList.concat( TAbstractDataController._formatError( error[ i ] ) );
+            }
+
+        } else if ( iteeValidators.isObject( error ) ) {
+
+            if ( error.name === 'ValidationError' ) {
+
+                let _message  = '';
+                let subsError = error.errors;
+
+                for ( let property in subsError ) {
+                    if ( !Object.prototype.hasOwnProperty.call( subsError, property ) ) { continue }
+                    _message += subsError[ property ].message + '<br>';
+                }
+
+                errorsList.push( {
+                    title:   'Erreur de validation',
+                    message: _message || 'Aucun message d\'erreur... Gloups !'
+                } );
+
+            } else if ( error.name === 'VersionError' ) {
+
+                errorsList.push( {
+                    title:   'Erreur de base de donnée',
+                    message: 'Aucun document correspondant n\'as put être trouvé pour la requete !'
+                } );
+
+            } else {
+
+                errorsList.push( {
+                    title:   error.title || 'Erreur',
+                    message: error.message || 'Aucun message d\'erreur... Gloups !'
+                } );
+
+            }
+
+        } else if ( iteeValidators.isString( error ) ) {
+
+            errorsList.push( {
+                title:   'Erreur',
+                message: error
+            } );
+
+        } else {
+
+            throw new Error( `Unknown error type: ${error} !` )
+
+        }
+
+        return errorsList
+
+    }
+
+    /**
+     * In case database call return nothing consider that is a not found.
+     * If response parameter is a function consider this is a returnNotFound callback function to call,
+     * else check if server response headers aren't send yet, and return response with status 204
+     *
+     * @param response - The server response or returnNotFound callback
+     * @returns {*} callback call or response with status 204
+     */
+    static returnNotFound ( response ) {
+
+        if ( iteeValidators.isFunction( response ) ) { return response() }
+        if ( response.headersSent ) { return }
+
+        response.status( 204 ).end();
+
+    }
+
+    /**
+     * In case database call return an error.
+     * If response parameter is a function consider this is a returnError callback function to call,
+     * else check if server response headers aren't send yet, log and flush stack trace (if allowed) and return response with status 500 and
+     * stringified error as content
+     *
+     * @param error - A server/database error
+     * @param response - The server response or returnError callback
+     * @returns {*} callback call or response with status 500 and associated error
+     */
+    static returnError ( error, response ) {
+
+        if ( iteeValidators.isFunction( response ) ) { return response( error, null ) }
+        if ( response.headersSent ) { return }
+
+        const formatedError = TAbstractDataController._formatError( error );
+
+        response.format( {
+
+            'application/json': () => {
+                response.status( 500 ).json( formatedError );
+            },
+
+            'default': () => {
+                response.status( 406 ).send( 'Not Acceptable' );
+            }
+
+        } );
+
+    }
+
+    /**
+     * In case database call return some data.
+     * If response parameter is a function consider this is a returnData callback function to call,
+     * else check if server response headers aren't send yet, and return response with status 200 and
+     * stringified data as content
+     *
+     * @param data - The server/database data
+     * @param response - The server response or returnData callback
+     * @returns {*} callback call or response with status 200 and associated data
+     */
+    static returnData ( data, response ) {
+
+        if ( iteeValidators.isFunction( response ) ) { return response( null, data ) }
+        if ( response.headersSent ) { return }
+
+        const _data = iteeValidators.isArray( data ) ? data : [ data ];
+
+        response.format( {
+
+            'application/json': () => {
+                response.status( 200 ).json( _data );
+            },
+
+            'default': () => {
+                response.status( 406 ).send( 'Not Acceptable' );
+            }
+
+        } );
+
+    }
+
+    /**
+     * In case database call return some data AND error.
+     * If response parameter is a function consider this is a returnErrorAndData callback function to call,
+     * else check if server response headers aren't send yet, log and flush stack trace (if allowed) and
+     * return response with status 406 with stringified data and error in a literal object as content
+     *
+     * @param error - A server/database error
+     * @param data - The server/database data
+     * @param response - The server response or returnErrorAndData callback
+     * @returns {*} callback call or response with status 406, associated error and data
+     */
+    static returnErrorAndData ( error, data, response ) {
+
+        if ( iteeValidators.isFunction( response ) ) { return response( error, data ) }
+        if ( response.headersSent ) { return }
+
+        const result = {
+            errors: error,
+            datas:  data
+        };
+
+        response.format( {
+
+            'application/json': () => {
+                response.status( 416 ).json( result );
+            },
+
+            'default': () => {
+                response.status( 416 ).send( 'Range Not Satisfiable' );
+            }
+
+        } );
+
+    }
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                driver:  null,
+                useNext: false
+            }, ...parameters
+        };
+
+        this._driver  = _parameters.driver;
+        this._useNext = _parameters.useNext;
+
+    }
+
+    return ( response, callbacks = {} ) {
+
+        const _callbacks = Object.assign( {
+
+                immediate:                null,
+                beforeAll:                null,
+                beforeReturnErrorAndData: null,
+                afterReturnErrorAndData:  null,
+                beforeReturnError:        null,
+                afterReturnError:         null,
+                beforeReturnData:         null,
+                afterReturnData:          null,
+                beforeReturnNotFound:     null,
+                afterReturnNotFound:      null,
+                afterAll:                 null
+
+            },
+            callbacks,
+            {
+                returnErrorAndData: TAbstractDataController.returnErrorAndData.bind( this ),
+                returnError:        TAbstractDataController.returnError.bind( this ),
+                returnData:         TAbstractDataController.returnData.bind( this ),
+                returnNotFound:     TAbstractDataController.returnNotFound.bind( this )
+            } );
+
+        /**
+         * The callback that will be used for parse database response
+         */
+        function dispatchResult ( error = null, data = null ) {
+
+            const haveData  = iteeValidators.isDefined( data );
+            const haveError = iteeValidators.isDefined( error );
+
+            if ( _callbacks.beforeAll ) { _callbacks.beforeAll(); }
+
+            if ( haveData && haveError ) {
+
+                if ( _callbacks.beforeReturnErrorAndData ) { _callbacks.beforeReturnErrorAndData( error, data ); }
+                _callbacks.returnErrorAndData( error, data, response );
+                if ( _callbacks.afterReturnErrorAndData ) { _callbacks.afterReturnErrorAndData( error, data ); }
+
+            } else if ( haveData && !haveError ) {
+
+                if ( _callbacks.beforeReturnData ) { _callbacks.beforeReturnData( data ); }
+                _callbacks.returnData( data, response );
+                if ( _callbacks.afterReturnData ) { _callbacks.afterReturnData( data ); }
+
+            } else if ( !haveData && haveError ) {
+
+                if ( _callbacks.beforeReturnError ) { _callbacks.beforeReturnError( error ); }
+                _callbacks.returnError( error, response );
+                if ( _callbacks.afterReturnError ) { _callbacks.afterReturnError( error ); }
+
+            } else if ( !haveData && !haveError ) {
+
+                if ( _callbacks.beforeReturnNotFound ) { _callbacks.beforeReturnNotFound(); }
+                _callbacks.returnNotFound( response );
+                if ( _callbacks.afterReturnNotFound ) { _callbacks.afterReturnNotFound(); }
+
+            }
+
+            if ( _callbacks.afterAll ) { _callbacks.afterAll(); }
+
+        }
+
+        // An immediate callback hook ( for timing for example )
+        if ( _callbacks.immediate ) { _callbacks.immediate(); }
+
+        return dispatchResult
+
+    }
+
+    //////////////////
+    // CRUD Methods //
+    //////////////////
+
+    create ( request, response, next ) {
+
+        const data = request.body;
+
+        if ( iteeValidators.isNotDefined( data ) ) {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Le corps de la requete ne peut pas être null ou indefini.'
+            }, ( this._useNext ) ? next : response );
+
+        } else if ( iteeValidators.isArray( data ) ) {
+
+            if ( iteeValidators.isEmptyArray( data ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'objet de la requete ne peut pas être vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._createMany( data, response, next );
+
+            }
+
+        } else if ( iteeValidators.isObject( data ) ) {
+
+            if ( iteeValidators.isEmptyObject( data ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'objet de la requete ne peut pas être vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._createOne( data, response, next );
+
+            }
+
+        } else {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'Le type de donnée de la requete est invalide. Les paramètres valides sont objet ou un tableau d\'objet.'
+            }, ( this._useNext ) ? next : response );
+
+        }
+
+    }
+
+    _createOne ( /*data, response, next*/ ) {}
+
+    _createMany ( /*datas, response, next*/ ) {}
+
+    read ( request, response, next ) {
+
+        const id          = request.params[ 'id' ];
+        const requestBody = request.body;
+        const haveBody    = ( iteeValidators.isDefined( requestBody ) );
+        const ids         = ( haveBody ) ? requestBody.ids : null;
+        const query       = ( haveBody ) ? requestBody.query : null;
+        const projection  = ( haveBody ) ? requestBody.projection : null;
+
+        if ( iteeValidators.isDefined( id ) ) {
+
+            if ( iteeValidators.isNotString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant devrait être une chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyString( id ) || iteeValidators.isBlankString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant ne peut pas être une chaine de caractères vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._readOne( id, projection, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( ids ) ) {
+
+            if ( iteeValidators.isNotArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants devrait être un tableau de chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants ne peut pas être vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._readMany( ids, projection, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( query ) ) {
+
+            if ( iteeValidators.isNotObject( query ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requete devrait être un objet javascript.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyObject( query ) ) {
+
+                this._readAll( projection, response, next );
+
+            } else {
+
+                this._readWhere( query, projection, response, next );
+
+            }
+
+        } else {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'La requete ne peut pas être null.'
+            }, ( this._useNext ) ? next : response );
+
+        }
+
+    }
+
+    _readOne ( /*id, projection, response, next*/ ) {}
+
+    _readMany ( /*ids, projection, response, next*/ ) {}
+
+    _readWhere ( /*query, projection, response, next*/ ) {}
+
+    _readAll ( /*projection, response, next*/ ) {}
+
+    update ( request, response, next ) {
+
+        const id          = request.params[ 'id' ];
+        const requestBody = request.body;
+        const haveBody    = ( iteeValidators.isDefined( requestBody ) );
+        const ids         = ( haveBody ) ? requestBody.ids : null;
+        const query       = ( haveBody ) ? requestBody.query : null;
+        const update      = ( haveBody ) ? requestBody.update : null;
+
+        if ( iteeValidators.isNotDefined( update ) ) {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'La mise à jour a appliquer ne peut pas être null ou indefini.'
+            }, ( this._useNext ) ? next : response );
+
+        } else if ( iteeValidators.isDefined( id ) ) {
+
+            if ( iteeValidators.isNotString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant devrait être une chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyString( id ) || iteeValidators.isBlankString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant ne peut pas être une chaine de caractères vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._updateOne( id, update, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( ids ) ) {
+
+            if ( iteeValidators.isNotArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants devrait être un tableau de chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants ne peut pas être vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._updateMany( ids, update, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( query ) ) {
+
+            if ( iteeValidators.isNotObject( query ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requete devrait être un objet javascript.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyObject( query ) ) {
+
+                this._updateAll( update, response, next );
+
+            } else {
+
+                this._updateWhere( query, update, response, next );
+
+            }
+
+        } else {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'La requete ne peut pas être vide.'
+            }, ( this._useNext ) ? next : response );
+
+        }
+
+    }
+
+    _updateOne ( /*id, update, response, next*/ ) {}
+
+    _updateMany ( /*ids, updates, response, next*/ ) {}
+
+    _updateWhere ( /*query, update, response, next*/ ) {}
+
+    _updateAll ( /*update, response, next*/ ) {}
+
+    delete ( request, response, next ) {
+
+        const id          = request.params[ 'id' ];
+        const requestBody = request.body;
+        const haveBody    = ( iteeValidators.isDefined( requestBody ) );
+        const ids         = ( haveBody ) ? requestBody.ids : null;
+        const query       = ( haveBody ) ? requestBody.query : null;
+
+        if ( iteeValidators.isDefined( id ) ) {
+
+            if ( iteeValidators.isNotString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant devrait être une chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyString( id ) || iteeValidators.isBlankString( id ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'L\'identifiant ne peut pas être une chaine de caractères vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._deleteOne( id, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( ids ) ) {
+
+            if ( iteeValidators.isNotArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants devrait être un tableau de chaine de caractères.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyArray( ids ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'Le tableau d\'identifiants ne peut pas être vide.'
+                }, ( this._useNext ) ? next : response );
+
+            } else {
+
+                this._deleteMany( ids, response, next );
+
+            }
+
+        } else if ( iteeValidators.isDefined( query ) ) {
+
+            if ( iteeValidators.isNotObject( query ) ) {
+
+                TAbstractDataController.returnError( {
+                    title:   'Erreur de paramètre',
+                    message: 'La requete devrait être un objet javascript.'
+                }, ( this._useNext ) ? next : response );
+
+            } else if ( iteeValidators.isEmptyObject( query ) ) {
+
+                this._deleteAll( response, next );
+
+            } else {
+
+                this._deleteWhere( query, response, next );
+
+            }
+
+        } else {
+
+            TAbstractDataController.returnError( {
+                title:   'Erreur de paramètre',
+                message: 'La requete ne peut pas être vide.'
+            }, ( this._useNext ) ? next : response );
+
+        }
+
+    }
+
+    _deleteOne ( /*id, response, next*/ ) {}
+
+    _deleteMany ( /*ids, response, next*/ ) {}
+
+    _deleteWhere ( /*query, response, next*/ ) {}
+
+    _deleteAll ( /*response, next*/ ) {}
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+/* Writable memory stream */
+class MemoryWriteStream extends stream.Writable {
+
+    constructor ( options ) {
+
+        super( options );
+
+        const bufferSize  = options.bufferSize || buffer.kStringMaxLength;
+        this.memoryBuffer = Buffer.alloc( bufferSize );
+        this.offset       = 0;
+    }
+
+    _final ( callback ) {
+
+        callback();
+
+    }
+
+    _write ( chunk, encoding, callback ) {
+
+        // our memory store stores things in buffers
+        const buffer = ( Buffer.isBuffer( chunk ) ) ? chunk : new Buffer( chunk, encoding );
+
+        // concat to the buffer already there
+        for ( let byteIndex = 0, numberOfByte = buffer.length ; byteIndex < numberOfByte ; byteIndex++ ) {
+            this.memoryBuffer[ this.offset ] = buffer[ byteIndex ];
+            this.offset++;
+        }
+
+        // Next
+        callback();
+
+    }
+
+    _writev ( chunks, callback ) {
+
+        for ( let chunkIndex = 0, numberOfChunks = chunks.length ; chunkIndex < numberOfChunks ; chunkIndex++ ) {
+            this.memoryBuffer = Buffer.concat( [ this.memoryBuffer, chunks[ chunkIndex ] ] );
+        }
+
+        // Next
+        callback();
+
+    }
+
+    _releaseMemory () {
+
+        this.memoryBuffer = null;
+
+    }
+
+    toArrayBuffer () {
+
+        const buffer      = this.memoryBuffer;
+        const arrayBuffer = new ArrayBuffer( buffer.length );
+        const view        = new Uint8Array( arrayBuffer );
+
+        for ( let i = 0 ; i < buffer.length ; ++i ) {
+            view[ i ] = buffer[ i ];
+        }
+
+        this._releaseMemory();
+
+        return arrayBuffer
+
+    }
+
+    toJSON () {
+
+        return JSON.parse( this.toString() )
+
+    }
+
+    toString () {
+
+        const string = this.memoryBuffer.toString();
+        this._releaseMemory();
+
+        return string
+
+    }
+
+}
+
+////////
+
+class TAbstractFileConverter {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
+            }, ...parameters
+        };
+
+        this.dumpType = _parameters.dumpType;
+
+        this._isProcessing = false;
+        this._queue        = [];
+
+    }
+
+    get dumpType () {
+
+        return this._dumpType
+
+    }
+
+    set dumpType ( value ) {
+
+        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Dump type cannot be null ! Expect a non empty string.' ) }
+        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Dump type cannot be undefined ! Expect a non empty string.' ) }
+
+        this._dumpType = value;
+
+    }
+
+    setDumpType ( value ) {
+
+        this.dumpType = value;
+        return this
+
+    }
+
+    convert ( file, parameters, onSuccess, onProgress, onError ) {
+
+        if ( !file ) {
+            onError( 'File cannot be null or empty, aborting file convertion !!!' );
+            return
+        }
+
+        this._queue.push( {
+            file,
+            parameters,
+            onSuccess,
+            onProgress,
+            onError
+        } );
+
+        this._processQueue();
+
+    }
+
+    _processQueue () {
+
+        if ( this._queue.length === 0 || this._isProcessing ) { return }
+
+        this._isProcessing = true;
+
+        const self       = this;
+        const dataBloc   = this._queue.shift();
+        const file       = dataBloc.file;
+        const parameters = dataBloc.parameters;
+        const onSuccess  = dataBloc.onSuccess;
+        const onProgress = dataBloc.onProgress;
+        const onError    = dataBloc.onError;
+
+        if ( iteeValidators.isString( file ) ) {
+
+            self._dumpFileInMemoryAs(
+                self._dumpType,
+                file,
+                parameters,
+                _onDumpSuccess,
+                _onProcessProgress,
+                _onProcessError
+            );
+
+        } else {
+
+            const data = file.data;
+
+            switch ( self._dumpType ) {
+
+                case TAbstractFileConverter.DumpType.ArrayBuffer: {
+
+                    const bufferSize  = data.length;
+                    const arrayBuffer = new ArrayBuffer( bufferSize );
+                    const view        = new Uint8Array( arrayBuffer );
+
+                    for ( let i = 0 ; i < bufferSize ; ++i ) {
+                        view[ i ] = data[ i ];
+                    }
+
+                    _onDumpSuccess( arrayBuffer );
+
+                }
+                    break
+
+                case TAbstractFileConverter.DumpType.JSON:
+                    _onDumpSuccess( JSON.parse( data.toString() ) );
+                    break
+
+                case TAbstractFileConverter.DumpType.String:
+                    _onDumpSuccess( data.toString() );
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${self._dumpType}` )
+
+            }
+
+        }
+
+        function _onDumpSuccess ( data ) {
+
+            self._convert(
+                data,
+                parameters,
+                _onProcessSuccess,
+                _onProcessProgress,
+                _onProcessError
+            );
+
+        }
+
+        function _onProcessSuccess ( threeData ) {
+
+            onSuccess( threeData );
+
+            self._isProcessing = false;
+            self._processQueue();
+
+        }
+
+        function _onProcessProgress ( progress ) {
+
+            onProgress( progress );
+
+        }
+
+        function _onProcessError ( error ) {
+
+            onError( error );
+
+            self._isProcessing = false;
+            self._processQueue();
+
+        }
+
+    }
+
+    _dumpFileInMemoryAs ( dumpType, file, parameters, onSuccess, onProgress, onError ) {
+
+        let isOnError = false;
+
+        const fileReadStream = fs.createReadStream( file );
+
+        fileReadStream.on( 'error', ( error ) => {
+            console.error( `Read stream on error: ${error}` );
+
+            isOnError = true;
+            onError( error );
+
+        } );
+
+        const fileSize          = parseInt( parameters.fileSize );
+        const memoryWriteStream = new MemoryWriteStream( { bufferSize: fileSize } );
+
+        memoryWriteStream.on( 'error', ( error ) => {
+
+            isOnError = true;
+            onError( error );
+
+        } );
+
+        memoryWriteStream.on( 'finish', () => {
+
+            if ( isOnError ) {
+                return
+            }
+
+            switch ( dumpType ) {
+
+                case TAbstractFileConverter.DumpType.ArrayBuffer:
+                    onSuccess( memoryWriteStream.toArrayBuffer() );
+                    break
+
+                case TAbstractFileConverter.DumpType.String:
+                    onSuccess( memoryWriteStream.toString() );
+                    break
+
+                case TAbstractFileConverter.DumpType.JSON:
+                    onSuccess( memoryWriteStream.toJSON() );
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${dumpType}` )
+
+            }
+
+            fileReadStream.unpipe();
+            fileReadStream.close();
+            memoryWriteStream.end();
+
+        } );
+
+        fileReadStream.pipe( memoryWriteStream );
+
+    }
+
+    _convert ( /*data, parameters, onSuccess, onProgress, onError*/ ) {}
+
+}
+
+TAbstractFileConverter.MAX_FILE_SIZE = 67108864;
+
+TAbstractFileConverter.DumpType = Object.freeze( {
+    ArrayBuffer: 0,
+    String:      1,
+    JSON:        2
+} );
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+class TAbstractDatabasePlugin {
+
+    static _registerRoutesTo ( Driver, Application, Router, ControllerCtors, descriptors ) {
+
+        for ( let index = 0, numberOfDescriptor = descriptors.length ; index < numberOfDescriptor ; index++ ) {
+
+            const descriptor      = descriptors[ index ];
+            const ControllerClass = ControllerCtors.get( descriptor.controller.name );
+            const controller      = new ControllerClass( { driver: Driver, ...descriptor.controller.options } );
+            const router          = Router( { mergeParams: true } );
+
+            console.log( `\tAdd controller for base route: ${descriptor.route}` );
+            Application.use( descriptor.route, TAbstractDatabasePlugin._populateRouter( router, controller, descriptor.controller.can ) );
+
+        }
+
+    }
+
+    static _populateRouter ( router, controller, can = {} ) {
+
+        for ( let _do in can ) {
+
+            const action = can[ _do ];
+
+            console.log( `\t\tMap route ${action.over} on (${action.on}) to ${controller.constructor.name}.${_do} method.` );
+            router[ action.on ]( action.over, controller[ _do ].bind( controller ) );
+
+        }
+
+        return router
+
+    }
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                controllers: new Map(),
+                descriptors: []
+            }, ...parameters
+        };
+
+        this.controllers = _parameters.controllers;
+        this.descriptors = _parameters.descriptors;
+
+        this.__dirname = undefined;
+
+    }
+
+    get controllers () {
+        return this._controllers
+    }
+
+    set controllers ( value ) {
+
+        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Controllers cannot be null ! Expect a map of controller.' ) }
+        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Controllers cannot be undefined ! Expect a map of controller.' ) }
+        if ( !( value instanceof Map ) ) { throw new TypeError( `Controllers cannot be an instance of ${value.constructor.name} ! Expect a map of controller.` ) }
+
+        this._controllers = value;
+
+    }
+
+    get descriptors () {
+        return this._descriptors
+    }
+
+    set descriptors ( value ) {
+
+        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Descriptors cannot be null ! Expect an array of POJO.' ) }
+        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Descriptors cannot be undefined ! Expect an array of POJO.' ) }
+
+        this._descriptors = value;
+
+    }
+
+    addController ( value ) {
+
+        this._controllers.set( value.name, value );
+        return this
+
+    }
+
+    addDescriptor ( value ) {
+
+        this._descriptors.push( value );
+        return this
+
+    }
+
+    beforeRegisterRoutes ( /*driver*/ ) {}
+
+    registerTo ( driver, application, router ) {
+
+        this.beforeRegisterRoutes( driver );
+
+        TAbstractDatabasePlugin._registerRoutesTo( driver, application, router, this._controllers, this._descriptors );
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @class TMongooseController
+ * @classdesc The TMongooseController is the base class to perform CRUD operations on the database
+ */
+
+class TMongooseController extends TAbstractDataController {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                driver:     null,
+                schemaName: ''
+            }, ...parameters
+        };
+
+        super( _parameters );
+
+        this.databaseSchema = this._driver.model( _parameters.schemaName );
+
+    }
+
+    get databaseSchema () {
+
+        return this._databaseSchema
+
+    }
+
+    set databaseSchema ( value ) {
+
+        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Database schema cannot be null.' ) }
+        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Database schema cannot be undefined.' ) }
+
+        this._databaseSchema = value;
+
+    }
+
+    setDatabaseSchema ( value ) {
+
+        this.databaseSchema = value;
+        return this
+
+    }
+
+    _createMany ( datas, response ) {
+        super._createMany( datas, response );
+
+        this._databaseSchema.create( datas, this.return( response ) );
+
+    }
+
+    // Create
+    _createOne ( data, response ) {
+        super._createOne( data, response );
+
+        this._databaseSchema.create( data, this.return( response ) );
+
+    }
+
+    _deleteAll ( response ) {
+        super._deleteAll( response );
+
+        this._databaseSchema.collection.drop( this.return( response ) );
+
+    }
+
+    _deleteMany ( ids, response ) {
+        super._deleteMany( ids, response );
+
+        this._databaseSchema.deleteMany( { '_id': { $in: ids } }, this.return( response ) );
+
+    }
+
+    // Delete
+    _deleteOne ( id, response ) {
+        super._deleteOne( id, response );
+
+        this._databaseSchema
+            .findByIdAndDelete( id )
+            .then( data => TAbstractDataController.returnData( data, response ) )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    _deleteWhere ( query, response ) {
+        super._deleteWhere( query, response );
+
+        this._databaseSchema.deleteMany( query, this.return( response ) );
+
+    }
+
+    _readAll ( projection, response ) {
+        super._readAll( projection, response );
+
+        this._databaseSchema
+            .find( {}, projection )
+            .lean()
+            .exec()
+            .then( data => TAbstractDataController.returnData( data, response ) )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    _readMany ( ids, projection, response ) {
+        super._readMany( ids, projection, response );
+
+        this._databaseSchema
+            .find( { '_id': { $in: ids } }, projection )
+            .lean()
+            .exec()
+            .then( ( data ) => {
+
+                if ( iteeValidators.isNull( data ) || iteeValidators.isEmptyArray( data ) ) {
+                    TAbstractDataController.returnNotFound( response );
+                } else if ( ids.length !== data.length ) {
+                    TAbstractDataController.returnErrorAndData( {
+                        title:   'Missing data',
+                        message: 'Some requested objects could not be found.'
+                    }, data, response );
+                } else {
+                    TAbstractDataController.returnData( data, response );
+                }
+
+            } )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    // Read
+    _readOne ( id, projection, response ) {
+        super._readOne( id, projection, response );
+
+        this._databaseSchema
+            .findById( id, projection )
+            .lean()
+            .exec()
+            .then( ( data ) => {
+
+                if ( iteeValidators.isNull( data ) ) {
+                    TAbstractDataController.returnNotFound( response );
+                } else {
+                    TAbstractDataController.returnData( data, response );
+                }
+
+            } )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    _readWhere ( query, projection, response ) {
+        super._readWhere( query, projection, response );
+
+        this._databaseSchema
+            .find( query, projection )
+            .lean()
+            .exec()
+            .then( data => TAbstractDataController.returnData( data, response ) )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    _updateAll ( update, response ) {
+        super._updateAll( update, response );
+
+        this._databaseSchema.update( {}, update, { multi: true }, this.return( response ) );
+
+    }
+
+    _updateMany ( ids, updates, response ) {
+        super._updateMany( ids, updates, response );
+
+        this._databaseSchema.update( { _id: { $in: ids } }, updates, { multi: true }, this.return( response ) );
+
+    }
+
+    // Update
+    _updateOne ( id, update, response ) {
+        super._updateOne( id, update, response );
+
+        this._databaseSchema
+            .findByIdAndUpdate( id, update )
+            .exec()
+            .then( data => TAbstractDataController.returnData( data, response ) )
+            .catch( error => TAbstractDataController.returnError( error, response ) );
+
+    }
+
+    _updateWhere ( query, update, response ) {
+        super._updateWhere( query, update, response );
+
+        this._databaseSchema.update( query, update, { multi: true }, this.return( response ) );
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+class TMongoDBPlugin extends TAbstractDatabasePlugin {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                types:   [],
+                schemas: []
+            },
+            ...parameters
+        };
+
+        super( _parameters );
+
+        this.types   = _parameters.types;
+        this.schemas = _parameters.schemas;
+
+    }
+
+    get schemas () {
+        return this._schemas
+    }
+
+    set schemas ( value ) {
+        this._schemas = value;
+    }
+
+    get types () {
+        return this._types
+    }
+
+    set types ( value ) {
+        this._types = value;
+    }
+
+    addSchema ( value ) {
+
+        this._schemas.push( value );
+        return this
+
+    }
+
+    addType ( value ) {
+
+        this._types.push( value );
+        return this
+
+    }
+
+    beforeRegisterRoutes ( Mongoose ) {
+
+        super.beforeRegisterRoutes( Mongoose );
+
+        this._searchLocalTypes();
+        this._registerTypes( Mongoose );
+
+        this._searchLocalSchemas();
+        this._registerSchemas( Mongoose );
+
+    }
+
+    _searchLocalTypes () {
+
+        const typesBasePath = path.join( this.__dirname, 'types' );
+        if ( iteeValidators.isInvalidDirectoryPath( typesBasePath ) ) {
+            console.warn( `Unable to find "types" folder for path "${typesBasePath}"` );
+            return
+        } else {
+            console.log( `Add types from: ${typesBasePath}` );
+        }
+
+        const typesFilesPaths = iteeUtils.getFilesPathsUnder( typesBasePath );
+        let typeFilePath      = '';
+        let typeFile          = undefined;
+
+        for ( let typeIndex = 0, numberOfTypes = typesFilesPaths.length ; typeIndex < numberOfTypes ; typeIndex++ ) {
+
+            typeFilePath = typesFilesPaths[ typeIndex ];
+            typeFile     = require( typeFilePath );
+            this._types.push( typeFile );
+
+        }
+
+    }
+
+    _registerTypes ( Mongoose ) {
+
+        for ( let type of this._types ) {
+
+            console.log( `Register type: ${type.name}` );
+            type( Mongoose );
+
+        }
+
+    }
+
+    _searchLocalSchemas () {
+
+        const localSchemasBasePath = path.join( this.__dirname, 'schemas' );
+        if ( iteeValidators.isInvalidDirectoryPath( localSchemasBasePath ) ) {
+            console.warn( `Unable to find "schemas" folder for path "${localSchemasBasePath}"` );
+            return
+        } else {
+            console.log( `Add schemas from: ${localSchemasBasePath}` );
+        }
+
+        const localSchemasFilesPaths = iteeUtils.getFilesPathsUnder( localSchemasBasePath );
+        let localSchemaFilePath      = '';
+        let localSchemaFile          = undefined;
+        for ( let schemaIndex = 0, numberOfSchemas = localSchemasFilesPaths.length ; schemaIndex < numberOfSchemas ; schemaIndex++ ) {
+
+            localSchemaFilePath = localSchemasFilesPaths[ schemaIndex ];
+
+            if ( iteeValidators.isEmptyFile( localSchemaFilePath ) ) {
+
+                console.warn( `Skip empty local database schema: ${localSchemaFilePath}` );
+                continue
+
+            }
+
+            localSchemaFile = require( localSchemaFilePath );
+            this._schemas.push( localSchemaFile );
+
+        }
+
+    }
+
+    _registerSchemas ( Mongoose ) {
+
+        for ( let schema of this._schemas ) {
+
+            console.log( `Register schema: ${schema.name}` );
+
+            if ( iteeValidators.isFunction( schema.registerModelTo ) ) {
+
+                schema.registerModelTo( Mongoose );
+
+            } else if ( iteeValidators.isFunction( schema ) ) {
+
+                schema( Mongoose );
+
+            } else {
+
+                console.error( `Unable to register local database schema: ${schema}` );
+
+            }
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
+
+    constructor () {
+        super( {
+            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+        } );
+    }
+
+    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+        super._convert( data, parameters, onSuccess, onProgress, onError );
+
+        try {
+
+            const loader    = new threeFull.ColladaLoader();
+            const threeData = loader.parse( data );
+            onSuccess( threeData );
+
+        } catch ( error ) {
+
+            onError( error );
+
+        }
+
+    }
+
+}
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -138,7 +1643,7 @@ Object.assign( DBFLoader.prototype, {
 
         const version = this.reader.getInt8();
         if ( !this._isValidVersion( version ) ) {
-            this.logger.error( `DBFLoader: Invalid version number: ${version}` );
+            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
             return null
         }
 
@@ -203,7 +1708,7 @@ Object.assign( DBFLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid version parameter: ${version}` )
+                throw new RangeError( `Invalid version parameter: ${ version }` )
 
         }
 
@@ -582,7 +2087,7 @@ Object.assign( DBFLoader.prototype, {
                         break
 
                     default:
-                        throw new RangeError( `Invalid data type parameter: ${field.type}` )
+                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
 
                 }
 
@@ -785,6 +2290,43 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
  *
  */
 
+class FbxToThree extends iteeDatabase.TAbstractFileConverter {
+
+    constructor () {
+        super( {
+            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+        } );
+    }
+
+    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+        super._convert( data, parameters, onSuccess, onProgress, onError );
+
+        try {
+
+            const loader    = new threeFull.FBXLoader();
+            const threeData = loader.parse( data );
+            onSuccess( threeData );
+
+        } catch ( error ) {
+
+            onError( error );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
 class JsonToThree extends iteeDatabase.TAbstractFileConverter {
 
     constructor () {
@@ -935,7 +2477,9 @@ function ringClockwise ( ring ) {
         return false
     }
 
-    var i = 0, n, area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
+    var i    = 0,
+        n,
+        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
     while ( ++i < n ) {
         area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ];
     }
@@ -1006,11 +2550,13 @@ function ringContains ( ring, point ) {
  * @return {boolean}
  */
 function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ], y20 = p2[ 1 ] - p0[ 1 ];
+    var x20 = p2[ 0 ] - p0[ 0 ],
+        y20 = p2[ 1 ] - p0[ 1 ];
     if ( x20 === 0 && y20 === 0 ) {
         return true
     }
-    var x10 = p1[ 0 ] - p0[ 0 ], y10 = p1[ 1 ] - p0[ 1 ];
+    var x10 = p1[ 0 ] - p0[ 0 ],
+        y10 = p1[ 1 ] - p0[ 1 ];
     if ( x10 === 0 && y10 === 0 ) {
         return false
     }
@@ -1268,7 +2814,7 @@ Object.assign( SHPLoader.prototype, {
                     break
 
                 default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${header.shapeType}` );
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
                     break
 
             }
@@ -1622,855 +3168,948 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
  *
  */
 
-class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
-
-    constructor ( parameters = {} ) {
-
-        super( parameters );
-
-    }
-
-    _save ( data, parameters, onSuccess, onProgress, onError ) {
-
-        const self                 = this;
-        const parentId             = parameters.parentId;
-        const disableRootNode      = ( parameters.disableRootNode === 'true' );
-        const dataToParse          = ( disableRootNode ) ? data.children : ( iteeValidators.isArray( data ) ) ? data : [ data ];
-        const errors               = [];
-        const numberOfRootChildren = dataToParse.length;
-        let processedRootChildren  = 0;
-
-        if ( numberOfRootChildren === 0 ) {
-            onError( 'No node to save in database !' );
-        }
-
-        let rootChildIndex = 0;
-        checkNextRootChild();
-
-        function checkNextRootChild () {
-
-            const rootChild = dataToParse[ rootChildIndex ];
-
-            self._parse(
-                rootChild,
-                ( childrenIds ) => {
-
-                    processedRootChildren++;
-
-                    onProgress( {
-                        name: rootChild.name,
-                        done: processedRootChildren,
-                        todo: numberOfRootChildren
-                    } );
-
-                    // In case the root object haven't parent or children skip update
-                    if ( iteeValidators.isNotDefined( parentId ) || iteeValidators.isNotDefined( childrenIds ) ) {
-
-                        checkEndOfParsing();
-                        return
-
-                    } else if ( typeof childrenIds === 'string' ) {
-
-                        // Convert single childrenId to array to avoid unecessary code duplication
-                        childrenIds = [ childrenIds ];
-
-                    }
-
-                    const Objects3DModelBase = self._driver.model( 'Objects3D' );
-                    Objects3DModelBase.findOneAndUpdate( { _id: parentId }, { $push: { children: childrenIds } }, ( error, rootObject ) => {
-
-                        if ( error ) {
-
-                            errors.push( error );
-                            checkEndOfParsing();
-                            return
-
-                        }
-
-                        if ( !rootObject ) {
-
-                            errors.push( `Unable to retrieve parent object with the given id: ${parentId} !!!` );
-                            checkEndOfParsing();
-                            return
-
-                        }
-
-                        // Update Children with parent id
-                        const rootId           = rootObject.id;
-                        const numberOfChildren = childrenIds.length;
-                        let endUpdates         = 0;
-
-                        for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-
-                            let childId = childrenIds[ childIndex ];
-
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error ) => {
-
-                                if ( error ) {
-                                    errors.push( error );
-                                }
-
-                                endUpdates++;
-                                if ( endUpdates < numberOfChildren ) {
-                                    return
-                                }
-
-                                checkEndOfParsing();
-
-                            } );
-
-                        }
-
-                    } );
-
-                },
-                onProgress,
-                onError
-            );
-
-        }
-
-        function checkEndOfParsing () {
-            rootChildIndex++;
-            if ( rootChildIndex < numberOfRootChildren ) {
-                checkNextRootChild();
-                return
-            }
-
-            if ( errors.length > 0 ) {
-                onError( errors );
-            } else {
-                onSuccess( parentId );
-            }
-        }
-
-    }
-
-    _parse ( object, onSuccess, onProgress, onError ) {
-
-        const self             = this;
-        const numberOfChildren = object.children.length;
-        let childrenIds        = [];
-        let childIndex         = 0;
-
-        if ( numberOfChildren > 0 ) {
-
-            checkNextChild();
-
-        } else {
-
-            self._saveInDataBase( object, [], onError, onSuccess );
-
-        }
-
-        function checkNextChild () {
-
-            const child = object.children[ childIndex ];
-
-            self._parse(
-                child,
-                objectId => {
-
-                    childrenIds.push( objectId );
-
-                    onProgress( {
-                        name: child.name,
-                        done: childrenIds.length,
-                        todo: numberOfChildren
-                    } );
-
-                    if ( childrenIds.length < numberOfChildren ) {
-                        childIndex++;
-                        checkNextChild();
-                        return
-                    }
-
-                    self._saveInDataBase( object, childrenIds, onError, onSuccess );
-
-                },
-                onProgress,
-                onError
-            );
-
-        }
-
-    }
-
-    ///////////
-
-    _parseUserData ( jsonUserData ) {
-
-        let userData = {};
-
-        for ( let prop in jsonUserData ) {
-
-            if ( !Object.prototype.hasOwnProperty.call( jsonUserData, prop ) ) { continue }
-
-            userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ];
-
-        }
-
-        return userData
-
-    }
-
-    _saveInDataBase ( object, childrenArrayIds, onError, onSuccess ) {
-
-        // Remove null ids that could come from invalid objects
-        const self        = this;
-        const childrenIds = childrenArrayIds.filter( ( item ) => {
-            return item
+class StlToThree extends iteeDatabase.TAbstractFileConverter {
+
+    constructor () {
+        super( {
+            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
-
-        // Preprocess objects here to save geometry, materials and related before to save the object itself
-        const objectType = object.type;
-        const geometry   = object.geometry;
-        const materials  = object.material;
-
-        if (
-            objectType === 'Curve' ||
-            objectType === 'ArcCurve' ||
-            objectType === 'CatmullRomCurve3' ||
-            objectType === 'CubicBezierCurve' ||
-            objectType === 'CubicBezierCurve3' ||
-            objectType === 'EllipseCurve' ||
-            objectType === 'LineCurve' ||
-            objectType === 'LineCurve3' ||
-            objectType === 'QuadraticBezierCurve' ||
-            objectType === 'QuadraticBezierCurve3' ||
-            objectType === 'SplineCurve' ||
-            objectType === 'CurvePath' ||
-            objectType === 'Path' ||
-            objectType === 'Shape'
-        ) {
-
-            self._saveCurveInDatabase( object, childrenIds, onError, onSuccess );
-
-        } else if ( geometry && materials ) {
-
-            if ( geometry.isGeometry ) {
-
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.vertices || geometry.vertices.length === 0 ) ) {
-
-                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` );
-                    onSuccess( null );
-                    return
-
-                }
-
-                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
-
-                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
-                    if ( Array.isArray( materials ) ) {
-
-                        let materialOnError = false;
-                        let material        = undefined;
-                        let materialType    = undefined;
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            material     = materials[ materialIndex ];
-                            materialType = material.type;
-                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
-                                materialOnError = true;
-                                break
-                            }
-
-                        }
-
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` );
-                            onSuccess( null );
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` );
-                        onSuccess( null );
-                        return
-
-                    }
-
-                } else if ( objectType === 'Points' ) {
-
-                    // if material != PointsMaterial... ERROR
-
-                    if ( Array.isArray( materials ) ) {
-
-                        let materialOnError = false;
-                        let material        = undefined;
-                        let materialType    = undefined;
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            material     = materials[ materialIndex ];
-                            materialType = material.type;
-                            if ( materialType !== 'PointsMaterial' ) {
-                                materialOnError = true;
-                                break
-                            }
-
-                        }
-
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` );
-                            onSuccess( null );
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'PointsMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` );
-                        onSuccess( null );
-                        return
-
-                    }
-
-                }
-
-                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess );
-
-                    } );
-
-                } );
-
-            } else if ( geometry.isBufferGeometry ) {
-
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
-
-                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` );
-                    onSuccess( null );
-                    return
-
-                }
-
-                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
-
-                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
-                    if ( Array.isArray( materials ) ) {
-
-                        let materialOnError = false;
-                        let material        = undefined;
-                        let materialType    = undefined;
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            material     = materials[ materialIndex ];
-                            materialType = material.type;
-                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
-                                materialOnError = true;
-                                break
-                            }
-
-                        }
-
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` );
-                            onSuccess( null );
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` );
-                        onSuccess( null );
-                        return
-
-                    }
-
-                } else if ( objectType === 'Points' ) {
-
-                    // if material != PointsMaterial... ERROR
-
-                    if ( Array.isArray( materials ) ) {
-
-                        let materialOnError = false;
-                        let material        = undefined;
-                        let materialType    = undefined;
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            material     = materials[ materialIndex ];
-                            materialType = material.type;
-                            if ( materialType !== 'PointsMaterial' ) {
-                                materialOnError = true;
-                                break
-                            }
-
-                        }
-
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` );
-                            onSuccess( null );
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'PointsMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` );
-                        onSuccess( null );
-                        return
-
-                    }
-
-                }
-
-                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess );
-
-                    } );
-
-                } );
-
-            } else {
-
-                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` );
-                onSuccess( null );
-
-            }
-
-        } else if ( geometry && !materials ) {
-
-            // Is this right ??? Object can have geometry without material ???
-
-            if ( geometry.isGeometry ) {
-
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.vertices || geometry.vertices.length === 0 ) ) {
-
-                    console.error( `Mesh ${object.name} geometry doesn't contain vertices ! Skip it.` );
-                    onSuccess( null );
-                    return
-
-                }
-
-                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                    self._saveObject3DInDatabase( object, childrenIds, geometryId, [], onError, onSuccess );
-
-                } );
-
-            } else if ( geometry.isBufferGeometry ) {
-
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
-
-                    console.error( `Mesh ${object.name} buffer geometry doesn't contain position attributes ! Skip it.` );
-                    onSuccess( null );
-                    return
-
-                }
-
-                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                    self._saveObject3DInDatabase( object, childrenIds, geometryId, null, onError, onSuccess );
-
-                } );
-
-            } else {
-
-                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` );
-                onSuccess( null );
-
-            }
-
-        } else if ( !geometry && materials ) {
-
-            if ( objectType === 'Sprite' ) {
-
-                // if material != SpriteMaterial... ERROR
-                if ( Array.isArray( materials ) ) {
-
-                    let materialOnError = false;
-                    let material        = undefined;
-                    let materialType    = undefined;
-                    for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                        material     = materials[ materialIndex ];
-                        materialType = material.type;
-                        if ( materialType !== 'SpriteMaterial' ) {
-                            materialOnError = true;
-                            break
-                        }
-
-                    }
-
-                    if ( materialOnError ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` );
-                        onSuccess( null );
-                        return
-
-                    }
-
-                } else if ( materials.type !== 'SpriteMaterial' ) {
-
-                    console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` );
-                    onSuccess( null );
-                    return
-
-                }
-
-            } else {
-
-                console.error( `Missing geometry for object ${object.name} of type ${objectType}. Only Sprite can contains material without geometry ! Skip it.` );
-                onSuccess( null );
-                return
-
-            }
-
-            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                self._saveObject3DInDatabase( object, childrenIds, null, materialIds, onError, onSuccess );
-
-            } );
-
-        } else {
-
-            self._saveObject3DInDatabase( object, childrenIds, null, null, onError, onSuccess );
-
-        }
-
     }
 
-    // Object3D
+    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+        super._convert( data, parameters, onSuccess, onProgress, onError );
 
-    _checkIfObject3DAlreadyExist ( /*object*/ ) {
+        try {
 
-        // Todo
-        return null
+            const loader    = new threeFull.STLLoader();
+            const threeData = loader.parse( data );
+            onSuccess( threeData );
 
-    }
+        } catch ( error ) {
 
-    _getObject3DModel ( object, childrenIds, geometryId, materialsIds ) {
-
-        object.parent   = null;
-        object.children = childrenIds;
-        object.geometry = geometryId;
-        object.material = materialsIds;
-
-        return this._driver.model( object.type )( object )
-
-    }
-
-    _saveObject3DInDatabase ( object, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
-
-        const self     = this;
-        const objectId = this._checkIfObject3DAlreadyExist( object );
-
-        if ( objectId ) {
-
-            onSuccess( objectId );
-
-        } else {
-
-            this._getObject3DModel( object, childrenIds, geometryId, materialsIds )
-                .save()
-                .then( savedObject => {
-
-                    const objectId = savedObject.id;
-
-                    // Update Children with parent id
-                    if ( childrenIds && childrenIds.length > 0 ) {
-                        updateChildren( onError, onSuccess );
-                    } else {
-                        onSuccess( objectId );
-                    }
-
-                    function updateChildren ( onError, onSuccess ) {
-
-                        const savedChildrenIds = savedObject._doc.children;
-                        const numberOfChildren = savedChildrenIds.length;
-
-                        let endUpdates = 0;
-                        let childId    = undefined;
-                        const errors   = [];
-
-                        for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-
-                            childId = savedChildrenIds[ childIndex ];
-
-                            const Objects3DModelBase = self._driver.model( 'Objects3D' );
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error ) => {
-
-                                if ( error ) {
-                                    errors.push( error );
-                                }
-
-                                endUpdates++;
-                                if ( endUpdates < numberOfChildren ) {
-                                    return
-                                }
-
-                                returnResult( onError, onSuccess );
-
-                            } );
-
-                        }
-
-                        function returnResult ( onError, onSuccess ) {
-
-                            if ( errors.length > 0 ) {
-                                onError( errors );
-                            } else {
-                                onSuccess( objectId );
-                            }
-
-                        }
-
-                    }
-
-                } )
-                .catch( onError );
-
-        }
-
-    }
-
-    // Curve
-
-    _checkIfCurveAlreadyExist ( /*curve*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getCurveModel ( curve ) {
-
-        return this._driver.model( curve.type )( curve )
-
-    }
-
-    _saveCurveInDatabase ( curve, onError, onSuccess ) {
-
-        const curveId = this._checkIfCurveAlreadyExist( curve );
-
-        if ( curveId ) {
-
-            onSuccess( curveId );
-
-        } else {
-
-            this._getCurveModel( curve )
-                .save()
-                .then( savedCurve => { onSuccess( savedCurve.id ); } )
-                .catch( onError );
-
-        }
-
-    }
-
-    // Geometry
-
-    _checkIfGeometryAlreadyExist ( /*geometry*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getGeometryModel ( geometry ) {
-
-        return this._driver.model( geometry.type )( geometry )
-
-    }
-
-    _saveGeometryInDatabase ( geometry, onError, onSuccess ) {
-
-        const geometryId = this._checkIfGeometryAlreadyExist( geometry );
-
-        if ( geometryId ) {
-
-            onSuccess( geometryId );
-
-        } else {
-
-            this._getGeometryModel( geometry )
-                .save()
-                .then( savedGeometry => { onSuccess( savedGeometry.id ); } )
-                .catch( onError );
-
-        }
-
-    }
-
-    // BufferGeometry
-
-    _checkIfBufferGeometryAlreadyExist ( /*bufferGeometry*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getBufferGeometryModel ( bufferGeometry ) {
-
-        return this._driver.model( bufferGeometry.type )( bufferGeometry )
-
-    }
-
-    _saveBufferGeometryInDatabase ( bufferGeometry, onError, onSuccess ) {
-
-        const bufferGeometryId = this._checkIfBufferGeometryAlreadyExist( bufferGeometry );
-
-        if ( bufferGeometryId ) {
-
-            onSuccess( bufferGeometryId );
-
-        } else {
-
-            this._getBufferGeometryModel( bufferGeometry )
-                .save()
-                .then( savedBufferGeometry => { onSuccess( savedBufferGeometry.id ); } )
-                .catch( onError );
-
-        }
-
-    }
-
-    // Material
-
-    _checkIfMaterialAlreadyExist ( /*materials*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getMaterialModel ( material, texturesIds ) {
-
-        material.texturesIds = texturesIds;
-
-        return this._driver.model( material.type )( material )
-
-    }
-
-    _saveMaterialInDatabase ( materials, onError, onSuccess ) {
-
-        if ( iteeValidators.isArray( materials ) ) {
-
-            const numberOfMaterials    = materials.length;
-            let materialIds            = new Array( numberOfMaterials );
-            let numberOfSavedMaterials = 0;
-            let material               = undefined;
-            for ( let materialIndex = 0 ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                material         = materials[ materialIndex ];
-                const materialId = this._checkIfMaterialAlreadyExist( material );
-
-                if ( materialId ) {
-
-                    materialIds[ materialIndex ] = materialId;
-                    numberOfSavedMaterials++;
-
-                    // End condition
-                    if ( numberOfSavedMaterials === numberOfMaterials ) {
-                        onSuccess( materialIds );
-                    }
-
-                } else {
-
-                    ( () => {
-
-                        const materialLocalIndex = materialIndex;
-
-                        this._getMaterialModel( material )
-                            .save()
-                            .then( savedMaterial => {
-
-                                materialIds[ materialLocalIndex ] = savedMaterial.id;
-                                numberOfSavedMaterials++;
-
-                                // End condition
-                                if ( numberOfSavedMaterials === numberOfMaterials ) {
-                                    onSuccess( materialIds );
-                                }
-
-                            } )
-                            .catch( onError );
-
-                    } )();
-
-                }
-
-            }
-
-        } else {
-
-            const materialId = this._checkIfMaterialAlreadyExist( materials );
-
-            if ( materialId ) {
-
-                onSuccess( materialId );
-
-            } else {
-
-                this._getMaterialModel( materials )
-                    .save()
-                    .then( savedMaterial => {
-
-                        // Return id
-                        onSuccess( savedMaterial.id );
-
-                    } )
-                    .catch( onError );
-
-            }
-
-        }
-
-    }
-
-    // Texture
-
-    _checkIfTextureAlreadyExist ( /*texture*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getTextureModel ( texture ) {
-
-        return this._driver.model( texture.type )( texture )
-
-    }
-
-    _saveTextureInDatabase ( texture, onError, onSuccess ) {
-
-        const textureId = this._checkIfTextureAlreadyExist( texture );
-
-        if ( textureId ) {
-
-            onSuccess( textureId );
-
-        } else {
-
-            this._getTextureModel( texture )
-                .save()
-                .then( savedTexture => { onSuccess( savedTexture.id ); } )
-                .catch( onError );
+            onError( error );
 
         }
 
     }
 
 }
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+class TdsToThree extends iteeDatabase.TAbstractFileConverter {
+
+    constructor () {
+        super( {
+            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+        } );
+    }
+
+    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+        super._convert( data, parameters, onSuccess, onProgress, onError );
+
+        try {
+
+            const loader    = new threeFull.TDSLoader();
+            const threeData = loader.parse( data );
+            onSuccess( threeData );
+
+        } catch ( error ) {
+
+            onError( error );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @file Todo
+ *
+ * @example Todo
+ *
+ */
+
+class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
+
+    constructor ( parameters = {} ) {
+
+        super( parameters );
+        this.mergeStrategy = 'add';
+
+        // Addition
+        // Update
+        // Deletion
+
+        // Add objects from file if missing in database
+        // Remove objects from database if missing in file
+        // Update objects in database if existing in file
+
+    }
+
+    // Utils
+    static _arrayify ( data ) {
+
+        let array = [];
+
+        if ( iteeValidators.isDefined( data ) ) {
+
+            if ( iteeValidators.isArray( data ) ) {
+                array = data;
+            } else {
+                array = [ data ];
+            }
+
+        }
+
+        return array
+
+    }
+
+    async _save ( data, parameters, onSuccess, onProgress, onError ) {
+
+        const dataToParse = ThreeToMongoDB._arrayify( data );
+        if ( iteeValidators.isEmptyArray( dataToParse ) ) {
+            onError( 'No data to save in database. Abort insert !' );
+            return
+        }
+
+        const names = dataToParse.map( _data => _data.name );
+        console.log( `ThreeToMongoDB: Saving ${ names }` );
+
+        // Check startegy
+        if ( parameters.mergeStrategy ) {
+            this.mergeStrategy = parameters.mergeStrategy;
+        }
+
+        try {
+
+            // Check if parent is required
+            const parentId  = parameters.parentId;
+            let children    = null;
+            let childrenIds = null;
+            if ( iteeValidators.isDefined( parentId ) ) {
+
+                const parentDocument = this._readOneDocument( 'Objects3D', { _id: parentId } );
+                if ( iteeValidators.isNull( parentDocument ) ) {
+                    onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` );
+                    return
+                }
+
+                // then update it
+                if ( this.mergeStrategy === 'add' ) {
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId );
+                    childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+                    // Add children to given parent
+                    this._updateDocument( parentDocument, {
+                        $addToSet: {
+                            children: childrenIds
+                        }
+                    } );
+
+                } else if ( this.mergeStrategy === 'replace' ) {
+
+                    // Merge children into parent
+                    //// Clean up current dbObject dependencies
+                    // Children create and update will be perform on children iteration but remove need to be checked here !
+                    const dbChildren         = this._readManyDocument( 'Objects3D', { parent: parentId } );
+                    const childrenUuids      = dataToParse.map( child => child.uuid );
+                    const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
+
+                    this._removeChildrenDocuments( dbChildrenToRemove );
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId );
+                    childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+                    this._updateDocument( parentDocument, {
+                        $set: {
+                            children: childrenIds
+                        }
+                    } );
+
+                }
+
+                // Update children reference to parent
+                // await this._updateDocuments( children, { $set: { parent: parentId } } )
+
+            } else {
+
+                // If not required just create children as root objects
+                children    = await this._parseObjects( dataToParse, null );
+                childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+            }
+
+            console.log( `ThreeToMongoDB: Saved ${ childrenIds }` );
+            onSuccess();
+
+        } catch ( error ) {
+            onError( error );
+        }
+
+    }
+
+    async _parseObjects ( objects = [], parentId = null ) {
+
+        const _objects = ThreeToMongoDB._arrayify( objects );
+        if ( iteeValidators.isEmptyArray( _objects ) ) {
+            return null
+        }
+
+        const documents = [];
+        let document    = null;
+
+        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+            document = this._parseObject( _objects[ index ], parentId );
+            documents.push( document );
+        }
+
+        return Promise.all( documents )
+
+        // return new Promise( async ( resolve ) => {
+        //
+        //     const documents = []
+        //     let document    = null
+        //
+        //     for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+        //         document = await this._parseObject( _objects[ index ], parentId )
+        //         documents.push( document )
+        //     }
+        //
+        //     resolve( documents )
+        //
+        // } )
+
+    }
+
+    async _parseObject ( object, parentId = null ) {
+
+        if ( iteeValidators.isNotDefined( object ) ) {
+            return null
+        }
+
+        // Preprocess objects here to save geometry, materials and related before to save the object itself
+        const objectType      = object.type;
+        const objectName      = object.name;
+        const objectGeometry  = object.geometry;
+        const objectChildren  = ThreeToMongoDB._arrayify( object.children );
+        const objectMaterials = ThreeToMongoDB._arrayify( object.material );
+
+        // If it is a terminal object ( No children ) with an empty geometry
+        if ( iteeValidators.isDefined( objectGeometry ) && iteeValidators.isEmptyArray( objectChildren ) ) {
+
+            if ( objectGeometry.isGeometry ) {
+
+                const vertices = objectGeometry.vertices;
+                if ( iteeValidators.isNotDefined( vertices ) || iteeValidators.isEmptyArray( vertices ) ) {
+                    console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` );
+                    return null
+                }
+
+            } else if ( objectGeometry.isBufferGeometry ) {
+
+                const attributes = objectGeometry.attributes;
+                if ( iteeValidators.isNotDefined( attributes ) ) {
+                    console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` );
+                    return null
+                }
+
+                const positions = attributes.position;
+                if ( iteeValidators.isNotDefined( positions ) || positions.count === 0 ) {
+                    console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` );
+                    return null
+                }
+
+            } else {
+                console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` );
+                return null
+            }
+
+        }
+
+        let availableMaterialTypes = null;
+
+        if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
+
+            if ( iteeValidators.isNotDefined( objectGeometry ) ) {
+                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
+                return null
+            }
+
+            availableMaterialTypes = ThreeToMongoDB.AvailableLineMaterialTypes;
+
+        } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
+
+            if ( iteeValidators.isNotDefined( objectGeometry ) ) {
+                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
+                return null
+            }
+
+            availableMaterialTypes = ThreeToMongoDB.AvailablePointMaterialTypes;
+
+        } else if ( ThreeToMongoDB.AvailableSpriteTypes.includes( objectType ) ) {
+
+            availableMaterialTypes = ThreeToMongoDB.AvailableSpriteMaterialTypes;
+
+        }
+
+        if ( availableMaterialTypes ) {
+
+            for ( let materialIndex = 0, numberOfMaterials = objectMaterials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                const material     = objectMaterials[ materialIndex ];
+                const materialType = material.type;
+                if ( !availableMaterialTypes.includes( materialType ) ) {
+                    console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` );
+                    return null
+                }
+
+            }
+
+        }
+
+        const geometry   = this._getOrCreateDocuments( objectGeometry );
+        const geometryId = ( iteeValidators.isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null;
+
+        const materials    = this._getOrCreateDocuments( objectMaterials );
+        const materialsIds = ( iteeValidators.isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : [];
+
+        // Check if object already exist
+        // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
+        let document = this._readOneDocument( objectType, {
+            uuid:   object.uuid,
+            parent: parentId
+        } );
+
+        // Todo if document.parent != parentId warn id collision !n m
+        if ( iteeValidators.isDefined( document ) ) {
+
+            // Check merge strategie
+            // If add, only update existing and create new objects
+            // else if replace, remove missings children from new data, update existing and create new
+            if ( this.mergeStrategy === 'add' ) {
+
+                const children    = this._parseObjects( objectChildren, document._id );
+                const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+                this._updateDocument( document, {
+                    $addToSet: {
+                        children: childrenIds // geometry: geometryId, // Geometry is not an array !!
+                        // material: materialsIds // Should check which material still exist !!!
+                    }
+                } );
+
+            } else if ( this.mergeStrategy === 'replace' ) {
+
+                //// Clean up current dbObject dependencies
+                // Children create and update will be perform on children iteration but remove need to be checked here !
+                const dbChildren         = this._readManyDocument( 'Objects3D', { parent: document._id } );
+                const childrenUuids      = objectChildren.map( child => child.uuid );
+                const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
+
+                this._removeChildrenDocuments( dbChildrenToRemove );
+
+                const children    = this._parseObjects( objectChildren, document._id );
+                const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+                this._updateDocument( document, {
+                    $set: {
+                        children: childrenIds,
+                        geometry: geometryId,
+                        material: materialsIds
+                    }
+                } );
+
+            } else {
+                console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` );
+            }
+
+        } else {
+
+            object.parent   = parentId;
+            object.children = [];
+            object.geometry = geometryId;
+            object.material = materialsIds;
+            document        = this._createDocument( object );
+
+            const children    = this._parseObjects( objectChildren, document._id );
+            const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+
+            this._updateDocument( document, {
+                $set: {
+                    children: childrenIds,
+                    geometry: geometryId,
+                    material: materialsIds
+                }
+            } );
+
+        }
+
+        return document
+
+        /*
+                return new Promise( async ( resolve, reject ) => {
+
+                    // Preprocess objects here to save geometry, materials and related before to save the object itself
+                    const objectType      = object.type
+                    const objectName      = object.name
+                    const objectGeometry  = object.geometry
+                    const objectChildren  = ThreeToMongoDB._arrayify( object.children )
+                    const objectMaterials = ThreeToMongoDB._arrayify( object.material )
+
+                    // If it is a terminal object ( No children ) with an empty geometry
+                    if ( isDefined( objectGeometry ) && isEmptyArray( objectChildren ) ) {
+
+                        if ( objectGeometry.isGeometry ) {
+
+                            const vertices = objectGeometry.vertices
+                            if ( isNotDefined( vertices ) || isEmptyArray( vertices ) ) {
+
+                                console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
+                                resolve( null )
+                                return
+
+                            }
+
+                        } else if ( objectGeometry.isBufferGeometry ) {
+
+                            const attributes = objectGeometry.attributes
+                            if ( isNotDefined( attributes ) ) {
+                                console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
+                                resolve( null )
+                                return
+                            }
+
+                            const positions = attributes.position
+                            if ( isNotDefined( positions ) || positions.count === 0 ) {
+
+                                console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
+                                resolve( null )
+                                return
+                            }
+
+                        } else {
+
+                            console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
+                            resolve( null )
+                            return
+
+                        }
+
+                    }
+
+                    let availableMaterialTypes = null
+
+                    if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
+
+                        if ( isNotDefined( objectGeometry ) ) {
+
+                            console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                            resolve( null )
+                            return
+
+                        }
+
+                        availableMaterialTypes = ThreeToMongoDB.AvailableLineMaterialTypes
+
+                    } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
+
+                        if ( isNotDefined( objectGeometry ) ) {
+
+                            console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                            resolve( null )
+                            return
+
+                        }
+
+                        availableMaterialTypes = ThreeToMongoDB.AvailablePointMaterialTypes
+
+                    } else if ( ThreeToMongoDB.AvailableSpriteTypes.includes( objectType ) ) {
+
+                        availableMaterialTypes = ThreeToMongoDB.AvailableSpriteMaterialTypes
+
+                    }
+
+                    if ( availableMaterialTypes ) {
+
+                        for ( let materialIndex = 0, numberOfMaterials = objectMaterials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                            const material     = objectMaterials[ materialIndex ]
+                            const materialType = material.type
+                            if ( !availableMaterialTypes.includes( materialType ) ) {
+                                console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
+                                resolve( null )
+                                return
+                            }
+
+                        }
+
+                    }
+
+                    try {
+
+                        // const children    = await this._parseObjects( objectChildren )
+                        // const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                        const geometry   = this._getOrCreateDocuments( objectGeometry )
+                        const geometryId = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null
+
+                        const materials    = this._getOrCreateDocuments( objectMaterials )
+                        const materialsIds = ( isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : []
+
+                        // Check if object already exist
+                        // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
+                        let document = this._readOneDocument( objectType, {
+                            uuid:   object.uuid,
+                            parent: parentId
+                        } )
+                        // Todo if document.parent != parentId warn id collision !n m
+                        if ( isDefined( document ) ) {
+
+                            // Check merge strategie
+                            // If add, only update existing and create new objects
+                            // else if replace, remove missings children from new data, update existing and create new
+                            if ( this.mergeStrategy === 'add' ) {
+
+                                const children    = await this._parseObjects( objectChildren, document._id )
+                                const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                                this._updateDocument( document, {
+                                    $addToSet: {
+                                        children: childrenIds // geometry: geometryId, // Geometry is not an array !!
+                                        // material: materialsIds // Should check which material still exist !!!
+                                    }
+                                } )
+
+                            } else if ( this.mergeStrategy === 'replace' ) {
+
+                                //// Clean up current dbObject dependencies
+                                // Children create and update will be perform on children iteration but remove need to be checked here !
+                                const dbChildren         = this._readManyDocument( 'Objects3D', { parent: document._id } )
+                                const childrenUuids      = objectChildren.map( child => child.uuid )
+                                const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
+
+                                this._removeChildrenDocuments( dbChildrenToRemove )
+
+                                const children    = await this._parseObjects( objectChildren, document._id )
+                                const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                                this._updateDocument( document, {
+                                    $set: {
+                                        children: childrenIds,
+                                        geometry: geometryId,
+                                        material: materialsIds
+                                    }
+                                } )
+
+                            } else {
+                                console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
+                            }
+
+                        } else {
+
+                            object.parent   = parentId
+                            object.children = []
+                            object.geometry = geometryId
+                            object.material = materialsIds
+                            document        = this._createDocument( object )
+
+                            const children    = await this._parseObjects( objectChildren, document._id )
+                            const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                            this._updateDocument( document, {
+                                $set: {
+                                    children: childrenIds,
+                                    geometry: geometryId,
+                                    material: materialsIds
+                                }
+                            } )
+
+                        }
+
+                        // Update children reference to parent only after all stuff is done
+                        // await this._updateDocuments( children, { $set: { parent: document._id } } )
+                        resolve( document )
+
+                    } catch ( error ) {
+
+                        reject( error )
+
+                    }
+
+                } )
+        */
+
+    }
+
+    _getOrCreateDocuments ( objects = [] ) {
+
+        const _objects = ThreeToMongoDB._arrayify( objects );
+        if ( iteeValidators.isEmptyArray( _objects ) ) {
+            return null
+        }
+
+        const documents = [];
+
+        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+
+            const document = this._getOrCreateDocument( _objects[ index ] );
+            documents.push( document );
+
+        }
+
+        return Promise.all( documents )
+
+    }
+
+    _getOrCreateDocument ( data ) {
+
+        if ( iteeValidators.isNotDefined( data ) ) {
+            return null
+        }
+
+        let document = this._readOneDocument( data.type, { uuid: data.uuid } );
+        if ( iteeValidators.isDefined( document ) ) {
+            document = this._updateDocument( document, data );
+        } else {
+            document = this._createDocument( data );
+        }
+
+        return document
+
+        /*
+                return new Promise( async ( resolve, reject ) => {
+
+                    try {
+
+                        let document = this._readOneDocument( data.type, { uuid: data.uuid } )
+                        if ( isDefined( document ) ) {
+                            document = this._updateDocument( document, data )
+                        } else {
+                            document = this._createDocument( data )
+                        }
+
+                        resolve( document )
+
+                    } catch ( error ) {
+
+                        reject( error )
+
+                    }
+
+                } )
+        */
+
+    }
+
+    // Create
+    // Todo non async createDocument to allow multi promises at once
+    _createDocuments ( datas = [] ) {
+
+        const _datas = ThreeToMongoDB._arrayify( datas );
+        if ( iteeValidators.isEmptyArray( _datas ) ) {
+            return null
+        }
+
+        const documents = [];
+
+        for ( let index = 0, numberOfDocuments = _datas.length ; index < numberOfDocuments ; index++ ) {
+
+            const promise = this._createDocument( _datas[ index ] );
+            documents.push( promise );
+
+        }
+
+        return documents
+
+    }
+
+    async _createDocument ( data ) {
+
+        if ( iteeValidators.isNotDefined( data ) ) {
+            return null
+        }
+
+        const model         = this._driver.model( data.type );
+        const savedDocument = await model( data ).save();
+        return savedDocument._doc
+
+        /*
+                return new Promise( async ( resolve, reject ) => {
+
+                    try {
+
+                        const model         = this._driver.model( data.type )
+                        const savedDocument = await model( data ).save()
+                        resolve( savedDocument._doc )
+
+                    } catch ( error ) {
+
+                        reject( error )
+
+                    }
+
+                } )
+        */
+
+    }
+
+    // Read
+    async _readOneDocument ( type, query ) {
+
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+            return null
+        }
+
+        const model = await this._driver
+                                .model( type )
+                                .findOne( query )
+                                .exec();
+
+        return ( iteeValidators.isDefined( model ) ) ? model._doc : null
+
+        /*
+                return new Promise( async ( resolve, reject ) => {
+
+                    try {
+
+                        const model = await this._driver
+                                                .model( type )
+                                                .findOne( query )
+                                                .exec()
+
+                        if ( isDefined( model ) ) {
+                            resolve( model._doc )
+                        } else {
+                            resolve( null )
+                        }
+
+                    } catch ( error ) {
+
+                        reject( error )
+
+                    }
+
+                } )
+        */
+
+    }
+
+    async _readManyDocument ( type, query ) {
+
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+            return null
+        }
+
+        return await this._driver
+                         .model( type )
+                         .find( query )
+                         .exec()
+                         .map( model => model._doc )
+
+        //        return new Promise( async ( resolve, reject ) => {
+        //
+        //            try {
+        //
+        //                const models = await this._driver
+        //                                         .model( type )
+        //                                         .find( query )
+        //                                         .exec()
+        //
+        //                const documents = models.map( model => model._doc )
+        //
+        //                resolve( documents )
+        //
+        //            } catch ( error ) {
+        //
+        //                reject( error )
+        //
+        //            }
+        //
+        //        } )
+
+    }
+
+    // Update
+    _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+
+        const _documents = ThreeToMongoDB._arrayify( documents );
+        if ( iteeValidators.isEmptyArray( _documents ) ) {
+            return null
+        }
+
+        const results = [];
+
+        for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
+
+            const document = this._updateDocument( _documents[ index ], updateQuery, queryOptions );
+            results.push( document );
+
+        }
+
+        return results
+
+    }
+
+    async _updateDocument ( document, updateQuery, queryOptions ) {
+
+        if ( iteeValidators.isNotDefined( document ) ) {
+            return null
+        }
+
+        return await this._driver
+                         .model( document.type )
+                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                         .exec()
+
+    }
+
+    // Delete
+    _deleteDocuments ( documents = [] ) {
+
+        const _documents = ThreeToMongoDB._arrayify( documents );
+        if ( iteeValidators.isEmptyArray( _documents ) ) {
+            return null
+        }
+
+        const results = [];
+
+        for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
+
+            const document = this._deleteDocument( _documents[ index ] );
+            results.push( document );
+
+        }
+
+        return results
+
+    }
+
+    async _deleteDocument ( document ) {
+
+        if ( iteeValidators.isNotDefined( document ) ) {
+            return null
+        }
+
+        return await this._driver
+                         .model( document.type )
+                         .findByIdAndDelete( document._id )
+                         .exec()
+
+    }
+
+    ///
+    _removeChildrenDocuments ( documents ) {
+
+        for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+
+            this._removeChildDocument( documents[ childIndex ] );
+
+        }
+
+    }
+
+    _removeChildDocument ( document ) {
+
+        // Remove children recursively
+        const children = this._readManyDocument( 'Objects3D', { parent: document._id } );
+        this._removeChildrenDocuments( children );
+
+        // Remove geometry only if current object is the last that reference it
+        this._removeOrphanGeometryWithId( document.geometry );
+
+        // Remove material only if current object is the last that reference it
+        this._removeOrphanMaterialsWithIds( document.material || [] );
+
+        // finally remove the incriminated document
+        this._deleteDocument( document );
+
+    }
+
+    // Remove orphan geometry
+    _removeOrphanGeometryWithId ( geometryId ) {
+
+        if ( iteeValidators.isNotDefined( geometryId ) ) { return }
+
+        const referencingObjects = this._readManyDocument( 'Objects3D', { geometry: geometryId } );
+        if ( referencingObjects.length > 1 ) { return }
+
+        const geometryDocument = this._readOneDocument( 'Geometries', { _id: geometryId } );
+        this._deleteDocument( geometryDocument );
+
+    }
+
+    // Remove only orphan materials
+    _removeOrphanMaterialsWithIds ( materialsIds ) {
+
+        const removed = [];
+
+        for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
+
+            const materialId = materialsIds[ index ];
+            const remove     = this._removeOrphanMaterialWithId( materialId );
+            removed.push( remove );
+
+        }
+
+        return removed
+
+    }
+
+    // Remove only orphan material
+    _removeOrphanMaterialWithId ( materialId ) {
+
+        const referencingObjects = this._readManyDocument( 'Objects3D', { material: materialId } );
+        if ( referencingObjects.length > 1 ) { return }
+
+        const materialDocument = this._readOneDocument( 'Materials', { _id: materialId } );
+        this._deleteDocument( materialDocument );
+
+    }
+
+}
+
+ThreeToMongoDB.AvailableCurveTypes = [
+    'Curve',
+    'ArcCurve',
+    'CatmullRomCurve3',
+    'CubicBezierCurve',
+    'CubicBezierCurve3',
+    'EllipseCurve',
+    'LineCurve',
+    'LineCurve3',
+    'QuadraticBezierCurve',
+    'QuadraticBezierCurve3',
+    'SplineCurve',
+    'CurvePath',
+    'Path',
+    'Shape'
+];
+
+ThreeToMongoDB.AvailableLineTypes         = [ 'Line', 'LineLoop', 'LineSegments' ];
+ThreeToMongoDB.AvailableLineMaterialTypes = [ 'LineBasicMaterial', 'LineDashedMaterial' ];
+
+ThreeToMongoDB.AvailablePointTypes         = [ 'Points' ];
+ThreeToMongoDB.AvailablePointMaterialTypes = [ 'PointsMaterial' ];
+
+ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ];
+ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ];
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -3453,16 +5092,15 @@ function _createSchema$a ( Mongoose ) {
     const Schema = Mongoose.Schema;
 
     _schema$a = new Schema( {
-            type: {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+        type: {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            collection:       'curves',
-            discriminatorKey: 'type'
-        } );
+        arcLengthDivisions: Number
+    }, {
+        collection:       'curves',
+        discriminatorKey: 'type'
+    } );
 
 }
 
@@ -3535,23 +5173,19 @@ function _createSchema$b ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    const NestedCurveSchema = new Schema(
-        {
-            type: {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type: {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } );
 
     _schema$b = new Schema( {
-        curves:    [ NestedCurveSchema ],
-        // Curve
+        curves:    [ NestedCurveSchema ], // Curve
         autoClose: {
             type:    Boolean,
             default: false
@@ -3778,19 +5412,16 @@ function _createSchema$e ( Mongoose ) {
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    const NestedCurveSchema = new Schema(
-        {
-            type: {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type: {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } );
 
     _schema$e = new Schema( {
 
@@ -3874,39 +5505,33 @@ function _createSchema$f ( Mongoose ) {
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    const NestedCurveSchema = new Schema(
-        {
-            type: {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type: {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } );
 
-    const NestedPathSchema = new Schema(
-        {
+    const NestedPathSchema = new Schema( {
 
-            // CurvePath inheritance
-            curves:    [ NestedCurveSchema ], // Curve
-            autoClose: {
-                type:    Boolean,
-                default: false
-            },
-
-            // Path inheritance
-            currentPoint: Vector2
-
+        // CurvePath inheritance
+        curves:    [ NestedCurveSchema ], // Curve
+        autoClose: {
+            type:    Boolean,
+            default: false
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+
+        // Path inheritance
+        currentPoint: Vector2
+
+    }, {
+        id:  false,
+        _id: false
+    } );
 
     _schema$f = new Schema( {
 
@@ -6830,63 +8455,54 @@ function _createSchema$W ( Mongoose ) {
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    const NestedCurveSchema = new Schema(
-        {
-            type: {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type: {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } );
 
-    const NestedPathSchema = new Schema(
-        {
+    const NestedPathSchema = new Schema( {
 
-            // CurvePath inheritance
-            curves:    [ NestedCurveSchema ], // Curve
-            autoClose: {
-                type:    Boolean,
-                default: false
-            },
-
-            // Path inheritance
-            currentPoint: Vector2
-
+        // CurvePath inheritance
+        curves:    [ NestedCurveSchema ], // Curve
+        autoClose: {
+            type:    Boolean,
+            default: false
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
 
-    const NestedShapeSchema = new Schema(
-        {
+        // Path inheritance
+        currentPoint: Vector2
 
-            // CurvePath inheritance
-            curves:    [ NestedCurveSchema ], // Curve
-            autoClose: {
-                type:    Boolean,
-                default: false
-            },
+    }, {
+        id:  false,
+        _id: false
+    } );
 
-            // Path inheritance
-            currentPoint: Vector2,
+    const NestedShapeSchema = new Schema( {
 
-            // Shape inheritance
-            uuid:  String,
-            holes: [ NestedPathSchema ] // Path
-
+        // CurvePath inheritance
+        curves:    [ NestedCurveSchema ], // Curve
+        autoClose: {
+            type:    Boolean,
+            default: false
         },
-        {
-            id:  false,
-            _id: false
-        }
-    );
+
+        // Path inheritance
+        currentPoint: Vector2,
+
+        // Shape inheritance
+        uuid:  String,
+        holes: [ NestedPathSchema ] // Path
+
+    }, {
+        id:  false,
+        _id: false
+    } );
 
     _schema$W = new Schema( {
         shapes:        [ NestedShapeSchema ],
@@ -11400,21 +13016,19 @@ function _createSchema$1Y ( Mongoose ) {
     const Vector3  = Types.Vector3;
 
     _schema$1Y = new Schema( {
-        lensFlares: [
-            {
-                texture:  ObjectId,
-                size:     Number,
-                distance: Number,
-                x:        Number,
-                y:        Number,
-                z:        Number,
-                scale:    Number,
-                rotation: Number,
-                opacity:  Number,
-                color:    Color,
-                blending: Number
-            }
-        ],
+        lensFlares: [ {
+            texture:  ObjectId,
+            size:     Number,
+            distance: Number,
+            x:        Number,
+            y:        Number,
+            z:        Number,
+            scale:    Number,
+            rotation: Number,
+            opacity:  Number,
+            color:    Color,
+            blending: Number
+        } ],
         positionScreen: Vector3
     } );
 
@@ -11489,12 +13103,10 @@ function _createSchema$1Z ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'LineBasicMaterial'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'LineBasicMaterial'
+        } ],
         drawMode: Number
     } );
 
@@ -11569,12 +13181,10 @@ function _createSchema$1_ ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'LineBasicMaterial'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'LineBasicMaterial'
+        } ],
         drawMode: Number
     } );
 
@@ -11649,12 +13259,10 @@ function _createSchema$1$ ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'LineBasicMaterial'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'LineBasicMaterial'
+        } ],
         drawMode: Number
     } );
 
@@ -11799,12 +13407,10 @@ function _createSchema$21 ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'Material'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'Material'
+        } ],
         drawMode: Number
     } );
 
@@ -11879,12 +13485,10 @@ function _createSchema$22 ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'PointsMaterial'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'PointsMaterial'
+        } ],
         drawMode: Number
     } );
 
@@ -12031,12 +13635,10 @@ function _createSchema$24 ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'Material'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'Material'
+        } ],
         drawMode: Number,
 
         // SkinnedMesh
@@ -12113,12 +13715,10 @@ function _createSchema$25 ( Mongoose ) {
     const ObjectId = Types.ObjectId;
 
     _schema$25 = new Schema( {
-        material: [
-            {
-                type: ObjectId,
-                ref:  'SpriteMaterial'
-            }
-        ]
+        material: [ {
+            type: ObjectId,
+            ref:  'SpriteMaterial'
+        } ]
     } );
 
 }
@@ -12308,35 +13908,34 @@ function _createSchema$28 ( Mongoose ) {
     const Matrix3  = Types.Matrix3;
 
     _schema$28 = new Schema( {
-            uuid:             String,
-            name:             String,
-            image:            ObjectId,
-            mipmaps:          [],
-            mapping:          Number,
-            wrapS:            Number,
-            wrapT:            Number,
-            magFilter:        Number,
-            minFilter:        Number,
-            anisotropy:       Number,
-            format:           Number,
-            type:             Number,
-            offset:           Vector2,
-            repeat:           Vector2,
-            center:           Vector2,
-            rotation:         Number,
-            matrixAutoUpdate: Boolean,
-            matrix:           Matrix3,
-            generateMipmaps:  Boolean,
-            premultiplyAlpha: Boolean,
-            flipY:            Boolean,
-            unpackAlignment:  Number,
-            encoding:         Number,
-            version:          Number
-        },
-        {
-            collection:       'textures',
-            discriminatorKey: 'type'
-        } );
+        uuid:             String,
+        name:             String,
+        image:            ObjectId,
+        mipmaps:          [],
+        mapping:          Number,
+        wrapS:            Number,
+        wrapT:            Number,
+        magFilter:        Number,
+        minFilter:        Number,
+        anisotropy:       Number,
+        format:           Number,
+        type:             Number,
+        offset:           Vector2,
+        repeat:           Vector2,
+        center:           Vector2,
+        rotation:         Number,
+        matrixAutoUpdate: Boolean,
+        matrix:           Matrix3,
+        generateMipmaps:  Boolean,
+        premultiplyAlpha: Boolean,
+        flipY:            Boolean,
+        unpackAlignment:  Number,
+        encoding:         Number,
+        version:          Number
+    }, {
+        collection:       'textures',
+        discriminatorKey: 'type'
+    } );
 
 }
 
@@ -12800,17 +14399,17 @@ function ColorType ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} is not a object or Color instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Color instance` ) }
 
-            if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain r property` ) }
-            if ( iteeValidators.isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain r property` ) }
+            if ( iteeValidators.isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
-            if ( !( 'g' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain g property` ) }
-            if ( iteeValidators.isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'g' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain g property` ) }
+            if ( iteeValidators.isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
-            if ( !( 'b' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain b property` ) }
-            if ( iteeValidators.isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'b' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain b property` ) }
+            if ( iteeValidators.isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
             return {
                 r: value.r,
@@ -12856,28 +14455,21 @@ function EulerType ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Euler: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isEuler ) { throw new Error( `Euler: ${value} is not a object or Euler instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Euler: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isEuler ) { throw new Error( `Euler: ${ value } is not a object or Euler instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Euler: ' + value + ' does not contain x property' ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Euler: ${value} expected x to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Euler: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Euler: ${ value } expected x to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Euler: ' + value + ' does not contain y property' ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Euler: ${value} expected y to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Euler: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Euler: ${ value } expected y to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( 'Euler: ' + value + ' does not contain z property' ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Euler: ${value} expected z to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Error( `Euler: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Euler: ${ value } expected z to be a number` ) }
 
-            if ( !( 'order' in value ) ) { throw new Error( 'Euler: ' + value + ' does not contain order property' ) }
-            if ( iteeValidators.isNotString( value.order ) ) { throw new Error( `Euler: ${value} expected order to be a string` ) }
-            if ( ![
-                'XYZ',
-                'YZX',
-                'ZXY',
-                'XZY',
-                'YXZ',
-                'ZYX'
-            ].includes( value.order.toUpperCase() ) ) { throw new Error( `Euler: ${value} expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
+            if ( !( 'order' in value ) ) { throw new Error( `Euler: ${ value } does not contain order property` ) }
+            if ( iteeValidators.isNotString( value.order ) ) { throw new Error( `Euler: ${ value } expected order to be a string` ) }
+            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Error( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
                 x:     value.x,
@@ -12921,8 +14513,8 @@ function Matrix3Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix3: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix3 ) { throw new Error( `Matrix3: ${value} is not a object or Matrix3 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix3: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotArray( value ) && !value.isMatrix3 ) { throw new Error( `Matrix3: ${ value } is not a object or Matrix3 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix3 ) {
@@ -12934,7 +14526,7 @@ function Matrix3Type ( Mongoose ) {
             // Check number of values
             const numberOfValues = result.length;
             if ( numberOfValues !== 9 ) {
-                throw new Error( `Matrix3: ${value} does not contain the right number of values. Expect 9 values and found ${numberOfValues}` )
+                throw new Error( `Matrix3: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
             }
 
             // Check values are numbers in the range [0 - 1]
@@ -12943,11 +14535,11 @@ function Matrix3Type ( Mongoose ) {
                 val = result[ index ];
 
                 if ( iteeValidators.isNotNumber( val ) ) {
-                    throw new Error( `Matrix3: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
                 if ( iteeValidators.isNaN( val ) ) {
-                    throw new Error( `Matrix3: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
             }
@@ -12989,8 +14581,8 @@ function Matrix4Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix4: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix4 ) { throw new Error( `Matrix4: ${value} is not a object or Matrix4 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix4: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotArray( value ) && !value.isMatrix4 ) { throw new Error( `Matrix4: ${ value } is not a object or Matrix4 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix4 ) {
@@ -13002,7 +14594,7 @@ function Matrix4Type ( Mongoose ) {
             // Check number of values
             const numberOfValues = result.length;
             if ( numberOfValues !== 16 ) {
-                throw new Error( `Matrix4: ${value} does not contain the right number of values. Expect 9 values and found ${numberOfValues}` )
+                throw new Error( `Matrix4: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
             }
 
             // Check values are numbers in the range [0 - 1]
@@ -13011,11 +14603,11 @@ function Matrix4Type ( Mongoose ) {
                 val = result[ index ];
 
                 if ( iteeValidators.isNotNumber( val ) ) {
-                    throw new Error( `Matrix4: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
                 if ( iteeValidators.isNaN( val ) ) {
-                    throw new Error( `Matrix4: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
             }
@@ -13057,20 +14649,20 @@ function QuaternionType ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Quaternion: ${value} is null or undefined` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Quaternion: ${ value } is null or undefined` ) }
             //if ( isNotObject( value ) && !value.isQuaternion ) { throw new Error( `Quaternion: ${value} is not a object or Quaternion instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Quaternion: ' + value + ' does not contain x property' ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Quaternion: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Quaternion: ' + value + ' does not contain y property' ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Quaternion: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( 'Quaternion: ' + value + ' does not contain z property' ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Quaternion: ${value} expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'w' in value ) ) { throw new Error( 'Quaternion: ' + value + ' does not contain w property' ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Quaternion: ${value} expected to be a number` ) }
+            if ( !( 'w' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain w property` ) }
+            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13114,14 +14706,14 @@ function Vector2Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector2: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector2 ) { throw new Error( `Vector2: ${value} is not a object or Vector2 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector2: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector2 ) { throw new Error( `Vector2: ${ value } is not a object or Vector2 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Vector2: ' + value + ' does not contain x property' ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector2: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Vector2: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Vector2: ' + value + ' does not contain y property' ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector2: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Vector2: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13163,17 +14755,17 @@ function Vector3Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector3: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector3 ) { throw new Error( `Vector3: ${value} is not a object or Vector3 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector3: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector3 ) { throw new Error( `Vector3: ${ value } is not a object or Vector3 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Vector3: ' + value + ' does not contain x property' ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector3: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Vector3: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Vector3: ' + value + ' does not contain y property' ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector3: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Vector3: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( 'Vector3: ' + value + ' does not contain z property' ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector3: ${value} expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Error( `Vector3: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13216,20 +14808,20 @@ function Vector4Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector4: ${value} is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector4 ) { throw new Error( `Vector4: ${value} is not a object or Vector4 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector4: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector4 ) { throw new Error( `Vector4: ${ value } is not a object or Vector4 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain x property' ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Vector4: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain y property' ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Vector4: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain z property' ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Error( `Vector4: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'w' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain w property' ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'w' in value ) ) { throw new Error( `Vector4: ${ value } does not contain w property` ) }
+            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13264,7 +14856,7 @@ function Vector4Type ( Mongoose ) {
  * using FunctionRegistrator for type and add to plugin using .addType( myFunctionRegistrator ), extending class AbstractMongooseRegistrator for Schema and add to plugin using .addSchema(
  * MySchemaRegistrator ) using direct registration importing mongoose in the file (care to the loading order ! An no output about what is registered.)
  */
-var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
+var MongoDBThreePlugin = new TMongoDBPlugin()
     .addType( ColorType )
     .addType( EulerType )
     .addType( Matrix3Type )
@@ -13445,7 +15037,7 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
     .addSchema( DepthTexture_1 )
     .addSchema( Texture_1 )
     .addSchema( VideoTexture_1 )
-    .addController( iteeDatabase.TMongooseController )
+    .addController( TMongooseController )
     .addDescriptor( {
         route:      '/objects',
         controller: {
@@ -13589,42 +15181,50 @@ var MongoDBThreePlugin = new iteeDatabase.TMongoDBPlugin()
             options: {
                 useNext:    true,
                 converters: {
-                    JsonToThree: new JsonToThree(),
-                    ShpToThree:  new ShpToThree(),
-                    DbfToThree:  new DbfToThree(),
-                    MtlToThree:  new MtlToThree(),
-                    ObjToThree:  new Obj2ToThree()
+                    JsonToThree:    new JsonToThree(),
+                    ShpToThree:     new ShpToThree(),
+                    DbfToThree:     new DbfToThree(),
+                    FbxToThree:     new FbxToThree(),
+                    ColladaToThree: new ColladaToThree(),
+                    StlToThree:     new StlToThree(),
+                    TdsToThree:     new TdsToThree(),
+                    MtlToThree:     new MtlToThree(),
+                    ObjToThree:     new Obj2ToThree()
                 },
-                rules: [
-                    {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    },
-                    {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    },
-                    {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    },
-                    {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    },
-                    {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    },
-                    {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    },
-                    {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    }
-                ],
+                rules: [ {
+                    on:  '.json',
+                    use: 'JsonToThree'
+                }, {
+                    on:  '.dae',
+                    use: 'ColladaToThree'
+                }, {
+                    on:  '.fbx',
+                    use: 'FbxToThree'
+                }, {
+                    on:  '.stl',
+                    use: 'StlToThree'
+                }, {
+                    on:  '.3ds',
+                    use: 'TdsToThree'
+                }, {
+                    on:  '.shp',
+                    use: 'ShpToThree'
+                }, {
+                    on:  '.dbf',
+                    use: 'DbfToThree'
+                }, {
+                    on:  [ '.shp', '.dbf' ],
+                    use: [ 'ShpToThree', 'DbfToThree' ]
+                }, {
+                    on:  '.mtl',
+                    use: 'MtlToThree'
+                }, {
+                    on:  '.obj',
+                    use: 'ObjToThree'
+                }, {
+                    on:  [ '.mtl', '.obj' ],
+                    use: [ 'MtlToThree', 'ObjToThree' ]
+                } ],
                 inserter: ThreeToMongoDB
             },
             can: {

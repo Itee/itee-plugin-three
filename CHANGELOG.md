@@ -1,3 +1,29 @@
+# [1.2.0](https://github.com/Itee/itee-plugin-three/compare/v1.1.2...v1.2.0) (2020-02-17)
+
+
+### Bug Fixes
+
+* **cameracontrols:** add missing consume event ([1ef2b0d](https://github.com/Itee/itee-plugin-three/commit/1ef2b0d))
+* **clippingcontrols:** fix wrong variable name and usage ([e2f3f36](https://github.com/Itee/itee-plugin-three/commit/e2f3f36))
+* **mongodbthreeplugin:** update package references for inheritance ([a24c2b2](https://github.com/Itee/itee-plugin-three/commit/a24c2b2))
+* **threetomongodb:** update async await management and remove nested async promisified function ([1d4df5e](https://github.com/Itee/itee-plugin-three/commit/1d4df5e))
+
+
+### Features
+
+* **cameracontrols:** start implementing orthographic camera displacement ([9686ad0](https://github.com/Itee/itee-plugin-three/commit/9686ad0))
+* **clippingbox:** allow to set a clipping margin ([3aaeafe](https://github.com/Itee/itee-plugin-three/commit/3aaeafe))
+* **collada:** add colladatothree converter ([d6c5305](https://github.com/Itee/itee-plugin-three/commit/d6c5305))
+* **fbx:** add fbxtothree converter ([7f2c260](https://github.com/Itee/itee-plugin-three/commit/7f2c260))
+* **stl:** add stltothree converter ([51a03da](https://github.com/Itee/itee-plugin-three/commit/51a03da))
+* **tds:** add tdstothree converter ([e5ec267](https://github.com/Itee/itee-plugin-three/commit/e5ec267))
+* **threetomongodb:** add different type of merge strategie. Clean up ([3e42a24](https://github.com/Itee/itee-plugin-three/commit/3e42a24))
+
+
+### Performance Improvements
+
+* **orbitcontrolshelper:** disable matrixautoupdate ([a2eb531](https://github.com/Itee/itee-plugin-three/commit/a2eb531))
+
 ## [1.1.2](https://github.com/Itee/itee-plugin-three/compare/v1.1.1...v1.1.2) (2019-10-21)
 
 
