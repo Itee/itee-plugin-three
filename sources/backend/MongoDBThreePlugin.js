@@ -8,11 +8,6 @@
  *
  */
 
-import {
-    TAbstractConverterManager,
-    TMongoDBPlugin,
-    TMongooseController
-}                         from 'itee-database'
 import { DbfToThree }     from './converters/DbfToThree'
 import { JsonToThree }    from './converters/JsonToThree'
 import { MtlToThree }     from './converters/MtlToThree'
@@ -23,6 +18,11 @@ import { ColladaToThree } from './converters/ColladaToThree'
 import { StlToThree }     from './converters/StlToThree'
 import { TdsToThree }     from './converters/TdsToThree'
 import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
+import { TAbstractConverterManager } from 'itee-database'
+import {
+    TMongoDBPlugin,
+    TMongooseController
+}                                    from 'itee-mongodb'
 
 import { Audio }                     from './schemas/audio/Audio'
 import { AudioListener }             from './schemas/audio/AudioListener'
