@@ -71,10 +71,13 @@ class ClippingBox extends LineSegments {
     constructor () {
         super()
 
-        this.geometry = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
-        this.material = new LineBasicMaterial( {
+        this.margin = 0.01
+
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
+        this.material         = new LineBasicMaterial( {
             color: 0xffffff
         } )
+        this.matrixAutoUpdate = false
 
         // Planes
         this.normalPlanes = {
@@ -153,7 +156,7 @@ class ClippingBox extends LineSegments {
 
         this._boundingBox.setFromObject( this )
 
-        const margin = 0.0
+        const margin = this.margin
         const min    = this._boundingBox.min
         const max    = this._boundingBox.max
 
@@ -270,8 +273,9 @@ class AbstractHitbox extends Mesh {
         }
 
         super( _parameters.geometry, _parameters.material )
-        this.isHitbox = true
-        this.type     = 'Hitbox'
+        this.isHitbox         = true
+        this.type             = 'Hitbox'
+        this.matrixAutoUpdate = false
 
     }
 }
@@ -429,8 +433,9 @@ class AbstractHandle extends Object3D {
         }
 
         super()
-        this.isHandle = true
-        this.type     = 'Handle'
+        this.isHandle         = true
+        this.type             = 'Handle'
+        this.matrixAutoUpdate = false
 
         this.color  = _parameters.color
         this.hitbox = _parameters.hitbox
@@ -550,15 +555,17 @@ class TranslateHandle extends AbstractHandle {
         this.isTranslateHandle = true
         this.type              = 'TranslateHandle'
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) )
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } )
-        const line         = new Line( lineGeometry, lineMaterial )
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false )
         coneGeometry.translate( 0, 0.9, 0 )
-        const coneMaterial = new HighlightableMaterial( { color: _parameters.color } )
-        const cone         = new Mesh( coneGeometry, coneMaterial )
+        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const cone            = new Mesh( coneGeometry, coneMaterial )
+        cone.matrixAutoUpdate = false
         this.add( cone )
 
         this.direction = _parameters.direction
@@ -575,7 +582,7 @@ class TranslateHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -640,15 +647,17 @@ class ScaleHandle extends AbstractHandle {
         this.isScaleHandle = true
         this.type          = 'ScaleHandle'
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) )
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } )
-        const line         = new Line( lineGeometry, lineMaterial )
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 )
         boxGeometry.translate( 0, 0.94, 0 )
-        const boxMaterial = new HighlightableMaterial( { color: _parameters.color } )
-        const box         = new Mesh( boxGeometry, boxMaterial )
+        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const box            = new Mesh( boxGeometry, boxMaterial )
+        box.matrixAutoUpdate = false
         this.add( box )
 
         this.direction = _parameters.direction
@@ -665,7 +674,7 @@ class ScaleHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -758,7 +767,8 @@ class PlaneHandle extends AbstractHandle {
             color: _parameters.color
         } )
 
-        const line = new Line( lineBufferGeometry, lineMaterial )
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         // Plane
@@ -776,12 +786,13 @@ class PlaneHandle extends AbstractHandle {
         planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
         planeBufferGeometry.setIndex( planeIndexes )
 
-        const planeMaterial = new HighlightableMaterial( {
+        const planeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } )
-        const plane         = new Mesh( planeBufferGeometry, planeMaterial )
+        const plane            = new Mesh( planeBufferGeometry, planeMaterial )
+        plane.matrixAutoUpdate = false
         this.add( plane )
 
         this.xAxis = new Vector3( 1, 0, 0 )
@@ -805,7 +816,7 @@ class PlaneHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -971,7 +982,8 @@ class LozengeHandle extends AbstractHandle {
             color: _parameters.color
         } )
 
-        const line = new Line( lineBufferGeometry, lineMaterial )
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
         this.add( line )
 
         // Lozenge
@@ -989,12 +1001,13 @@ class LozengeHandle extends AbstractHandle {
         lozengeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) )
         lozengeBufferGeometry.setIndex( lozengeIndexes )
 
-        const lozengeMaterial = new HighlightableMaterial( {
+        const lozengeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } )
-        const lozenge         = new Mesh( lozengeBufferGeometry, lozengeMaterial )
+        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial )
+        lozenge.matrixAutoUpdate = false
         this.add( lozenge )
 
         this.direction  = _parameters.direction
@@ -1016,7 +1029,7 @@ class LozengeHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -1142,21 +1155,23 @@ class OctahedricalHandle extends AbstractHandle {
         this.isOmnidirectionalHandle = true
         this.type                    = 'OmnidirectionalHandle'
 
-        const octahedronGeometry = new OctahedronBufferGeometry( 1, 0 )
-        const octahedronMaterial = new HighlightableMaterial( {
+        const octahedronGeometry    = new OctahedronBufferGeometry( 1, 0 )
+        const octahedronMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.55
         } )
-        const octahedron         = new Mesh( octahedronGeometry, octahedronMaterial )
+        const octahedron            = new Mesh( octahedronGeometry, octahedronMaterial )
+        octahedron.matrixAutoUpdate = false
         this.add( octahedron )
 
-        const edgesGeometry = new EdgesGeometry( octahedronGeometry )
-        const edgesMaterial = new HighlightableLineMaterial( {
+        const edgesGeometry    = new EdgesGeometry( octahedronGeometry )
+        const edgesMaterial    = new HighlightableLineMaterial( {
             color:     _parameters.color,
             linewidth: 4
         } )
-        const edges         = new LineSegments( edgesGeometry, edgesMaterial )
+        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
+        edges.matrixAutoUpdate = false
         this.add( edges )
 
     }
@@ -1174,26 +1189,31 @@ class AbstractGizmo extends Object3D {
     constructor () {
 
         super()
-        this.isGizmo = true
-        this.type    = 'AbstractGizmo'
+        this.isGizmo          = true
+        this.type             = 'AbstractGizmo'
+        this.matrixAutoUpdate = false
 
     }
 
     init () {
 
-        this.handles = new Object3D()
+        this.handles                  = new Object3D()
+        this.handles.matrixAutoUpdate = false
 
         this.add( this.handles )
 
         //// PLANES
-        const planeGeometry = new PlaneBufferGeometry( 50, 50, 2, 2 )
-        const planeMaterial = new MeshBasicMaterial( {
+        const planeGeometry                  = new PlaneBufferGeometry( 50, 50, 2, 2 )
+        const planeMaterial                  = new MeshBasicMaterial( {
             side:    DoubleSide,
             visible: false
             //            transparent: true,
             //            opacity:     0.1
         } )
-        this.intersectPlane = new Mesh( planeGeometry, planeMaterial )
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial )
+        this.intersectPlane.matrixAutoUpdate = false
+        this.intersectPlane.visible          = false
+
         this.add( this.intersectPlane )
 
         //// HANDLES
@@ -1387,59 +1407,37 @@ class RotateGizmo extends AbstractGizmo {
 
         this.handleGizmos = {
 
-            X: [
-                [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Y: [
-                [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Z: [
-                [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ]
-            ],
+            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
 
-            E: [
-                [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ]
-            ],
+            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
-            XYZ: [
-                [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ]
-            ]
+            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
 
         }
 
         this.pickerGizmos = {
 
-            X: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ]
-            ],
+            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
 
-            Y: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ]
-            ],
+            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
 
-            Z: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ]
-            ],
+            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
 
-            E: [
-                [
-                    new TorusHitbox( {
-                        radius:          1.25,
-                        tube:            0.12,
-                        radialSegments:  2,
-                        tubularSegments: 24
-                    } )
-                ]
-            ],
+            E: [ [ new TorusHitbox( {
+                radius:          1.25,
+                tube:            0.12,
+                radialSegments:  2,
+                tubularSegments: 24
+            } ) ] ],
 
-            XYZ: [
-                [ new TorusHitbox() ]
-            ]
+            XYZ: [ [ new TorusHitbox() ] ]
 
         }
 
@@ -1584,7 +1582,7 @@ class ClippingControls extends Object3D {
         super()
 
         // Need to be defined before domElement to make correct binding events
-        this._handlers                 = {
+        this._handlers = {
             onMouseEnter:  this._onMouseEnter.bind( this ),
             onMouseLeave:  this._onMouseLeave.bind( this ),
             onMouseDown:   this._onMouseDown.bind( this ),
@@ -1600,19 +1598,36 @@ class ClippingControls extends Object3D {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         }
+
+        this._events = {
+            impose:     { type: 'impose' },
+            dispose:    { type: 'dispose' },
+            change:     { type: 'change' },
+            translate:  { type: 'translate' },
+            rotate:     { type: 'rotate' },
+            scale:      { type: 'scale' },
+            mouseEnter: { type: 'mouseEnter' },
+            mouseLeave: { type: 'mouseLeave' },
+            mouseDown:  { type: 'mouseDown' },
+            mouseUp:    { type: 'mouseUp' }
+        }
+
         // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
         this._objectsToClipBoundingBox = new Box3()
+        this._objectsToClipSize        = new Vector3()
+        this._objectsToClipCenter      = new Vector3()
 
         this._clippingBox = new ClippingBox()
         this.add( this._clippingBox )
 
-        this.camera          = _parameters.camera
-        this.domElement      = _parameters.domElement
-        this.mode            = _parameters.mode
-        this.objectsToClip   = _parameters.objectsToClip
-        this.translationSnap = 0.1
-        this.scaleSnap       = 0.1
-        this.rotationSnap    = 0.1
+        this.camera           = _parameters.camera
+        this.domElement       = _parameters.domElement
+        this.mode             = _parameters.mode
+        this.objectsToClip    = _parameters.objectsToClip
+        this.translationSnap  = 0.1
+        this.scaleSnap        = 0.1
+        this.rotationSnap     = 0.1
+        this.matrixAutoUpdate = false
 
         this.enabled = false // Should be true by default
 
@@ -1642,15 +1657,6 @@ class ClippingControls extends Object3D {
         }
         this._currentGizmo  = null
         this._currentHandle = null
-
-        this._events = {
-            change:       { type: 'change' },
-            mouseEnter:   { type: 'mouseEnter' },
-            mouseLeave:   { type: 'mouseLeave' },
-            mouseDown:    { type: 'mouseDown' },
-            mouseUp:      { type: 'mouseUp' },
-            objectChange: { type: 'objectChange' }
-        }
 
         // The actions map about input events
         this.actionsMap = {
@@ -1692,23 +1698,10 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._objectsToClip = value
-
-        const size = new Vector3()
-        this._objectsToClipBoundingBox
-            .makeEmpty()
-            .expandByObject( value )
-            .getSize( size )
-
-        const x = Math.round( size.x ) || 50
-        const y = Math.round( size.y ) || 22
-        const z = Math.round( size.z ) || 70
-        this.scale.set( x, y, z )
-        //        this.scale.set( 50, 22, 70 )
-
-        this._clippingBox.update()
+        this.updateClipping()
 
     }
 
@@ -1720,7 +1713,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -1734,7 +1727,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
 
         // Clear previous element
         if ( this._domElement ) {
@@ -1837,7 +1830,7 @@ class ClippingControls extends Object3D {
             passive: false
         } )
 
-        this.dispatchEvent( { type: 'impose' } )
+        this.dispatchEvent( this._events.impose )
 
     }
 
@@ -1870,7 +1863,7 @@ class ClippingControls extends Object3D {
             passive: false
         } )
 
-        this.dispatchEvent( { type: 'dispose' } )
+        this.dispatchEvent( this._events.dispose )
 
     }
 
@@ -1886,6 +1879,23 @@ class ClippingControls extends Object3D {
 
         this.visible = true
         this.enabled = true
+
+        // Init size and position
+        if ( isDefined( this._objectsToClip ) ) {
+
+            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip )
+
+            this._objectsToClipBoundingBox.getSize( this._objectsToClipSize )
+            this._objectsToClipSize.divideScalar( 2 )
+            this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z )
+
+            this._objectsToClipBoundingBox.getCenter( this._objectsToClipCenter )
+            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z )
+
+            // update...
+            this.updateMatrixWorld()
+        }
+
         this.updateClipping()
 
     }
@@ -1957,42 +1967,42 @@ class ClippingControls extends Object3D {
                         this._translateZ( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.back.includes( key ) ) {
 
                         this._translateZ( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.right.includes( key ) ) {
 
                         this._translateX( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.left.includes( key ) ) {
 
                         this._translateX( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.up.includes( key ) ) {
 
                         this._translateY( this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.translate.down.includes( key ) ) {
 
                         this._translateY( -this.translationSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     }
 
@@ -2009,42 +2019,42 @@ class ClippingControls extends Object3D {
                         this._scaleZ( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.depthMinus.includes( key ) ) {
 
                         this._scaleZ( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.widthPlus.includes( key ) ) {
 
                         this._scaleX( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.widthMinus.includes( key ) ) {
 
                         this._scaleX( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.heightPlus.includes( key ) ) {
 
                         this._scaleY( this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     } else if ( actionMap.scale.heightMinus.includes( key ) ) {
 
                         this._scaleY( -this.scaleSnap )
                         this.updateClipping()
                         this._consumeEvent( keyEvent )
-                        this.dispatchEvent( this._events.objectChange )
+                        this.dispatchEvent( this._events.change )
 
                     }
 
@@ -2304,13 +2314,13 @@ class ClippingControls extends Object3D {
                     break
 
                 default:
-                    throw new RangeError( `Invalid switch parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid switch parameter: ${ this._mode }` )
 
             }
 
             this.updateClipping()
             this._consumeEvent( mouseEvent )
-            this.dispatchEvent( this._events.objectChange )
+            this.dispatchEvent( this._events.change )
 
         }
 
@@ -2320,10 +2330,10 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( event.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        // todo isActive when mouse enter
 
         mouseEvent.preventDefault()
-        this._consumeEvent( mouseEvent )
 
         this._dragging = false
         this.dispatchEvent( this._events.mouseUp )
@@ -2332,9 +2342,7 @@ class ClippingControls extends Object3D {
         const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
-            const handle = intersect.object
-
-            this._currentHandle = handle
+            this._currentHandle = intersect.object
             this._currentHandle.highlight( true )
 
             this._consumeEvent( mouseEvent )

@@ -30,14 +30,14 @@ function Vector2Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( isNotDefined( value ) ) { throw new Error( `Vector2: ${value} is null or undefined` ) }
-            if ( isNotObject( value ) && !value.isVector2 ) { throw new Error( `Vector2: ${value} is not a object or Vector2 instance` ) }
+            if ( isNotDefined( value ) ) { throw new Error( `Vector2: ${ value } is null or undefined` ) }
+            if ( isNotObject( value ) && !value.isVector2 ) { throw new Error( `Vector2: ${ value } is not a object or Vector2 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Vector2: ' + value + ' does not contain x property' ) }
-            if ( isNotNumber( value.x ) ) { throw new Error( `Vector2: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Vector2: ${ value } does not contain x property` ) }
+            if ( isNotNumber( value.x ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Vector2: ' + value + ' does not contain y property' ) }
-            if ( isNotNumber( value.y ) ) { throw new Error( `Vector2: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Vector2: ${ value } does not contain y property` ) }
+            if ( isNotNumber( value.y ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,

@@ -46,7 +46,7 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
         switch ( textureType ) {
 
             default:
-                throw new Error( `TTexturesManager: Unknown texture of type: ${textureType}` )
+                throw new Error( `TTexturesManager: Unknown texture of type: ${ textureType }` )
 
         }
 

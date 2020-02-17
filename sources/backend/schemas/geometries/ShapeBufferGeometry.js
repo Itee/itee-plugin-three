@@ -31,63 +31,54 @@ function _createSchema ( Mongoose ) {
     const Types   = Schema.Types
     const Vector2 = Types.Vector2
 
-    const NestedCurveSchema = new Schema(
-        {
-            type:               {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type:               {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    )
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } )
 
-    const NestedPathSchema = new Schema(
-        {
+    const NestedPathSchema = new Schema( {
 
-            // CurvePath inheritance
-            curves:    [ NestedCurveSchema ], // Curve
-            autoClose: {
-                type:    Boolean,
-                default: false
-            },
-
-            // Path inheritance
-            currentPoint: Vector2
-
+        // CurvePath inheritance
+        curves:    [ NestedCurveSchema ], // Curve
+        autoClose: {
+            type:    Boolean,
+            default: false
         },
-        {
-            id:  false,
-            _id: false
-        }
-    )
 
-    const NestedShapeSchema = new Schema(
-        {
+        // Path inheritance
+        currentPoint: Vector2
 
-            // CurvePath inheritance
-            curves:    [ NestedCurveSchema ], // Curve
-            autoClose: {
-                type:    Boolean,
-                default: false
-            },
+    }, {
+        id:  false,
+        _id: false
+    } )
 
-            // Path inheritance
-            currentPoint: Vector2,
+    const NestedShapeSchema = new Schema( {
 
-            // Shape inheritance
-            uuid:  String,
-            holes: [ NestedPathSchema ] // Path
-
+        // CurvePath inheritance
+        curves:    [ NestedCurveSchema ], // Curve
+        autoClose: {
+            type:    Boolean,
+            default: false
         },
-        {
-            id:  false,
-            _id: false
-        }
-    )
+
+        // Path inheritance
+        currentPoint: Vector2,
+
+        // Shape inheritance
+        uuid:  String,
+        holes: [ NestedPathSchema ] // Path
+
+    }, {
+        id:  false,
+        _id: false
+    } )
 
     _schema = new Schema( {
         shapes:        [ NestedShapeSchema ],

@@ -29,23 +29,19 @@ function _createSchema ( Mongoose ) {
 
     const Schema = Mongoose.Schema
 
-    const NestedCurveSchema = new Schema(
-        {
-            type:               {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type:               {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    )
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } )
 
     _schema = new Schema( {
-        curves:    [ NestedCurveSchema ],
-        // Curve
+        curves:    [ NestedCurveSchema ], // Curve
         autoClose: {
             type:    Boolean,
             default: false

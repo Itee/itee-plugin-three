@@ -120,7 +120,7 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
                 break
 
             default:
-                throw new Error( `TCurvesManager: Unknown curve of type: ${curveType}` )
+                throw new Error( `TCurvesManager: Unknown curve of type: ${ curveType }` )
 
         }
 

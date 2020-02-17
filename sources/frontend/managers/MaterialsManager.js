@@ -81,7 +81,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
-        if ( isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
         if ( isEmptyString( value ) ) { throw new TypeError( 'Textures path cannot be empty ! Expect a non empty string.' ) }
         if ( isBlankString( value ) ) { throw new TypeError( 'Textures path cannot contain only whitespace ! Expect a non empty string.' ) }
 
@@ -97,7 +97,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
-        if ( !( value instanceof TexturesManager ) && !( value instanceof TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TTexturesManager.` ) }
+        if ( !( value instanceof TexturesManager ) && !( value instanceof TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TTexturesManager.` ) }
 
         this._texturesProvider = value
 
@@ -111,7 +111,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._generateMipmap = value
     }
@@ -532,7 +532,7 @@ class MaterialsManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TMaterialsManager: Unmanaged material of type: ${type}` )
+                throw new Error( `TMaterialsManager: Unmanaged material of type: ${ type }` )
 
         }
 
@@ -782,7 +782,7 @@ class MaterialsManager extends TDataBaseManager {
                 const map = material[ mapType ]
                 if ( isDefined( map ) && isString( map ) && isNotEmptyString( map ) ) {
 
-                    const texturePath  = `${this._texturesPath}/${map}`
+                    const texturePath  = `${ this._texturesPath }/${ map }`
                     const cachedResult = localCache[ texturePath ]
 
                     if ( isDefined( cachedResult ) ) {

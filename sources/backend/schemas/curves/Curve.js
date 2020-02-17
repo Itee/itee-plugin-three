@@ -27,16 +27,15 @@ function _createSchema ( Mongoose ) {
     const Schema = Mongoose.Schema
 
     _schema = new Schema( {
-            type:               {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+        type:               {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            collection:       'curves',
-            discriminatorKey: 'type'
-        } )
+        arcLengthDivisions: Number
+    }, {
+        collection:       'curves',
+        discriminatorKey: 'type'
+    } )
 
 }
 

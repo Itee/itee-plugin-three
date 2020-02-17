@@ -11,7 +11,10 @@
 import { TAbstractDataInserter } from 'itee-database'
 import {
     isArray,
-    isNotDefined
+    isDefined,
+    isEmptyArray,
+    isNotDefined,
+    isNull
 }                                from 'itee-validators'
 
 class ThreeToMongoDB extends TAbstractDataInserter {
@@ -19,879 +22,675 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     constructor ( parameters = {} ) {
 
         super( parameters )
+        this.mergeStrategy = 'add'
+
+        // Addition
+        // Update
+        // Deletion
+
+        // Add objects from file if missing in database
+        // Remove objects from database if missing in file
+        // Update objects in database if existing in file
 
     }
 
-    _save ( data, parameters, onSuccess, onProgress, onError ) {
+    // Utils
+    static _arrayify ( data ) {
 
-        const self                 = this
-        const parentId             = parameters.parentId
-        const disableRootNode      = ( parameters.disableRootNode === 'true' )
-        const dataToParse          = ( disableRootNode ) ? data.children : ( isArray( data ) ) ? data : [ data ]
-        const errors               = []
-        const numberOfRootChildren = dataToParse.length
-        let processedRootChildren  = 0
+        let array = []
 
-        if ( numberOfRootChildren === 0 ) {
-            onError( 'No node to save in database !' )
+        if ( isDefined( data ) ) {
+
+            if ( isArray( data ) ) {
+                array = data
+            } else {
+                array = [ data ]
+            }
+
         }
 
-        let rootChildIndex = 0
-        checkNextRootChild()
+        return array
 
-        function checkNextRootChild () {
+    }
 
-            const rootChild = dataToParse[ rootChildIndex ]
+    async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
-            self._parse(
-                rootChild,
-                ( childrenIds ) => {
+        const dataToParse = ThreeToMongoDB._arrayify( data )
+        if ( isEmptyArray( dataToParse ) ) {
+            onError( 'No data to save in database. Abort insert !' )
+            return
+        }
 
-                    processedRootChildren++
+        const names = dataToParse.map( _data => _data.name )
+        console.log( `ThreeToMongoDB: Saving ${ names }` )
 
-                    onProgress( {
-                        name: rootChild.name,
-                        done: processedRootChildren,
-                        todo: numberOfRootChildren
+        // Check startegy
+        if ( parameters.mergeStrategy ) {
+            this.mergeStrategy = parameters.mergeStrategy
+        }
+
+        try {
+
+            // Check if parent is required
+            const parentId  = parameters.parentId
+            let children    = null
+            let childrenIds = null
+            if ( isDefined( parentId ) ) {
+
+                const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } )
+                if ( isNull( parentDocument ) ) {
+                    onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` )
+                    return
+                }
+
+                // then update it
+                if ( this.mergeStrategy === 'add' ) {
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId )
+                    childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                    // Add children to given parent
+                    await this._updateDocument( parentDocument, {
+                        $addToSet: {
+                            children: childrenIds
+                        }
                     } )
 
-                    // In case the root object haven't parent or children skip update
-                    if ( isNotDefined( parentId ) || isNotDefined( childrenIds ) ) {
+                } else if ( this.mergeStrategy === 'replace' ) {
 
-                        checkEndOfParsing()
+                    // Merge children into parent
+                    //// Clean up current dbObject dependencies
+                    // Children create and update will be perform on children iteration but remove need to be checked here !
+                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: parentId } )
+                    const childrenUuids      = dataToParse.map( child => child.uuid )
+                    const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
+
+                    await this._removeChildrenDocuments( dbChildrenToRemove )
+
+                    // If parent exist let create children
+                    children    = await this._parseObjects( dataToParse, parentId )
+                    childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                    await this._updateDocument( parentDocument, {
+                        $set: {
+                            children: childrenIds
+                        }
+                    } )
+
+                }
+
+                // Update children reference to parent
+                // await this._updateDocuments( children, { $set: { parent: parentId } } )
+
+            } else {
+
+                // If not required just create children as root objects
+                children    = await this._parseObjects( dataToParse, null )
+                childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+            }
+
+            console.log( `ThreeToMongoDB: Saved ${ childrenIds }` )
+            onSuccess()
+
+        } catch ( error ) {
+            onError( error )
+        }
+
+    }
+
+    async _parseObjects ( objects = [], parentId = null ) {
+
+        const _objects = ThreeToMongoDB._arrayify( objects )
+        if ( isEmptyArray( _objects ) ) {
+            return null
+        }
+
+        const documents = []
+        let document    = null
+
+        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+            document = this._parseObject( _objects[ index ], parentId )
+            documents.push( document )
+        }
+
+        return Promise.all( documents )
+
+        // return new Promise( async ( resolve ) => {
+        //
+        //     const documents = []
+        //     let document    = null
+        //
+        //     for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+        //         document = await this._parseObject( _objects[ index ], parentId )
+        //         documents.push( document )
+        //     }
+        //
+        //     resolve( documents )
+        //
+        // } )
+
+    }
+
+    _parseObject ( object, parentId = null ) {
+
+        if ( isNotDefined( object ) ) {
+            return null
+        }
+
+        return new Promise( async ( resolve, reject ) => {
+
+            // Preprocess objects here to save geometry, materials and related before to save the object itself
+            const objectType      = object.type
+            const objectName      = object.name
+            const objectGeometry  = object.geometry
+            const objectChildren  = ThreeToMongoDB._arrayify( object.children )
+            const objectMaterials = ThreeToMongoDB._arrayify( object.material )
+
+            // If it is a terminal object ( No children ) with an empty geometry
+            if ( isDefined( objectGeometry ) && isEmptyArray( objectChildren ) ) {
+
+                if ( objectGeometry.isGeometry ) {
+
+                    const vertices = objectGeometry.vertices
+                    if ( isNotDefined( vertices ) || isEmptyArray( vertices ) ) {
+
+                        console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
+                        resolve( null )
                         return
 
-                    } else if ( typeof childrenIds === 'string' ) {
+                    }
 
-                        // Convert single childrenId to array to avoid unecessary code duplication
-                        childrenIds = [ childrenIds ]
+                } else if ( objectGeometry.isBufferGeometry ) {
+
+                    const attributes = objectGeometry.attributes
+                    if ( isNotDefined( attributes ) ) {
+                        console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
+                        resolve( null )
+                        return
+                    }
+
+                    const positions = attributes.position
+                    if ( isNotDefined( positions ) || positions.count === 0 ) {
+
+                        console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
+                        resolve( null )
+                        return
+                    }
+
+                } else {
+
+                    console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
+                    resolve( null )
+                    return
+
+                }
+
+            }
+
+            let availableMaterialTypes = null
+
+            if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
+
+                if ( isNotDefined( objectGeometry ) ) {
+
+                    console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                    resolve( null )
+                    return
+
+                }
+
+                availableMaterialTypes = ThreeToMongoDB.AvailableLineMaterialTypes
+
+            } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
+
+                if ( isNotDefined( objectGeometry ) ) {
+
+                    console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                    resolve( null )
+                    return
+
+                }
+
+                availableMaterialTypes = ThreeToMongoDB.AvailablePointMaterialTypes
+
+            } else if ( ThreeToMongoDB.AvailableSpriteTypes.includes( objectType ) ) {
+
+                availableMaterialTypes = ThreeToMongoDB.AvailableSpriteMaterialTypes
+
+            }
+
+            if ( availableMaterialTypes ) {
+
+                for ( let materialIndex = 0, numberOfMaterials = objectMaterials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+
+                    const material     = objectMaterials[ materialIndex ]
+                    const materialType = material.type
+                    if ( !availableMaterialTypes.includes( materialType ) ) {
+                        console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
+                        resolve( null )
+                        return
+                    }
+
+                }
+
+            }
+
+            try {
+
+                // const children    = await this._parseObjects( objectChildren )
+                // const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                const geometry   = await this._getOrCreateDocuments( objectGeometry )
+                const geometryId = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null
+
+                const materials    = await this._getOrCreateDocuments( objectMaterials )
+                const materialsIds = ( isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : []
+
+                // Check if object already exist
+                // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
+                let document = await this._readOneDocument( objectType, {
+                    uuid:   object.uuid,
+                    parent: parentId
+                } )
+                // Todo if document.parent != parentId warn id collision !n m
+                if ( isDefined( document ) ) {
+
+                    // Check merge strategie
+                    // If add, only update existing and create new objects
+                    // else if replace, remove missings children from new data, update existing and create new
+                    if ( this.mergeStrategy === 'add' ) {
+
+                        const children    = await this._parseObjects( objectChildren, document._id )
+                        const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                        await this._updateDocument( document, {
+                            $addToSet: {
+                                children: childrenIds // geometry: geometryId, // Geometry is not an array !!
+                                // material: materialsIds // Should check which material still exist !!!
+                            }
+                        } )
+
+                    } else if ( this.mergeStrategy === 'replace' ) {
+
+                        //// Clean up current dbObject dependencies
+                        // Children create and update will be perform on children iteration but remove need to be checked here !
+                        const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+                        const childrenUuids      = objectChildren.map( child => child.uuid )
+                        const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
+
+                        await this._removeChildrenDocuments( dbChildrenToRemove )
+
+                        const children    = await this._parseObjects( objectChildren, document._id )
+                        const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
+
+                        await this._updateDocument( document, {
+                            $set: {
+                                children: childrenIds,
+                                geometry: geometryId,
+                                material: materialsIds
+                            }
+                        } )
 
                     } else {
-                        // already an array, it's ok
+                        console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
                     }
 
-                    const Objects3DModelBase = self._driver.model( 'Objects3D' )
-                    Objects3DModelBase.findOneAndUpdate( { _id: parentId }, { $push: { children: childrenIds } }, ( error, rootObject ) => {
+                } else {
 
-                        if ( error ) {
+                    object.parent   = parentId
+                    object.children = []
+                    object.geometry = geometryId
+                    object.material = materialsIds
+                    document        = await this._createDocument( object )
 
-                            errors.push( error )
-                            checkEndOfParsing()
-                            return
+                    const children    = await this._parseObjects( objectChildren, document._id )
+                    const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
 
+                    await this._updateDocument( document, {
+                        $set: {
+                            children: childrenIds,
+                            geometry: geometryId,
+                            material: materialsIds
                         }
-
-                        if ( !rootObject ) {
-
-                            errors.push( `Unable to retrieve parent object with the given id: ${parentId} !!!` )
-                            checkEndOfParsing()
-                            return
-
-                        }
-
-                        // Update Children with parent id
-                        const rootId           = rootObject.id
-                        const numberOfChildren = childrenIds.length
-                        let endUpdates         = 0
-
-                        for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-
-                            let childId = childrenIds[ childIndex ]
-
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: rootId } }, ( error ) => {
-
-                                if ( error ) {
-                                    errors.push( error )
-                                }
-
-                                endUpdates++
-                                if ( endUpdates < numberOfChildren ) {
-                                    return
-                                }
-
-                                checkEndOfParsing()
-
-                            } )
-
-                        }
-
                     } )
 
-                },
-                onProgress,
-                onError
-            )
+                }
 
-        }
+                // Update children reference to parent only after all stuff is done
+                // await this._updateDocuments( children, { $set: { parent: document._id } } )
+                resolve( document )
 
-        function checkEndOfParsing () {
-            rootChildIndex++
-            if ( rootChildIndex < numberOfRootChildren ) {
-                checkNextRootChild()
-                return
+            } catch ( error ) {
+
+                reject( error )
+
             }
 
-            if ( errors.length > 0 ) {
-                onError( errors )
-            } else {
-                onSuccess( parentId )
-            }
-        }
-
-    }
-
-    _parse ( object, onSuccess, onProgress, onError ) {
-
-        const self             = this
-        const numberOfChildren = object.children.length
-        let childrenIds        = []
-        let childIndex         = 0
-
-        if ( numberOfChildren > 0 ) {
-
-            checkNextChild()
-
-        } else {
-
-            self._saveInDataBase( object, [], onError, onSuccess )
-
-        }
-
-        function checkNextChild () {
-
-            const child = object.children[ childIndex ]
-
-            self._parse(
-                child,
-                objectId => {
-
-                    childrenIds.push( objectId )
-
-                    onProgress( {
-                        name: child.name,
-                        done: childrenIds.length,
-                        todo: numberOfChildren
-                    } )
-
-                    if ( childrenIds.length < numberOfChildren ) {
-                        childIndex++
-                        checkNextChild()
-                        return
-                    }
-
-                    self._saveInDataBase( object, childrenIds, onError, onSuccess )
-
-                },
-                onProgress,
-                onError
-            )
-
-        }
-
-    }
-
-    ///////////
-
-    _parseUserData ( jsonUserData ) {
-
-        let userData = {}
-
-        for ( let prop in jsonUserData ) {
-
-            if ( !Object.prototype.hasOwnProperty.call( jsonUserData, prop ) ) { continue }
-
-            userData[ prop.replace( /\./g, '' ) ] = jsonUserData[ prop ]
-
-        }
-
-        return userData
-
-    }
-
-    _saveInDataBase ( object, childrenArrayIds, onError, onSuccess ) {
-
-        // Remove null ids that could come from invalid objects
-        const self        = this
-        const childrenIds = childrenArrayIds.filter( ( item ) => {
-            return item
         } )
 
-        // Preprocess objects here to save geometry, materials and related before to save the object itself
-        const objectType = object.type
-        const geometry   = object.geometry
-        const materials  = object.material
+    }
 
-        if (
-            objectType === 'Curve' ||
-            objectType === 'ArcCurve' ||
-            objectType === 'CatmullRomCurve3' ||
-            objectType === 'CubicBezierCurve' ||
-            objectType === 'CubicBezierCurve3' ||
-            objectType === 'EllipseCurve' ||
-            objectType === 'LineCurve' ||
-            objectType === 'LineCurve3' ||
-            objectType === 'QuadraticBezierCurve' ||
-            objectType === 'QuadraticBezierCurve3' ||
-            objectType === 'SplineCurve' ||
-            objectType === 'CurvePath' ||
-            objectType === 'Path' ||
-            objectType === 'Shape'
-        ) {
+    _getOrCreateDocuments ( objects = [] ) {
 
-            self._saveCurveInDatabase( object, childrenIds, onError, onSuccess )
+        const _objects = ThreeToMongoDB._arrayify( objects )
+        if ( isEmptyArray( _objects ) ) {
+            return null
+        }
 
-        } else if ( geometry && materials ) {
+        const promises = []
 
-            if ( geometry.isGeometry ) {
+        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
 
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.vertices || geometry.vertices.length === 0 ) ) {
+            const promise = this._getOrCreateDocument( _objects[ index ] )
+            promises.push( promise )
 
-                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` )
-                    onSuccess( null )
-                    return
+        }
 
-                }
+        return Promise.all( promises )
 
-                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
+    }
 
-                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
-                    if ( Array.isArray( materials ) ) {
+    _getOrCreateDocument ( data ) {
 
-                        let materialOnError = false
-                        let material        = undefined
-                        let materialType    = undefined
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+        if ( isNotDefined( data ) ) {
+            return null
+        }
 
-                            material     = materials[ materialIndex ]
-                            materialType = material.type
-                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
-                                materialOnError = true
-                                break
-                            }
+        return new Promise( async ( resolve, reject ) => {
 
-                        }
+            try {
 
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
-                            onSuccess( null )
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
-                        onSuccess( null )
-                        return
-
-                    } else {
-
-                        // Materials are ok for this type of object
-
-                    }
-
-                } else if ( objectType === 'Points' ) {
-
-                    // if material != PointsMaterial... ERROR
-
-                    if ( Array.isArray( materials ) ) {
-
-                        let materialOnError = false
-                        let material        = undefined
-                        let materialType    = undefined
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            material     = materials[ materialIndex ]
-                            materialType = material.type
-                            if ( materialType !== 'PointsMaterial' ) {
-                                materialOnError = true
-                                break
-                            }
-
-                        }
-
-                        if ( materialOnError ) {
-
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
-                            onSuccess( null )
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'PointsMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
-                        onSuccess( null )
-                        return
-
-                    } else {
-
-                        // Materials are ok for this type of object
-
-                    }
-
+                let document = await this._readOneDocument( data.type, { uuid: data.uuid } )
+                if ( isDefined( document ) ) {
+                    document = await this._updateDocument( document, data )
                 } else {
-
-                    // Regular object
-
+                    document = await this._createDocument( data )
                 }
 
-                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+                resolve( document )
 
-                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+            } catch ( error ) {
 
-                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess )
+                reject( error )
 
-                    } )
+            }
 
-                } )
+        } )
 
-            } else if ( geometry.isBufferGeometry ) {
+    }
 
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
+    // Create
+    _createDocuments ( datas = [] ) {
 
-                    console.error( `Object ${object.name} geometry doesn't contain vertices ! Skip it.` )
-                    onSuccess( null )
-                    return
+        const _datas = ThreeToMongoDB._arrayify( datas )
+        if ( isEmptyArray( _datas ) ) {
+            return null
+        }
 
-                }
+        const promises = []
 
-                if ( objectType === 'Line' || objectType === 'LineLoop' || objectType === 'LineSegments' ) {
+        for ( let index = 0, numberOfDocuments = _datas.length ; index < numberOfDocuments ; index++ ) {
 
-                    // if material != LineBasicMaterial or LineDashedMaterial... ERROR
-                    if ( Array.isArray( materials ) ) {
+            const promise = this._createDocument( _datas[ index ] )
+            promises.push( promise )
 
-                        let materialOnError = false
-                        let material        = undefined
-                        let materialType    = undefined
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+        }
 
-                            material     = materials[ materialIndex ]
-                            materialType = material.type
-                            if ( materialType !== 'LineBasicMaterial' && materialType !== 'LineDashedMaterial' ) {
-                                materialOnError = true
-                                break
-                            }
+        return Promise.all( promises )
 
-                        }
+    }
 
-                        if ( materialOnError ) {
+    _createDocument ( data ) {
 
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
-                            onSuccess( null )
-                            return
+        if ( isNotDefined( data ) ) {
+            return null
+        }
 
-                        }
+        return new Promise( async ( resolve, reject ) => {
 
-                    } else if ( materials.type !== 'LineBasicMaterial' && materials.type !== 'LineDashedMaterial' ) {
+            try {
 
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
-                        onSuccess( null )
-                        return
+                const model         = this._driver.model( data.type )
+                const savedDocument = await model( data ).save()
+                resolve( savedDocument._doc )
 
-                    } else {
+            } catch ( error ) {
 
-                        // Materials are ok for this type of object
+                reject( error )
 
-                    }
+            }
 
-                } else if ( objectType === 'Points' ) {
+        } )
 
-                    // if material != PointsMaterial... ERROR
+    }
 
-                    if ( Array.isArray( materials ) ) {
+    // Read
+    _readOneDocument ( type, query ) {
 
-                        let materialOnError = false
-                        let material        = undefined
-                        let materialType    = undefined
-                        for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+        if ( isNotDefined( type ) || isNotDefined( query ) ) {
+            return null
+        }
 
-                            material     = materials[ materialIndex ]
-                            materialType = material.type
-                            if ( materialType !== 'PointsMaterial' ) {
-                                materialOnError = true
-                                break
-                            }
+        return new Promise( async ( resolve, reject ) => {
 
-                        }
+            try {
 
-                        if ( materialOnError ) {
+                const model = await this._driver
+                                        .model( type )
+                                        .findOne( query )
+                                        .exec()
 
-                            console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
-                            onSuccess( null )
-                            return
-
-                        }
-
-                    } else if ( materials.type !== 'PointsMaterial' ) {
-
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
-                        onSuccess( null )
-                        return
-
-                    } else {
-
-                        // Materials are ok for this type of object
-
-                    }
-
+                if ( isDefined( model ) ) {
+                    resolve( model._doc )
                 } else {
-
-                    // Regular object
-
+                    resolve( null )
                 }
 
-                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
+            } catch ( error ) {
 
-                    self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
-
-                        self._saveObject3DInDatabase( object, childrenIds, geometryId, materialIds, onError, onSuccess )
-
-                    } )
-
-                } )
-
-            } else {
-
-                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
-                onSuccess( null )
+                reject( error )
 
             }
 
-        } else if ( geometry && !materials ) {
+        } )
 
-            // Is this right ??? Object can have geometry without material ???
+    }
 
-            if ( geometry.isGeometry ) {
+    _readManyDocument ( type, query ) {
 
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.vertices || geometry.vertices.length === 0 ) ) {
+        if ( isNotDefined( type ) || isNotDefined( query ) ) {
+            return null
+        }
 
-                    console.error( `Mesh ${object.name} geometry doesn't contain vertices ! Skip it.` )
-                    onSuccess( null )
-                    return
+        return new Promise( async ( resolve, reject ) => {
 
-                }
+            try {
 
-                self._saveGeometryInDatabase( geometry, onError, ( geometryId ) => {
+                const models = await this._driver
+                                         .model( type )
+                                         .find( query )
+                                         .exec()
 
-                    self._saveObject3DInDatabase( object, childrenIds, geometryId, [], onError, onSuccess )
+                const documents = models.map( model => model._doc )
 
-                } )
+                resolve( documents )
 
-            } else if ( geometry.isBufferGeometry ) {
+            } catch ( error ) {
 
-                // If it is a terminal object ( No children ) with an empty geometry
-                if ( childrenIds.length === 0 && ( !geometry.attributes[ 'position' ] || geometry.attributes[ 'position' ].count === 0 ) ) {
-
-                    console.error( `Mesh ${object.name} buffer geometry doesn't contain position attributes ! Skip it.` )
-                    onSuccess( null )
-                    return
-
-                }
-
-                self._saveBufferGeometryInDatabase( geometry, onError, ( geometryId ) => {
-
-                    self._saveObject3DInDatabase( object, childrenIds, geometryId, null, onError, onSuccess )
-
-                } )
-
-            } else {
-
-                console.error( `Object ${object.name} contain an unknown/unmanaged geometry of type ${geometry.type} ! Skip it.` )
-                onSuccess( null )
+                reject( error )
 
             }
 
-        } else if ( !geometry && materials ) {
+        } )
 
-            if ( objectType === 'Sprite' ) {
+    }
 
-                // if material != SpriteMaterial... ERROR
-                if ( Array.isArray( materials ) ) {
+    // Update
+    _updateDocuments ( documents = [], updateQuery, queryOptions ) {
 
-                    let materialOnError = false
-                    let material        = undefined
-                    let materialType    = undefined
-                    for ( let materialIndex = 0, numberOfMaterials = materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
+        const _documents = ThreeToMongoDB._arrayify( documents )
+        if ( isEmptyArray( _documents ) ) {
+            return null
+        }
 
-                        material     = materials[ materialIndex ]
-                        materialType = material.type
-                        if ( materialType !== 'SpriteMaterial' ) {
-                            materialOnError = true
-                            break
-                        }
+        const promises = []
 
-                    }
+        for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
 
-                    if ( materialOnError ) {
+            const promise = this._updateDocument( _documents[ index ], updateQuery, queryOptions )
+            promises.push( promise )
 
-                        console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
-                        onSuccess( null )
-                        return
+        }
 
-                    }
+        return Promise.all( promises )
 
-                } else if ( materials.type !== 'SpriteMaterial' ) {
+    }
 
-                    console.error( `Object ${object.name} of type ${objectType}, contain an invalid material of type ${materials.type} ! Skip it.` )
-                    onSuccess( null )
-                    return
+    _updateDocument ( document, updateQuery, queryOptions ) {
 
-                } else {
+        if ( isNotDefined( document ) ) {
+            return null
+        }
 
-                    // Materials are ok for this type of object
+        return this._driver
+                   .model( document.type )
+                   .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                   .exec()
 
-                }
+    }
 
-            } else {
+    // Delete
+    _deleteDocuments ( documents = [] ) {
 
-                console.error( `Missing geometry for object ${object.name} of type ${objectType}. Only Sprite can contains material without geometry ! Skip it.` )
-                onSuccess( null )
-                return
+        const _documents = ThreeToMongoDB._arrayify( documents )
+        if ( isEmptyArray( _documents ) ) {
+            return null
+        }
 
-            }
+        const promises = []
 
-            self._saveMaterialInDatabase( materials, onError, ( materialIds ) => {
+        for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
 
-                self._saveObject3DInDatabase( object, childrenIds, null, materialIds, onError, onSuccess )
+            const promise = this._deleteDocument( _documents[ index ] )
+            promises.push( promise )
 
-            } )
+        }
 
-        } else {
+        return Promise.all( promises )
 
-            self._saveObject3DInDatabase( object, childrenIds, null, null, onError, onSuccess )
+    }
+
+    _deleteDocument ( document ) {
+
+        if ( isNotDefined( document ) ) {
+            return null
+        }
+
+        return this._driver
+                   .model( document.type )
+                   .findByIdAndDelete( document._id )
+                   .exec()
+
+    }
+
+    ///
+    async _removeChildrenDocuments ( documents ) {
+
+        for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+
+            const childToRemove = documents[ childIndex ]
+            this._removeChildDocument( documents[ childIndex ] )
 
         }
 
     }
 
-    // Object3D
+    async _removeChildDocument ( document ) {
 
-    _checkIfObject3DAlreadyExist ( /*object*/ ) {
+        // Remove children recursively
+        const children = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+        await this._removeChildrenDocuments( children )
 
-        // Todo
-        return null
+        // Remove geometry only if current object is the last that reference it
+        await this._removeOrphanGeometryWithId( document.geometry )
 
-    }
+        // Remove material only if current object is the last that reference it
+        await this._removeOrphanMaterialsWithIds( document.material || [] )
 
-    _getObject3DModel ( object, childrenIds, geometryId, materialsIds ) {
-
-        object.parent   = null
-        object.children = childrenIds
-        object.geometry = geometryId
-        object.material = materialsIds
-
-        return this._driver.model( object.type )( object )
+        // finally remove the incriminated document
+        await this._deleteDocument( document )
 
     }
 
-    _saveObject3DInDatabase ( object, childrenIds, geometryId, materialsIds, onError, onSuccess ) {
+    // Remove orphan geometry
+    async _removeOrphanGeometryWithId ( geometryId ) {
 
-        const self     = this
-        const objectId = this._checkIfObject3DAlreadyExist( object )
+        if ( isNotDefined( geometryId ) ) { return }
 
-        if ( objectId ) {
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } )
+        if ( referencingObjects.length > 1 ) { return }
 
-            onSuccess( objectId )
+        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } )
+        await this._deleteDocument( geometryDocument )
 
-        } else {
+    }
 
-            this._getObject3DModel( object, childrenIds, geometryId, materialsIds )
-                .save()
-                .then( savedObject => {
+    // Remove only orphan materials
+    async _removeOrphanMaterialsWithIds ( materialsIds ) {
 
-                    const objectId = savedObject.id
+        const promises = []
 
-                    // Update Children with parent id
-                    if ( childrenIds && childrenIds.length > 0 ) {
-                        updateChildren( onError, onSuccess )
-                    } else {
-                        onSuccess( objectId )
-                    }
+        for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
 
-                    function updateChildren ( onError, onSuccess ) {
-
-                        const savedChildrenIds = savedObject._doc.children
-                        const numberOfChildren = savedChildrenIds.length
-
-                        let endUpdates = 0
-                        let childId    = undefined
-                        const errors   = []
-
-                        for ( let childIndex = 0 ; childIndex < numberOfChildren ; childIndex++ ) {
-
-                            childId = savedChildrenIds[ childIndex ]
-
-                            const Objects3DModelBase = self._driver.model( 'Objects3D' )
-                            Objects3DModelBase.findByIdAndUpdate( childId, { $set: { parent: objectId } }, ( error ) => {
-
-                                if ( error ) {
-                                    errors.push( error )
-                                }
-
-                                endUpdates++
-                                if ( endUpdates < numberOfChildren ) {
-                                    return
-                                }
-
-                                returnResult( onError, onSuccess )
-
-                            } )
-
-                        }
-
-                        function returnResult ( onError, onSuccess ) {
-
-                            if ( errors.length > 0 ) {
-                                onError( errors )
-                            } else {
-                                onSuccess( objectId )
-                            }
-
-                        }
-
-                    }
-
-                } )
-                .catch( onError )
+            const materialId  = materialsIds[ index ]
+            const savePromise = this._removeOrphanMaterialWithId( materialId )
+            promises.push( savePromise )
 
         }
 
-    }
-
-    // Curve
-
-    _checkIfCurveAlreadyExist ( /*curve*/ ) {
-
-        // Todo
-        return null
+        return Promise.all( promises )
 
     }
 
-    _getCurveModel ( curve ) {
+    // Remove only orphan material
+    async _removeOrphanMaterialWithId ( materialId ) {
 
-        return this._driver.model( curve.type )( curve )
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )
+        if ( referencingObjects.length > 1 ) { return }
 
-    }
-
-    _saveCurveInDatabase ( curve, onError, onSuccess ) {
-
-        const curveId = this._checkIfCurveAlreadyExist( curve )
-
-        if ( curveId ) {
-
-            onSuccess( curveId )
-
-        } else {
-
-            this._getCurveModel( curve )
-                .save()
-                .then( savedCurve => { onSuccess( savedCurve.id ) } )
-                .catch( onError )
-
-        }
-
-    }
-
-    // Geometry
-
-    _checkIfGeometryAlreadyExist ( /*geometry*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getGeometryModel ( geometry ) {
-
-        return this._driver.model( geometry.type )( geometry )
-
-    }
-
-    _saveGeometryInDatabase ( geometry, onError, onSuccess ) {
-
-        const geometryId = this._checkIfGeometryAlreadyExist( geometry )
-
-        if ( geometryId ) {
-
-            onSuccess( geometryId )
-
-        } else {
-
-            this._getGeometryModel( geometry )
-                .save()
-                .then( savedGeometry => { onSuccess( savedGeometry.id ) } )
-                .catch( onError )
-
-        }
-
-    }
-
-    // BufferGeometry
-
-    _checkIfBufferGeometryAlreadyExist ( /*bufferGeometry*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getBufferGeometryModel ( bufferGeometry ) {
-
-        return this._driver.model( bufferGeometry.type )( bufferGeometry )
-
-    }
-
-    _saveBufferGeometryInDatabase ( bufferGeometry, onError, onSuccess ) {
-
-        const bufferGeometryId = this._checkIfBufferGeometryAlreadyExist( bufferGeometry )
-
-        if ( bufferGeometryId ) {
-
-            onSuccess( bufferGeometryId )
-
-        } else {
-
-            this._getBufferGeometryModel( bufferGeometry )
-                .save()
-                .then( savedBufferGeometry => { onSuccess( savedBufferGeometry.id ) } )
-                .catch( onError )
-
-        }
-
-    }
-
-    // Material
-
-    _checkIfMaterialAlreadyExist ( /*materials*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getMaterialModel ( material, texturesIds ) {
-
-        material.texturesIds = texturesIds
-
-        return this._driver.model( material.type )( material )
-
-    }
-
-    _saveMaterialInDatabase ( materials, onError, onSuccess ) {
-
-        if ( isArray( materials ) ) {
-
-            const numberOfMaterials    = materials.length
-            let materialIds            = new Array( numberOfMaterials )
-            let numberOfSavedMaterials = 0
-            let material               = undefined
-            for ( let materialIndex = 0 ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                material         = materials[ materialIndex ]
-                const materialId = this._checkIfMaterialAlreadyExist( material )
-
-                if ( materialId ) {
-
-                    materialIds[ materialIndex ] = materialId
-                    numberOfSavedMaterials++
-
-                    // End condition
-                    if ( numberOfSavedMaterials === numberOfMaterials ) {
-                        onSuccess( materialIds )
-                    }
-
-                } else {
-
-                    ( () => {
-
-                        const materialLocalIndex = materialIndex
-
-                        this._getMaterialModel( material )
-                            .save()
-                            .then( savedMaterial => {
-
-                                materialIds[ materialLocalIndex ] = savedMaterial.id
-                                numberOfSavedMaterials++
-
-                                // End condition
-                                if ( numberOfSavedMaterials === numberOfMaterials ) {
-                                    onSuccess( materialIds )
-                                }
-
-                            } )
-                            .catch( onError )
-
-                    } )()
-
-                }
-
-            }
-
-        } else {
-
-            const materialId = this._checkIfMaterialAlreadyExist( materials )
-
-            if ( materialId ) {
-
-                onSuccess( materialId )
-
-            } else {
-
-                this._getMaterialModel( materials )
-                    .save()
-                    .then( savedMaterial => {
-
-                        // Return id
-                        onSuccess( savedMaterial.id )
-
-                    } )
-                    .catch( onError )
-
-            }
-
-        }
-
-    }
-
-    // Texture
-
-    _checkIfTextureAlreadyExist ( /*texture*/ ) {
-
-        // Todo
-        return null
-
-    }
-
-    _getTextureModel ( texture ) {
-
-        return this._driver.model( texture.type )( texture )
-
-    }
-
-    _saveTextureInDatabase ( texture, onError, onSuccess ) {
-
-        const textureId = this._checkIfTextureAlreadyExist( texture )
-
-        if ( textureId ) {
-
-            onSuccess( textureId )
-
-        } else {
-
-            this._getTextureModel( texture )
-                .save()
-                .then( savedTexture => { onSuccess( savedTexture.id ) } )
-                .catch( onError )
-
-        }
+        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } )
+        await this._deleteDocument( materialDocument )
 
     }
 
 }
+
+ThreeToMongoDB.AvailableCurveTypes = [
+    'Curve',
+    'ArcCurve',
+    'CatmullRomCurve3',
+    'CubicBezierCurve',
+    'CubicBezierCurve3',
+    'EllipseCurve',
+    'LineCurve',
+    'LineCurve3',
+    'QuadraticBezierCurve',
+    'QuadraticBezierCurve3',
+    'SplineCurve',
+    'CurvePath',
+    'Path',
+    'Shape'
+]
+
+ThreeToMongoDB.AvailableLineTypes         = [ 'Line', 'LineLoop', 'LineSegments' ]
+ThreeToMongoDB.AvailableLineMaterialTypes = [ 'LineBasicMaterial', 'LineDashedMaterial' ]
+
+ThreeToMongoDB.AvailablePointTypes         = [ 'Points' ]
+ThreeToMongoDB.AvailablePointMaterialTypes = [ 'PointsMaterial' ]
+
+ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ]
+ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ]
 
 export { ThreeToMongoDB }

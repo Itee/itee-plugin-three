@@ -136,7 +136,7 @@ Object.assign( DBFLoader.prototype, {
 
         const version = this.reader.getInt8()
         if ( !this._isValidVersion( version ) ) {
-            this.logger.error( `DBFLoader: Invalid version number: ${version}` )
+            this.logger.error( `DBFLoader: Invalid version number: ${ version }` )
             return null
         }
 
@@ -201,7 +201,7 @@ Object.assign( DBFLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid version parameter: ${version}` )
+                throw new RangeError( `Invalid version parameter: ${ version }` )
 
         }
 
@@ -580,7 +580,7 @@ Object.assign( DBFLoader.prototype, {
                         break
 
                     default:
-                        throw new RangeError( `Invalid data type parameter: ${field.type}` )
+                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
 
                 }
 

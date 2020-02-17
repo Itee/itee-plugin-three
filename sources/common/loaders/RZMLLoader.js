@@ -113,8 +113,7 @@ Object.assign( RZMLLoader.prototype, {
 
             // Todo: consider using array and/or create directly floating images from there
             this.imagesShotData.push( {
-                imageName: shot.attributes[ 'n' ].value,
-                //        imagePath: iplnElement.attributes["img"].value,
+                imageName: shot.attributes[ 'n' ].value, //        imagePath: iplnElement.attributes["img"].value,
                 position:  {
                     x: parseFloat( translationElement.attributes[ 'x' ].value ),
                     y: parseFloat( translationElement.attributes[ 'y' ].value ),

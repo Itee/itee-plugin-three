@@ -34,21 +34,19 @@ function _createSchema ( Mongoose ) {
     const Vector3  = Types.Vector3
 
     _schema = new Schema( {
-        lensFlares:     [
-            {
-                texture:  ObjectId,
-                size:     Number,
-                distance: Number,
-                x:        Number,
-                y:        Number,
-                z:        Number,
-                scale:    Number,
-                rotation: Number,
-                opacity:  Number,
-                color:    Color,
-                blending: Number
-            }
-        ],
+        lensFlares:     [ {
+            texture:  ObjectId,
+            size:     Number,
+            distance: Number,
+            x:        Number,
+            y:        Number,
+            z:        Number,
+            scale:    Number,
+            rotation: Number,
+            opacity:  Number,
+            color:    Color,
+            blending: Number
+        } ],
         positionScreen: Vector3
     } )
 

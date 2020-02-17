@@ -28,17 +28,17 @@ function ColorType ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} is null or undefined` ) }
-            if ( isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} is not a object or Color instance` ) }
+            if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
+            if ( isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Color instance` ) }
 
-            if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain r property` ) }
-            if ( isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain r property` ) }
+            if ( isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
-            if ( !( 'g' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain g property` ) }
-            if ( isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'g' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain g property` ) }
+            if ( isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
-            if ( !( 'b' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} does not contain b property` ) }
-            if ( isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${value} expected to be a number` ) }
+            if ( !( 'b' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain b property` ) }
+            if ( isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
             return {
                 r: value.r,

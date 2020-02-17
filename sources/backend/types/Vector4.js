@@ -30,20 +30,20 @@ function Vector4Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( isNotDefined( value ) ) { throw new Error( `Vector4: ${value} is null or undefined` ) }
-            if ( isNotObject( value ) && !value.isVector4 ) { throw new Error( `Vector4: ${value} is not a object or Vector4 instance` ) }
+            if ( isNotDefined( value ) ) { throw new Error( `Vector4: ${ value } is null or undefined` ) }
+            if ( isNotObject( value ) && !value.isVector4 ) { throw new Error( `Vector4: ${ value } is not a object or Vector4 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain x property' ) }
-            if ( isNotNumber( value.x ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Error( `Vector4: ${ value } does not contain x property` ) }
+            if ( isNotNumber( value.x ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain y property' ) }
-            if ( isNotNumber( value.y ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Error( `Vector4: ${ value } does not contain y property` ) }
+            if ( isNotNumber( value.y ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain z property' ) }
-            if ( isNotNumber( value.z ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Error( `Vector4: ${ value } does not contain z property` ) }
+            if ( isNotNumber( value.z ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'w' in value ) ) { throw new Error( 'Vector4: ' + value + ' does not contain w property' ) }
-            if ( isNotNumber( value.w ) ) { throw new Error( `Vector4: ${value} expected to be a number` ) }
+            if ( !( 'w' in value ) ) { throw new Error( `Vector4: ${ value } does not contain w property` ) }
+            if ( isNotNumber( value.w ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,

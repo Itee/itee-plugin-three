@@ -125,7 +125,7 @@ class FilairesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TFilaireManager: Unknown object of type: ${objectType}` )
+                throw new Error( `TFilaireManager: Unknown object of type: ${ objectType }` )
 
         }
 
@@ -139,7 +139,7 @@ class FilairesManager extends TDataBaseManager {
         const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] )
 
         if ( isNotDefined( positions ) ) {
-            throw new Error( `TFilaireManager._parseFilaire() : ${data.type} geometry doesn't contains coordinates !!!` )
+            throw new Error( `TFilaireManager._parseFilaire() : ${ data.type } geometry doesn't contains coordinates !!!` )
         }
 
         const material = new LineBasicMaterial( {

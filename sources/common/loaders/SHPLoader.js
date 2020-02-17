@@ -62,7 +62,9 @@ function ringClockwise ( ring ) {
         return false
     }
 
-    var i = 0, n, area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ]
+    var i    = 0,
+        n,
+        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ]
     while ( ++i < n ) {
         area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ]
     }
@@ -133,11 +135,13 @@ function ringContains ( ring, point ) {
  * @return {boolean}
  */
 function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ], y20 = p2[ 1 ] - p0[ 1 ]
+    var x20 = p2[ 0 ] - p0[ 0 ],
+        y20 = p2[ 1 ] - p0[ 1 ]
     if ( x20 === 0 && y20 === 0 ) {
         return true
     }
-    var x10 = p1[ 0 ] - p0[ 0 ], y10 = p1[ 1 ] - p0[ 1 ]
+    var x10 = p1[ 0 ] - p0[ 0 ],
+        y10 = p1[ 1 ] - p0[ 1 ]
     if ( x10 === 0 && y10 === 0 ) {
         return false
     }
@@ -395,7 +399,7 @@ Object.assign( SHPLoader.prototype, {
                     break
 
                 default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${header.shapeType}` )
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` )
                     break
 
             }

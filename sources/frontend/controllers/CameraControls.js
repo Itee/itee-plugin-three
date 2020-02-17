@@ -255,7 +255,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -271,7 +271,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value
 
@@ -311,7 +311,7 @@ class CameraControls extends EventDispatcher {
 
     set trackPath ( value ) {
 
-        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${value.constructor.name}. Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
         this._trackPath = value
 
@@ -331,7 +331,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -864,7 +864,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Unknown state: ${state}` )
+                throw new RangeError( `Unknown state: ${ state }` )
 
         }
 
@@ -888,6 +888,7 @@ class CameraControls extends EventDispatcher {
         mouseEvent.preventDefault()
 
         this._state = State.None
+        this._consumeEvent( mouseEvent )
 
     }
 
@@ -905,7 +906,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canFront ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion )
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed )
@@ -913,9 +914,29 @@ class CameraControls extends EventDispatcher {
             this._camera.position.add( displacement )
             this._target.position.add( displacement )
 
+        } else if ( this._camera.isOrthographicCamera ) {
+
+            const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion )
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed )
+
+            this._camera.position.add( displacement )
+            this._target.position.add( displacement )
+
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom += halfOffsetHeight * this.frontSpeed
+            //            this._camera.right -= halfOffsetWidth * this.frontSpeed
+            //            this._camera.left += halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.frontSpeed * this.zoomSpeed
+            this._camera.zoom += zoomDisplacement
+
+            this._camera.updateProjectionMatrix()
+
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -928,7 +949,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canBack ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion )
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed )
@@ -936,9 +957,33 @@ class CameraControls extends EventDispatcher {
             this._camera.position.add( displacement )
             this._target.position.add( displacement )
 
+        } else if ( this._camera.isOrthographicCamera ) {
+
+            const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion )
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed )
+
+            this._camera.position.add( displacement )
+            this._target.position.add( displacement )
+
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top += halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.right += halfOffsetWidth * this.frontSpeed
+            //            this._camera.left -= halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.backSpeed * this.zoomSpeed
+            if ( this._camera.zoom - zoomDisplacement <= 0.0 ) {
+                this._camera.zoom = 0.01
+            } else {
+                this._camera.zoom -= zoomDisplacement
+            }
+
+            this._camera.updateProjectionMatrix()
+
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -951,7 +996,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canUp ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = UP.clone()
                                    .applyQuaternion( this._camera.quaternion )
@@ -962,7 +1007,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -975,7 +1020,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canDown ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = DOWN.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -986,7 +1031,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -999,7 +1044,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canLeft ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = LEFT.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -1010,7 +1055,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            // Todo: ...
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1023,7 +1068,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canRight ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = RIGHT.clone()
                                       .applyQuaternion( this._camera.quaternion )
@@ -1047,7 +1092,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRotate ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position
             const targetPosition = this._target.position
@@ -1109,7 +1154,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Unamanaged rotation for camera mode ${this._mode}` )
+                    throw new RangeError( `Unamanaged rotation for camera mode ${ this._mode }` )
 
             }
 
@@ -1128,7 +1173,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canPan ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             // Take into account the distance between the camera and his target
             const cameraPosition = this._camera.position
@@ -1155,7 +1200,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRoll ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position
             const targetPosition = this._target.position
@@ -1182,7 +1227,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canZoom ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             switch ( this._mode ) {
 
@@ -1228,15 +1273,30 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
-        } /*else {
+        } else if ( this._camera.isOrthographicCamera ) {
 
-         // Todo: ...
+            const cameraPosition                 = this._camera.position
+            const targetPosition                 = this._target.position
+            const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
+            const deltaZoom                      = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget )
 
-         }*/
+            if ( this._camera.zoom + deltaZoom <= 0.0 ) {
+                this._camera.zoom = 0.01
+            } else {
+                this._camera.zoom += deltaZoom
+            }
+
+            this._camera.updateProjectionMatrix()
+
+        } else {
+
+            // Todo: ...
+
+        }
 
         this.dispatchEvent( { type: 'zoom' } )
         this.dispatchEvent( { type: 'change' } )
@@ -1247,7 +1307,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canLookAt ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const _direction     = direction.clone()
             const cameraPosition = this._camera.position
@@ -1271,7 +1331,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
@@ -1342,7 +1402,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Invalid camera control _mode parameter: ${this._mode}` )
+                throw new RangeError( `Invalid camera control _mode parameter: ${ this._mode }` )
 
         }
 
