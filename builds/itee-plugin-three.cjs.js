@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.0 - CommonJs')
+console.log('Itee.Plugin.Three v1.2.1 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -16,9 +16,9 @@ var threeFull = require('three-full');
 var iteeClient = require('itee-client');
 var bson = require('bson');
 
-console.log('Itee.Database.MongoDB v1.0.0 - EsModule');
+console.log('Itee.Database.MongoDB v1.0.1 - EsModule');
 
-console.log('Itee.Database v8.0.0 - EsModule');
+console.log('Itee.Database v8.0.2 - EsModule');
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -940,7 +940,6 @@ class TAbstractFileConverter {
         const fileReadStream = fs.createReadStream( file );
 
         fileReadStream.on( 'error', ( error ) => {
-            console.error( `Read stream on error: ${error}` );
 
             isOnError = true;
             onError( error );
@@ -4239,6 +4238,7 @@ Object3D._schema         = null;
 Object3D._model          = null;
 
 var Object3D$1 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
 	Object3D: Object3D
 });
 
@@ -5378,6 +5378,7 @@ const Geometry = {
 };
 
 var Geometry$1 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
 	Geometry: Geometry
 });
 
