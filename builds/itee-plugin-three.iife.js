@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.0 - Standalone')
+console.log('Itee.Plugin.Three v1.2.1 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -7413,9 +7413,6 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                    }
 
-	                    break
-
-	                default:
 	                    break
 
 	            }

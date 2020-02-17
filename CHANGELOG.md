@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/Itee/itee-plugin-three/compare/v1.2.0...v1.2.1) (2020-02-17)
+
+
+### Bug Fixes
+
+* **package:** update package lock ([a14967b](https://github.com/Itee/itee-plugin-three/commit/a14967b15787f542894754e6cd162e987f35eda7)), closes [#2](https://github.com/Itee/itee-plugin-three/issues/2)
+
 # [1.2.0](https://github.com/Itee/itee-plugin-three/compare/v1.1.2...v1.2.0) (2020-02-17)
 
 
