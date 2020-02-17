@@ -57,7 +57,8 @@
   "dependencies": {
     "bson": "^4.0.2",
     "itee-client": "^7.1.1",
-    "itee-database": "^7.3.0",
+    "itee-database": "^8.0.0",
+    "itee-mongodb": "^1.0.0",
     "itee-utils": "^5.1.1",
     "itee-validators": "^5.1.2",
     "mongoose": "^5.7.1",
