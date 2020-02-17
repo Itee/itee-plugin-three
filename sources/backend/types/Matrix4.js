@@ -31,8 +31,8 @@ function Matrix4Type ( Mongoose ) {
 
         cast ( value ) {
 
-            if ( isNotDefined( value ) ) { throw new Error( `Matrix4: ${value} is null or undefined` ) }
-            if ( isNotArray( value ) && !value.isMatrix4 ) { throw new Error( `Matrix4: ${value} is not a object or Matrix4 instance` ) }
+            if ( isNotDefined( value ) ) { throw new Error( `Matrix4: ${ value } is null or undefined` ) }
+            if ( isNotArray( value ) && !value.isMatrix4 ) { throw new Error( `Matrix4: ${ value } is not a object or Matrix4 instance` ) }
 
             let result = undefined
             if ( value.isMatrix4 ) {
@@ -44,7 +44,7 @@ function Matrix4Type ( Mongoose ) {
             // Check number of values
             const numberOfValues = result.length
             if ( numberOfValues !== 16 ) {
-                throw new Error( `Matrix4: ${value} does not contain the right number of values. Expect 9 values and found ${numberOfValues}` )
+                throw new Error( `Matrix4: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
             }
 
             // Check values are numbers in the range [0 - 1]
@@ -53,11 +53,11 @@ function Matrix4Type ( Mongoose ) {
                 val = result[ index ]
 
                 if ( isNotNumber( val ) ) {
-                    throw new Error( `Matrix4: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
                 if ( isNaN( val ) ) {
-                    throw new Error( `Matrix4: ${value} does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
             }

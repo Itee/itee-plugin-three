@@ -36,12 +36,10 @@ function _createSchema ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [
-            {
-                type: ObjectId,
-                ref:  'PointsMaterial'
-            }
-        ],
+        material: [ {
+            type: ObjectId,
+            ref:  'PointsMaterial'
+        } ],
         drawMode: Number
     } )
 

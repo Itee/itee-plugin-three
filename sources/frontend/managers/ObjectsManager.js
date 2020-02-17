@@ -84,7 +84,7 @@ class ObjectsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
-        if ( !( value instanceof GeometriesManager ) ) { throw new TypeError( `Geometries provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TGeometriesManager.` ) }
+        if ( !( value instanceof GeometriesManager ) ) { throw new TypeError( `Geometries provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TGeometriesManager.` ) }
 
         this._geometriesProvider = value
 
@@ -98,7 +98,7 @@ class ObjectsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
-        if ( !( value instanceof MaterialsManager ) ) { throw new TypeError( `Materials provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TMaterialsManager.` ) }
+        if ( !( value instanceof MaterialsManager ) ) { throw new TypeError( `Materials provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TMaterialsManager.` ) }
 
         this._materialsProvider = value
 
@@ -400,7 +400,7 @@ class ObjectsManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TObjectsManager: Unknown object of type: ${objectType}` )
+                throw new Error( `TObjectsManager: Unknown object of type: ${ objectType }` )
 
         }
 

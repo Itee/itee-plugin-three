@@ -345,7 +345,7 @@ class ASCLoader {
             } )
 
         } else {
-            this.logger.error( `Invalid data line: ${line}` )
+            this.logger.error( `Invalid data line: ${ line }` )
         }
 
     }
@@ -389,7 +389,7 @@ class ASCLoader {
             this._parseLinesAsXYZIRGBnXnYnZ( lines )
 
         } else {
-            this.logger.error( `Invalid data line: ${lines}` )
+            this.logger.error( `Invalid data line: ${ lines }` )
         }
 
     }

@@ -8,21 +8,21 @@
  *
  */
 
-import { DbfToThree }     from './converters/DbfToThree'
-import { JsonToThree }    from './converters/JsonToThree'
-import { MtlToThree }     from './converters/MtlToThree'
-import { Obj2ToThree }    from './converters/Obj2ToThree'
-import { ShpToThree }     from './converters/ShpToThree'
-import { FbxToThree }     from './converters/FbxToThree'
-import { ColladaToThree } from './converters/ColladaToThree'
-import { StlToThree }     from './converters/StlToThree'
-import { TdsToThree }     from './converters/TdsToThree'
-import { ThreeToMongoDB } from './inserters/ThreeToMongoDB'
 import { TAbstractConverterManager } from 'itee-database'
 import {
     TMongoDBPlugin,
     TMongooseController
 }                                    from 'itee-mongodb'
+import { ColladaToThree }            from './converters/ColladaToThree'
+import { DbfToThree }                from './converters/DbfToThree'
+import { FbxToThree }                from './converters/FbxToThree'
+import { JsonToThree }               from './converters/JsonToThree'
+import { MtlToThree }                from './converters/MtlToThree'
+import { Obj2ToThree }               from './converters/Obj2ToThree'
+import { ShpToThree }                from './converters/ShpToThree'
+import { StlToThree }                from './converters/StlToThree'
+import { TdsToThree }                from './converters/TdsToThree'
+import { ThreeToMongoDB }            from './inserters/ThreeToMongoDB'
 
 import { Audio }                     from './schemas/audio/Audio'
 import { AudioListener }             from './schemas/audio/AudioListener'
@@ -547,52 +547,40 @@ export default new TMongoDBPlugin()
                     MtlToThree:     new MtlToThree(),
                     ObjToThree:     new Obj2ToThree()
                 },
-                rules:      [
-                    {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    },
-                    {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    },
-                    {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    },
-                    {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    },
-                    {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    },
-                    {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    },
-                    {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    },
-                    {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    },
-                    {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    },
-                    {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    },
-                    {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    }
-                ],
+                rules:      [ {
+                    on:  '.json',
+                    use: 'JsonToThree'
+                }, {
+                    on:  '.dae',
+                    use: 'ColladaToThree'
+                }, {
+                    on:  '.fbx',
+                    use: 'FbxToThree'
+                }, {
+                    on:  '.stl',
+                    use: 'StlToThree'
+                }, {
+                    on:  '.3ds',
+                    use: 'TdsToThree'
+                }, {
+                    on:  '.shp',
+                    use: 'ShpToThree'
+                }, {
+                    on:  '.dbf',
+                    use: 'DbfToThree'
+                }, {
+                    on:  [ '.shp', '.dbf' ],
+                    use: [ 'ShpToThree', 'DbfToThree' ]
+                }, {
+                    on:  '.mtl',
+                    use: 'MtlToThree'
+                }, {
+                    on:  '.obj',
+                    use: 'ObjToThree'
+                }, {
+                    on:  [ '.mtl', '.obj' ],
+                    use: [ 'MtlToThree', 'ObjToThree' ]
+                } ],
                 inserter:   ThreeToMongoDB
             },
             can:     {

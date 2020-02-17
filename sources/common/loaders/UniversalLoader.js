@@ -119,7 +119,7 @@ Object.assign( UniversalLoader.prototype, {
         if ( files instanceof FileList ) {
 
             const numberOfFiles = files.length
-            this.logger.log( `numberOfFiles: ${numberOfFiles}` )
+            this.logger.log( `numberOfFiles: ${ numberOfFiles }` )
 
             const filesUrls = []
             let fileUrl     = ''
@@ -127,7 +127,7 @@ Object.assign( UniversalLoader.prototype, {
 
             for ( let fileIndex = 0 ; fileIndex < numberOfFiles ; ++fileIndex ) {
                 fileObject = files[ fileIndex ]
-                fileUrl    = `${URL.createObjectURL( fileObject )}/${fileObject.name}`
+                fileUrl    = `${ URL.createObjectURL( fileObject ) }/${ fileObject.name }`
 
                 filesUrls.push( { url: fileUrl } )
             }
@@ -136,7 +136,7 @@ Object.assign( UniversalLoader.prototype, {
 
         } else if ( files instanceof File ) {
 
-            const fileUrl = `${URL.createObjectURL( files )}/${files.name}`
+            const fileUrl = `${ URL.createObjectURL( files ) }/${ files.name }`
             this.loadSingleFile( { url: fileUrl }, onLoad, onProgress, onError )
 
         } else if ( isObject( files ) ) {
@@ -224,7 +224,7 @@ Object.assign( UniversalLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid file extension: ${fileExtension}. Supported formats are: ${FileFormat.toString()}` )
+                throw new RangeError( `Invalid file extension: ${ fileExtension }. Supported formats are: ${ FileFormat.toString() }` )
 
         }
 

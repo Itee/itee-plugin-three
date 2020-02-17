@@ -10,11 +10,11 @@
 
 import { TAbstractDataInserter } from 'itee-database'
 import {
-    isNull,
     isArray,
     isDefined,
     isEmptyArray,
-    isNotDefined
+    isNotDefined,
+    isNull
 }                                from 'itee-validators'
 
 class ThreeToMongoDB extends TAbstractDataInserter {
@@ -34,6 +34,25 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    // Utils
+    static _arrayify ( data ) {
+
+        let array = []
+
+        if ( isDefined( data ) ) {
+
+            if ( isArray( data ) ) {
+                array = data
+            } else {
+                array = [ data ]
+            }
+
+        }
+
+        return array
+
+    }
+
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = ThreeToMongoDB._arrayify( data )
@@ -43,7 +62,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         }
 
         const names = dataToParse.map( _data => _data.name )
-        console.log( `ThreeToMongoDB: Saving ${names}` )
+        console.log( `ThreeToMongoDB: Saving ${ names }` )
 
         // Check startegy
         if ( parameters.mergeStrategy ) {
@@ -60,7 +79,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } )
                 if ( isNull( parentDocument ) ) {
-                    onError( `Unable to retrieve parent with id (${parameters.parentId}). Abort insert !` )
+                    onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` )
                     return
                 }
 
@@ -112,7 +131,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
             }
 
-            console.log( `ThreeToMongoDB: Saved ${childrenIds}` )
+            console.log( `ThreeToMongoDB: Saved ${ childrenIds }` )
             onSuccess()
 
         } catch ( error ) {
@@ -121,26 +140,36 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    async _parseObjects ( objects = [], parentId = null  ) {
+    async _parseObjects ( objects = [], parentId = null ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {
             return null
         }
 
-        return new Promise( async ( resolve, reject ) => {
+        const documents = []
+        let document    = null
 
-            const documents = []
-            let document    = null
+        for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+            document = this._parseObject( _objects[ index ], parentId )
+            documents.push( document )
+        }
 
-            for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
-                document = await this._parseObject( _objects[ index ], parentId )
-                documents.push( document )
-            }
+        return Promise.all( documents )
 
-            resolve( documents )
-
-        } )
+        // return new Promise( async ( resolve ) => {
+        //
+        //     const documents = []
+        //     let document    = null
+        //
+        //     for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
+        //         document = await this._parseObject( _objects[ index ], parentId )
+        //         documents.push( document )
+        //     }
+        //
+        //     resolve( documents )
+        //
+        // } )
 
     }
 
@@ -167,7 +196,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                     const vertices = objectGeometry.vertices
                     if ( isNotDefined( vertices ) || isEmptyArray( vertices ) ) {
 
-                        console.error( `Leaf object ${objectName} have a geometry that doesn't contain vertices ! Skip it.` )
+                        console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
                         resolve( null )
                         return
 
@@ -177,7 +206,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                     const attributes = objectGeometry.attributes
                     if ( isNotDefined( attributes ) ) {
-                        console.error( `Buffer geometry of ${objectName} doesn't contain attributes ! Skip it.` )
+                        console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
                         resolve( null )
                         return
                     }
@@ -185,14 +214,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                     const positions = attributes.position
                     if ( isNotDefined( positions ) || positions.count === 0 ) {
 
-                        console.error( `Leaf object ${objectName} have a buffer geometry that doesn't contain position attribute ! Skip it.` )
+                        console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
                         resolve( null )
                         return
                     }
 
                 } else {
 
-                    console.error( `Object ${objectName} contain an unknown/unmanaged geometry of type ${objectGeometry.type} ! Skip it.` )
+                    console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
                     resolve( null )
                     return
 
@@ -206,7 +235,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 if ( isNotDefined( objectGeometry ) ) {
 
-                    console.error( `Missing geometry for object ${object.name} of type ${objectType}. Only Sprite can contains material without geometry ! Skip it.` )
+                    console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
                     resolve( null )
                     return
 
@@ -218,7 +247,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 if ( isNotDefined( objectGeometry ) ) {
 
-                    console.error( `Missing geometry for object ${object.name} of type ${objectType}. Only Sprite can contains material without geometry ! Skip it.` )
+                    console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
                     resolve( null )
                     return
 
@@ -239,7 +268,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                     const material     = objectMaterials[ materialIndex ]
                     const materialType = material.type
                     if ( !availableMaterialTypes.includes( materialType ) ) {
-                        console.error( `Object ${objectName} of type ${objectType}, contain an invalid material of type ${materialType} ! Skip it.` )
+                        console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
                         resolve( null )
                         return
                     }
@@ -253,7 +282,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                 // const children    = await this._parseObjects( objectChildren )
                 // const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
 
-                const geometry    = await this._getOrCreateDocuments( objectGeometry )
+                const geometry   = await this._getOrCreateDocuments( objectGeometry )
                 const geometryId = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null
 
                 const materials    = await this._getOrCreateDocuments( objectMaterials )
@@ -261,7 +290,10 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 // Check if object already exist
                 // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-                let document = await this._readOneDocument( objectType, { uuid: object.uuid, parent: parentId } )
+                let document = await this._readOneDocument( objectType, {
+                    uuid:   object.uuid,
+                    parent: parentId
+                } )
                 // Todo if document.parent != parentId warn id collision !n m
                 if ( isDefined( document ) ) {
 
@@ -275,8 +307,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                         await this._updateDocument( document, {
                             $addToSet: {
-                                children: childrenIds,
-                                // geometry: geometryId, // Geometry is not an array !!
+                                children: childrenIds // geometry: geometryId, // Geometry is not an array !!
                                 // material: materialsIds // Should check which material still exist !!!
                             }
                         } )
@@ -303,13 +334,12 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                         } )
 
                     } else {
-                        console.error( `Unknown/Unmanaged merge srategy ${this.mergeStrategy}` )
+                        console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
                     }
 
                 } else {
 
                     object.parent   = parentId
-                    // object.parent   = null
                     object.children = []
                     object.geometry = geometryId
                     object.material = materialsIds
@@ -632,25 +662,6 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
         const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } )
         await this._deleteDocument( materialDocument )
-
-    }
-
-    // Utils
-    static _arrayify ( data ) {
-
-        let array = []
-
-        if ( isDefined( data ) ) {
-
-            if ( isArray( data ) ) {
-                array = data
-            } else {
-                array = [ data ]
-            }
-
-        }
-
-        return array
 
     }
 

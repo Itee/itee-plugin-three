@@ -31,35 +31,34 @@ function _createSchema ( Mongoose ) {
     const Matrix3  = Types.Matrix3
 
     _schema = new Schema( {
-            uuid:             String,
-            name:             String,
-            image:            ObjectId,
-            mipmaps:          [],
-            mapping:          Number,
-            wrapS:            Number,
-            wrapT:            Number,
-            magFilter:        Number,
-            minFilter:        Number,
-            anisotropy:       Number,
-            format:           Number,
-            type:             Number,
-            offset:           Vector2,
-            repeat:           Vector2,
-            center:           Vector2,
-            rotation:         Number,
-            matrixAutoUpdate: Boolean,
-            matrix:           Matrix3,
-            generateMipmaps:  Boolean,
-            premultiplyAlpha: Boolean,
-            flipY:            Boolean,
-            unpackAlignment:  Number,
-            encoding:         Number,
-            version:          Number
-        },
-        {
-            collection:       'textures',
-            discriminatorKey: 'type'
-        } )
+        uuid:             String,
+        name:             String,
+        image:            ObjectId,
+        mipmaps:          [],
+        mapping:          Number,
+        wrapS:            Number,
+        wrapT:            Number,
+        magFilter:        Number,
+        minFilter:        Number,
+        anisotropy:       Number,
+        format:           Number,
+        type:             Number,
+        offset:           Vector2,
+        repeat:           Vector2,
+        center:           Vector2,
+        rotation:         Number,
+        matrixAutoUpdate: Boolean,
+        matrix:           Matrix3,
+        generateMipmaps:  Boolean,
+        premultiplyAlpha: Boolean,
+        flipY:            Boolean,
+        unpackAlignment:  Number,
+        encoding:         Number,
+        version:          Number
+    }, {
+        collection:       'textures',
+        discriminatorKey: 'type'
+    } )
 
 }
 

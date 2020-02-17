@@ -73,8 +73,8 @@ class ClippingBox extends LineSegments {
 
         this.margin = 0.01
 
-        this.geometry = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
-        this.material = new LineBasicMaterial( {
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
+        this.material         = new LineBasicMaterial( {
             color: 0xffffff
         } )
         this.matrixAutoUpdate = false
@@ -582,7 +582,7 @@ class TranslateHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -674,7 +674,7 @@ class ScaleHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -816,7 +816,7 @@ class PlaneHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -1029,7 +1029,7 @@ class LozengeHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value
 
@@ -1407,59 +1407,37 @@ class RotateGizmo extends AbstractGizmo {
 
         this.handleGizmos = {
 
-            X: [
-                [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Y: [
-                [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Z: [
-                [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ]
-            ],
+            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
 
-            E: [
-                [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ]
-            ],
+            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
-            XYZ: [
-                [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ]
-            ]
+            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
 
         }
 
         this.pickerGizmos = {
 
-            X: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ]
-            ],
+            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
 
-            Y: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ]
-            ],
+            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
 
-            Z: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ]
-            ],
+            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
 
-            E: [
-                [
-                    new TorusHitbox( {
-                        radius:          1.25,
-                        tube:            0.12,
-                        radialSegments:  2,
-                        tubularSegments: 24
-                    } )
-                ]
-            ],
+            E: [ [ new TorusHitbox( {
+                radius:          1.25,
+                tube:            0.12,
+                radialSegments:  2,
+                tubularSegments: 24
+            } ) ] ],
 
-            XYZ: [
-                [ new TorusHitbox() ]
-            ]
+            XYZ: [ [ new TorusHitbox() ] ]
 
         }
 
@@ -1720,7 +1698,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._objectsToClip = value
         this.updateClipping()
@@ -1735,7 +1713,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -1749,7 +1727,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
 
         // Clear previous element
         if ( this._domElement ) {
@@ -2336,7 +2314,7 @@ class ClippingControls extends Object3D {
                     break
 
                 default:
-                    throw new RangeError( `Invalid switch parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid switch parameter: ${ this._mode }` )
 
             }
 

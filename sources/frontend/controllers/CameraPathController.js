@@ -225,7 +225,7 @@ function CameraPathController ( parameters = {} ) {
 
         } else {
 
-            TLogger.warn( 'The key event is not implemented for key code: ' + event.keyCode )
+            TLogger.warn( `The key event is not implemented for key code: ${ event.keyCode }` )
 
         }
 
@@ -386,7 +386,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 

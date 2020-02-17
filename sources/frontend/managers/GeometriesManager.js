@@ -123,7 +123,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeBoundingBox ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeBoundingBox = value
     }
@@ -135,7 +135,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeBoundingSphere ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeBoundingSphere = value
     }
@@ -147,7 +147,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeNormals ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeNormals = value
     }
@@ -278,7 +278,7 @@ class GeometriesManager extends TDataBaseManager {
 
         } else {
 
-            throw new Error( `TGeometriesManager: Unable to retrieve geometry of type ${geometryType} !` )
+            throw new Error( `TGeometriesManager: Unable to retrieve geometry of type ${ geometryType } !` )
 
         }
 
@@ -397,7 +397,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TGeometriesManager: Unknown geometry of type: ${geometryType}` )
+                throw new Error( `TGeometriesManager: Unknown geometry of type: ${ geometryType }` )
 
         }
 
@@ -537,7 +537,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TGeometriesManager: Unknown buffer geometry of type: ${bufferGeometryType}` )
+                throw new Error( `TGeometriesManager: Unknown buffer geometry of type: ${ bufferGeometryType }` )
 
         }
 
@@ -727,7 +727,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new RangeError( `Invalid switch parameter: ${type}` )
+                throw new RangeError( `Invalid switch parameter: ${ type }` )
 
         }
 

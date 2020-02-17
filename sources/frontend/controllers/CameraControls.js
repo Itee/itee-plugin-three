@@ -255,7 +255,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -271,7 +271,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value
 
@@ -311,7 +311,7 @@ class CameraControls extends EventDispatcher {
 
     set trackPath ( value ) {
 
-        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${value.constructor.name}. Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
         this._trackPath = value
 
@@ -331,7 +331,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -864,7 +864,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Unknown state: ${state}` )
+                throw new RangeError( `Unknown state: ${ state }` )
 
         }
 
@@ -936,7 +936,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -983,7 +983,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1007,7 +1007,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1031,7 +1031,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1055,7 +1055,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${this._camera.type}` )
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1154,7 +1154,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Unamanaged rotation for camera mode ${this._mode}` )
+                    throw new RangeError( `Unamanaged rotation for camera mode ${ this._mode }` )
 
             }
 
@@ -1273,7 +1273,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
@@ -1282,7 +1282,7 @@ class CameraControls extends EventDispatcher {
             const cameraPosition                 = this._camera.position
             const targetPosition                 = this._target.position
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
-            const deltaZoom = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget )
+            const deltaZoom                      = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget )
 
             if ( this._camera.zoom + deltaZoom <= 0.0 ) {
                 this._camera.zoom = 0.01
@@ -1331,7 +1331,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
@@ -1402,7 +1402,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Invalid camera control _mode parameter: ${this._mode}` )
+                throw new RangeError( `Invalid camera control _mode parameter: ${ this._mode }` )
 
         }
 

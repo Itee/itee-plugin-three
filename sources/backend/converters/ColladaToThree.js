@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { ColladaLoader }              from 'three-full'
+import { ColladaLoader }          from 'three-full'
 
 class ColladaToThree extends TAbstractFileConverter {
 

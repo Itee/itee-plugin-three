@@ -13,13 +13,13 @@ import { STLLoader }              from 'three-full'
 
 class StlToThree extends TAbstractFileConverter {
 
-    constructor() {
+    constructor () {
         super( {
             dumpType: TAbstractFileConverter.DumpType.JSON
         } )
     }
 
-    _convert( data, parameters, onSuccess, onProgress, onError ) {
+    _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

@@ -32,12 +32,10 @@ function _createSchema ( Mongoose ) {
     const ObjectId = Types.ObjectId
 
     _schema = new Schema( {
-        material: [
-            {
-                type: ObjectId,
-                ref:  'SpriteMaterial'
-            }
-        ]
+        material: [ {
+            type: ObjectId,
+            ref:  'SpriteMaterial'
+        } ]
     } )
 
 }

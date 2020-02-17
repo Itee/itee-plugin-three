@@ -21,12 +21,42 @@ import {
 
 class OrbitControlsHelper extends LineSegments {
 
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                radius:     2,
+                radials:    16,
+                circles:    2,
+                divisions:  64,
+                innerColor: new Color( 0x444444 ),
+                outerColor: new Color( 0x888888 )
+            }, ...parameters
+        }
+
+        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() )
+
+
+        this.matrixAutoUpdate = false
+        //        this.control     = control
+        this._intervalId      = undefined
+
+        //        this.impose()
+
+    }
+
     static _createInternalGeometry ( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
 
         const vertices = []
         const colors   = []
 
-        let x, z, v, i, j, r, color
+        let x,
+            z,
+            v,
+            i,
+            j,
+            r,
+            color
 
         // create the radials
         for ( i = 0 ; i <= RADIALS ; i++ ) {
@@ -112,30 +142,6 @@ class OrbitControlsHelper extends LineSegments {
         material.name        = 'TOrbitControlsHelperMaterial'
 
         return material
-
-    }
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                radius:     2,
-                radials:    16,
-                circles:    2,
-                divisions:  64,
-                innerColor: new Color( 0x444444 ),
-                outerColor: new Color( 0x888888 )
-            }, ...parameters
-        }
-
-        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() )
-
-
-        this.matrixAutoUpdate = false
-        //        this.control     = control
-        this._intervalId = undefined
-
-        //        this.impose()
 
     }
 

@@ -31,19 +31,16 @@ function _createSchema ( Mongoose ) {
     const Types   = Schema.Types
     const Vector2 = Types.Vector2
 
-    const NestedCurveSchema = new Schema(
-        {
-            type:               {
-                type:    String,
-                default: 'Curve'
-            },
-            arcLengthDivisions: Number
+    const NestedCurveSchema = new Schema( {
+        type:               {
+            type:    String,
+            default: 'Curve'
         },
-        {
-            id:  false,
-            _id: false
-        }
-    )
+        arcLengthDivisions: Number
+    }, {
+        id:  false,
+        _id: false
+    } )
 
     _schema = new Schema( {
 
