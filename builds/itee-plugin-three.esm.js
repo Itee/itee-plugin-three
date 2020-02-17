@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.1.2 - EsModule')
+console.log('Itee.Plugin.Three v1.2.0 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, FileFormat, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
 import { Box3, DefaultLoadingManager, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, TextureLoader, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, _Math, Vector3, Shape, ColladaLoader, FBXLoader, ObjectLoader, OBJLoader, ShapeBufferGeometry, MeshPhongMaterial, STLLoader, MTLLoader, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, CurvePath, EllipseCurve, LineCurve, LineCurve3, Path, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, BoxGeometry, CircleGeometry, CylinderGeometry, ConeGeometry, DodecahedronGeometry, ExtrudeGeometry, Geometry, IcosahedronGeometry, LatheGeometry, OctahedronGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusGeometry, TorusKnotGeometry, TubeGeometry, SphereGeometry, WireframeGeometry, Face3, CircleBufferGeometry, DodecahedronBufferGeometry, ExtrudeBufferGeometry, IcosahedronBufferGeometry, LatheBufferGeometry, ParametricBufferGeometry, PolyhedronBufferGeometry, RingBufferGeometry, TetrahedronBufferGeometry, TextBufferGeometry, TorusKnotBufferGeometry, TubeBufferGeometry, InstancedBufferGeometry, ImageLoader, MeshLambertMaterial, Color, LinearFilter, Fog, FogExp2, PerspectiveCamera, OrthographicCamera, AmbientLight, DirectionalLight, PointLight, RectAreaLight, SpotLight, HemisphereLight, SkinnedMesh, LOD, LineLoop, Sprite, VertexColors } from 'three-full';
 import { degreesToRadians, toEnum } from 'itee-utils';
@@ -337,7 +337,7 @@ class ASCLoader {
             } );
 
         } else {
-            this.logger.error( `Invalid data line: ${line}` );
+            this.logger.error( `Invalid data line: ${ line }` );
         }
 
     }
@@ -381,7 +381,7 @@ class ASCLoader {
             this._parseLinesAsXYZIRGBnXnYnZ( lines );
 
         } else {
-            this.logger.error( `Invalid data line: ${lines}` );
+            this.logger.error( `Invalid data line: ${ lines }` );
         }
 
     }
@@ -936,7 +936,7 @@ Object.assign( DBFLoader.prototype, {
 
         const version = this.reader.getInt8();
         if ( !this._isValidVersion( version ) ) {
-            this.logger.error( `DBFLoader: Invalid version number: ${version}` );
+            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
             return null
         }
 
@@ -1001,7 +1001,7 @@ Object.assign( DBFLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid version parameter: ${version}` )
+                throw new RangeError( `Invalid version parameter: ${ version }` )
 
         }
 
@@ -1380,7 +1380,7 @@ Object.assign( DBFLoader.prototype, {
                         break
 
                     default:
-                        throw new RangeError( `Invalid data type parameter: ${field.type}` )
+                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
 
                 }
 
@@ -1630,8 +1630,7 @@ Object.assign( RZMLLoader.prototype, {
 
             // Todo: consider using array and/or create directly floating images from there
             this.imagesShotData.push( {
-                imageName: shot.attributes[ 'n' ].value,
-                //        imagePath: iplnElement.attributes["img"].value,
+                imageName: shot.attributes[ 'n' ].value, //        imagePath: iplnElement.attributes["img"].value,
                 position:  {
                     x: parseFloat( translationElement.attributes[ 'x' ].value ),
                     y: parseFloat( translationElement.attributes[ 'y' ].value ),
@@ -1748,7 +1747,9 @@ function ringClockwise ( ring ) {
         return false
     }
 
-    var i = 0, n, area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
+    var i    = 0,
+        n,
+        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
     while ( ++i < n ) {
         area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ];
     }
@@ -1819,11 +1820,13 @@ function ringContains ( ring, point ) {
  * @return {boolean}
  */
 function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ], y20 = p2[ 1 ] - p0[ 1 ];
+    var x20 = p2[ 0 ] - p0[ 0 ],
+        y20 = p2[ 1 ] - p0[ 1 ];
     if ( x20 === 0 && y20 === 0 ) {
         return true
     }
-    var x10 = p1[ 0 ] - p0[ 0 ], y10 = p1[ 1 ] - p0[ 1 ];
+    var x10 = p1[ 0 ] - p0[ 0 ],
+        y10 = p1[ 1 ] - p0[ 1 ];
     if ( x10 === 0 && y10 === 0 ) {
         return false
     }
@@ -2081,7 +2084,7 @@ Object.assign( SHPLoader.prototype, {
                     break
 
                 default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${header.shapeType}` );
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
                     break
 
             }
@@ -2477,7 +2480,7 @@ Object.assign( UniversalLoader.prototype, {
         if ( files instanceof FileList ) {
 
             const numberOfFiles = files.length;
-            this.logger.log( `numberOfFiles: ${numberOfFiles}` );
+            this.logger.log( `numberOfFiles: ${ numberOfFiles }` );
 
             const filesUrls = [];
             let fileUrl     = '';
@@ -2485,7 +2488,7 @@ Object.assign( UniversalLoader.prototype, {
 
             for ( let fileIndex = 0 ; fileIndex < numberOfFiles ; ++fileIndex ) {
                 fileObject = files[ fileIndex ];
-                fileUrl    = `${URL.createObjectURL( fileObject )}/${fileObject.name}`;
+                fileUrl    = `${ URL.createObjectURL( fileObject ) }/${ fileObject.name }`;
 
                 filesUrls.push( { url: fileUrl } );
             }
@@ -2494,7 +2497,7 @@ Object.assign( UniversalLoader.prototype, {
 
         } else if ( files instanceof File ) {
 
-            const fileUrl = `${URL.createObjectURL( files )}/${files.name}`;
+            const fileUrl = `${ URL.createObjectURL( files ) }/${ files.name }`;
             this.loadSingleFile( { url: fileUrl }, onLoad, onProgress, onError );
 
         } else if ( isObject( files ) ) {
@@ -2582,7 +2585,7 @@ Object.assign( UniversalLoader.prototype, {
                 break
 
             default:
-                throw new RangeError( `Invalid file extension: ${fileExtension}. Supported formats are: ${FileFormat.toString()}` )
+                throw new RangeError( `Invalid file extension: ${ fileExtension }. Supported formats are: ${ FileFormat.toString() }` )
 
         }
 
@@ -3197,7 +3200,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value;
 
@@ -3213,7 +3216,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value;
 
@@ -3253,7 +3256,7 @@ class CameraControls extends EventDispatcher {
 
     set trackPath ( value ) {
 
-        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${value.constructor.name}. Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
         this._trackPath = value;
 
@@ -3273,7 +3276,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -3804,7 +3807,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Unknown state: ${state}` )
+                throw new RangeError( `Unknown state: ${ state }` )
 
         }
 
@@ -3828,6 +3831,7 @@ class CameraControls extends EventDispatcher {
         mouseEvent.preventDefault();
 
         this._state = State.None;
+        this._consumeEvent( mouseEvent );
 
     }
 
@@ -3845,13 +3849,37 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canFront ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion );
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed );
 
             this._camera.position.add( displacement );
             this._target.position.add( displacement );
+
+        } else if ( this._camera.isOrthographicCamera ) {
+
+            const cameraDirection = FRONT.clone().applyQuaternion( this._camera.quaternion );
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.frontSpeed );
+
+            this._camera.position.add( displacement );
+            this._target.position.add( displacement );
+
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom += halfOffsetHeight * this.frontSpeed
+            //            this._camera.right -= halfOffsetWidth * this.frontSpeed
+            //            this._camera.left += halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.frontSpeed * this.zoomSpeed;
+            this._camera.zoom += zoomDisplacement;
+
+            this._camera.updateProjectionMatrix();
+
+        } else {
+
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3864,13 +3892,41 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canBack ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion );
             const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed );
 
             this._camera.position.add( displacement );
             this._target.position.add( displacement );
+
+        } else if ( this._camera.isOrthographicCamera ) {
+
+            const cameraDirection = BACK.clone().applyQuaternion( this._camera.quaternion );
+            const displacement    = ( this._trackPath ) ? this._getPathDisplacement( cameraDirection ) : cameraDirection.multiplyScalar( this.backSpeed );
+
+            this._camera.position.add( displacement );
+            this._target.position.add( displacement );
+
+            //            const halfOffsetWidth = this.domElement.offsetWidth / 2
+            //            const halfOffsetHeight = this.domElement.offsetHeight / 2
+            //            this._camera.top += halfOffsetHeight * this.frontSpeed
+            //            this._camera.bottom -= halfOffsetHeight * this.frontSpeed
+            //            this._camera.right += halfOffsetWidth * this.frontSpeed
+            //            this._camera.left -= halfOffsetWidth * this.frontSpeed
+
+            const zoomDisplacement = this.backSpeed * this.zoomSpeed;
+            if ( this._camera.zoom - zoomDisplacement <= 0.0 ) {
+                this._camera.zoom = 0.01;
+            } else {
+                this._camera.zoom -= zoomDisplacement;
+            }
+
+            this._camera.updateProjectionMatrix();
+
+        } else {
+
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3883,7 +3939,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canUp ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = UP.clone()
                                    .applyQuaternion( this._camera.quaternion )
@@ -3891,6 +3947,10 @@ class CameraControls extends EventDispatcher {
 
             this._camera.position.add( displacement );
             this._target.position.add( displacement );
+
+        } else {
+
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3903,7 +3963,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canDown ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = DOWN.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -3911,6 +3971,10 @@ class CameraControls extends EventDispatcher {
 
             this._camera.position.add( displacement );
             this._target.position.add( displacement );
+
+        } else {
+
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3923,7 +3987,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canLeft ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = LEFT.clone()
                                      .applyQuaternion( this._camera.quaternion )
@@ -3931,6 +3995,10 @@ class CameraControls extends EventDispatcher {
 
             this._camera.position.add( displacement );
             this._target.position.add( displacement );
+
+        } else {
+
+            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3943,7 +4011,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canMove || !this.canRight ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const displacement = RIGHT.clone()
                                       .applyQuaternion( this._camera.quaternion )
@@ -3963,7 +4031,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRotate ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position;
             const targetPosition = this._target.position;
@@ -4025,7 +4093,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Unamanaged rotation for camera mode ${this._mode}` )
+                    throw new RangeError( `Unamanaged rotation for camera mode ${ this._mode }` )
 
             }
 
@@ -4044,7 +4112,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canPan ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             // Take into account the distance between the camera and his target
             const cameraPosition = this._camera.position;
@@ -4067,7 +4135,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canRoll ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const cameraPosition = this._camera.position;
             const targetPosition = this._target.position;
@@ -4090,7 +4158,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canZoom ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera ) {
 
             switch ( this._mode ) {
 
@@ -4136,15 +4204,26 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
-        } /*else {
+        } else if ( this._camera.isOrthographicCamera ) {
 
-         // Todo: ...
+            const cameraPosition                 = this._camera.position;
+            const targetPosition                 = this._target.position;
+            const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition );
+            const deltaZoom                      = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget );
 
-         }*/
+            if ( this._camera.zoom + deltaZoom <= 0.0 ) {
+                this._camera.zoom = 0.01;
+            } else {
+                this._camera.zoom += deltaZoom;
+            }
+
+            this._camera.updateProjectionMatrix();
+
+        }
 
         this.dispatchEvent( { type: 'zoom' } );
         this.dispatchEvent( { type: 'change' } );
@@ -4155,7 +4234,7 @@ class CameraControls extends EventDispatcher {
 
         if ( !this.canLookAt ) { return }
 
-        if ( this._camera.type === 'PerspectiveCamera' ) {
+        if ( this._camera.isPerspectiveCamera || this._camera.isOrthographicCamera ) {
 
             const _direction     = direction.clone();
             const cameraPosition = this._camera.position;
@@ -4179,7 +4258,7 @@ class CameraControls extends EventDispatcher {
                     break
 
                 default:
-                    throw new RangeError( `Invalid camera control mode parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid camera control mode parameter: ${ this._mode }` )
 
             }
 
@@ -4250,7 +4329,7 @@ class CameraControls extends EventDispatcher {
                 break
 
             default:
-                throw new RangeError( `Invalid camera control _mode parameter: ${this._mode}` )
+                throw new RangeError( `Invalid camera control _mode parameter: ${ this._mode }` )
 
         }
 
@@ -4932,7 +5011,7 @@ function CameraPathController ( parameters = {} ) {
 
         } else {
 
-            DefaultLogger.warn( 'The key event is not implemented for key code: ' + event.keyCode );
+            DefaultLogger.warn( `The key event is not implemented for key code: ${ event.keyCode }` );
 
         }
 
@@ -5077,7 +5156,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value;
 
@@ -5347,10 +5426,13 @@ class ClippingBox extends LineSegments {
     constructor () {
         super();
 
-        this.geometry = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) );
-        this.material = new LineBasicMaterial( {
+        this.margin = 0.01;
+
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) );
+        this.material         = new LineBasicMaterial( {
             color: 0xffffff
         } );
+        this.matrixAutoUpdate = false;
 
         // Planes
         this.normalPlanes = {
@@ -5429,7 +5511,7 @@ class ClippingBox extends LineSegments {
 
         this._boundingBox.setFromObject( this );
 
-        const margin = 0.0;
+        const margin = this.margin;
         const min    = this._boundingBox.min;
         const max    = this._boundingBox.max;
 
@@ -5546,8 +5628,9 @@ class AbstractHitbox extends Mesh {
         };
 
         super( _parameters.geometry, _parameters.material );
-        this.isHitbox = true;
-        this.type     = 'Hitbox';
+        this.isHitbox         = true;
+        this.type             = 'Hitbox';
+        this.matrixAutoUpdate = false;
 
     }
 }
@@ -5705,8 +5788,9 @@ class AbstractHandle extends Object3D {
         };
 
         super();
-        this.isHandle = true;
-        this.type     = 'Handle';
+        this.isHandle         = true;
+        this.type             = 'Handle';
+        this.matrixAutoUpdate = false;
 
         this.color  = _parameters.color;
         this.hitbox = _parameters.hitbox;
@@ -5826,15 +5910,17 @@ class TranslateHandle extends AbstractHandle {
         this.isTranslateHandle = true;
         this.type              = 'TranslateHandle';
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) );
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } );
-        const line         = new Line( lineGeometry, lineMaterial );
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) );
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
+        const line            = new Line( lineGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
         this.add( line );
 
         const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false );
         coneGeometry.translate( 0, 0.9, 0 );
-        const coneMaterial = new HighlightableMaterial( { color: _parameters.color } );
-        const cone         = new Mesh( coneGeometry, coneMaterial );
+        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } );
+        const cone            = new Mesh( coneGeometry, coneMaterial );
+        cone.matrixAutoUpdate = false;
         this.add( cone );
 
         this.direction = _parameters.direction;
@@ -5851,7 +5937,7 @@ class TranslateHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value;
 
@@ -5916,15 +6002,17 @@ class ScaleHandle extends AbstractHandle {
         this.isScaleHandle = true;
         this.type          = 'ScaleHandle';
 
-        const lineGeometry = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) );
-        const lineMaterial = new HighlightableLineMaterial( { color: _parameters.color } );
-        const line         = new Line( lineGeometry, lineMaterial );
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) );
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
+        const line            = new Line( lineGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
         this.add( line );
 
         const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 );
         boxGeometry.translate( 0, 0.94, 0 );
-        const boxMaterial = new HighlightableMaterial( { color: _parameters.color } );
-        const box         = new Mesh( boxGeometry, boxMaterial );
+        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } );
+        const box            = new Mesh( boxGeometry, boxMaterial );
+        box.matrixAutoUpdate = false;
         this.add( box );
 
         this.direction = _parameters.direction;
@@ -5941,7 +6029,7 @@ class ScaleHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value;
 
@@ -6034,7 +6122,8 @@ class PlaneHandle extends AbstractHandle {
             color: _parameters.color
         } );
 
-        const line = new Line( lineBufferGeometry, lineMaterial );
+        const line            = new Line( lineBufferGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
         this.add( line );
 
         // Plane
@@ -6052,12 +6141,13 @@ class PlaneHandle extends AbstractHandle {
         planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
         planeBufferGeometry.setIndex( planeIndexes );
 
-        const planeMaterial = new HighlightableMaterial( {
+        const planeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } );
-        const plane         = new Mesh( planeBufferGeometry, planeMaterial );
+        const plane            = new Mesh( planeBufferGeometry, planeMaterial );
+        plane.matrixAutoUpdate = false;
         this.add( plane );
 
         this.xAxis = new Vector3( 1, 0, 0 );
@@ -6081,7 +6171,7 @@ class PlaneHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value;
 
@@ -6247,7 +6337,8 @@ class LozengeHandle extends AbstractHandle {
             color: _parameters.color
         } );
 
-        const line = new Line( lineBufferGeometry, lineMaterial );
+        const line            = new Line( lineBufferGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
         this.add( line );
 
         // Lozenge
@@ -6265,12 +6356,13 @@ class LozengeHandle extends AbstractHandle {
         lozengeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) );
         lozengeBufferGeometry.setIndex( lozengeIndexes );
 
-        const lozengeMaterial = new HighlightableMaterial( {
+        const lozengeMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.35
         } );
-        const lozenge         = new Mesh( lozengeBufferGeometry, lozengeMaterial );
+        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial );
+        lozenge.matrixAutoUpdate = false;
         this.add( lozenge );
 
         this.direction  = _parameters.direction;
@@ -6292,7 +6384,7 @@ class LozengeHandle extends AbstractHandle {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${value.constructor.name}. Expect an instance of Vector3.` ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
         this._direction = value;
 
@@ -6418,21 +6510,23 @@ class OctahedricalHandle extends AbstractHandle {
         this.isOmnidirectionalHandle = true;
         this.type                    = 'OmnidirectionalHandle';
 
-        const octahedronGeometry = new OctahedronBufferGeometry( 1, 0 );
-        const octahedronMaterial = new HighlightableMaterial( {
+        const octahedronGeometry    = new OctahedronBufferGeometry( 1, 0 );
+        const octahedronMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
             opacity:     0.55
         } );
-        const octahedron         = new Mesh( octahedronGeometry, octahedronMaterial );
+        const octahedron            = new Mesh( octahedronGeometry, octahedronMaterial );
+        octahedron.matrixAutoUpdate = false;
         this.add( octahedron );
 
-        const edgesGeometry = new EdgesGeometry( octahedronGeometry );
-        const edgesMaterial = new HighlightableLineMaterial( {
+        const edgesGeometry    = new EdgesGeometry( octahedronGeometry );
+        const edgesMaterial    = new HighlightableLineMaterial( {
             color:     _parameters.color,
             linewidth: 4
         } );
-        const edges         = new LineSegments( edgesGeometry, edgesMaterial );
+        const edges            = new LineSegments( edgesGeometry, edgesMaterial );
+        edges.matrixAutoUpdate = false;
         this.add( edges );
 
     }
@@ -6450,26 +6544,31 @@ class AbstractGizmo extends Object3D {
     constructor () {
 
         super();
-        this.isGizmo = true;
-        this.type    = 'AbstractGizmo';
+        this.isGizmo          = true;
+        this.type             = 'AbstractGizmo';
+        this.matrixAutoUpdate = false;
 
     }
 
     init () {
 
-        this.handles = new Object3D();
+        this.handles                  = new Object3D();
+        this.handles.matrixAutoUpdate = false;
 
         this.add( this.handles );
 
         //// PLANES
-        const planeGeometry = new PlaneBufferGeometry( 50, 50, 2, 2 );
-        const planeMaterial = new MeshBasicMaterial( {
+        const planeGeometry                  = new PlaneBufferGeometry( 50, 50, 2, 2 );
+        const planeMaterial                  = new MeshBasicMaterial( {
             side:    DoubleSide,
             visible: false
             //            transparent: true,
             //            opacity:     0.1
         } );
-        this.intersectPlane = new Mesh( planeGeometry, planeMaterial );
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial );
+        this.intersectPlane.matrixAutoUpdate = false;
+        this.intersectPlane.visible          = false;
+
         this.add( this.intersectPlane );
 
         //// HANDLES
@@ -6663,59 +6762,37 @@ class RotateGizmo extends AbstractGizmo {
 
         this.handleGizmos = {
 
-            X: [
-                [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Y: [
-                [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
-            ],
+            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-            Z: [
-                [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ]
-            ],
+            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
 
-            E: [
-                [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ]
-            ],
+            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
-            XYZ: [
-                [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ]
-            ]
+            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
 
         };
 
         this.pickerGizmos = {
 
-            X: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ]
-            ],
+            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
 
-            Y: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ]
-            ],
+            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
 
-            Z: [
-                [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ]
-            ],
+            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
 
-            E: [
-                [
-                    new TorusHitbox( {
-                        radius:          1.25,
-                        tube:            0.12,
-                        radialSegments:  2,
-                        tubularSegments: 24
-                    } )
-                ]
-            ],
+            E: [ [ new TorusHitbox( {
+                radius:          1.25,
+                tube:            0.12,
+                radialSegments:  2,
+                tubularSegments: 24
+            } ) ] ],
 
-            XYZ: [
-                [ new TorusHitbox() ]
-            ]
+            XYZ: [ [ new TorusHitbox() ] ]
 
         };
 
@@ -6860,7 +6937,7 @@ class ClippingControls extends Object3D {
         super();
 
         // Need to be defined before domElement to make correct binding events
-        this._handlers                 = {
+        this._handlers = {
             onMouseEnter:  this._onMouseEnter.bind( this ),
             onMouseLeave:  this._onMouseLeave.bind( this ),
             onMouseDown:   this._onMouseDown.bind( this ),
@@ -6876,19 +6953,36 @@ class ClippingControls extends Object3D {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         };
+
+        this._events = {
+            impose:     { type: 'impose' },
+            dispose:    { type: 'dispose' },
+            change:     { type: 'change' },
+            translate:  { type: 'translate' },
+            rotate:     { type: 'rotate' },
+            scale:      { type: 'scale' },
+            mouseEnter: { type: 'mouseEnter' },
+            mouseLeave: { type: 'mouseLeave' },
+            mouseDown:  { type: 'mouseDown' },
+            mouseUp:    { type: 'mouseUp' }
+        };
+
         // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
         this._objectsToClipBoundingBox = new Box3();
+        this._objectsToClipSize        = new Vector3();
+        this._objectsToClipCenter      = new Vector3();
 
         this._clippingBox = new ClippingBox();
         this.add( this._clippingBox );
 
-        this.camera          = _parameters.camera;
-        this.domElement      = _parameters.domElement;
-        this.mode            = _parameters.mode;
-        this.objectsToClip   = _parameters.objectsToClip;
-        this.translationSnap = 0.1;
-        this.scaleSnap       = 0.1;
-        this.rotationSnap    = 0.1;
+        this.camera           = _parameters.camera;
+        this.domElement       = _parameters.domElement;
+        this.mode             = _parameters.mode;
+        this.objectsToClip    = _parameters.objectsToClip;
+        this.translationSnap  = 0.1;
+        this.scaleSnap        = 0.1;
+        this.rotationSnap     = 0.1;
+        this.matrixAutoUpdate = false;
 
         this.enabled = false; // Should be true by default
 
@@ -6918,15 +7012,6 @@ class ClippingControls extends Object3D {
         }
         this._currentGizmo  = null;
         this._currentHandle = null;
-
-        this._events = {
-            change:       { type: 'change' },
-            mouseEnter:   { type: 'mouseEnter' },
-            mouseLeave:   { type: 'mouseLeave' },
-            mouseDown:    { type: 'mouseDown' },
-            mouseUp:      { type: 'mouseUp' },
-            objectChange: { type: 'objectChange' }
-        };
 
         // The actions map about input events
         this.actionsMap = {
@@ -6968,23 +7053,10 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${value.constructor.name}. Expect an instance of Object3D.` ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._objectsToClip = value;
-
-        const size = new Vector3();
-        this._objectsToClipBoundingBox
-            .makeEmpty()
-            .expandByObject( value )
-            .getSize( size );
-
-        const x = Math.round( size.x ) || 50;
-        const y = Math.round( size.y ) || 22;
-        const z = Math.round( size.z ) || 70;
-        this.scale.set( x, y, z );
-        //        this.scale.set( 50, 22, 70 )
-
-        this._clippingBox.update();
+        this.updateClipping();
 
     }
 
@@ -6996,7 +7068,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${value.constructor.name}. Expect an instance of Camera.` ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value;
 
@@ -7010,7 +7082,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${value.constructor.name}. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
 
         // Clear previous element
         if ( this._domElement ) {
@@ -7113,7 +7185,7 @@ class ClippingControls extends Object3D {
             passive: false
         } );
 
-        this.dispatchEvent( { type: 'impose' } );
+        this.dispatchEvent( this._events.impose );
 
     }
 
@@ -7146,7 +7218,7 @@ class ClippingControls extends Object3D {
             passive: false
         } );
 
-        this.dispatchEvent( { type: 'dispose' } );
+        this.dispatchEvent( this._events.dispose );
 
     }
 
@@ -7162,6 +7234,23 @@ class ClippingControls extends Object3D {
 
         this.visible = true;
         this.enabled = true;
+
+        // Init size and position
+        if ( isDefined( this._objectsToClip ) ) {
+
+            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip );
+
+            this._objectsToClipBoundingBox.getSize( this._objectsToClipSize );
+            this._objectsToClipSize.divideScalar( 2 );
+            this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z );
+
+            this._objectsToClipBoundingBox.getCenter( this._objectsToClipCenter );
+            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z );
+
+            // update...
+            this.updateMatrixWorld();
+        }
+
         this.updateClipping();
 
     }
@@ -7233,42 +7322,42 @@ class ClippingControls extends Object3D {
                         this._translateZ( this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.translate.back.includes( key ) ) {
 
                         this._translateZ( -this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.translate.right.includes( key ) ) {
 
                         this._translateX( this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.translate.left.includes( key ) ) {
 
                         this._translateX( -this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.translate.up.includes( key ) ) {
 
                         this._translateY( this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.translate.down.includes( key ) ) {
 
                         this._translateY( -this.translationSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     }
 
@@ -7285,42 +7374,42 @@ class ClippingControls extends Object3D {
                         this._scaleZ( this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.scale.depthMinus.includes( key ) ) {
 
                         this._scaleZ( -this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.scale.widthPlus.includes( key ) ) {
 
                         this._scaleX( this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.scale.widthMinus.includes( key ) ) {
 
                         this._scaleX( -this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.scale.heightPlus.includes( key ) ) {
 
                         this._scaleY( this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     } else if ( actionMap.scale.heightMinus.includes( key ) ) {
 
                         this._scaleY( -this.scaleSnap );
                         this.updateClipping();
                         this._consumeEvent( keyEvent );
-                        this.dispatchEvent( this._events.objectChange );
+                        this.dispatchEvent( this._events.change );
 
                     }
 
@@ -7580,13 +7669,13 @@ class ClippingControls extends Object3D {
                     break
 
                 default:
-                    throw new RangeError( `Invalid switch parameter: ${this._mode}` )
+                    throw new RangeError( `Invalid switch parameter: ${ this._mode }` )
 
             }
 
             this.updateClipping();
             this._consumeEvent( mouseEvent );
-            this.dispatchEvent( this._events.objectChange );
+            this.dispatchEvent( this._events.change );
 
         }
 
@@ -7596,10 +7685,10 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( event.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        // todo isActive when mouse enter
 
         mouseEvent.preventDefault();
-        this._consumeEvent( mouseEvent );
 
         this._dragging = false;
         this.dispatchEvent( this._events.mouseUp );
@@ -7608,9 +7697,7 @@ class ClippingControls extends Object3D {
         const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children );
         if ( intersect ) {
 
-            const handle = intersect.object;
-
-            this._currentHandle = handle;
+            this._currentHandle = intersect.object;
             this._currentHandle.highlight( true );
 
             this._consumeEvent( mouseEvent );
@@ -8038,7 +8125,7 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
                 break
 
             default:
-                throw new Error( `TCurvesManager: Unknown curve of type: ${curveType}` )
+                throw new Error( `TCurvesManager: Unknown curve of type: ${ curveType }` )
 
         }
 
@@ -8189,7 +8276,7 @@ class FilairesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TFilaireManager: Unknown object of type: ${objectType}` )
+                throw new Error( `TFilaireManager: Unknown object of type: ${ objectType }` )
 
         }
 
@@ -8203,7 +8290,7 @@ class FilairesManager extends TDataBaseManager {
         const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] );
 
         if ( isNotDefined( positions ) ) {
-            throw new Error( `TFilaireManager._parseFilaire() : ${data.type} geometry doesn't contains coordinates !!!` )
+            throw new Error( `TFilaireManager._parseFilaire() : ${ data.type } geometry doesn't contains coordinates !!!` )
         }
 
         const material = new LineBasicMaterial( {
@@ -8317,7 +8404,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeBoundingBox ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeBoundingBox = value;
     }
@@ -8329,7 +8416,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeBoundingSphere ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeBoundingSphere = value;
     }
@@ -8341,7 +8428,7 @@ class GeometriesManager extends TDataBaseManager {
     set computeNormals ( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._computeNormals = value;
     }
@@ -8472,7 +8559,7 @@ class GeometriesManager extends TDataBaseManager {
 
         } else {
 
-            throw new Error( `TGeometriesManager: Unable to retrieve geometry of type ${geometryType} !` )
+            throw new Error( `TGeometriesManager: Unable to retrieve geometry of type ${ geometryType } !` )
 
         }
 
@@ -8591,7 +8678,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TGeometriesManager: Unknown geometry of type: ${geometryType}` )
+                throw new Error( `TGeometriesManager: Unknown geometry of type: ${ geometryType }` )
 
         }
 
@@ -8731,7 +8818,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TGeometriesManager: Unknown buffer geometry of type: ${bufferGeometryType}` )
+                throw new Error( `TGeometriesManager: Unknown buffer geometry of type: ${ bufferGeometryType }` )
 
         }
 
@@ -8921,7 +9008,7 @@ class GeometriesManager extends TDataBaseManager {
                 break
 
             default:
-                throw new RangeError( `Invalid switch parameter: ${type}` )
+                throw new RangeError( `Invalid switch parameter: ${ type }` )
 
         }
 
@@ -9018,7 +9105,7 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
         switch ( textureType ) {
 
             default:
-                throw new Error( `TTexturesManager: Unknown texture of type: ${textureType}` )
+                throw new Error( `TTexturesManager: Unknown texture of type: ${ textureType }` )
 
         }
 
@@ -9117,7 +9204,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
-        if ( isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${value.constructor.name} ! Expect a non empty string.` ) }
+        if ( isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
         if ( isEmptyString( value ) ) { throw new TypeError( 'Textures path cannot be empty ! Expect a non empty string.' ) }
         if ( isBlankString( value ) ) { throw new TypeError( 'Textures path cannot contain only whitespace ! Expect a non empty string.' ) }
 
@@ -9133,7 +9220,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
-        if ( !( value instanceof TexturesManager ) && !( value instanceof TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TTexturesManager.` ) }
+        if ( !( value instanceof TexturesManager ) && !( value instanceof TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TTexturesManager.` ) }
 
         this._texturesProvider = value;
 
@@ -9147,7 +9234,7 @@ class MaterialsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
-        if ( isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${value.constructor.name} ! Expect a boolean.` ) }
+        if ( isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
         this._generateMipmap = value;
     }
@@ -9568,7 +9655,7 @@ class MaterialsManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TMaterialsManager: Unmanaged material of type: ${type}` )
+                throw new Error( `TMaterialsManager: Unmanaged material of type: ${ type }` )
 
         }
 
@@ -9818,7 +9905,7 @@ class MaterialsManager extends TDataBaseManager {
                 const map = material[ mapType ];
                 if ( isDefined( map ) && isString( map ) && isNotEmptyString( map ) ) {
 
-                    const texturePath  = `${this._texturesPath}/${map}`;
+                    const texturePath  = `${ this._texturesPath }/${ map }`;
                     const cachedResult = localCache[ texturePath ];
 
                     if ( isDefined( cachedResult ) ) {
@@ -9916,7 +10003,7 @@ class ObjectsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
-        if ( !( value instanceof GeometriesManager ) ) { throw new TypeError( `Geometries provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TGeometriesManager.` ) }
+        if ( !( value instanceof GeometriesManager ) ) { throw new TypeError( `Geometries provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TGeometriesManager.` ) }
 
         this._geometriesProvider = value;
 
@@ -9930,7 +10017,7 @@ class ObjectsManager extends TDataBaseManager {
 
         if ( isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
-        if ( !( value instanceof MaterialsManager ) ) { throw new TypeError( `Materials provider cannot be an instance of ${value.constructor.name} ! Expect an instance of TMaterialsManager.` ) }
+        if ( !( value instanceof MaterialsManager ) ) { throw new TypeError( `Materials provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TMaterialsManager.` ) }
 
         this._materialsProvider = value;
 
@@ -10232,7 +10319,7 @@ class ObjectsManager extends TDataBaseManager {
                 break
 
             default:
-                throw new Error( `TObjectsManager: Unknown object of type: ${objectType}` )
+                throw new Error( `TObjectsManager: Unknown object of type: ${ objectType }` )
 
         }
 
@@ -10766,12 +10853,42 @@ class ObjectsManager extends TDataBaseManager {
 
 class OrbitControlsHelper extends LineSegments {
 
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                radius:     2,
+                radials:    16,
+                circles:    2,
+                divisions:  64,
+                innerColor: new Color( 0x444444 ),
+                outerColor: new Color( 0x888888 )
+            }, ...parameters
+        };
+
+        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() );
+
+
+        this.matrixAutoUpdate = false;
+        //        this.control     = control
+        this._intervalId      = undefined;
+
+        //        this.impose()
+
+    }
+
     static _createInternalGeometry ( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
 
         const vertices = [];
         const colors   = [];
 
-        let x, z, v, i, j, r, color;
+        let x,
+            z,
+            v,
+            i,
+            j,
+            r,
+            color;
 
         // create the radials
         for ( i = 0 ; i <= RADIALS ; i++ ) {
@@ -10827,9 +10944,9 @@ class OrbitControlsHelper extends LineSegments {
                 0, 0, -1, 0, 0, 1
             );
             colors.push(
-                1, 0, 0, 1, 0.6, 0,
-                0, 1, 0, 0.6, 1, 0,
-                0, 0, 1, 0, 0.6, 1
+                0, 0, 0, 1, 0, 0, // black to red
+                0, 0, 0, 0, 1, 0, // black to green
+                0, 0, 0, 0, 0, 1 // black to blue
             );
 
         }
@@ -10857,28 +10974,6 @@ class OrbitControlsHelper extends LineSegments {
         material.name        = 'TOrbitControlsHelperMaterial';
 
         return material
-
-    }
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                radius:     2,
-                radials:    16,
-                circles:    2,
-                divisions:  64,
-                innerColor: new Color( 0x444444 ),
-                outerColor: new Color( 0x888888 )
-            }, ...parameters
-        };
-
-        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() );
-
-        //        this.control     = control
-        this._intervalId = undefined;
-
-        //        this.impose()
 
     }
 
