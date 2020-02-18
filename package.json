@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "bson": "^4.0.3",
-    "three-full": "^28.0.1"
+    "three-full": "^28.0.2"
   },
   "peerDependencies": {
     "itee-client": "^7.1.2",

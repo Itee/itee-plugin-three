@@ -147,7 +147,7 @@ class FilairesManager extends TDataBaseManager {
         } )
 
         const bufferGeometry = new BufferGeometry()
-        bufferGeometry.addAttribute( 'position', new Float32BufferAttribute( positions, 3 ) )
+        bufferGeometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) )
 
         let object = new Line( bufferGeometry, material )
         if ( !isNotDefined( data.type ) ) {
