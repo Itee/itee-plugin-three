@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/Itee/itee-plugin-three/compare/v1.2.1...v1.2.2) (2020-02-18)
+
+
+### Bug Fixes
+
+* **package:** fix package version and peer dependencies ([2fc685c](https://github.com/Itee/itee-plugin-three/commit/2fc685ce718b95a65d77281817c6494517651a4d))
+
 ## [1.2.1](https://github.com/Itee/itee-plugin-three/compare/v1.2.0...v1.2.1) (2020-02-17)
 
 
