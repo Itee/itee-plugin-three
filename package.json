@@ -56,13 +56,14 @@
   },
   "dependencies": {
     "bson": "^4.0.3",
-    "itee-client": "^7.1.1",
+    "three-full": "^28.0.1"
+  },
+  "peerDependencies": {
+    "itee-client": "^7.1.2",
     "itee-database": "^8.0.2",
-    "itee-mongodb": "^1.0.1",
+    "itee-mongodb": "^1.0.2",
     "itee-utils": "^5.1.1",
-    "itee-validators": "^5.1.2",
-    "mongoose": "^5.9.1",
-    "three-full": "^28.0.0"
+    "itee-validators": "^5.1.2"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.0",
