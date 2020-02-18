@@ -738,8 +738,8 @@ class ASCLoader {
 
             }
 
-            geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) )
-            geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) )
+            geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) )
+            geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) )
 
             const material = new PointsMaterial( {
                 size:         0.01,
@@ -794,8 +794,8 @@ class ASCLoader {
 
         }
 
-        geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) )
-        geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) )
+        geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) )
+        geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) )
 
         const material = new PointsMaterial( {
             size:         0.005,

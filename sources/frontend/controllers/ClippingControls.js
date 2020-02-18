@@ -60,7 +60,7 @@ class LineGeometry extends BufferGeometry {
         super()
 
         this.type = 'LineGeometry'
-        this.addAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) )
+        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) )
 
     }
 
@@ -315,7 +315,7 @@ class PlanarHitbox extends AbstractHitbox {
             2, 3, 0
         ]
         const planeBufferGeometry = new BufferGeometry()
-        planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
         planeBufferGeometry.setIndex( planeIndexes )
 
         const _parameters = {
@@ -349,7 +349,7 @@ class LozengeHitbox extends AbstractHitbox {
         ]
         const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 )
         const lozengeBufferGeometry   = new BufferGeometry()
-        lozengeBufferGeometry.addAttribute( 'position', positionBufferAttribute )
+        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute )
         lozengeBufferGeometry.setIndex( lozengeIndexes )
 
         const _parameters = {
@@ -761,7 +761,7 @@ class PlaneHandle extends AbstractHandle {
 
         // Edge line
         const lineBufferGeometry = new BufferGeometry()
-        lineBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) )
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) )
 
         const lineMaterial = new HighlightableLineMaterial( {
             color: _parameters.color
@@ -783,7 +783,7 @@ class PlaneHandle extends AbstractHandle {
             2, 3, 0
         ]
         const planeBufferGeometry = new BufferGeometry()
-        planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
         planeBufferGeometry.setIndex( planeIndexes )
 
         const planeMaterial    = new HighlightableMaterial( {
@@ -976,7 +976,7 @@ class LozengeHandle extends AbstractHandle {
 
         // Edge line
         const lineBufferGeometry = new BufferGeometry()
-        lineBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) )
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) )
 
         const lineMaterial = new HighlightableLineMaterial( {
             color: _parameters.color
@@ -998,7 +998,7 @@ class LozengeHandle extends AbstractHandle {
             2, 3, 0
         ]
         const lozengeBufferGeometry = new BufferGeometry()
-        lozengeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) )
+        lozengeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) )
         lozengeBufferGeometry.setIndex( lozengeIndexes )
 
         const lozengeMaterial    = new HighlightableMaterial( {
@@ -1400,7 +1400,7 @@ class RotateGizmo extends AbstractGizmo {
 
             }
 
-            geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) )
+            geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) )
             return geometry
 
         }

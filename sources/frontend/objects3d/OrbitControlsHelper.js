@@ -126,8 +126,8 @@ class OrbitControlsHelper extends LineSegments {
         colorBufferAttribute.name  = 'TOrbitControlsHelperColorBufferAttribute'
 
         const geometry = new BufferGeometry()
-        geometry.addAttribute( 'position', positionBufferAttribute )
-        geometry.addAttribute( 'color', colorBufferAttribute )
+        geometry.setAttribute( 'position', positionBufferAttribute )
+        geometry.setAttribute( 'color', colorBufferAttribute )
         geometry.name = 'TOrbitControlsHelperGeometry'
 
         return geometry
