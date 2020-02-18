@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.3 - Standalone')
+console.log('Itee.Plugin.Three v1.2.4 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -730,8 +730,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            }
 
-	            geometry.addAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
-	            geometry.addAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
+	            geometry.setAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
+	            geometry.setAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
 
 	            const material = new threeFull.PointsMaterial( {
 	                size:         0.01,
@@ -786,8 +786,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
-	        geometry.addAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
-	        geometry.addAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
+	        geometry.setAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
+	        geometry.setAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
 
 	        const material = new threeFull.PointsMaterial( {
 	            size:         0.005,
@@ -5415,7 +5415,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        super();
 
 	        this.type = 'LineGeometry';
-	        this.addAttribute( 'position', new threeFull.Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+	        this.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
 
 	    }
 
@@ -5670,7 +5670,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            2, 3, 0
 	        ];
 	        const planeBufferGeometry = new threeFull.BufferGeometry();
-	        planeBufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
+	        planeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
 	        planeBufferGeometry.setIndex( planeIndexes );
 
 	        const _parameters = {
@@ -5704,7 +5704,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        ];
 	        const positionBufferAttribute = new threeFull.Float32BufferAttribute( lozengePositions, 3 );
 	        const lozengeBufferGeometry   = new threeFull.BufferGeometry();
-	        lozengeBufferGeometry.addAttribute( 'position', positionBufferAttribute );
+	        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
 	        lozengeBufferGeometry.setIndex( lozengeIndexes );
 
 	        const _parameters = {
@@ -6116,7 +6116,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        // Edge line
 	        const lineBufferGeometry = new threeFull.BufferGeometry();
-	        lineBufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
+	        lineBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
 
 	        const lineMaterial = new HighlightableLineMaterial( {
 	            color: _parameters.color
@@ -6138,7 +6138,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            2, 3, 0
 	        ];
 	        const planeBufferGeometry = new threeFull.BufferGeometry();
-	        planeBufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
+	        planeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
 	        planeBufferGeometry.setIndex( planeIndexes );
 
 	        const planeMaterial    = new HighlightableMaterial( {
@@ -6331,7 +6331,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        // Edge line
 	        const lineBufferGeometry = new threeFull.BufferGeometry();
-	        lineBufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
+	        lineBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
 
 	        const lineMaterial = new HighlightableLineMaterial( {
 	            color: _parameters.color
@@ -6353,7 +6353,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            2, 3, 0
 	        ];
 	        const lozengeBufferGeometry = new threeFull.BufferGeometry();
-	        lozengeBufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( lozengePositions, 3 ) );
+	        lozengeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( lozengePositions, 3 ) );
 	        lozengeBufferGeometry.setIndex( lozengeIndexes );
 
 	        const lozengeMaterial    = new HighlightableMaterial( {
@@ -6615,7 +6615,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                        object.updateMatrix();
 
 	                        const tempGeometry = object.geometry.clone();
-	                        tempGeometry.applyMatrix( object.matrix );
+	                        tempGeometry.applyMatrix4( object.matrix );
 	                        object.geometry = tempGeometry;
 
 	                        object.position.set( 0, 0, 0 );
@@ -6755,7 +6755,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            }
 
-	            geometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( vertices, 3 ) );
+	            geometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( vertices, 3 ) );
 	            return geometry
 
 	        };
@@ -8295,7 +8295,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        } );
 
 	        const bufferGeometry = new threeFull.BufferGeometry();
-	        bufferGeometry.addAttribute( 'position', new threeFull.Float32BufferAttribute( positions, 3 ) );
+	        bufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( positions, 3 ) );
 
 	        let object = new threeFull.Line( bufferGeometry, material );
 	        if ( !iteeValidators.isNotDefined( data.type ) ) {
@@ -10955,8 +10955,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        colorBufferAttribute.name  = 'TOrbitControlsHelperColorBufferAttribute';
 
 	        const geometry = new threeFull.BufferGeometry();
-	        geometry.addAttribute( 'position', positionBufferAttribute );
-	        geometry.addAttribute( 'color', colorBufferAttribute );
+	        geometry.setAttribute( 'position', positionBufferAttribute );
+	        geometry.setAttribute( 'color', colorBufferAttribute );
 	        geometry.name = 'TOrbitControlsHelperGeometry';
 
 	        return geometry
