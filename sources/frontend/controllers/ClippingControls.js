@@ -1260,7 +1260,7 @@ class AbstractGizmo extends Object3D {
                         object.updateMatrix()
 
                         const tempGeometry = object.geometry.clone()
-                        tempGeometry.applyMatrix( object.matrix )
+                        tempGeometry.applyMatrix4( object.matrix )
                         object.geometry = tempGeometry
 
                         object.position.set( 0, 0, 0 )
