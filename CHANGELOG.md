@@ -1,3 +1,11 @@
+## [1.2.4](https://github.com/Itee/itee-plugin-three/compare/v1.2.3...v1.2.4) (2020-02-18)
+
+
+### Bug Fixes
+
+* **global:** update addAttribute method name to setAttribute ([33dd279](https://github.com/Itee/itee-plugin-three/commit/33dd27917d5260da20f0816f139b41378d767f3a))
+* **global:** update applyMatrix method name to applyMatrix4 ([f2672c5](https://github.com/Itee/itee-plugin-three/commit/f2672c57b8469b3870b8727fd59fda26343d8f0b))
+
 ## [1.2.3](https://github.com/Itee/itee-plugin-three/compare/v1.2.2...v1.2.3) (2020-02-18)
 
 

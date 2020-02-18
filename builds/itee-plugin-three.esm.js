@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.3 - EsModule')
+console.log('Itee.Plugin.Three v1.2.4 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, FileFormat, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
 import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, TextureLoader, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, MathUtils, Vector3, Shape, ColladaLoader, FBXLoader, ObjectLoader, OBJLoader, ShapeBufferGeometry, MeshPhongMaterial, STLLoader, MTLLoader, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, MeshLambertMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Fog, FogExp2, VertexColors } from 'three-full';
 import { degreesToRadians, toEnum } from 'itee-utils';
@@ -730,8 +730,8 @@ class ASCLoader {
 
             }
 
-            geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) );
-            geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) );
+            geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) );
+            geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) );
 
             const material = new PointsMaterial( {
                 size:         0.01,
@@ -786,8 +786,8 @@ class ASCLoader {
 
         }
 
-        geometry.addAttribute( 'position', new BufferAttribute( positions, 3 ) );
-        geometry.addAttribute( 'color', new BufferAttribute( colors, 3 ) );
+        geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) );
+        geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) );
 
         const material = new PointsMaterial( {
             size:         0.005,
@@ -5415,7 +5415,7 @@ class LineGeometry extends BufferGeometry {
         super();
 
         this.type = 'LineGeometry';
-        this.addAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
 
     }
 
@@ -5670,7 +5670,7 @@ class PlanarHitbox extends AbstractHitbox {
             2, 3, 0
         ];
         const planeBufferGeometry = new BufferGeometry();
-        planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
         planeBufferGeometry.setIndex( planeIndexes );
 
         const _parameters = {
@@ -5704,7 +5704,7 @@ class LozengeHitbox extends AbstractHitbox {
         ];
         const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 );
         const lozengeBufferGeometry   = new BufferGeometry();
-        lozengeBufferGeometry.addAttribute( 'position', positionBufferAttribute );
+        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
         lozengeBufferGeometry.setIndex( lozengeIndexes );
 
         const _parameters = {
@@ -6116,7 +6116,7 @@ class PlaneHandle extends AbstractHandle {
 
         // Edge line
         const lineBufferGeometry = new BufferGeometry();
-        lineBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
 
         const lineMaterial = new HighlightableLineMaterial( {
             color: _parameters.color
@@ -6138,7 +6138,7 @@ class PlaneHandle extends AbstractHandle {
             2, 3, 0
         ];
         const planeBufferGeometry = new BufferGeometry();
-        planeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
         planeBufferGeometry.setIndex( planeIndexes );
 
         const planeMaterial    = new HighlightableMaterial( {
@@ -6331,7 +6331,7 @@ class LozengeHandle extends AbstractHandle {
 
         // Edge line
         const lineBufferGeometry = new BufferGeometry();
-        lineBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
 
         const lineMaterial = new HighlightableLineMaterial( {
             color: _parameters.color
@@ -6353,7 +6353,7 @@ class LozengeHandle extends AbstractHandle {
             2, 3, 0
         ];
         const lozengeBufferGeometry = new BufferGeometry();
-        lozengeBufferGeometry.addAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) );
+        lozengeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) );
         lozengeBufferGeometry.setIndex( lozengeIndexes );
 
         const lozengeMaterial    = new HighlightableMaterial( {
@@ -6615,7 +6615,7 @@ class AbstractGizmo extends Object3D {
                         object.updateMatrix();
 
                         const tempGeometry = object.geometry.clone();
-                        tempGeometry.applyMatrix( object.matrix );
+                        tempGeometry.applyMatrix4( object.matrix );
                         object.geometry = tempGeometry;
 
                         object.position.set( 0, 0, 0 );
@@ -6755,7 +6755,7 @@ class RotateGizmo extends AbstractGizmo {
 
             }
 
-            geometry.addAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+            geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
             return geometry
 
         };
@@ -8295,7 +8295,7 @@ class FilairesManager extends TDataBaseManager {
         } );
 
         const bufferGeometry = new BufferGeometry();
-        bufferGeometry.addAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
+        bufferGeometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
 
         let object = new Line( bufferGeometry, material );
         if ( !isNotDefined( data.type ) ) {
@@ -10955,8 +10955,8 @@ class OrbitControlsHelper extends LineSegments {
         colorBufferAttribute.name  = 'TOrbitControlsHelperColorBufferAttribute';
 
         const geometry = new BufferGeometry();
-        geometry.addAttribute( 'position', positionBufferAttribute );
-        geometry.addAttribute( 'color', colorBufferAttribute );
+        geometry.setAttribute( 'position', positionBufferAttribute );
+        geometry.setAttribute( 'color', colorBufferAttribute );
         geometry.name = 'TOrbitControlsHelperGeometry';
 
         return geometry
