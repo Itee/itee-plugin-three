@@ -67,7 +67,6 @@ function CreateRollupConfigs ( options ) {
     const output    = options.output
     const formats   = options.format.split( ',' )
     const envs      = options.env.split( ',' )
-    const sourcemap = options.sourcemap
     const treeshake = options.treeshake
     const fileName  = path.basename( input, '.js' )
 
@@ -89,12 +88,11 @@ function CreateRollupConfigs ( options ) {
                     'itee-database',
                     'itee-utils',
                     'itee-validators',
-                    'mongoose',
+                    'itee-mongodb',
                     'bson',
                     'three-full'
                 ] : [
                     'itee-client',
-                    'itee-database',
                     'itee-utils',
                     'itee-validators',
                     'three-full'
@@ -118,7 +116,6 @@ function CreateRollupConfigs ( options ) {
 
                     // Ignore some errors
                     if ( message.includes( 'Circular dependency' ) ) { return }
-                    //                    if ( message.includes( 'plugin uglify is deprecated' ) ) { return }
 
                     if ( loc ) {
                         process.stderr.write( `/!\\ ${loc.file} (${loc.line}:${loc.column}) ${frame} ${message}\n` )
@@ -146,7 +143,7 @@ function CreateRollupConfigs ( options ) {
                     footer:    '',
                     intro:     '',
                     outro:     '',
-                    sourcemap: sourcemap,
+                    sourcemap: !isProd,
                     interop:   true,
 
                     // danger zone
