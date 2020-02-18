@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.2 - Standalone')
+console.log('Itee.Plugin.Three v1.2.3 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -1676,9 +1676,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            plane.position.x = imageShot.position.x - 600200;
 	            plane.position.y = imageShot.position.y - 131400;
 	            plane.position.z = imageShot.position.z - 60 - 0.34;
-	            plane.rotation.x = threeFull._Math.degToRad( imageShot.rotation.x );
-	            plane.rotation.y = threeFull._Math.degToRad( imageShot.rotation.z ); // Need to inverse y and z due to z up import !!!
-	            plane.rotation.z = -( threeFull._Math.degToRad( imageShot.rotation.y ) );
+	            plane.rotation.x = threeFull.MathUtils.degToRad( imageShot.rotation.x );
+	            plane.rotation.y = threeFull.MathUtils.degToRad( imageShot.rotation.z ); // Need to inverse y and z due to z up import !!!
+	            plane.rotation.z = -( threeFull.MathUtils.degToRad( imageShot.rotation.y ) );
 	            // plane.visible    = false
 
 	            plane.userData = {

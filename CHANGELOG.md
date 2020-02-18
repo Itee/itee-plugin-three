@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/Itee/itee-plugin-three/compare/v1.2.2...v1.2.3) (2020-02-18)
+
+
+### Bug Fixes
+
+* **rzmloader:** fix _Math three js import that is now MathUtils ([2554fa3](https://github.com/Itee/itee-plugin-three/commit/2554fa38f80fce9b89d5ad141d62af3b3d9dc110))
+
 ## [1.2.2](https://github.com/Itee/itee-plugin-three/compare/v1.2.1...v1.2.2) (2020-02-18)
 
 
