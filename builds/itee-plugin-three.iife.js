@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.4 - Standalone')
+console.log('Itee.Plugin.Three v1.2.5 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {

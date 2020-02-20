@@ -1,3 +1,10 @@
+## [1.2.5](https://github.com/Itee/itee-plugin-three/compare/v1.2.4...v1.2.5) (2020-02-20)
+
+
+### Bug Fixes
+
+* **threetomongodb:** fix asynchronous call during insert and clean comments ([49da370](https://github.com/Itee/itee-plugin-three/commit/49da3700b04be95266cb18f229e8e1b6aa2cb416))
+
 ## [1.2.4](https://github.com/Itee/itee-plugin-three/compare/v1.2.3...v1.2.4) (2020-02-18)
 
 
