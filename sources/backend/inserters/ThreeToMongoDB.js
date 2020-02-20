@@ -451,12 +451,12 @@ class ThreeToMongoDB extends TAbstractDataInserter {
             return null
         }
 
-        const documents = []
+        const deletes = []
         for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
-            documents.push( this._deleteDocument( _documents[ index ] ) )
+            deletes.push( this._deleteDocument( _documents[ index ] ) )
         }
 
-        return Promise.all( documents )
+        return Promise.all( deletes )
 
     }
 
@@ -476,11 +476,11 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     ///
     async _removeChildrenDocuments ( documents ) {
 
+        let removed = []
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
-
-            await this._removeChildDocument( documents[ childIndex ] )
-
+            removed.push( this._removeChildDocument( documents[ childIndex ] ) )
         }
+        return Promise.all( removed )
 
     }
 
