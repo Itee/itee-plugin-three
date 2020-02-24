@@ -1,3 +1,10 @@
+## [1.2.6](https://github.com/Itee/itee-plugin-three/compare/v1.2.5...v1.2.6) (2020-02-24)
+
+
+### Bug Fixes
+
+* **clippingcontrols:** add missings update matrix call, and update management ([ece63f4](https://github.com/Itee/itee-plugin-three/commit/ece63f429f90bde0d3cceea333589c1faa2e5b9e))
+
 ## [1.2.5](https://github.com/Itee/itee-plugin-three/compare/v1.2.4...v1.2.5) (2020-02-20)
 
 
