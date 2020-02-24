@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.4 - CommonJs')
+console.log('Itee.Plugin.Three v1.2.7 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -1835,7 +1835,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             let childrenIds = null;
             if ( iteeValidators.isDefined( parentId ) ) {
 
-                const parentDocument = this._readOneDocument( 'Objects3D', { _id: parentId } );
+                const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } );
                 if ( iteeValidators.isNull( parentDocument ) ) {
                     onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` );
                     return
@@ -1849,7 +1849,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                     childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
                     // Add children to given parent
-                    this._updateDocument( parentDocument, {
+                    await this._updateDocument( parentDocument, {
                         $addToSet: {
                             children: childrenIds
                         }
@@ -1860,26 +1860,23 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                     // Merge children into parent
                     //// Clean up current dbObject dependencies
                     // Children create and update will be perform on children iteration but remove need to be checked here !
-                    const dbChildren         = this._readManyDocument( 'Objects3D', { parent: parentId } );
+                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: parentId } );
                     const childrenUuids      = dataToParse.map( child => child.uuid );
                     const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
 
-                    this._removeChildrenDocuments( dbChildrenToRemove );
+                    await this._removeChildrenDocuments( dbChildrenToRemove );
 
                     // If parent exist let create children
                     children    = await this._parseObjects( dataToParse, parentId );
                     childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
-                    this._updateDocument( parentDocument, {
+                    await this._updateDocument( parentDocument, {
                         $set: {
                             children: childrenIds
                         }
                     } );
 
                 }
-
-                // Update children reference to parent
-                // await this._updateDocuments( children, { $set: { parent: parentId } } )
 
             } else {
 
@@ -1906,28 +1903,11 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         const documents = [];
-        let document    = null;
-
         for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
-            document = this._parseObject( _objects[ index ], parentId );
-            documents.push( document );
+            documents.push( this._parseObject( _objects[ index ], parentId ) );
         }
 
         return Promise.all( documents )
-
-        // return new Promise( async ( resolve ) => {
-        //
-        //     const documents = []
-        //     let document    = null
-        //
-        //     for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
-        //         document = await this._parseObject( _objects[ index ], parentId )
-        //         documents.push( document )
-        //     }
-        //
-        //     resolve( documents )
-        //
-        // } )
 
     }
 
@@ -2017,15 +1997,15 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         }
 
-        const geometry   = this._getOrCreateDocuments( objectGeometry );
+        const geometry   = await this._getOrCreateDocuments( objectGeometry );
         const geometryId = ( iteeValidators.isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null;
 
-        const materials    = this._getOrCreateDocuments( objectMaterials );
+        const materials    = await this._getOrCreateDocuments( objectMaterials );
         const materialsIds = ( iteeValidators.isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : [];
 
         // Check if object already exist
         // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-        let document = this._readOneDocument( objectType, {
+        let document = await this._readOneDocument( objectType, {
             uuid:   object.uuid,
             parent: parentId
         } );
@@ -2038,10 +2018,10 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             // else if replace, remove missings children from new data, update existing and create new
             if ( this.mergeStrategy === 'add' ) {
 
-                const children    = this._parseObjects( objectChildren, document._id );
+                const children    = await this._parseObjects( objectChildren, document._id );
                 const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
-                this._updateDocument( document, {
+                await this._updateDocument( document, {
                     $addToSet: {
                         children: childrenIds // geometry: geometryId, // Geometry is not an array !!
                         // material: materialsIds // Should check which material still exist !!!
@@ -2052,16 +2032,16 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 //// Clean up current dbObject dependencies
                 // Children create and update will be perform on children iteration but remove need to be checked here !
-                const dbChildren         = this._readManyDocument( 'Objects3D', { parent: document._id } );
+                const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } );
                 const childrenUuids      = objectChildren.map( child => child.uuid );
                 const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
 
-                this._removeChildrenDocuments( dbChildrenToRemove );
+                await this._removeChildrenDocuments( dbChildrenToRemove );
 
-                const children    = this._parseObjects( objectChildren, document._id );
+                const children    = await this._parseObjects( objectChildren, document._id );
                 const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
-                this._updateDocument( document, {
+                await this._updateDocument( document, {
                     $set: {
                         children: childrenIds,
                         geometry: geometryId,
@@ -2079,12 +2059,12 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             object.children = [];
             object.geometry = geometryId;
             object.material = materialsIds;
-            document        = this._createDocument( object );
+            document        = await this._createDocument( object );
 
-            const children    = this._parseObjects( objectChildren, document._id );
+            const children    = await this._parseObjects( objectChildren, document._id );
             const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
-            this._updateDocument( document, {
+            await this._updateDocument( document, {
                 $set: {
                     children: childrenIds,
                     geometry: geometryId,
@@ -2096,202 +2076,9 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         return document
 
-        /*
-                return new Promise( async ( resolve, reject ) => {
-
-                    // Preprocess objects here to save geometry, materials and related before to save the object itself
-                    const objectType      = object.type
-                    const objectName      = object.name
-                    const objectGeometry  = object.geometry
-                    const objectChildren  = ThreeToMongoDB._arrayify( object.children )
-                    const objectMaterials = ThreeToMongoDB._arrayify( object.material )
-
-                    // If it is a terminal object ( No children ) with an empty geometry
-                    if ( isDefined( objectGeometry ) && isEmptyArray( objectChildren ) ) {
-
-                        if ( objectGeometry.isGeometry ) {
-
-                            const vertices = objectGeometry.vertices
-                            if ( isNotDefined( vertices ) || isEmptyArray( vertices ) ) {
-
-                                console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
-                                resolve( null )
-                                return
-
-                            }
-
-                        } else if ( objectGeometry.isBufferGeometry ) {
-
-                            const attributes = objectGeometry.attributes
-                            if ( isNotDefined( attributes ) ) {
-                                console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
-                                resolve( null )
-                                return
-                            }
-
-                            const positions = attributes.position
-                            if ( isNotDefined( positions ) || positions.count === 0 ) {
-
-                                console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
-                                resolve( null )
-                                return
-                            }
-
-                        } else {
-
-                            console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
-                            resolve( null )
-                            return
-
-                        }
-
-                    }
-
-                    let availableMaterialTypes = null
-
-                    if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
-
-                        if ( isNotDefined( objectGeometry ) ) {
-
-                            console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
-                            resolve( null )
-                            return
-
-                        }
-
-                        availableMaterialTypes = ThreeToMongoDB.AvailableLineMaterialTypes
-
-                    } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
-
-                        if ( isNotDefined( objectGeometry ) ) {
-
-                            console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
-                            resolve( null )
-                            return
-
-                        }
-
-                        availableMaterialTypes = ThreeToMongoDB.AvailablePointMaterialTypes
-
-                    } else if ( ThreeToMongoDB.AvailableSpriteTypes.includes( objectType ) ) {
-
-                        availableMaterialTypes = ThreeToMongoDB.AvailableSpriteMaterialTypes
-
-                    }
-
-                    if ( availableMaterialTypes ) {
-
-                        for ( let materialIndex = 0, numberOfMaterials = objectMaterials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-
-                            const material     = objectMaterials[ materialIndex ]
-                            const materialType = material.type
-                            if ( !availableMaterialTypes.includes( materialType ) ) {
-                                console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
-                                resolve( null )
-                                return
-                            }
-
-                        }
-
-                    }
-
-                    try {
-
-                        // const children    = await this._parseObjects( objectChildren )
-                        // const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
-
-                        const geometry   = this._getOrCreateDocuments( objectGeometry )
-                        const geometryId = ( isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null
-
-                        const materials    = this._getOrCreateDocuments( objectMaterials )
-                        const materialsIds = ( isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : []
-
-                        // Check if object already exist
-                        // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-                        let document = this._readOneDocument( objectType, {
-                            uuid:   object.uuid,
-                            parent: parentId
-                        } )
-                        // Todo if document.parent != parentId warn id collision !n m
-                        if ( isDefined( document ) ) {
-
-                            // Check merge strategie
-                            // If add, only update existing and create new objects
-                            // else if replace, remove missings children from new data, update existing and create new
-                            if ( this.mergeStrategy === 'add' ) {
-
-                                const children    = await this._parseObjects( objectChildren, document._id )
-                                const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
-
-                                this._updateDocument( document, {
-                                    $addToSet: {
-                                        children: childrenIds // geometry: geometryId, // Geometry is not an array !!
-                                        // material: materialsIds // Should check which material still exist !!!
-                                    }
-                                } )
-
-                            } else if ( this.mergeStrategy === 'replace' ) {
-
-                                //// Clean up current dbObject dependencies
-                                // Children create and update will be perform on children iteration but remove need to be checked here !
-                                const dbChildren         = this._readManyDocument( 'Objects3D', { parent: document._id } )
-                                const childrenUuids      = objectChildren.map( child => child.uuid )
-                                const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
-
-                                this._removeChildrenDocuments( dbChildrenToRemove )
-
-                                const children    = await this._parseObjects( objectChildren, document._id )
-                                const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
-
-                                this._updateDocument( document, {
-                                    $set: {
-                                        children: childrenIds,
-                                        geometry: geometryId,
-                                        material: materialsIds
-                                    }
-                                } )
-
-                            } else {
-                                console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
-                            }
-
-                        } else {
-
-                            object.parent   = parentId
-                            object.children = []
-                            object.geometry = geometryId
-                            object.material = materialsIds
-                            document        = this._createDocument( object )
-
-                            const children    = await this._parseObjects( objectChildren, document._id )
-                            const childrenIds = ( isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : []
-
-                            this._updateDocument( document, {
-                                $set: {
-                                    children: childrenIds,
-                                    geometry: geometryId,
-                                    material: materialsIds
-                                }
-                            } )
-
-                        }
-
-                        // Update children reference to parent only after all stuff is done
-                        // await this._updateDocuments( children, { $set: { parent: document._id } } )
-                        resolve( document )
-
-                    } catch ( error ) {
-
-                        reject( error )
-
-                    }
-
-                } )
-        */
-
     }
 
-    _getOrCreateDocuments ( objects = [] ) {
+    async _getOrCreateDocuments ( objects = [] ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects );
         if ( iteeValidators.isEmptyArray( _objects ) ) {
@@ -2299,61 +2086,34 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         const documents = [];
-
         for ( let index = 0, numberOfObjects = _objects.length ; index < numberOfObjects ; index++ ) {
-
-            const document = this._getOrCreateDocument( _objects[ index ] );
-            documents.push( document );
-
+            documents.push( this._getOrCreateDocument( _objects[ index ] ) );
         }
 
         return Promise.all( documents )
 
     }
 
-    _getOrCreateDocument ( data ) {
+    async _getOrCreateDocument ( data ) {
 
         if ( iteeValidators.isNotDefined( data ) ) {
             return null
         }
 
-        let document = this._readOneDocument( data.type, { uuid: data.uuid } );
+        let document = await this._readOneDocument( data.type, { uuid: data.uuid } );
         if ( iteeValidators.isDefined( document ) ) {
-            document = this._updateDocument( document, data );
+            document = await this._updateDocument( document, data );
         } else {
-            document = this._createDocument( data );
+            document = await this._createDocument( data );
         }
 
         return document
-
-        /*
-                return new Promise( async ( resolve, reject ) => {
-
-                    try {
-
-                        let document = this._readOneDocument( data.type, { uuid: data.uuid } )
-                        if ( isDefined( document ) ) {
-                            document = this._updateDocument( document, data )
-                        } else {
-                            document = this._createDocument( data )
-                        }
-
-                        resolve( document )
-
-                    } catch ( error ) {
-
-                        reject( error )
-
-                    }
-
-                } )
-        */
 
     }
 
     // Create
     // Todo non async createDocument to allow multi promises at once
-    _createDocuments ( datas = [] ) {
+    async _createDocuments ( datas = [] ) {
 
         const _datas = ThreeToMongoDB._arrayify( datas );
         if ( iteeValidators.isEmptyArray( _datas ) ) {
@@ -2361,15 +2121,11 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         const documents = [];
-
         for ( let index = 0, numberOfDocuments = _datas.length ; index < numberOfDocuments ; index++ ) {
-
-            const promise = this._createDocument( _datas[ index ] );
-            documents.push( promise );
-
+            documents.push( this._createDocument( _datas[ index ] ) );
         }
 
-        return documents
+        return Promise.all( documents )
 
     }
 
@@ -2382,24 +2138,6 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         const model         = this._driver.model( data.type );
         const savedDocument = await model( data ).save();
         return savedDocument._doc
-
-        /*
-                return new Promise( async ( resolve, reject ) => {
-
-                    try {
-
-                        const model         = this._driver.model( data.type )
-                        const savedDocument = await model( data ).save()
-                        resolve( savedDocument._doc )
-
-                    } catch ( error ) {
-
-                        reject( error )
-
-                    }
-
-                } )
-        */
 
     }
 
@@ -2417,31 +2155,6 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         return ( iteeValidators.isDefined( model ) ) ? model._doc : null
 
-        /*
-                return new Promise( async ( resolve, reject ) => {
-
-                    try {
-
-                        const model = await this._driver
-                                                .model( type )
-                                                .findOne( query )
-                                                .exec()
-
-                        if ( isDefined( model ) ) {
-                            resolve( model._doc )
-                        } else {
-                            resolve( null )
-                        }
-
-                    } catch ( error ) {
-
-                        reject( error )
-
-                    }
-
-                } )
-        */
-
     }
 
     async _readManyDocument ( type, query ) {
@@ -2456,47 +2169,22 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                          .exec()
                          .map( model => model._doc )
 
-        //        return new Promise( async ( resolve, reject ) => {
-        //
-        //            try {
-        //
-        //                const models = await this._driver
-        //                                         .model( type )
-        //                                         .find( query )
-        //                                         .exec()
-        //
-        //                const documents = models.map( model => model._doc )
-        //
-        //                resolve( documents )
-        //
-        //            } catch ( error ) {
-        //
-        //                reject( error )
-        //
-        //            }
-        //
-        //        } )
-
     }
 
     // Update
-    _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+    async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents );
         if ( iteeValidators.isEmptyArray( _documents ) ) {
             return null
         }
 
-        const results = [];
-
+        const updates = [];
         for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
-
-            const document = this._updateDocument( _documents[ index ], updateQuery, queryOptions );
-            results.push( document );
-
+            updates.push( this._updateDocument( _documents[ index ], updateQuery, queryOptions ) );
         }
 
-        return results
+        return Promise.all( updates )
 
     }
 
@@ -2514,23 +2202,19 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     }
 
     // Delete
-    _deleteDocuments ( documents = [] ) {
+    async _deleteDocuments ( documents = [] ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents );
         if ( iteeValidators.isEmptyArray( _documents ) ) {
             return null
         }
 
-        const results = [];
-
+        const deletes = [];
         for ( let index = 0, numberOfDocuments = _documents.length ; index < numberOfDocuments ; index++ ) {
-
-            const document = this._deleteDocument( _documents[ index ] );
-            results.push( document );
-
+            deletes.push( this._deleteDocument( _documents[ index ] ) );
         }
 
-        return results
+        return Promise.all( deletes )
 
     }
 
@@ -2548,71 +2232,66 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     }
 
     ///
-    _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments ( documents ) {
 
+        let removed = [];
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
-
-            this._removeChildDocument( documents[ childIndex ] );
-
+            removed.push( this._removeChildDocument( documents[ childIndex ] ) );
         }
+        return Promise.all( removed )
 
     }
 
-    _removeChildDocument ( document ) {
+    async _removeChildDocument ( document ) {
 
         // Remove children recursively
-        const children = this._readManyDocument( 'Objects3D', { parent: document._id } );
-        this._removeChildrenDocuments( children );
+        const children = await this._readManyDocument( 'Objects3D', { parent: document._id } );
+        await this._removeChildrenDocuments( children );
 
         // Remove geometry only if current object is the last that reference it
-        this._removeOrphanGeometryWithId( document.geometry );
+        await this._removeOrphanGeometryWithId( document.geometry );
 
         // Remove material only if current object is the last that reference it
-        this._removeOrphanMaterialsWithIds( document.material || [] );
+        await this._removeOrphanMaterialsWithIds( document.material || [] );
 
         // finally remove the incriminated document
-        this._deleteDocument( document );
+        await this._deleteDocument( document );
 
     }
 
     // Remove orphan geometry
-    _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId ( geometryId ) {
 
         if ( iteeValidators.isNotDefined( geometryId ) ) { return }
 
-        const referencingObjects = this._readManyDocument( 'Objects3D', { geometry: geometryId } );
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
         if ( referencingObjects.length > 1 ) { return }
 
-        const geometryDocument = this._readOneDocument( 'Geometries', { _id: geometryId } );
-        this._deleteDocument( geometryDocument );
+        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } );
+        await this._deleteDocument( geometryDocument );
 
     }
 
     // Remove only orphan materials
-    _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds ( materialsIds ) {
 
         const removed = [];
-
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
-
-            const materialId = materialsIds[ index ];
-            const remove     = this._removeOrphanMaterialWithId( materialId );
-            removed.push( remove );
-
+            removed.push( this._removeOrphanMaterialWithId( materialsIds[ index ] ) );
         }
 
-        return removed
+        return Promise.all( removed )
 
     }
 
     // Remove only orphan material
-    _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId ( materialId ) {
 
-        const referencingObjects = this._readManyDocument( 'Objects3D', { material: materialId } );
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
         if ( referencingObjects.length > 1 ) { return }
 
-        const materialDocument = this._readOneDocument( 'Materials', { _id: materialId } );
-        this._deleteDocument( materialDocument );
+        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } );
+        await this._deleteDocument( materialDocument );
 
     }
 

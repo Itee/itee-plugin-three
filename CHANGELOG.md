@@ -1,3 +1,25 @@
+## [1.2.7](https://github.com/Itee/itee-plugin-three/compare/v1.2.6...v1.2.7) (2020-02-24)
+
+
+### Bug Fixes
+
+* **maps:** remove old production maps ([68ad9d4](https://github.com/Itee/itee-plugin-three/commit/68ad9d4cc0bcd34f8a6392439bd8f6fd53287bf1))
+* **package:** move three-full as peer dependency to avoid duplicate code in final client bundle ([9a880ca](https://github.com/Itee/itee-plugin-three/commit/9a880ca858d0d19da9b36d79741b6c4221fcedf6))
+
+## [1.2.6](https://github.com/Itee/itee-plugin-three/compare/v1.2.5...v1.2.6) (2020-02-24)
+
+
+### Bug Fixes
+
+* **clippingcontrols:** add missings update matrix call, and update management ([ece63f4](https://github.com/Itee/itee-plugin-three/commit/ece63f429f90bde0d3cceea333589c1faa2e5b9e))
+
+## [1.2.5](https://github.com/Itee/itee-plugin-three/compare/v1.2.4...v1.2.5) (2020-02-20)
+
+
+### Bug Fixes
+
+* **threetomongodb:** fix asynchronous call during insert and clean comments ([49da370](https://github.com/Itee/itee-plugin-three/commit/49da3700b04be95266cb18f229e8e1b6aa2cb416))
+
 ## [1.2.4](https://github.com/Itee/itee-plugin-three/compare/v1.2.3...v1.2.4) (2020-02-18)
 
 

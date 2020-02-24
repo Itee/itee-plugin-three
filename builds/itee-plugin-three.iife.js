@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.4 - Standalone')
+console.log('Itee.Plugin.Three v1.2.7 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
@@ -5969,6 +5969,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            this.flipDirection();
 	        }
 
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
+
 	    }
 
 	    setDirection ( direction ) {
@@ -6061,6 +6064,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            this.flipDirection();
 	        }
 
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
+
 	    }
 
 	    setDirection ( direction ) {
@@ -6094,6 +6100,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    update ( cameraDirection ) {
 	        super.update( cameraDirection );
+
+
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
 	    }
 
 	}
@@ -6284,6 +6294,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
+
 	    }
 
 	    setDirection ( direction ) {
@@ -6457,6 +6470,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
+
 	    }
 
 	    setDirection ( direction ) {
@@ -6510,7 +6526,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.isOmnidirectionalHandle = true;
 	        this.type                    = 'OmnidirectionalHandle';
 
-	        const octahedronGeometry    = new threeFull.OctahedronBufferGeometry( 1, 0 );
+	        const octahedronGeometry    = new threeFull.OctahedronBufferGeometry( 0.1, 0 );
 	        const octahedronMaterial    = new HighlightableMaterial( {
 	            color:       _parameters.color,
 	            transparent: true,
@@ -6533,6 +6549,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    update ( cameraDirection ) {
 	        super.update( cameraDirection );
+
+	        this.updateMatrix();
+	        this.hitbox.updateMatrix();
 	    }
 
 	}
@@ -6567,7 +6586,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        } );
 	        this.intersectPlane                  = new threeFull.Mesh( planeGeometry, planeMaterial );
 	        this.intersectPlane.matrixAutoUpdate = false;
-	        this.intersectPlane.visible          = false;
+	        this.intersectPlane.visible          = true;
 
 	        this.add( this.intersectPlane );
 
@@ -6668,6 +6687,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    updateIntersectPlane ( cameraPosition ) {
 
 	        this.intersectPlane.lookAt( cameraPosition );
+	        this.intersectPlane.updateMatrix();
 
 	    }
 
@@ -7126,6 +7146,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
+	        this.updateGizmo();
+
 	    }
 
 	    setCamera ( value ) {
@@ -7248,10 +7270,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z );
 
 	            // update...
+	            this.updateMatrix();
 	            this.updateMatrixWorld();
 	        }
 
 	        this.updateClipping();
+	        this.updateGizmo();
 
 	    }
 
@@ -7272,7 +7296,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    }
 
-	    update () {
+	    updateGizmo () {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7709,6 +7733,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
+	        this.updateGizmo();
+
 	    }
 
 	    _onMouseWheel ( mouseEvent ) {
@@ -7803,24 +7829,28 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    _translate ( displacement ) {
 
 	        this.position.add( displacement );
+	        this.updateMatrix();
 
 	    }
 
 	    _translateX ( deltaX ) {
 
 	        this.position.setX( this.position.x + deltaX );
+	        this.updateMatrix();
 
 	    }
 
 	    _translateY ( deltaY ) {
 
 	        this.position.setY( this.position.y + deltaY );
+	        this.updateMatrix();
 
 	    }
 
 	    _translateZ ( deltaZ ) {
 
 	        this.position.setZ( this.position.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
@@ -7828,6 +7858,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.position.setX( this.position.x + deltaX );
 	        this.position.setY( this.position.y + deltaY );
+	        this.updateMatrix();
 
 	    }
 
@@ -7835,6 +7866,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.position.setX( this.position.x + deltaX );
 	        this.position.setZ( this.position.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
@@ -7842,12 +7874,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.position.setY( this.position.y + deltaY );
 	        this.position.setZ( this.position.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
 	    _translateXYZ ( deltaX, deltaY, deltaZ ) {
 
 	        this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
@@ -7877,24 +7911,28 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    _scale ( changeAmout ) {
 
 	        this.scale.add( changeAmout );
+	        this.updateMatrix();
 
 	    }
 
 	    _scaleX ( deltaX ) {
 
 	        this.scale.setX( this.scale.x + deltaX );
+	        this.updateMatrix();
 
 	    }
 
 	    _scaleY ( deltaY ) {
 
 	        this.scale.setY( this.scale.y + deltaY );
+	        this.updateMatrix();
 
 	    }
 
 	    _scaleZ ( deltaZ ) {
 
 	        this.scale.setZ( this.scale.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
@@ -7902,6 +7940,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.scale.setX( this.scale.x + deltaX );
 	        this.scale.setY( this.scale.y + deltaY );
+	        this.updateMatrix();
 
 	    }
 
@@ -7909,6 +7948,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.scale.setX( this.scale.x + deltaX );
 	        this.scale.setZ( this.scale.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
@@ -7916,12 +7956,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        this.scale.setY( this.scale.y + deltaY );
 	        this.scale.setZ( this.scale.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
 	    _scaleXYZ ( deltaX, deltaY, deltaZ ) {
 
 	        this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ );
+	        this.updateMatrix();
 
 	    }
 
