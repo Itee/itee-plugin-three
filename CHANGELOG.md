@@ -1,3 +1,11 @@
+## [1.2.7](https://github.com/Itee/itee-plugin-three/compare/v1.2.6...v1.2.7) (2020-02-24)
+
+
+### Bug Fixes
+
+* **maps:** remove old production maps ([68ad9d4](https://github.com/Itee/itee-plugin-three/commit/68ad9d4cc0bcd34f8a6392439bd8f6fd53287bf1))
+* **package:** move three-full as peer dependency to avoid duplicate code in final client bundle ([9a880ca](https://github.com/Itee/itee-plugin-three/commit/9a880ca858d0d19da9b36d79741b6c4221fcedf6))
+
 ## [1.2.6](https://github.com/Itee/itee-plugin-three/compare/v1.2.5...v1.2.6) (2020-02-24)
 
 
