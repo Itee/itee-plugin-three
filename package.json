@@ -55,15 +55,15 @@
     "postversion": "gulp build"
   },
   "dependencies": {
-    "bson": "^4.0.3",
-    "three-full": "^28.0.2"
+    "bson": "^4.0.3"
   },
   "peerDependencies": {
     "itee-client": "^7.1.2",
     "itee-database": "^8.0.2",
     "itee-mongodb": "^1.0.2",
     "itee-utils": "^5.1.1",
-    "itee-validators": "^5.1.2"
+    "itee-validators": "^5.1.2",
+    "three-full": "^28.0.2"
   },
   "devDependencies": {
     "@semantic-release/changelog": "^5.0.0",
