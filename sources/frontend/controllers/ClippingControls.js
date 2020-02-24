@@ -614,6 +614,9 @@ class TranslateHandle extends AbstractHandle {
             this.flipDirection()
         }
 
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
     }
 
     setDirection ( direction ) {
@@ -706,6 +709,9 @@ class ScaleHandle extends AbstractHandle {
             this.flipDirection()
         }
 
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
     }
 
     setDirection ( direction ) {
@@ -739,6 +745,10 @@ class RotateHandle extends AbstractHandle {
 
     update ( cameraDirection ) {
         super.update( cameraDirection )
+
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
     }
 
 }
@@ -929,6 +939,9 @@ class PlaneHandle extends AbstractHandle {
 
         }
 
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
     }
 
     setDirection ( direction ) {
@@ -1102,6 +1115,9 @@ class LozengeHandle extends AbstractHandle {
 
         }
 
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
     }
 
     setDirection ( direction ) {
@@ -1155,7 +1171,7 @@ class OctahedricalHandle extends AbstractHandle {
         this.isOmnidirectionalHandle = true
         this.type                    = 'OmnidirectionalHandle'
 
-        const octahedronGeometry    = new OctahedronBufferGeometry( 1, 0 )
+        const octahedronGeometry    = new OctahedronBufferGeometry( 0.1, 0 )
         const octahedronMaterial    = new HighlightableMaterial( {
             color:       _parameters.color,
             transparent: true,
@@ -1178,6 +1194,9 @@ class OctahedricalHandle extends AbstractHandle {
 
     update ( cameraDirection ) {
         super.update( cameraDirection )
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
     }
 
 }
@@ -1212,7 +1231,7 @@ class AbstractGizmo extends Object3D {
         } )
         this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial )
         this.intersectPlane.matrixAutoUpdate = false
-        this.intersectPlane.visible          = false
+        this.intersectPlane.visible          = true
 
         this.add( this.intersectPlane )
 
@@ -1313,6 +1332,7 @@ class AbstractGizmo extends Object3D {
     updateIntersectPlane ( cameraPosition ) {
 
         this.intersectPlane.lookAt( cameraPosition )
+        this.intersectPlane.updateMatrix()
 
     }
 
@@ -1771,6 +1791,8 @@ class ClippingControls extends Object3D {
 
         }
 
+        this.updateGizmo()
+
     }
 
     setCamera ( value ) {
@@ -1893,10 +1915,12 @@ class ClippingControls extends Object3D {
             this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z )
 
             // update...
+            this.updateMatrix()
             this.updateMatrixWorld()
         }
 
         this.updateClipping()
+        this.updateGizmo()
 
     }
 
@@ -1917,7 +1941,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    update () {
+    updateGizmo () {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -2357,6 +2381,8 @@ class ClippingControls extends Object3D {
 
         }
 
+        this.updateGizmo()
+
     }
 
     _onMouseWheel ( mouseEvent ) {
@@ -2451,24 +2477,28 @@ class ClippingControls extends Object3D {
     _translate ( displacement ) {
 
         this.position.add( displacement )
+        this.updateMatrix()
 
     }
 
     _translateX ( deltaX ) {
 
         this.position.setX( this.position.x + deltaX )
+        this.updateMatrix()
 
     }
 
     _translateY ( deltaY ) {
 
         this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
 
     }
 
     _translateZ ( deltaZ ) {
 
         this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
 
     }
 
@@ -2476,6 +2506,7 @@ class ClippingControls extends Object3D {
 
         this.position.setX( this.position.x + deltaX )
         this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
 
     }
 
@@ -2483,6 +2514,7 @@ class ClippingControls extends Object3D {
 
         this.position.setX( this.position.x + deltaX )
         this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
 
     }
 
@@ -2490,12 +2522,14 @@ class ClippingControls extends Object3D {
 
         this.position.setY( this.position.y + deltaY )
         this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
 
     }
 
     _translateXYZ ( deltaX, deltaY, deltaZ ) {
 
         this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ )
+        this.updateMatrix()
 
     }
 
@@ -2525,24 +2559,28 @@ class ClippingControls extends Object3D {
     _scale ( changeAmout ) {
 
         this.scale.add( changeAmout )
+        this.updateMatrix()
 
     }
 
     _scaleX ( deltaX ) {
 
         this.scale.setX( this.scale.x + deltaX )
+        this.updateMatrix()
 
     }
 
     _scaleY ( deltaY ) {
 
         this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
 
     }
 
     _scaleZ ( deltaZ ) {
 
         this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
 
     }
 
@@ -2550,6 +2588,7 @@ class ClippingControls extends Object3D {
 
         this.scale.setX( this.scale.x + deltaX )
         this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
 
     }
 
@@ -2557,6 +2596,7 @@ class ClippingControls extends Object3D {
 
         this.scale.setX( this.scale.x + deltaX )
         this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
 
     }
 
@@ -2564,12 +2604,14 @@ class ClippingControls extends Object3D {
 
         this.scale.setY( this.scale.y + deltaY )
         this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
 
     }
 
     _scaleXYZ ( deltaX, deltaY, deltaZ ) {
 
         this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ )
+        this.updateMatrix()
 
     }
 
