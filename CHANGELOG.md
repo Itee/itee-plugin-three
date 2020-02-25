@@ -1,3 +1,10 @@
+## [1.2.8](https://github.com/Itee/itee-plugin-three/compare/v1.2.7...v1.2.8) (2020-02-25)
+
+
+### Bug Fixes
+
+* **threetomongodb:** use correct array map method in readManyDocument method ([644f1c5](https://github.com/Itee/itee-plugin-three/commit/644f1c5903ca71a512624927a94ab9677ca2fd54))
+
 ## [1.2.7](https://github.com/Itee/itee-plugin-three/compare/v1.2.6...v1.2.7) (2020-02-24)
 
 

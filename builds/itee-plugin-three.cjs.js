@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.7 - CommonJs')
+console.log('Itee.Plugin.Three v1.2.8 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -2163,11 +2163,12 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             return null
         }
 
-        return await this._driver
-                         .model( type )
-                         .find( query )
-                         .exec()
-                         .map( model => model._doc )
+        let models = await this._driver
+                                  .model( type )
+                                  .find( query )
+                                  .exec();
+
+        return models.map( model => model._doc )
 
     }
 
