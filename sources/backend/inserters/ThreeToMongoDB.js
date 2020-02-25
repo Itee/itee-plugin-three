@@ -405,11 +405,12 @@ class ThreeToMongoDB extends TAbstractDataInserter {
             return null
         }
 
-        return await this._driver
-                         .model( type )
-                         .find( query )
-                         .exec()
-                         .map( model => model._doc )
+        let models = await this._driver
+                                  .model( type )
+                                  .find( query )
+                                  .exec()
+
+        return models.map( model => model._doc )
 
     }
 
