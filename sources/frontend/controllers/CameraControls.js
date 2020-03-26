@@ -1279,6 +1279,9 @@ class CameraControls extends EventDispatcher {
 
         } else if ( this._camera.isOrthographicCamera ) {
 
+            const containerWidth                 = this.domElement.offsetWidth
+            const containerHeight                = this.domElement.offsetHeight
+            const aspect                         = containerWidth / containerHeight
             const cameraPosition                 = this._camera.position
             const targetPosition                 = this._target.position
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
