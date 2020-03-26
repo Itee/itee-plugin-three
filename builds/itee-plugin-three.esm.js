@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.8 - EsModule')
+console.log('Itee.Plugin.Three v1.2.9 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, FileFormat, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
 import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, TextureLoader, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, MathUtils, Vector3, Shape, ColladaLoader, FBXLoader, ObjectLoader, OBJLoader, ShapeBufferGeometry, MeshPhongMaterial, STLLoader, MTLLoader, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, MeshLambertMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Fog, FogExp2, VertexColors } from 'three-full';
 import { degreesToRadians, toEnum } from 'itee-utils';
@@ -4210,18 +4210,70 @@ class CameraControls extends EventDispatcher {
 
         } else if ( this._camera.isOrthographicCamera ) {
 
+            const containerWidth                 = this.domElement.offsetWidth;
+            const containerHeight                = this.domElement.offsetHeight;
+            const aspect                         = containerWidth / containerHeight;
             const cameraPosition                 = this._camera.position;
             const targetPosition                 = this._target.position;
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition );
-            const deltaZoom                      = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget );
+            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone();
+            const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize();
+            const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget );
 
-            if ( this._camera.zoom + deltaZoom <= 0.0 ) {
-                this._camera.zoom = 0.01;
-            } else {
-                this._camera.zoom += deltaZoom;
-            }
+            cameraPosition.add( displacement );
+
+            const newDistance = cameraPosition.distanceTo( targetPosition );
+            const zoomHeight = ( newDistance / 2 );
+            const zoomWidth  = ( ( newDistance * aspect ) / 2 );
+
+            this._camera.top    = zoomHeight;
+            this._camera.bottom = -zoomHeight;
+            this._camera.right  = zoomWidth;
+            this._camera.left   = -zoomWidth;
 
             this._camera.updateProjectionMatrix();
+
+            // OR
+
+            //            const deltaZoom = this.zoomSpeed * 100
+            //            if ( delta > 0 ) {
+            //
+            //                if ( this._camera.zoom + deltaZoom >= 100.0 ) {
+            //                    this._camera.zoom = 100.0
+            //                } else {
+            //                    this._camera.zoom += deltaZoom
+            //                }
+            //
+            //            } else {
+            //
+            //                if ( this._camera.zoom - deltaZoom <= 0.0 ) {
+            //                    this._camera.zoom = 0.01
+            //                } else {
+            //                    this._camera.zoom -= deltaZoom
+            //                }
+            //
+            //            }
+            //
+            //            this._camera.updateProjectionMatrix()
+
+            // OR
+
+            //            const zoomFactor = this.zoomSpeed * 1000
+            //            const width      = this._camera.right * 2
+            //            const height     = this._camera.top * 2
+            //            const aspect     = width / height
+            //
+            //            const distance                      = this._camera.position.distanceTo( this._target.position )
+            //
+            //            const zoomHeight = ( delta < 0 ) ? height + zoomFactor : height - zoomFactor
+            //            const zoomWidth  = ( delta < 0 ) ? width + ( zoomFactor * aspect ) : width - ( zoomFactor * aspect )
+            //
+            //            this._camera.top    = ( zoomHeight / 2 )
+            //            this._camera.bottom = -( zoomHeight / 2 )
+            //            this._camera.right  = ( zoomWidth / 2 )
+            //            this._camera.left   = -( zoomWidth / 2 )
+            //
+            //            this._camera.updateProjectionMatrix()
 
         }
 
