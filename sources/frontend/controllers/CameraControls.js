@@ -1282,19 +1282,64 @@ class CameraControls extends EventDispatcher {
             const cameraPosition                 = this._camera.position
             const targetPosition                 = this._target.position
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
-            const deltaZoom                      = ( delta * this.zoomSpeed * distanceBetweenCameraAndTarget )
+            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone()
+            const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize()
+            const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget )
 
-            if ( this._camera.zoom + deltaZoom <= 0.0 ) {
-                this._camera.zoom = 0.01
-            } else {
-                this._camera.zoom += deltaZoom
-            }
+            cameraPosition.add( displacement )
+
+            const newDistance = cameraPosition.distanceTo( targetPosition )
+            const zoomHeight = ( newDistance / 2 )
+            const zoomWidth  = ( ( newDistance * aspect ) / 2 )
+
+            this._camera.top    = zoomHeight
+            this._camera.bottom = -zoomHeight
+            this._camera.right  = zoomWidth
+            this._camera.left   = -zoomWidth
 
             this._camera.updateProjectionMatrix()
 
-        } else {
+            // OR
 
-            // Todo: ...
+            //            const deltaZoom = this.zoomSpeed * 100
+            //            if ( delta > 0 ) {
+            //
+            //                if ( this._camera.zoom + deltaZoom >= 100.0 ) {
+            //                    this._camera.zoom = 100.0
+            //                } else {
+            //                    this._camera.zoom += deltaZoom
+            //                }
+            //
+            //            } else {
+            //
+            //                if ( this._camera.zoom - deltaZoom <= 0.0 ) {
+            //                    this._camera.zoom = 0.01
+            //                } else {
+            //                    this._camera.zoom -= deltaZoom
+            //                }
+            //
+            //            }
+            //
+            //            this._camera.updateProjectionMatrix()
+
+            // OR
+
+            //            const zoomFactor = this.zoomSpeed * 1000
+            //            const width      = this._camera.right * 2
+            //            const height     = this._camera.top * 2
+            //            const aspect     = width / height
+            //
+            //            const distance                      = this._camera.position.distanceTo( this._target.position )
+            //
+            //            const zoomHeight = ( delta < 0 ) ? height + zoomFactor : height - zoomFactor
+            //            const zoomWidth  = ( delta < 0 ) ? width + ( zoomFactor * aspect ) : width - ( zoomFactor * aspect )
+            //
+            //            this._camera.top    = ( zoomHeight / 2 )
+            //            this._camera.bottom = -( zoomHeight / 2 )
+            //            this._camera.right  = ( zoomWidth / 2 )
+            //            this._camera.left   = -( zoomWidth / 2 )
+            //
+            //            this._camera.updateProjectionMatrix()
 
         }
 
