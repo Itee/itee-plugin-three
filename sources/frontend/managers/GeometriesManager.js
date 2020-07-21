@@ -16,6 +16,7 @@
 /* eslint-env browser */
 
 import { TDataBaseManager } from 'itee-client'
+import { toEnum }                  from 'itee-utils'
 import {
     isDefined,
     isNotBoolean,
@@ -160,6 +161,8 @@ import { Vector3 }                 from 'three-full/sources/math/Vector3'
 //    Vector3,
 //    WireframeGeometry
 //}                           from 'three-full'
+
+const ArrayType = toEnum( {
     Int8Array:         0,
     Uint8Array:        1,
     Uint8ClampedArray: 2,
@@ -169,7 +172,7 @@ import { Vector3 }                 from 'three-full/sources/math/Vector3'
     Uint32Array:       6,
     Float32Array:      7,
     Float64Array:      8
-}
+} )
 
 class GeometriesManager extends TDataBaseManager {
 

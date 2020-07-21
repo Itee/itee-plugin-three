@@ -17,7 +17,8 @@ import {
     DefaultLogger,
     Endianness,
     TBinaryReader
-} from 'itee-client'
+}                                from 'itee-client'
+import { toEnum }                from 'itee-utils'
 import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
 import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
 // Waiting three-shaking fix
@@ -30,7 +31,7 @@ import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager
  *
  * @type {Object}
  */
-const DBFVersion = Object.freeze( {
+const DBFVersion = toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -55,7 +56,7 @@ const DBFVersion = Object.freeze( {
  *
  * @type {Object}
  */
-const DataType = Object.freeze( {
+const DataType = toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',
