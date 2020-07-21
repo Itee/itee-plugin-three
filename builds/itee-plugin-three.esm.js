@@ -1,8 +1,1524 @@
-console.log('Itee.Plugin.Three v1.2.9 - EsModule')
-import { DefaultLogger, TBinaryReader, Endianness, FileFormat, Keys, Mouse, TDataBaseManager, ResponseType } from 'itee-client';
-import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, TextureLoader, Mesh, PlaneGeometry, MeshBasicMaterial, DoubleSide, MathUtils, Vector3, Shape, ColladaLoader, FBXLoader, ObjectLoader, OBJLoader, ShapeBufferGeometry, MeshPhongMaterial, STLLoader, MTLLoader, EventDispatcher, Object3D, Camera, Vector2, Spherical, Quaternion, MOUSE, LineSegments, EdgesGeometry, BoxBufferGeometry, LineBasicMaterial, Plane, CylinderBufferGeometry, Float32BufferAttribute, OctahedronBufferGeometry, SphereBufferGeometry, TorusBufferGeometry, Line, ConeBufferGeometry, PlaneBufferGeometry, Raycaster, Euler, Scene, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, MeshLambertMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Fog, FogExp2, VertexColors } from 'three-full';
-import { degreesToRadians, toEnum } from 'itee-utils';
-import { isObject, isFunction, isArray, isString, isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isDefined, isNotArray, isNotString, isEmptyString, isBlankString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
+console.log('Itee.Plugin.Three v1.2.10 - EsModule')
+import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
+import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
+import { Shape } from 'three-full/sources/core/Shape';
+import { FileLoader } from 'three-full/sources/loaders/FileLoader';
+import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager';
+import { Vector3 } from 'three-full/sources/math/Vector3';
+import { BufferAttribute, Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute';
+import { BufferGeometry } from 'three-full/sources/core/BufferGeometry';
+import { PointsMaterial } from 'three-full/sources/materials/PointsMaterial';
+import { Box3 } from 'three-full/sources/math/Box3';
+import { Group } from 'three-full/sources/objects/Group';
+import { Points } from 'three-full/sources/objects/Points';
+import { isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isArray, isDefined, isNotArray, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
+import { EventDispatcher } from 'three-full/sources/core/EventDispatcher';
+import { Object3D } from 'three-full/sources/core/Object3D';
+import { Spherical } from 'three-full/sources/math/Spherical';
+import { Vector2 } from 'three-full/sources/math/Vector2';
+import { Camera } from 'three-full/sources/cameras/Camera';
+import { DoubleSide, LinearFilter, VertexColors } from 'three-full/sources/constants';
+import { Raycaster } from 'three-full/sources/core/Raycaster';
+import { BoxBufferGeometry, BoxGeometry } from 'three-full/sources/geometries/BoxGeometry';
+import { ConeBufferGeometry, ConeGeometry } from 'three-full/sources/geometries/ConeGeometry';
+import { CylinderBufferGeometry, CylinderGeometry } from 'three-full/sources/geometries/CylinderGeometry';
+import { EdgesGeometry } from 'three-full/sources/geometries/EdgesGeometry';
+import { OctahedronBufferGeometry, OctahedronGeometry } from 'three-full/sources/geometries/OctahedronGeometry';
+import { PlaneBufferGeometry, PlaneGeometry } from 'three-full/sources/geometries/PlaneGeometry';
+import { SphereBufferGeometry, SphereGeometry } from 'three-full/sources/geometries/SphereGeometry';
+import { TorusBufferGeometry, TorusGeometry } from 'three-full/sources/geometries/TorusGeometry';
+import { LineBasicMaterial } from 'three-full/sources/materials/LineBasicMaterial';
+import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial';
+import { Euler } from 'three-full/sources/math/Euler';
+import { Plane } from 'three-full/sources/math/Plane';
+import { Quaternion } from 'three-full/sources/math/Quaternion';
+import { Line } from 'three-full/sources/objects/Line';
+import { LineSegments } from 'three-full/sources/objects/LineSegments';
+import { Mesh } from 'three-full/sources/objects/Mesh';
+import { CurvePath } from 'three-full/sources/core/CurvePath';
+import { Path } from 'three-full/sources/core/Path';
+import { ArcCurve } from 'three-full/sources/curves/ArcCurve';
+import { CatmullRomCurve3 } from 'three-full/sources/curves/CatmullRomCurve3';
+import { CubicBezierCurve } from 'three-full/sources/curves/CubicBezierCurve';
+import { CubicBezierCurve3 } from 'three-full/sources/curves/CubicBezierCurve3';
+import { Curve } from 'three-full/sources/curves/Curve';
+import { EllipseCurve } from 'three-full/sources/curves/EllipseCurve';
+import { LineCurve } from 'three-full/sources/curves/LineCurve';
+import { LineCurve3 } from 'three-full/sources/curves/LineCurve3';
+import { QuadraticBezierCurve } from 'three-full/sources/curves/QuadraticBezierCurve';
+import { QuadraticBezierCurve3 } from 'three-full/sources/curves/QuadraticBezierCurve3';
+import { SplineCurve } from 'three-full/sources/curves/SplineCurve';
+import { Face3 } from 'three-full/sources/core/Face3';
+import { Geometry } from 'three-full/sources/core/Geometry';
+import { InstancedBufferGeometry } from 'three-full/sources/core/InstancedBufferGeometry';
+import { CircleGeometry, CircleBufferGeometry } from 'three-full/sources/geometries/CircleGeometry';
+import { DodecahedronGeometry, DodecahedronBufferGeometry } from 'three-full/sources/geometries/DodecahedronGeometry';
+import { ExtrudeGeometry, ExtrudeBufferGeometry } from 'three-full/sources/geometries/ExtrudeGeometry';
+import { IcosahedronGeometry, IcosahedronBufferGeometry } from 'three-full/sources/geometries/IcosahedronGeometry';
+import { LatheGeometry, LatheBufferGeometry } from 'three-full/sources/geometries/LatheGeometry';
+import { ParametricGeometry, ParametricBufferGeometry } from 'three-full/sources/geometries/ParametricGeometry';
+import { PolyhedronGeometry, PolyhedronBufferGeometry } from 'three-full/sources/geometries/PolyhedronGeometry';
+import { RingGeometry, RingBufferGeometry } from 'three-full/sources/geometries/RingGeometry';
+import { ShapeGeometry } from 'three-full/sources/geometries/ShapeGeometry';
+import { TetrahedronGeometry, TetrahedronBufferGeometry } from 'three-full/sources/geometries/TetrahedronGeometry';
+import { TextGeometry, TextBufferGeometry } from 'three-full/sources/geometries/TextGeometry';
+import { TorusKnotGeometry, TorusKnotBufferGeometry } from 'three-full/sources/geometries/TorusKnotGeometry';
+import { TubeGeometry, TubeBufferGeometry } from 'three-full/sources/geometries/TubeGeometry';
+import { WireframeGeometry } from 'three-full/sources/geometries/WireframeGeometry';
+import { ImageLoader } from 'three-full/sources/loaders/ImageLoader';
+import { TextureLoader } from 'three-full/sources/loaders/TextureLoader';
+import { MeshLambertMaterial } from 'three-full/sources/materials/MeshLambertMaterial';
+import { MeshPhongMaterial } from 'three-full/sources/materials/MeshPhongMaterial';
+import { Color } from 'three-full/sources/math/Color';
+import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera';
+import { PerspectiveCamera } from 'three-full/sources/cameras/PerspectiveCamera';
+import { AmbientLight } from 'three-full/sources/lights/AmbientLight';
+import { DirectionalLight } from 'three-full/sources/lights/DirectionalLight';
+import { HemisphereLight } from 'three-full/sources/lights/HemisphereLight';
+import { PointLight } from 'three-full/sources/lights/PointLight';
+import { RectAreaLight } from 'three-full/sources/lights/RectAreaLight';
+import { SpotLight } from 'three-full/sources/lights/SpotLight';
+import { LineLoop } from 'three-full/sources/objects/LineLoop';
+import { LOD } from 'three-full/sources/objects/LOD';
+import { SkinnedMesh } from 'three-full/sources/objects/SkinnedMesh';
+import { Sprite } from 'three-full/sources/objects/Sprite';
+import { Fog } from 'three-full/sources/scenes/Fog';
+import { FogExp2 } from 'three-full/sources/scenes/FogExp2';
+import { Scene } from 'three-full/sources/scenes/Scene';
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ *
+ * Constructor parameter:
+ *
+ * size - the size of the square view
+ *
+ * @class Todo...
+ * @classdesc Todo...
+ * @example Todo...
+ *
+ */
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader,
+//    Shape,
+//    Vector3
+//} from 'three-full'
+
+/**
+ *
+ * @type {Object}
+ */
+const ShapeType = toEnum( {
+    NullShape:   0,
+    Point:       1,
+    Polyline:    3,
+    Polygon:     5,
+    MultiPoint:  8,
+    PointZ:      11,
+    PolyLineZ:   13,
+    PolygonZ:    15,
+    MultiPointZ: 18,
+    PointM:      21,
+    PolylineM:   23,
+    PolygonM:    25,
+    MultiPointM: 28,
+    MultiPatch:  31
+} );
+
+class SHPLoader {
+
+//    static FileCode      = 9994
+//    static MinFileLength = 100
+//    static MinVersion    = 1000
+
+    get globalOffset () {
+        return this._globalOffset
+    }
+
+    set globalOffset ( value ) {
+        this._globalOffset = value;
+    }
+
+    setGlobalOffset ( value ) {
+        this.globalOffset = value;
+        return this
+    }
+
+    get worldAxis () {
+        return this._worldAxis
+    }
+
+    set worldAxis ( value ) {
+        this._worldAxis = value;
+    }
+
+    setWorldAxis ( value ) {
+        this.worldAxis = value;
+        return this
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
+
+    /**
+     *
+     * @param manager
+     * @param logger
+     * @constructor
+     */
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                manager:      DefaultLoadingManager,
+                logger:       DefaultLogger,
+                reader:       new TBinaryReader(),
+                globalOffset: new Vector3( 0, 0, 0 ),
+                worldAxis:    {
+                    from: 'zUp',
+                    to:   'zForward'
+                }
+            }, ...parameters
+        };
+
+        this.manager      = _parameters.manager;
+        this.logger       = _parameters.logger;
+        this.reader       = _parameters.reader;
+        this.globalOffset = _parameters.globalOffset;
+        this.worldAxis    = _parameters.worldAxis;
+
+    }
+
+    /**
+     *
+     * @param url
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     */
+    load ( url, onLoad, onProgress, onError ) {
+
+        const scope = this;
+
+        const loader = new FileLoader( scope.manager );
+        loader.setResponseType( 'arraybuffer' );
+        loader.load( url, arrayBuffer => {
+
+            onLoad( scope.parse( arrayBuffer ) );
+
+        }, onProgress, onError );
+
+    }
+
+    /**
+     *
+     * @param arrayBuffer
+     * @return {*}
+     */
+    parse ( arrayBuffer ) {
+
+        this._reader
+            .setEndianess( Endianness.Big )
+            .setBuffer( arrayBuffer );
+
+        const header = this._parseHeader();
+
+        if ( header.fileCode !== SHPLoader.FileCode ) {
+            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
+            return null
+        }
+
+        if ( header.fileLength < SHPLoader.MinFileLength ) {
+            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
+            return null
+        }
+
+        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
+            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
+            return null
+        }
+
+        if ( header.version < SHPLoader.MinVersion ) {
+            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
+        }
+
+        const datas  = this._parseDatas( header );
+        const shapes = this._convertToObjects( datas );
+
+        return shapes
+
+    }
+
+    /**
+     *
+     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
+     * @private
+     */
+    _parseHeader () {
+
+        const fileCode = this._reader.getInt32();
+        this._reader.skipOffsetOf( 20 );
+        const fileLength = this._reader.getInt32();
+
+        this._reader.setEndianess( Endianness.Little );
+
+        const version         = this._reader.getInt32();
+        const shapeType       = this._reader.getInt32();
+        const xMinBoundingBox = this._reader.getInt32();
+        const yMinBoundingBox = this._reader.getInt32();
+        const xMaxBoundingBox = this._reader.getInt32();
+        const yMaxBoundingBox = this._reader.getInt32();
+        const zMinBoundingBox = this._reader.getInt32();
+        const zMaxBoundingBox = this._reader.getInt32();
+        const mMinBoundingBox = this._reader.getInt32();
+        const mMaxBoundingBox = this._reader.getInt32();
+
+        return {
+            fileCode:    fileCode,
+            fileLength:  fileLength,
+            version:     version,
+            shapeType:   shapeType,
+            boundingBox: {
+                xMin: xMinBoundingBox,
+                xMax: xMaxBoundingBox,
+                yMin: yMinBoundingBox,
+                yMax: yMaxBoundingBox,
+                zMin: zMinBoundingBox,
+                zMax: zMaxBoundingBox,
+                mMin: mMinBoundingBox,
+                mMax: mMaxBoundingBox
+            }
+        }
+
+    }
+
+    /**
+     *
+     * @param header
+     * @return {Array}
+     * @private
+     */
+    _parseDatas ( header ) {
+
+        this._reader.skipOffsetTo( 100 );
+
+        let datas         = [];
+        let recordHeader  = undefined;
+        let endOfRecord   = undefined;
+        let recordContent = undefined;
+
+        while ( !this._reader.isEndOfFile() ) {
+
+            recordHeader = this._parseRecordHeader();
+            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
+
+            // All parsing methods use little below
+            this._reader.setEndianess( Endianness.Little );
+
+            switch ( header.shapeType ) {
+
+                case ShapeType.NullShape:
+
+                    this._reader.skipOffsetTo( endOfRecord );
+
+                    //                    // Todo: just skip 1 byte - or - to endRecord
+                    //                    while ( this._reader.getOffset() < endOfRecord ) {
+                    //
+                    //                        recordContent = this._parseNull();
+                    //                        if ( recordContent ) {
+                    //                            datas.push( recordContent );
+                    //                        }
+                    //
+                    //                    }
+                    break
+
+                case ShapeType.Point:
+                case ShapeType.PointZ:
+                case ShapeType.PointM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePoint();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.Polyline:
+                case ShapeType.PolyLineZ:
+                case ShapeType.PolylineM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePolyLine();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.Polygon:
+                case ShapeType.PolygonZ:
+                case ShapeType.PolygonM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePolyLine();
+                        //                        recordContent = this._parsePolygon();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.MultiPoint:
+                case ShapeType.MultiPointZ:
+                case ShapeType.MultiPointM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parseMultiPoint();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.MultiPatch:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parseMultiPatch();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                default:
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
+                    break
+
+            }
+
+        }
+
+        return datas
+
+    }
+
+    /**
+     *
+     * @return {{recordNumber, contentLength}}
+     * @private
+     */
+    _parseRecordHeader () {
+
+        this._reader.setEndianess( Endianness.Big );
+
+        const recordNumber  = this._reader.getInt32();
+        const contentLength = this._reader.getInt32();
+
+        return {
+            recordNumber,
+            contentLength
+        }
+
+    }
+
+    _parseNull () {
+
+        this._reader.getInt32();
+        return null
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePoint () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const x = this._reader.getFloat64();
+        const y = this._reader.getFloat64();
+
+        return {
+            shapeType,
+            x,
+            y
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePolyLine () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfParts  = this._reader.getInt32();
+        const numberOfPoints = this._reader.getInt32();
+
+        const parts = new Array( numberOfParts );
+        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+            parts[ indexParts ] = this._reader.getInt32();
+        }
+
+        const points = new Array( numberOfPoints );
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points[ indexPoint ] = {
+                x: this._reader.getFloat64(),
+                y: this._reader.getFloat64()
+            };
+        }
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfParts,
+            numberOfPoints,
+            parts,
+            points
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePolygon () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfParts  = this._reader.getInt32();
+        const numberOfPoints = this._reader.getInt32();
+
+        let parts = new Array( numberOfParts );
+        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+            parts[ indexParts ] = this._reader.getInt32();
+        }
+
+        let points = new Array( numberOfPoints );
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points[ indexPoint ] = {
+                x: this._reader.getFloat64(),
+                y: this._reader.getFloat64()
+            };
+        }
+
+        const polygons = [];
+        const holes    = [];
+
+        parts.forEach( ( value, index ) => {
+
+            const ring = points.slice( value, parts[ index + 1 ] );
+
+            if ( ringClockwise( ring ) ) {
+
+                polygons.push( ring );
+                //					polygons.push( [ ring ] );
+
+            } else {
+
+                holes.push( ring );
+
+            }
+
+        } );
+
+        holes.forEach( hole => {
+
+            polygons.some( polygon => {
+
+                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
+                    polygon.push( hole );
+                    return true
+                }
+
+            } ) || polygons.push( [ hole ] );
+
+        } );
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfParts,
+            numberOfPoints,
+            parts,
+            polygons
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parseMultiPoint () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfPoints = this._reader.getInt32();
+
+        const points = new Array( numberOfPoints );
+
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
+        }
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfPoints,
+            points
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parseMultiPatch () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        return {
+            shapeType
+        }
+
+    }
+
+    /**
+     *
+     * @param datas
+     * @return {Array}
+     * @private
+     */
+    _convertToObjects ( datas ) {
+
+        let shapes = [];
+
+        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
+            let data = datas[ index ];
+
+            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
+
+                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
+
+                    __createObjectsFromArrays( data.points );
+
+                } else {
+
+                    __createObjectFromPoints( data.points );
+
+                }
+
+            }
+
+        }
+
+        function __createObjectsFromArrays ( arrays ) {
+
+            //Todo: need to fix parsePolygon to avoid too much array imbrication
+
+            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
+
+                let array = arrays[ arrayIndex ];
+
+                if ( !array ) {
+                    this.logger.log( 'no array, oups !' );
+                    continue
+                }
+
+                if ( Array.isArray( array[ 0 ] ) ) {
+
+                    __createObjectsFromArrays( array );
+
+                } else {
+
+                    __createObjectFromPoints( array );
+
+                }
+
+            }
+
+        }
+
+        function __createObjectFromPoints ( points ) {
+
+            shapes.push( new Shape( points ) );
+
+        }
+
+        return shapes
+
+    }
+
+}
+
+SHPLoader.FileCode      = 9994;
+SHPLoader.MinFileLength = 100;
+SHPLoader.MinVersion    = 1000;
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * From:
+ * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
+ * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
+ * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
+ *
+ * @class Todo...
+ * @classdesc Todo...
+ * @example Todo...
+ *
+ */
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader
+//}                 from 'three-full'
+
+/**
+ *
+ * @type {Object}
+ */
+const DBFVersion = toEnum( {
+    FoxPro:               0x30,
+    FoxPro_Autoincrement: 0x31,
+
+    dBASE_II:   0x02,
+    FoxPro_Var: 0x32,
+
+    dBASE_III_plus:          0x03,
+    dBASE_III_plus_memo:     0x83,
+    dBASE_IV_SQL_table:      0x43,
+    dBASE_IV_SQL_system:     0x63,
+    dBASE_IV_memo:           0x8B,
+    dBASE_IV_memo_SQL_table: 0xCB,
+    FoxBase:                 0xFB,
+
+    dBase_v_7: 4,
+
+    FoxPro_2_x:    0xF5,
+    HiPerSix_memo: 0xE5
+} );
+
+/**
+ *
+ * @type {Object}
+ */
+const DataType = toEnum( {
+    Binary:        'B',
+    Character:     'C',
+    Date:          'D',
+    Numeric:       'N',
+    Logical:       'L',
+    Memo:          'M',
+    Timestamp:     '@',
+    Long:          'I',
+    Autoincrement: '+',
+    Float:         'F',
+    Double:        'O',
+    OLE:           'G'
+} );
+
+class DBFLoader {
+
+    //    static Terminator    = 0x0D
+    //    static DeletedRecord = 0x1A
+    //    static YearOffset    = 1900
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
+
+    /**
+     *
+     * @param manager
+     * @param logger
+     * @constructor
+     */
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                manager: DefaultLoadingManager,
+                logger:  DefaultLogger,
+                reader:  new TBinaryReader()
+            }, ...parameters
+        };
+
+        this.manager = _parameters.manager;
+        this.logger  = _parameters.logger;
+        this.reader  = _parameters.reader;
+
+    }
+
+    /**
+     *
+     * @param url
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     */
+    load ( url, onLoad, onProgress, onError ) {
+
+        const scope = this;
+
+        const loader = new FileLoader( scope.manager );
+        loader.setResponseType( 'arraybuffer' );
+        loader.load( url, arrayBuffer => {
+
+            onLoad( scope.parse( arrayBuffer ) );
+
+        }, onProgress, onError );
+
+    }
+
+    /**
+     *
+     * @param arrayBuffer
+     * @return {*}
+     */
+    parse ( arrayBuffer ) {
+
+        this.reader
+            .setEndianess( Endianness.Big )
+            .setBuffer( arrayBuffer );
+
+        const version = this.reader.getInt8();
+        if ( !this._isValidVersion( version ) ) {
+            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
+            return null
+        }
+
+        const header = this._parseHeader( version );
+        const datas  = this._parseDatas( version, header );
+
+        return {
+            header,
+            datas
+        }
+
+    }
+
+    /**
+     *
+     * @param version
+     * @return {boolean}
+     * @private
+     */
+    _isValidVersion ( version ) {
+
+        return DBFVersion.includes( version )
+
+    }
+
+    /**
+     *
+     * @param version
+     * @return {{}}
+     * @private
+     */
+    _parseHeader ( version ) {
+
+        let header = {};
+
+        switch ( version ) {
+
+            case DBFVersion.FoxPro:
+            case DBFVersion.FoxPro_Autoincrement:
+            case DBFVersion.FoxPro_Var:
+            case DBFVersion.dBASE_II:
+                header = this._parseHeaderV2();
+                break
+
+            case DBFVersion.dBASE_III_plus:
+            case DBFVersion.dBASE_III_plus_memo:
+                header = this._parseHeaderV2_5();
+                break
+
+            case DBFVersion.dBASE_IV_memo:
+            case DBFVersion.dBASE_IV_memo_SQL_table:
+            case DBFVersion.dBASE_IV_SQL_system:
+            case DBFVersion.dBASE_IV_SQL_table:
+                header = this._parseHeaderV3();
+                break
+
+            case DBFVersion.dBase_v_7:
+            case DBFVersion.FoxPro_2_x:
+            case DBFVersion.HiPerSix_memo:
+                header = this._parseHeaderV4();
+                break
+
+            default:
+                throw new RangeError( `Invalid version parameter: ${ version }` )
+
+        }
+
+        // Check terminator
+        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
+            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
+        }
+
+        return header
+
+    }
+
+    /**
+     *
+     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
+     * @private
+     */
+    _parseHeaderV2 () {
+
+        const numberOfRecords     = this.reader.getInt16();
+        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month               = this.reader.getInt8();
+        const day                 = this.reader.getInt8();
+        const lengthOfEachRecords = this.reader.getInt16();
+
+        // Field descriptor array
+        let fields        = [];
+        let name          = undefined;
+        let type          = undefined;
+        let length        = undefined;
+        let memoryAddress = undefined;
+        let decimalCount  = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name          = this.reader.getString( 11 );
+            type          = this.reader.getChar();
+            length        = this.reader.getUint8();
+            memoryAddress = this.reader.getInt16();
+            decimalCount  = this.reader.getInt8();
+
+            fields.push( {
+                name,
+                type,
+                length,
+                memoryAddress,
+                decimalCount
+            } );
+
+        }
+
+        return {
+            numberOfRecords,
+            year,
+            month,
+            day,
+            lengthOfEachRecords,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
+     * @private
+     */
+    _parseHeaderV2_5 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
+
+        // Field descriptor array
+        let fields        = [];
+        let name          = undefined;
+        let type          = undefined;
+        let length        = undefined;
+        let memoryAddress = undefined;
+        let decimalCount  = undefined;
+        let workAreaId    = undefined;
+        let MDXFlag       = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name          = this.reader.getString( 11 );
+            type          = this.reader.getChar();
+            memoryAddress = this.reader.getInt32();
+            length        = this.reader.getUint8();
+            decimalCount  = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            workAreaId = this.reader.getInt8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            MDXFlag = this.reader.getInt8();
+            this.reader.skipOffsetOf( 1 ); // Reserved
+
+            fields.push( {
+                name,
+                type,
+                length,
+                memoryAddress,
+                decimalCount,
+                workAreaId,
+                MDXFlag
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+     *     (*|number), languageDriverId: (*|number), fields: Array}}
+     * @private
+     */
+    _parseHeaderV3 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const incompleteTransactionFlag = this.reader.getInt8();
+        const encryptionFlag            = this.reader.getInt8();
+        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+        const MDXFlag          = this.reader.getInt8();
+        const languageDriverId = this.reader.getInt8();
+        this.reader.skipOffsetOf( 2 ); // Reserved
+
+        // Field descriptor array
+        let fields       = [];
+        let name         = undefined;
+        let type         = undefined;
+        let length       = undefined;
+        let decimalCount = undefined;
+        let workAreaId   = undefined;
+        let MDXFieldFlag = undefined;
+        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
+            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name = this.reader.getString( 11 );
+            type = this.reader.getChar();
+            this.reader.skipOffsetOf( 4 ); // Reserved
+            length       = this.reader.getUint8();
+            decimalCount = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            workAreaId = this.reader.getInt8();
+            this.reader.skipOffsetOf( 10 ); // Reserved
+            MDXFieldFlag = this.reader.getInt8();
+
+            fields.push( {
+                name,
+                type,
+                length,
+                decimalCount,
+                workAreaId,
+                MDXFieldFlag
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            incompleteTransactionFlag,
+            encryptionFlag,
+            MDXFlag,
+            languageDriverId,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
+     * @private
+     */
+    _parseHeaderV4 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const incompleteTransactionFlag = this.reader.getInt8();
+        const encryptionFlag            = this.reader.getInt8();
+        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+        const MDXFlag          = this.reader.getInt8();
+        const languageDriverId = this.reader.getInt8();
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const languageDriverName = this.reader.getString( 32 );
+        this.reader.skipOffsetOf( 4 ); // Reserved
+
+        // Field descriptor array
+        let fields                 = [];
+        let name                   = undefined;
+        let type                   = undefined;
+        let length                 = undefined;
+        let decimalCount           = undefined;
+        let MDXFieldFlag           = undefined;
+        let nextAutoincrementValue = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name         = this.reader.getString( 32 );
+            type         = this.reader.getChar();
+            length       = this.reader.getUint8();
+            decimalCount = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            MDXFieldFlag = this.reader.getInt8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            nextAutoincrementValue = this.reader.getInt32();
+            this.reader.skipOffsetOf( 4 ); // Reserved
+
+            fields.push( {
+                name,
+                type,
+                length,
+                decimalCount,
+                MDXFieldFlag,
+                nextAutoincrementValue
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            incompleteTransactionFlag,
+            encryptionFlag,
+            MDXFlag,
+            languageDriverId,
+            languageDriverName,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @param version
+     * @param header
+     * @return {Array}
+     * @private
+     */
+    _parseDatas ( version, header ) {
+
+        const numberOfRecords = header.numberOfRecords;
+        const fields          = header.fields;
+
+        // Todo: use it
+        //        let properties = null
+        //        if ( version === DBFVersion.dBase_v_7 ) {
+        //            properties = this._parseFieldProperties()
+        //        }
+
+        let records = [];
+        let record  = null;
+        let field   = null;
+        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
+
+            record              = {};
+            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
+
+            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
+
+                field = fields[ fieldIndex ];
+
+                switch ( field.type ) {
+
+                    case DataType.Binary: {
+                        const binaryString   = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( binaryString );
+                    }
+                        break
+
+                    case DataType.Numeric: {
+                        const numericString  = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( numericString );
+                    }
+                        break
+
+                    case DataType.Character: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    case DataType.Date: {
+                        // YYYYMMDD
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    case DataType.Logical: {
+                        const logical = this.reader.getChar().toLowerCase();
+                        if ( logical === 't' || logical === 'y' ) {
+                            record[ field.name ] = true;
+                        } else if ( logical === 'f' || logical === 'n' ) {
+                            record[ field.name ] = false;
+                        } else {
+                            record[ field.name ] = null;
+                        }
+                    }
+                        break
+
+                    case DataType.Memo: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    // 8 bytes - two longs, first for date, second for time.
+                    // The date is the number of days since  01/01/4713 BC.
+                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
+                    case DataType.Timestamp:
+                        break
+
+                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    case DataType.Long: {
+                        record[ field.name ] = this.reader.getInt32();
+                    }
+                        break
+
+                    // Same as a Long
+                    case DataType.Autoincrement: {
+                        record[ field.name ] = this.reader.getInt32();
+                    }
+                        break
+
+                    case DataType.Float: {
+                        const floatString    = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( floatString );
+                    }
+                        break
+
+                    case DataType.Double: {
+                        record[ field.name ] = this.reader.getFloat64();
+                    }
+                        break
+
+                    case DataType.OLE: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    default:
+                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
+
+                }
+
+            }
+
+            records.push( record );
+
+        }
+
+        return records
+
+    }
+
+    /**
+     *
+     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
+     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
+     * @private
+     */
+    _parseFieldProperties () {
+
+        const numberOfStandardProperties             = this.reader.getInt16();
+        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
+        const numberOfCustomProperties               = this.reader.getInt16();
+        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
+        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
+        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
+        const startOfData                            = this.reader.getInt16();
+        const sizeOfPropertiesStructure              = this.reader.getInt16();
+
+        let standardProperties = [];
+        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
+            standardProperties.push( this._getStandardProperties() );
+        }
+
+        let customProperties = [];
+        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
+            customProperties.push( this._getCustomProperties() );
+        }
+
+        let referentialIntegrityProperties = [];
+        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
+            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
+        }
+
+        return {
+            numberOfStandardProperties,
+            startOfStandardPropertiesDescriptor,
+            numberOfCustomProperties,
+            startOfCustomPropertiesDescriptor,
+            numberOfReferentialIntegrityProperties,
+            startOfReferentialIntegrityDescriptor,
+            startOfData,
+            sizeOfPropertiesStructure,
+            standardProperties,
+            customProperties,
+            referentialIntegrityProperties
+        }
+
+    }
+
+    /**
+     *
+     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
+     * @private
+     */
+    _getStandardProperties () {
+
+        const generationalNumber = this.reader.getInt16();
+        const tableFieldOffset   = this.reader.getInt16();
+        const propertyDescribed  = this.reader.getInt8();
+        const type               = this.reader.getInt8();
+        const isConstraint       = this.reader.getInt8();
+        this.reader.skipOffsetOf( 4 ); // Reserved
+        const offsetFromStart      = this.reader.getInt16();
+        const widthOfDatabaseField = this.reader.getInt16();
+
+        return {
+            generationalNumber,
+            tableFieldOffset,
+            propertyDescribed,
+            type,
+            isConstraint,
+            offsetFromStart,
+            widthOfDatabaseField
+        }
+
+    }
+
+    /**
+     *
+     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
+     * @private
+     */
+    _getCustomProperties () {
+
+        const generationalNumber = this.reader.getInt16();
+        const tableFieldOffset   = this.reader.getInt16();
+        const type               = this.reader.getInt8();
+        this.reader.skipOffsetOf( 1 ); // Reserved
+        const offsetFromStartOfName = this.reader.getInt16();
+        const lengthOfName          = this.reader.getInt16();
+        const offsetFromStartOfData = this.reader.getInt16();
+        const lengthOfData          = this.reader.getInt16();
+
+        return {
+            generationalNumber,
+            tableFieldOffset,
+            type,
+            offsetFromStartOfName,
+            lengthOfName,
+            offsetFromStartOfData,
+            lengthOfData
+        }
+
+    }
+
+    /**
+     *
+     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
+     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
+     * @private
+     */
+    _getReferentialIntegrityProperties () {
+
+        const databaseState                = this.reader.getInt8();
+        const sequentialNumberRule         = this.reader.getInt16();
+        const offsetOfTheRIRuleName        = this.reader.getInt16();
+        const sizeOfTheRIRuleName          = this.reader.getInt16();
+        const offsetOfNameOfForeignTable   = this.reader.getInt16();
+        const sizeOfNameOfForeignTable     = this.reader.getInt16();
+        const stateBehaviour               = this.reader.getInt8();
+        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
+        const offsetOfLocalTableTagName    = this.reader.getInt16();
+        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
+        const offsetOfForeignTableTagName  = this.reader.getInt16();
+        const sizeOfTheForeignTableTagName = this.reader.getInt16();
+
+        return {
+            databaseState,
+            sequentialNumberRule,
+            offsetOfTheRIRuleName,
+            sizeOfTheRIRuleName,
+            offsetOfNameOfForeignTable,
+            sizeOfNameOfForeignTable,
+            stateBehaviour,
+            numberOfFieldsInLinkingKey,
+            offsetOfLocalTableTagName,
+            sizeOfTheLocalTableTagName,
+            offsetOfForeignTableTagName,
+            sizeOfTheForeignTableTagName
+        }
+
+    }
+
+}
+
+DBFLoader.Terminator    = 0x0D;
+DBFLoader.DeletedRecord = 0x1A;
+DBFLoader.YearOffset    = 1900;
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -28,6 +1544,17 @@ import { isObject, isFunction, isArray, isString, isNull, isUndefined, isNotBool
  * } );
  *
  */
+// Waiting three-shaking fix
+//import {
+//    Box3,
+//    BufferAttribute,
+//    BufferGeometry,
+//    DefaultLoadingManager,
+//    FileLoader,
+//    Group,
+//    Points,
+//    PointsMaterial
+//}                        from 'three-full'
 
 class ASCLoader {
 
@@ -812,2171 +2339,20 @@ class ASCLoader {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * From:
- * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
- * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
- * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
- *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
- *
- */
-
-/**
- *
- * @type {Object}
- */
-const DBFVersion = Object.freeze( {
-    FoxPro:               0x30,
-    FoxPro_Autoincrement: 0x31,
-
-    dBASE_II:   0x02,
-    FoxPro_Var: 0x32,
-
-    dBASE_III_plus:          0x03,
-    dBASE_III_plus_memo:     0x83,
-    dBASE_IV_SQL_table:      0x43,
-    dBASE_IV_SQL_system:     0x63,
-    dBASE_IV_memo:           0x8B,
-    dBASE_IV_memo_SQL_table: 0xCB,
-    FoxBase:                 0xFB,
-
-    dBase_v_7: 4,
-
-    FoxPro_2_x:    0xF5,
-    HiPerSix_memo: 0xE5
-} );
-
-/**
- *
- * @type {Object}
- */
-const DataType = Object.freeze( {
-    Binary:        'B',
-    Character:     'C',
-    Date:          'D',
-    Numeric:       'N',
-    Logical:       'L',
-    Memo:          'M',
-    Timestamp:     '@',
-    Long:          'I',
-    Autoincrement: '+',
-    Float:         'F',
-    Double:        'O',
-    OLE:           'G'
-} );
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function DBFLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager;
-    this.logger  = logger;
-    this.reader  = new TBinaryReader();
-
-}
-
-Object.assign( DBFLoader, {
-
-    /**
-     *
-     */
-    Terminator: 0x0D,
-
-    /**
-     *
-     */
-    DeletedRecord: 0x1A,
-
-    /**
-     *
-     */
-    YearOffset: 1900
-
-} );
-
-Object.assign( DBFLoader.prototype, {
-
-    /**
-     *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load ( url, onLoad, onProgress, onError ) {
-
-        const scope = this;
-
-        const loader = new FileLoader( scope.manager );
-        loader.setResponseType( 'arraybuffer' );
-        loader.load( url, arrayBuffer => {
-
-            onLoad( scope.parse( arrayBuffer ) );
-
-        }, onProgress, onError );
-
-    },
-
-    /**
-     *
-     * @param arrayBuffer
-     * @return {*}
-     */
-    parse ( arrayBuffer ) {
-
-        this.reader
-            .setEndianess( Endianness.Big )
-            .setBuffer( arrayBuffer );
-
-        const version = this.reader.getInt8();
-        if ( !this._isValidVersion( version ) ) {
-            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
-            return null
-        }
-
-        const header = this._parseHeader( version );
-        const datas  = this._parseDatas( version, header );
-
-        return {
-            header,
-            datas
-        }
-
-    },
-
-    /**
-     *
-     * @param version
-     * @return {boolean}
-     * @private
-     */
-    _isValidVersion ( version ) {
-
-        const availablesVersionValues = Object.values( DBFVersion );
-        return ( availablesVersionValues.includes( version ) )
-
-    },
-
-    /**
-     *
-     * @param version
-     * @return {{}}
-     * @private
-     */
-    _parseHeader ( version ) {
-
-        let header = {};
-
-        switch ( version ) {
-
-            case DBFVersion.FoxPro:
-            case DBFVersion.FoxPro_Autoincrement:
-            case DBFVersion.FoxPro_Var:
-            case DBFVersion.dBASE_II:
-                header = this._parseHeaderV2();
-                break
-
-            case DBFVersion.dBASE_III_plus:
-            case DBFVersion.dBASE_III_plus_memo:
-                header = this._parseHeaderV2_5();
-                break
-
-            case DBFVersion.dBASE_IV_memo:
-            case DBFVersion.dBASE_IV_memo_SQL_table:
-            case DBFVersion.dBASE_IV_SQL_system:
-            case DBFVersion.dBASE_IV_SQL_table:
-                header = this._parseHeaderV3();
-                break
-
-            case DBFVersion.dBase_v_7:
-            case DBFVersion.FoxPro_2_x:
-            case DBFVersion.HiPerSix_memo:
-                header = this._parseHeaderV4();
-                break
-
-            default:
-                throw new RangeError( `Invalid version parameter: ${ version }` )
-
-        }
-
-        // Check terminator
-        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
-            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
-        }
-
-        return header
-
-    },
-
-    /**
-     *
-     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
-     * @private
-     */
-    _parseHeaderV2 () {
-
-        const numberOfRecords     = this.reader.getInt16();
-        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month               = this.reader.getInt8();
-        const day                 = this.reader.getInt8();
-        const lengthOfEachRecords = this.reader.getInt16();
-
-        // Field descriptor array
-        let fields        = [];
-        let name          = undefined;
-        let type          = undefined;
-        let length        = undefined;
-        let memoryAddress = undefined;
-        let decimalCount  = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name          = this.reader.getString( 11 );
-            type          = this.reader.getChar();
-            length        = this.reader.getUint8();
-            memoryAddress = this.reader.getInt16();
-            decimalCount  = this.reader.getInt8();
-
-            fields.push( {
-                name,
-                type,
-                length,
-                memoryAddress,
-                decimalCount
-            } );
-
-        }
-
-        return {
-            numberOfRecords,
-            year,
-            month,
-            day,
-            lengthOfEachRecords,
-            fields
-        }
-
-    },
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
-     * @private
-     */
-    _parseHeaderV2_5 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
-
-        // Field descriptor array
-        let fields        = [];
-        let name          = undefined;
-        let type          = undefined;
-        let length        = undefined;
-        let memoryAddress = undefined;
-        let decimalCount  = undefined;
-        let workAreaId    = undefined;
-        let MDXFlag       = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name          = this.reader.getString( 11 );
-            type          = this.reader.getChar();
-            memoryAddress = this.reader.getInt32();
-            length        = this.reader.getUint8();
-            decimalCount  = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            workAreaId = this.reader.getInt8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            MDXFlag = this.reader.getInt8();
-            this.reader.skipOffsetOf( 1 ); // Reserved
-
-            fields.push( {
-                name,
-                type,
-                length,
-                memoryAddress,
-                decimalCount,
-                workAreaId,
-                MDXFlag
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            fields
-        }
-
-    },
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-     *     (*|number), languageDriverId: (*|number), fields: Array}}
-     * @private
-     */
-    _parseHeaderV3 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const incompleteTransactionFlag = this.reader.getInt8();
-        const encryptionFlag            = this.reader.getInt8();
-        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-        const MDXFlag          = this.reader.getInt8();
-        const languageDriverId = this.reader.getInt8();
-        this.reader.skipOffsetOf( 2 ); // Reserved
-
-        // Field descriptor array
-        let fields       = [];
-        let name         = undefined;
-        let type         = undefined;
-        let length       = undefined;
-        let decimalCount = undefined;
-        let workAreaId   = undefined;
-        let MDXFieldFlag = undefined;
-        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
-            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name = this.reader.getString( 11 );
-            type = this.reader.getChar();
-            this.reader.skipOffsetOf( 4 ); // Reserved
-            length       = this.reader.getUint8();
-            decimalCount = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            workAreaId = this.reader.getInt8();
-            this.reader.skipOffsetOf( 10 ); // Reserved
-            MDXFieldFlag = this.reader.getInt8();
-
-            fields.push( {
-                name,
-                type,
-                length,
-                decimalCount,
-                workAreaId,
-                MDXFieldFlag
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            incompleteTransactionFlag,
-            encryptionFlag,
-            MDXFlag,
-            languageDriverId,
-            fields
-        }
-
-    },
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
-     * @private
-     */
-    _parseHeaderV4 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const incompleteTransactionFlag = this.reader.getInt8();
-        const encryptionFlag            = this.reader.getInt8();
-        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-        const MDXFlag          = this.reader.getInt8();
-        const languageDriverId = this.reader.getInt8();
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const languageDriverName = this.reader.getString( 32 );
-        this.reader.skipOffsetOf( 4 ); // Reserved
-
-        // Field descriptor array
-        let fields                 = [];
-        let name                   = undefined;
-        let type                   = undefined;
-        let length                 = undefined;
-        let decimalCount           = undefined;
-        let MDXFieldFlag           = undefined;
-        let nextAutoincrementValue = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name         = this.reader.getString( 32 );
-            type         = this.reader.getChar();
-            length       = this.reader.getUint8();
-            decimalCount = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            MDXFieldFlag = this.reader.getInt8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            nextAutoincrementValue = this.reader.getInt32();
-            this.reader.skipOffsetOf( 4 ); // Reserved
-
-            fields.push( {
-                name,
-                type,
-                length,
-                decimalCount,
-                MDXFieldFlag,
-                nextAutoincrementValue
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            incompleteTransactionFlag,
-            encryptionFlag,
-            MDXFlag,
-            languageDriverId,
-            languageDriverName,
-            fields
-        }
-
-    },
-
-    /**
-     *
-     * @param version
-     * @param header
-     * @return {Array}
-     * @private
-     */
-    _parseDatas ( version, header ) {
-
-        const numberOfRecords = header.numberOfRecords;
-        const fields          = header.fields;
-
-        // Todo: use it
-        //        let properties = null
-        //        if ( version === DBFVersion.dBase_v_7 ) {
-        //            properties = this._parseFieldProperties()
-        //        }
-
-        let records = [];
-        let record  = null;
-        let field   = null;
-        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
-
-            record              = {};
-            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
-
-            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
-
-                field = fields[ fieldIndex ];
-
-                switch ( field.type ) {
-
-                    case DataType.Binary: {
-                        const binaryString   = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( binaryString );
-                    }
-                        break
-
-                    case DataType.Numeric: {
-                        const numericString  = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( numericString );
-                    }
-                        break
-
-                    case DataType.Character: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    case DataType.Date: {
-                        // YYYYMMDD
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    case DataType.Logical: {
-                        const logical = this.reader.getChar().toLowerCase();
-                        if ( logical === 't' || logical === 'y' ) {
-                            record[ field.name ] = true;
-                        } else if ( logical === 'f' || logical === 'n' ) {
-                            record[ field.name ] = false;
-                        } else {
-                            record[ field.name ] = null;
-                        }
-                    }
-                        break
-
-                    case DataType.Memo: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    // 8 bytes - two longs, first for date, second for time.
-                    // The date is the number of days since  01/01/4713 BC.
-                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
-                    case DataType.Timestamp:
-                        break
-
-                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
-                    case DataType.Long: {
-                        record[ field.name ] = this.reader.getInt32();
-                    }
-                        break
-
-                    // Same as a Long
-                    case DataType.Autoincrement: {
-                        record[ field.name ] = this.reader.getInt32();
-                    }
-                        break
-
-                    case DataType.Float: {
-                        const floatString    = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( floatString );
-                    }
-                        break
-
-                    case DataType.Double: {
-                        record[ field.name ] = this.reader.getFloat64();
-                    }
-                        break
-
-                    case DataType.OLE: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    default:
-                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
-
-                }
-
-            }
-
-            records.push( record );
-
-        }
-
-        return records
-
-    },
-
-    /**
-     *
-     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
-     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
-     * @private
-     */
-    _parseFieldProperties () {
-
-        const numberOfStandardProperties             = this.reader.getInt16();
-        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
-        const numberOfCustomProperties               = this.reader.getInt16();
-        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
-        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
-        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
-        const startOfData                            = this.reader.getInt16();
-        const sizeOfPropertiesStructure              = this.reader.getInt16();
-
-        let standardProperties = [];
-        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
-            standardProperties.push( this._getStandardProperties() );
-        }
-
-        let customProperties = [];
-        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
-            customProperties.push( this._getCustomProperties() );
-        }
-
-        let referentialIntegrityProperties = [];
-        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
-            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
-        }
-
-        return {
-            numberOfStandardProperties,
-            startOfStandardPropertiesDescriptor,
-            numberOfCustomProperties,
-            startOfCustomPropertiesDescriptor,
-            numberOfReferentialIntegrityProperties,
-            startOfReferentialIntegrityDescriptor,
-            startOfData,
-            sizeOfPropertiesStructure,
-            standardProperties,
-            customProperties,
-            referentialIntegrityProperties
-        }
-
-    },
-
-    /**
-     *
-     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
-     * @private
-     */
-    _getStandardProperties () {
-
-        const generationalNumber = this.reader.getInt16();
-        const tableFieldOffset   = this.reader.getInt16();
-        const propertyDescribed  = this.reader.getInt8();
-        const type               = this.reader.getInt8();
-        const isConstraint       = this.reader.getInt8();
-        this.reader.skipOffsetOf( 4 ); // Reserved
-        const offsetFromStart      = this.reader.getInt16();
-        const widthOfDatabaseField = this.reader.getInt16();
-
-        return {
-            generationalNumber,
-            tableFieldOffset,
-            propertyDescribed,
-            type,
-            isConstraint,
-            offsetFromStart,
-            widthOfDatabaseField
-        }
-
-    },
-
-    /**
-     *
-     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
-     * @private
-     */
-    _getCustomProperties () {
-
-        const generationalNumber = this.reader.getInt16();
-        const tableFieldOffset   = this.reader.getInt16();
-        const type               = this.reader.getInt8();
-        this.reader.skipOffsetOf( 1 ); // Reserved
-        const offsetFromStartOfName = this.reader.getInt16();
-        const lengthOfName          = this.reader.getInt16();
-        const offsetFromStartOfData = this.reader.getInt16();
-        const lengthOfData          = this.reader.getInt16();
-
-        return {
-            generationalNumber,
-            tableFieldOffset,
-            type,
-            offsetFromStartOfName,
-            lengthOfName,
-            offsetFromStartOfData,
-            lengthOfData
-        }
-
-    },
-
-    /**
-     *
-     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
-     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
-     * @private
-     */
-    _getReferentialIntegrityProperties () {
-
-        const databaseState                = this.reader.getInt8();
-        const sequentialNumberRule         = this.reader.getInt16();
-        const offsetOfTheRIRuleName        = this.reader.getInt16();
-        const sizeOfTheRIRuleName          = this.reader.getInt16();
-        const offsetOfNameOfForeignTable   = this.reader.getInt16();
-        const sizeOfNameOfForeignTable     = this.reader.getInt16();
-        const stateBehaviour               = this.reader.getInt8();
-        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
-        const offsetOfLocalTableTagName    = this.reader.getInt16();
-        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
-        const offsetOfForeignTableTagName  = this.reader.getInt16();
-        const sizeOfTheForeignTableTagName = this.reader.getInt16();
-
-        return {
-            databaseState,
-            sequentialNumberRule,
-            offsetOfTheRIRuleName,
-            sizeOfTheRIRuleName,
-            offsetOfNameOfForeignTable,
-            sizeOfNameOfForeignTable,
-            stateBehaviour,
-            numberOfFieldsInLinkingKey,
-            offsetOfLocalTableTagName,
-            sizeOfTheLocalTableTagName,
-            offsetOfForeignTableTagName,
-            sizeOfTheForeignTableTagName
-        }
-
-    }
-
-} );
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
- *
- */
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function RZMLLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager;
-    this.logger  = logger;
-
-    this.textureLoader  = new TextureLoader();
-    this.imagesShotData = [];
-
-}
-
-Object.assign( RZMLLoader.prototype, {
-
-    /**
-     *
-     */
-    constructor: RZMLLoader,
-
-    /**
-     *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load: function ( url, onLoad, onProgress, onError ) {
-
-        //this.logger.time( "RZMLLoader" )
-
-        const filePath = url.replace( /[^/]*$/, '' );
-        const loader   = new FileLoader( this.manager );
-        loader.setResponseType( 'text/plain' );
-        loader.load( url, text => {
-
-            onLoad( this._parse( text, filePath ) );
-
-        }, onProgress, onError );
-
-    },
-
-    /**
-     *
-     * @param text
-     * @param filePath
-     * @return {*}
-     * @private
-     */
-    _parse ( text, filePath ) {
-
-        let document = null;
-
-        if ( window.DOMParser ) {
-            const parser = new DOMParser();
-            document     = parser.parseFromString( text, 'text/xml' );
-        } else // Internet Explorer
-        {
-            document       = new window.ActiveXObject( 'Microsoft.XMLDOM' );
-            document.async = false;
-            document.loadXML( text );
-        }
-
-        const shots            = document.getElementsByTagName( 'SHOT' );
-        let shot               = null;
-        let cfrmElement        = null;
-        let translationElement = null;
-        let rotationElement    = null;
-        //        let iplnElement        = null
-
-        for ( let i = 0, numberOfShots = shots.length ; i < numberOfShots ; ++i ) {
-            shot               = shots[ i ];
-            cfrmElement        = shot.children[ 0 ];
-            //            iplnElement        = shot.children[ 1 ]
-            translationElement = cfrmElement.children[ 0 ];
-            rotationElement    = cfrmElement.children[ 1 ];
-
-            // Todo: consider using array and/or create directly floating images from there
-            this.imagesShotData.push( {
-                imageName: shot.attributes[ 'n' ].value, //        imagePath: iplnElement.attributes["img"].value,
-                position:  {
-                    x: parseFloat( translationElement.attributes[ 'x' ].value ),
-                    y: parseFloat( translationElement.attributes[ 'y' ].value ),
-                    z: parseFloat( translationElement.attributes[ 'z' ].value )
-                },
-                rotation: {
-                    x: parseFloat( rotationElement.attributes[ 'x' ].value ),
-                    y: parseFloat( rotationElement.attributes[ 'y' ].value ),
-                    z: parseFloat( rotationElement.attributes[ 'z' ].value )
-                }
-            } );
-        }
-
-        //this.logger.timeEnd( "RZMLLoader" );
-
-        return this._createImagesPacks( filePath )
-    },
-
-    /**
-     *
-     * @param filePath
-     * @return {Group}
-     * @private
-     */
-    _createImagesPacks ( filePath ) {
-
-        var imagesShots = this.imagesShotData;
-        var planesGroup = new Group();
-        var imageShot   = undefined;
-        var plane       = undefined;
-        for ( var i = 0, numberOfShots = imagesShots.length ; i < numberOfShots ; ++i ) {
-
-            imageShot = imagesShots[ i ];
-
-            plane = new Mesh(
-                new PlaneGeometry( 0.06528, 0.04896, 1, 1 ),
-                new MeshBasicMaterial( {
-                    color: 0xffffff,
-                    side:  DoubleSide
-                } ) );
-
-            plane.name       = imageShot.imageName;
-            plane.position.x = imageShot.position.x - 600200;
-            plane.position.y = imageShot.position.y - 131400;
-            plane.position.z = imageShot.position.z - 60 - 0.34;
-            plane.rotation.x = MathUtils.degToRad( imageShot.rotation.x );
-            plane.rotation.y = MathUtils.degToRad( imageShot.rotation.z ); // Need to inverse y and z due to z up import !!!
-            plane.rotation.z = -( MathUtils.degToRad( imageShot.rotation.y ) );
-            // plane.visible    = false
-
-            plane.userData = {
-                filePath: filePath
-            };
-
-            planesGroup.add( plane );
-
-        }
-
-        planesGroup.rotateX( -( Math.PI / 2 ) );
-
-        return planesGroup
-
-    }
-
-} );
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- *
- * Constructor parameter:
- *
- * size - the size of the square view
- *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
- *
- */
-
-/**
- *
- * @type {Object}
- */
-const ShapeType = Object.freeze( {
-    NullShape:   0,
-    Point:       1,
-    Polyline:    3,
-    Polygon:     5,
-    MultiPoint:  8,
-    PointZ:      11,
-    PolyLineZ:   13,
-    PolygonZ:    15,
-    MultiPointZ: 18,
-    PointM:      21,
-    PolylineM:   23,
-    PolygonM:    25,
-    MultiPointM: 28,
-    MultiPatch:  31
-} );
-
-// Helpers
-/**
- *
- * @param ring
- * @return {boolean}
- */
-function ringClockwise ( ring ) {
-
-    if ( ( n = ring.length ) < 4 ) {
-        return false
-    }
-
-    var i    = 0,
-        n,
-        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
-    while ( ++i < n ) {
-        area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ];
-    }
-    return area >= 0
-}
-
-/**
- *
- * @param ring
- * @param hole
- * @return {boolean}
- */
-function ringContainsSome ( ring, hole ) {
-
-    let i = 0;
-    let n = hole.length;
-
-    do {
-
-        if ( ringContains( ring, hole[ i ] ) > 0 ) {
-            return true
-        }
-
-    } while ( ++i < n )
-
-    return false
-
-}
-
-/**
- *
- * @param ring
- * @param point
- * @return {number}
- */
-function ringContains ( ring, point ) {
-
-    let x        = point[ 0 ];
-    let y        = point[ 1 ];
-    let contains = -1;
-
-    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-
-        const pi = ring[ i ];
-        const xi = pi[ 0 ];
-        const yi = pi[ 1 ];
-        const pj = ring[ j ];
-        const xj = pj[ 0 ];
-        const yj = pj[ 1 ];
-
-        if ( segmentContains( pi, pj, point ) ) {
-            contains = 0;
-        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
-            contains = -contains;
-        }
-
-    }
-
-    return contains
-
-}
-
-/**
- *
- * @param p0
- * @param p1
- * @param p2
- * @return {boolean}
- */
-function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ],
-        y20 = p2[ 1 ] - p0[ 1 ];
-    if ( x20 === 0 && y20 === 0 ) {
-        return true
-    }
-    var x10 = p1[ 0 ] - p0[ 0 ],
-        y10 = p1[ 1 ] - p0[ 1 ];
-    if ( x10 === 0 && y10 === 0 ) {
-        return false
-    }
-    var t = ( x20 * x10 + y20 * y10 ) / ( x10 * x10 + y10 * y10 );
-    return t < 0 || t > 1 ? false : t === 0 || t === 1 ? true : t * x10 === x20 && t * y10 === y20
-}
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function SHPLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager;
-    this.logger  = logger;
-
-    this.globalOffset = new Vector3();
-    this.worldAxis    = {
-        from: 'zUp',
-        to:   'zForward'
-    };
-
-    this._reader = new TBinaryReader();
-
-}
-
-Object.assign( SHPLoader, {
-
-    /**
-     *
-     */
-    FileCode: 9994,
-
-    /**
-     *
-     */
-    MinFileLength: 100,
-
-    /**
-     *
-     */
-    MinVersion: 1000
-
-} );
-
-Object.assign( SHPLoader.prototype, {
-
-    /**
-     *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load ( url, onLoad, onProgress, onError ) {
-
-        const scope = this;
-
-        const loader = new FileLoader( scope.manager );
-        loader.setResponseType( 'arraybuffer' );
-        loader.load( url, arrayBuffer => {
-
-            onLoad( scope.parse( arrayBuffer ) );
-
-        }, onProgress, onError );
-
-    },
-
-    /**
-     *
-     * @param arrayBuffer
-     * @return {*}
-     */
-    parse ( arrayBuffer ) {
-
-        this._reader
-            .setEndianess( Endianness.Big )
-            .setBuffer( arrayBuffer );
-
-        const header = this._parseHeader();
-
-        if ( header.fileCode !== SHPLoader.FileCode ) {
-            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
-            return null
-        }
-
-        if ( header.fileLength < SHPLoader.MinFileLength ) {
-            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
-            return null
-        }
-
-        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
-            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
-            return null
-        }
-
-        if ( header.version < SHPLoader.MinVersion ) {
-            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
-        }
-
-        const datas  = this._parseDatas( header );
-        const shapes = this._convertToObjects( datas );
-
-        return shapes
-
-    },
-
-    /**
-     *
-     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
-     * @private
-     */
-    _parseHeader () {
-
-        const fileCode = this._reader.getInt32();
-        this._reader.skipOffsetOf( 20 );
-        const fileLength = this._reader.getInt32();
-
-        this._reader.setEndianess( Endianness.Little );
-
-        const version         = this._reader.getInt32();
-        const shapeType       = this._reader.getInt32();
-        const xMinBoundingBox = this._reader.getInt32();
-        const yMinBoundingBox = this._reader.getInt32();
-        const xMaxBoundingBox = this._reader.getInt32();
-        const yMaxBoundingBox = this._reader.getInt32();
-        const zMinBoundingBox = this._reader.getInt32();
-        const zMaxBoundingBox = this._reader.getInt32();
-        const mMinBoundingBox = this._reader.getInt32();
-        const mMaxBoundingBox = this._reader.getInt32();
-
-        return {
-            fileCode:    fileCode,
-            fileLength:  fileLength,
-            version:     version,
-            shapeType:   shapeType,
-            boundingBox: {
-                xMin: xMinBoundingBox,
-                xMax: xMaxBoundingBox,
-                yMin: yMinBoundingBox,
-                yMax: yMaxBoundingBox,
-                zMin: zMinBoundingBox,
-                zMax: zMaxBoundingBox,
-                mMin: mMinBoundingBox,
-                mMax: mMaxBoundingBox
-            }
-        }
-
-    },
-
-    /**
-     *
-     * @param header
-     * @return {Array}
-     * @private
-     */
-    _parseDatas ( header ) {
-
-        this._reader.skipOffsetTo( 100 );
-
-        let datas         = [];
-        let recordHeader  = undefined;
-        let endOfRecord   = undefined;
-        let recordContent = undefined;
-
-        while ( !this._reader.isEndOfFile() ) {
-
-            recordHeader = this._parseRecordHeader();
-            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
-
-            // All parsing methods use little below
-            this._reader.setEndianess( Endianness.Little );
-
-            switch ( header.shapeType ) {
-
-                case ShapeType.NullShape:
-
-                    this._reader.skipOffsetTo( endOfRecord );
-
-                    //                    // Todo: just skip 1 byte - or - to endRecord
-                    //                    while ( this._reader.getOffset() < endOfRecord ) {
-                    //
-                    //                        recordContent = this._parseNull();
-                    //                        if ( recordContent ) {
-                    //                            datas.push( recordContent );
-                    //                        }
-                    //
-                    //                    }
-                    break
-
-                case ShapeType.Point:
-                case ShapeType.PointZ:
-                case ShapeType.PointM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePoint();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.Polyline:
-                case ShapeType.PolyLineZ:
-                case ShapeType.PolylineM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePolyLine();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.Polygon:
-                case ShapeType.PolygonZ:
-                case ShapeType.PolygonM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePolyLine();
-                        //                        recordContent = this._parsePolygon();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.MultiPoint:
-                case ShapeType.MultiPointZ:
-                case ShapeType.MultiPointM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parseMultiPoint();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.MultiPatch:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parseMultiPatch();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
-                    break
-
-            }
-
-        }
-
-        return datas
-
-    },
-
-    /**
-     *
-     * @return {{recordNumber, contentLength}}
-     * @private
-     */
-    _parseRecordHeader () {
-
-        this._reader.setEndianess( Endianness.Big );
-
-        const recordNumber  = this._reader.getInt32();
-        const contentLength = this._reader.getInt32();
-
-        return {
-            recordNumber,
-            contentLength
-        }
-
-    },
-
-    //    _parseNull () {
-    //
-    //        this._reader.getInt32();
-    //
-    //        return null;
-    //    },
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePoint () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const x = this._reader.getFloat64();
-        const y = this._reader.getFloat64();
-
-        return {
-            shapeType,
-            x,
-            y
-        }
-
-    },
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePolyLine () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfParts  = this._reader.getInt32();
-        const numberOfPoints = this._reader.getInt32();
-
-        const parts = new Array( numberOfParts );
-        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-            parts[ indexParts ] = this._reader.getInt32();
-        }
-
-        const points = new Array( numberOfPoints );
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points[ indexPoint ] = {
-                x: this._reader.getFloat64(),
-                y: this._reader.getFloat64()
-            };
-        }
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfParts,
-            numberOfPoints,
-            parts,
-            points
-        }
-
-    },
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePolygon () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfParts  = this._reader.getInt32();
-        const numberOfPoints = this._reader.getInt32();
-
-        let parts = new Array( numberOfParts );
-        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-            parts[ indexParts ] = this._reader.getInt32();
-        }
-
-        let points = new Array( numberOfPoints );
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points[ indexPoint ] = {
-                x: this._reader.getFloat64(),
-                y: this._reader.getFloat64()
-            };
-        }
-
-        const polygons = [];
-        const holes    = [];
-
-        parts.forEach( ( value, index ) => {
-
-            const ring = points.slice( value, parts[ index + 1 ] );
-
-            if ( ringClockwise( ring ) ) {
-
-                polygons.push( ring );
-                //					polygons.push( [ ring ] );
-
-            } else {
-
-                holes.push( ring );
-
-            }
-
-        } );
-
-        holes.forEach( hole => {
-
-            polygons.some( polygon => {
-
-                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
-                    polygon.push( hole );
-                    return true
-                }
-
-            } ) || polygons.push( [ hole ] );
-
-        } );
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfParts,
-            numberOfPoints,
-            parts,
-            polygons
-        }
-
-    },
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parseMultiPoint () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfPoints = this._reader.getInt32();
-
-        const points = new Array( numberOfPoints );
-
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
-        }
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfPoints,
-            points
-        }
-
-    },
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parseMultiPatch () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        return {
-            shapeType
-        }
-
-    },
-
-    /**
-     *
-     * @param datas
-     * @return {Array}
-     * @private
-     */
-    _convertToObjects ( datas ) {
-
-        let shapes = [];
-
-        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
-            let data = datas[ index ];
-
-            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
-
-                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
-
-                    __createObjectsFromArrays( data.points );
-
-                } else {
-
-                    __createObjectFromPoints( data.points );
-
-                }
-
-            }
-
-        }
-
-        function __createObjectsFromArrays ( arrays ) {
-
-            //Todo: need to fix parsePolygon to avoid too much array imbrication
-
-            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
-
-                let array = arrays[ arrayIndex ];
-
-                if ( !array ) {
-                    this.logger.log( 'no array, oups !' );
-                    continue
-                }
-
-                if ( Array.isArray( array[ 0 ] ) ) {
-
-                    __createObjectsFromArrays( array );
-
-                } else {
-
-                    __createObjectFromPoints( array );
-
-                }
-
-            }
-
-        }
-
-        function __createObjectFromPoints ( points ) {
-
-            shapes.push( new Shape( points ) );
-
-        }
-
-        return shapes
-
-    }
-
-} );
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class UniversalLoader
- * @classdesc The TUniversalLoader allow to automatically select correct THREE loader for given files. (based on https://github.com/jeromeetienne/threex.universalloader)
- * @example Todo...
- *
- */
-
-// Helpers
-/**
- *
- * @param fileUrl
- * @return {string|*}
- */
-function getFilePath ( fileUrl ) {
-
-    return fileUrl.substring( 0, fileUrl.lastIndexOf( '/' ) )
-
-}
-
-/**
- *
- * @param fileUrl
- * @return {string|*}
- */
-function getFileName ( fileUrl ) {
-
-    return fileUrl.substring( fileUrl.lastIndexOf( '/' ) + 1 )
-
-}
-
-/**
- *
- * @param fileName
- */
-function getFileExtension ( fileName ) {
-
-    return fileName.slice( ( fileName.lastIndexOf( '.' ) - 1 >>> 0 ) + 2 )
-
-}
-
-/**
- *
- * @param fileUrl
- * @return {string|*}
- */
-function computeUrl ( fileUrl ) {
-
-    const filePath = getFilePath( fileUrl );
-    const isBlob   = ( fileUrl.indexOf( 'blob' ) > -1 );
-
-    return ( isBlob ) ? filePath : fileUrl
-
-}
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function UniversalLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager;
-    this.logger  = logger;
-
-}
-
-Object.assign( UniversalLoader.prototype, {
-
-    /**
-     *
-     * @param files
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load ( files, onLoad, onProgress, onError ) {
-
-        if ( !files ) {
-            this.logger.error( 'Unable to load null or undefined files !' );
-            return
-        }
-
-        if ( files instanceof FileList ) {
-
-            const numberOfFiles = files.length;
-            this.logger.log( `numberOfFiles: ${ numberOfFiles }` );
-
-            const filesUrls = [];
-            let fileUrl     = '';
-            let fileObject  = null;
-
-            for ( let fileIndex = 0 ; fileIndex < numberOfFiles ; ++fileIndex ) {
-                fileObject = files[ fileIndex ];
-                fileUrl    = `${ URL.createObjectURL( fileObject ) }/${ fileObject.name }`;
-
-                filesUrls.push( { url: fileUrl } );
-            }
-
-            this.load( filesUrls, onLoad, onProgress, onError );
-
-        } else if ( files instanceof File ) {
-
-            const fileUrl = `${ URL.createObjectURL( files ) }/${ files.name }`;
-            this.loadSingleFile( { url: fileUrl }, onLoad, onProgress, onError );
-
-        } else if ( isObject( files ) ) {
-
-            this.loadSingleFile( files, onLoad, onProgress, onError );
-
-        } else if ( isFunction( files ) ) {
-
-            this.load( files(), onLoad, onProgress, onError );
-
-        } else if ( isArray( files ) ) {
-
-            // Todo: need to rework logic here and use wrapper object instead of array of object to avoid
-            // Todo: array of 2 differents files.
-            if ( ( files.length === 2 ) && ( isObject( files[ 0 ] ) && isObject( files[ 1 ] ) ) ) {
-
-                this.loadAssociatedFiles( files, onLoad, onProgress, onError );
-
-            } else {
-
-                for ( let fileIndex = 0, numberOfFiles = files.length ; fileIndex < numberOfFiles ; fileIndex++ ) {
-                    this.load( files[ fileIndex ], onLoad, onProgress, onError );
-                }
-
-            }
-
-        } else if ( isString( files ) ) {
-
-            this.loadSingleFile( { url: files }, onLoad, onProgress, onError );
-
-        } else {
-
-            this.logger.error( 'TUniversalLoader: Invalid files parameter !!!' );
-
-        }
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    loadSingleFile ( file, onLoad, onProgress, onError ) {
-
-        const fileUrl       = file.url;
-        const fileName      = getFileName( fileUrl );
-        const fileExtension = getFileExtension( fileName );
-        file.url            = computeUrl( fileUrl );
-
-        switch ( fileExtension ) {
-
-            case FileFormat.Asc.value:
-                this._loadAsc( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Dae.value:
-                this._loadDae( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Dbf.value:
-                this._loadDbf( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Fbx.value:
-                this._loadFbx( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Json.value:
-                this._loadJson( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Obj.value:
-                this._loadObj( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Shp.value:
-                this._loadShp( file, onLoad, onProgress, onError );
-                break
-
-            case FileFormat.Stl.value:
-                this._loadStl( file, onLoad, onProgress, onError );
-                break
-
-            default:
-                throw new RangeError( `Invalid file extension: ${ fileExtension }. Supported formats are: ${ FileFormat.toString() }` )
-
-        }
-
-    },
-
-    /**
-     *
-     * @param files
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    loadAssociatedFiles ( files, onLoad, onProgress, onError ) {
-
-        const firstFile          = files[ 0 ];
-        const firstUrl           = firstFile.url;
-        const firstFileName      = getFileName( firstUrl );
-        const firstFileExtension = getFileExtension( firstFileName );
-        firstFile.url            = computeUrl( firstUrl );
-
-        const secondFile          = files[ 1 ];
-        const secondUrl           = secondFile.url;
-        const secondFileName      = getFileName( secondUrl );
-        const secondFileExtension = getFileExtension( secondFileName );
-        secondFile.url            = computeUrl( secondUrl );
-
-        if ( firstFileExtension === FileFormat.Mtl.value && secondFileExtension === FileFormat.Obj.value ) {
-
-            this._loadObjMtlCouple( secondFile, firstFile, onLoad, onProgress, onError );
-
-        } else if ( firstFileExtension === FileFormat.Obj.value && secondFileExtension === FileFormat.Mtl.value ) {
-
-            this._loadObjMtlCouple( firstFile, secondFile, onLoad, onProgress, onError );
-
-        } else if ( firstFileExtension === FileFormat.Shp.value && secondFileExtension === FileFormat.Dbf.value ) {
-
-            this._loadShpDbfCouple( firstFile, secondFile, onLoad, onProgress, onError );
-
-        } else if ( firstFileExtension === FileFormat.Dbf.value && secondFileExtension === FileFormat.Shp.value ) {
-
-            this._loadShpDbfCouple( secondFile, firstFile, onLoad, onProgress, onError );
-
-        } else {
-
-            this.loadSingleFile( files[ 0 ], onLoad, onProgress, onError );
-            this.loadSingleFile( files[ 1 ], onLoad, onProgress, onError );
-
-        }
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadAsc ( file, onLoad, onProgress, onError ) {
-
-        const loader = new ASCLoader( this.manager );
-        loader.load(
-            file.url,
-            onLoad,
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadDae ( file, onLoad, onProgress, onError ) {
-
-        const loader = new ColladaLoader( this.manager );
-        loader.load(
-            file.url,
-            data => {
-
-                onLoad( data.scene );
-
-            },
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadDbf ( file, onLoad, onProgress, onError ) {
-
-        const loader = new DBFLoader( this.manager );
-        loader.load(
-            file.url,
-            onLoad,
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadFbx ( file, onLoad, onProgress, onError ) {
-
-        const loader = new FBXLoader( this.manager );
-        loader.load(
-            file.url,
-            object => {
-
-                const position = file.position;
-                if ( position ) {
-                    object.position.set( position.x, position.y, position.z );
-                }
-
-                onLoad( object );
-
-            },
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadJson ( file, onLoad, onProgress, onError ) {
-
-        const loader = new ObjectLoader( this.manager );
-        loader.load(
-            file.url,
-            onLoad,
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadObj ( file, onLoad, onProgress, onError ) {
-
-        const loader = new OBJLoader( this.manager );
-        loader.load(
-            file.url,
-            onLoad,
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadShp ( file, onLoad, onProgress, onError ) {
-
-        const loader = new SHPLoader( this.manager );
-        loader.load(
-            file.url,
-            shapes => {
-
-                const group = new Group();
-
-                for ( let shapeIndex = 0, numberOfShapes = shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
-
-                    group.add(
-                        new Mesh(
-                            new ShapeBufferGeometry( shapes[ shapeIndex ] ),
-                            new MeshPhongMaterial( {
-                                color: Math.random() * 0xffffff,
-                                side:  DoubleSide
-                            } )
-                        )
-                    );
-
-                }
-
-                // Todo: make proper import system from different referentiels
-                group.rotateX( degreesToRadians( -90 ) );
-
-                onLoad( group );
-
-            },
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param file
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadStl ( file, onLoad, onProgress, onError ) {
-
-        const loader = new STLLoader( this.manager );
-        loader.load(
-            file.url,
-            geometry => {
-
-                const material = new MeshPhongMaterial();
-                const object   = new Mesh( geometry, material );
-
-                const position = file.position;
-                if ( position ) {
-                    object.position.set( position.x, position.y, position.z );
-                }
-
-                onLoad( object );
-
-            },
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param objFile
-     * @param mtlFile
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadObjMtlCouple ( objFile, mtlFile, onLoad, onProgress, onError ) {
-
-        const mtlLoader = new MTLLoader( this.manager );
-        const objLoader = new OBJLoader( this.manager );
-
-        const texturePath = mtlFile.texturePath;
-        if ( texturePath ) {
-            mtlLoader.setTexturePath( texturePath );
-        }
-
-        mtlLoader.load(
-            mtlFile.url,
-            materials => {
-
-                materials.preload();
-
-                for ( let materialIndex = 0, numberOfMaterials = materials.materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-                    const material                       = materials.materials[ materialIndex ];
-                    material.opacity                     = 1.0;
-                    materials.materials[ materialIndex ] = material;
-                }
-
-                objLoader.setMaterials( materials );
-                objLoader.load(
-                    objFile.url,
-                    onLoad,
-                    onProgress,
-                    onError
-                );
-
-            },
-            onProgress,
-            onError
-        );
-
-    },
-
-    /**
-     *
-     * @param shpFile
-     * @param dbfFile
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @private
-     */
-    _loadShpDbfCouple ( shpFile, dbfFile, onLoad, onProgress, onError ) {
-
-        let _shapes = undefined;
-        let _dbf    = undefined;
-
-        const shpLoader = new SHPLoader( this.manager );
-        shpLoader.load(
-            shpFile.url,
-            shapes => {
-
-                _shapes = shapes;
-                checkEnd();
-
-            },
-            onProgress,
-            onError
-        );
-
-        const dbfLoader = new DBFLoader( this.manager );
-        dbfLoader.load(
-            dbfFile.url,
-            dbf => {
-
-                _dbf = dbf;
-                checkEnd();
-
-            },
-            onProgress,
-            onError
-        );
-
-        function checkEnd () {
-
-            if ( !_shapes || !_dbf ) {
-                return
-            }
-
-            const group = new Group();
-            group.name  = 'Locaux';
-
-            let mesh = undefined;
-            for ( let shapeIndex = 0, numberOfShapes = _shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
-
-                mesh = new Mesh(
-                    new ShapeBufferGeometry( _shapes[ shapeIndex ] ),
-                    new MeshPhongMaterial( {
-                        color: 0xb0f2b6,
-                        //                        color: Math.random() * 0xffffff,
-                        side:  DoubleSide
-                    } )
-                );
-
-                const shapeName         = _dbf.datas[ shapeIndex ][ 'CODE' ];
-                mesh.name               = shapeName;
-                mesh.userData[ 'Code' ] = shapeName;
-
-                group.add( mesh );
-
-            }
-
-            onLoad( group );
-
-        }
-
-    }
-
-} );
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
  * @file Todo
  *
  * @example Todo
  *
  */
+// Waiting three-shaking fix
+//import {
+//    Camera,
+//    EventDispatcher,
+//    Object3D,
+//    Spherical,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 );
 const BACK  = new Vector3( 0, 0, 1 );
@@ -3200,7 +2576,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+        if ( !value.isCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value;
 
@@ -3216,7 +2592,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+        if ( !value.isObject3D ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value;
 
@@ -3230,7 +2606,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
-        //        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
+        if ( !CameraControlMode.includes( value ) ) { throw new Error( `Mode cannot be an instance of ${ value.constructor.name }. Expect a value from TCameraControlMode enum.` ) }
 
         this._mode = value;
 
@@ -3879,7 +3255,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3926,7 +3302,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3950,7 +3326,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3974,7 +3350,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -3998,7 +3374,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
         }
 
@@ -4216,15 +3592,15 @@ class CameraControls extends EventDispatcher {
             const cameraPosition                 = this._camera.position;
             const targetPosition                 = this._target.position;
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition );
-            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone();
+            const direction                      = ( delta > 0 ) ? FRONT.clone() : BACK.clone();
             const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize();
             const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget );
 
             cameraPosition.add( displacement );
 
             const newDistance = cameraPosition.distanceTo( targetPosition );
-            const zoomHeight = ( newDistance / 2 );
-            const zoomWidth  = ( ( newDistance * aspect ) / 2 );
+            const zoomHeight  = ( newDistance / 2 );
+            const zoomWidth   = ( ( newDistance * aspect ) / 2 );
 
             this._camera.top    = zoomHeight;
             this._camera.bottom = -zoomHeight;
@@ -4855,601 +4231,6 @@ class CameraControls extends EventDispatcher {
 //}
 
 /**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
- */
-
-const PI_2    = Math.PI / 2;
-const STATE   = {
-    NONE:   -1,
-    ROTATE: 0,
-    ZOOM:   1,
-    PAN:    2
-};
-const xVector = new Vector3( 1, 0, 0 );
-const yVector = new Vector3( 0, 1, 0 );
-
-/**
- *
- * @param camera
- * @param domElement
- * @constructor
- */
-function CameraPathController ( parameters = {} ) {
-
-    const _parameters = {
-        ...{
-            camera:     null,
-            target:     new Object3D(),
-            mode:       CameraControlMode.Orbit,
-            domElement: document
-        }, ...parameters
-    };
-
-    const self = this;
-
-    let currentState = STATE.NONE;
-
-    this.camera     = _parameters.camera;
-    this.cameraJump = 0.0;
-
-    this.paths               = [];
-    this.pathsMap            = new Map();
-    this.currentPath         = undefined;
-    this.currentPathIndex    = -1;
-    this.currentPathPosition = 0;
-
-    this.domElement      = _parameters.domElement;
-    this.forwardControl  = this.domElement.children[ 0 ].children[ 0 ].children[ 0 ];
-    this.backwardControl = this.domElement.children[ 0 ].children[ 1 ].children[ 0 ];
-    this.timeoutId       = undefined;
-
-    // Set to false to disable controls
-    this.enabled = false;
-
-    // Set to false to disable zooming
-    this.enableZoom = true;
-    this.zoomSpeed  = 1.0;
-
-    // Set to false to disable rotating
-    this.enableRotate = true;
-    this.rotateSpeed  = 0.0025;
-
-    // Set to false to disable panning
-    this.enablePan   = true;
-    this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
-
-    this.verticalOffset = 1.5;
-
-    this.keysCodes = {
-        forwardKeys:  [ Keys.Z, Keys.UP_ARROW ],
-        backwardKeys: [ Keys.S, Keys.BOTTOM_ARROW ]
-    };
-
-    // Mouse
-    let mouseQuat = {
-        x: new Quaternion(),
-        y: new Quaternion()
-    };
-
-    this.mouseButtons = {
-        ORBIT: MOUSE.LEFT,
-        ZOOM:  MOUSE.MIDDLE,
-        PAN:   MOUSE.RIGHT
-    };
-
-    this.orientation = {
-        x: 0,
-        y: 0
-    };
-
-    // Private methods
-    function moveForward () {
-
-        self.currentPathPosition += self.cameraJump;
-        if ( self.currentPathPosition > 1 ) {
-
-            DefaultLogger.log( 'reachEnd' );
-            var indexOfNextPath           = self.pathsMap.get( self.currentPathIndex ).indexOfNextPath;
-            var indexOfNextPathOfNextPath = self.pathsMap.get( indexOfNextPath ).indexOfNextPath;
-
-            // If next path of the next path is the current path that means flows are in the same direction
-            // so we need to inverse the current path position to 1 to start at the right position
-            if ( indexOfNextPathOfNextPath === self.currentPathIndex ) {
-                self.currentPathPosition = 1;
-            } else {
-                self.currentPathPosition = 0;
-            }
-
-            self.currentPathIndex = indexOfNextPath;
-            self.currentPath      = self.paths[ indexOfNextPath ];
-
-        }
-
-        self.update();
-        self.dispatchEvent( { type: 'move' } );
-
-    }
-
-    function moveBackward () {
-
-        self.currentPathPosition -= self.cameraJump;
-        if ( self.currentPathPosition < 0 ) {
-
-            DefaultLogger.log( 'reachStart' );
-            var indexOfPreviousPath               = self.pathsMap.get( self.currentPathIndex ).indexOfPreviousPath;
-            var indexOfPreviousPathOfPreviousPath = self.pathsMap.get( indexOfPreviousPath ).indexOfPreviousPath;
-
-            // If previous path of the previous path is the current path that means flows have the same origin
-            // so we need to inverse the current path position to 0 to start at the right position
-            if ( indexOfPreviousPathOfPreviousPath === self.currentPathIndex ) {
-                self.currentPathPosition = 0;
-            } else {
-                self.currentPathPosition = 1;
-            }
-
-            self.currentPathIndex = indexOfPreviousPath;
-            self.currentPath      = self.paths[ indexOfPreviousPath ];
-
-        }
-
-        self.update();
-        self.dispatchEvent( { type: 'move' } );
-
-    }
-
-    function rotate ( event ) {
-
-        //TLogger.log( 'handleMouseMoveRotate' )
-
-        var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-        var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-        var orientation = self.orientation;
-        orientation.y += movementX * self.rotateSpeed;
-        orientation.x += movementY * self.rotateSpeed;
-        orientation.x   = Math.max( -PI_2, Math.min( PI_2, orientation.x ) );
-
-        self.update();
-        self.dispatchEvent( { type: 'rotate' } );
-
-    }
-
-    // Handlers
-    function onKeyDown ( event ) {
-
-        if ( self.enabled === false ) {
-            return
-        }
-
-        var pathCurrentPoint = self.currentPath.getPointAt( self.currentPathPosition );
-        var pathNextPoint    = undefined;
-        var pathDirection    = undefined;
-        if ( self.currentPathPosition + self.cameraJump > 1 ) { // end of path
-            pathNextPoint = self.currentPath.getPointAt( self.currentPathPosition - self.cameraJump );
-            pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize().negate();
-        } else {
-            pathNextPoint = self.currentPath.getPointAt( self.currentPathPosition + self.cameraJump );
-            pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize();
-        }
-
-        var cameraDirection = self.camera.getWorldDirection().normalize();
-        var dotProduct      = cameraDirection.dot( pathDirection );
-
-        if ( dotProduct > 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
-
-            event.preventDefault();
-            moveForward();
-
-        } else if ( dotProduct < 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
-
-            event.preventDefault();
-            moveBackward();
-
-        } else if ( dotProduct > 0 && self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-
-            event.preventDefault();
-            moveBackward();
-
-        } else if ( dotProduct < 0 && self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-
-            event.preventDefault();
-            moveForward();
-
-        } else {
-
-            DefaultLogger.warn( `The key event is not implemented for key code: ${ event.keyCode }` );
-
-        }
-
-    }
-
-    function onKeyUp ( event ) {
-
-        if ( self.enabled === false ) {
-            return
-        }
-
-        if ( !self.keysCodes.forwardKeys.includes( event.keyCode ) && !self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-            return
-        }
-
-        if ( event ) { event.preventDefault(); }
-
-        self.dispatchEvent( { type: 'moveEnd' } );
-
-    }
-
-    function onMouseDown ( event ) {
-
-        if ( self.enabled === false ) {
-            return
-        }
-
-        event.preventDefault();
-
-        if ( self.enableRotate === true && event.button === self.mouseButtons.ORBIT ) {
-
-            currentState = STATE.ROTATE;
-
-        } else if ( self.enableZoom === true && event.button === self.mouseButtons.ZOOM ) ; else if ( self.enablePan === true && event.button === self.mouseButtons.PAN ) ;
-
-    }
-
-    function onMouseMove ( event ) {
-
-        if ( self.enabled === false ) {
-            return
-        }
-
-        event.preventDefault();
-
-        if ( currentState === STATE.ROTATE ) {
-
-            rotate( event );
-
-        }
-
-    }
-
-    function onMouseUp ( event ) {
-
-        if ( self.enabled === false ) {
-            return
-        }
-
-        if ( event ) { event.preventDefault(); }
-
-        currentState = STATE.NONE;
-
-        self.dispatchEvent( { type: 'rotateEnd' } );
-
-    }
-
-    function onForward ( event ) {
-
-        clearTimeout( self.timeoutId );
-
-        event.keyCode = Keys.UP_ARROW;
-        onKeyDown( event );
-
-        self.timeoutId = setTimeout( onKeyUp.bind( self ), 750 );
-
-    }
-
-    function onBackward ( event ) {
-
-        clearTimeout( self.timeoutId );
-
-        event.keyCode = Keys.BOTTOM_ARROW;
-        onKeyDown( event );
-
-        self.timeoutId = setTimeout( onKeyUp.bind( self ), 750 );
-
-    }
-
-    // Public function that access private methods
-    this.update = function () {
-
-        if ( this.enabled === false ) {
-            return
-        }
-
-        // Update position
-        var newPosition        = this.currentPath.getPointAt( this.currentPathPosition );
-        this.camera.position.x = newPosition.x;
-        this.camera.position.y = newPosition.y + this.verticalOffset;
-        this.camera.position.z = newPosition.z;
-
-        // Update rotation
-        mouseQuat.x.setFromAxisAngle( xVector, this.orientation.x );
-        mouseQuat.y.setFromAxisAngle( yVector, this.orientation.y );
-        this.camera.quaternion.copy( mouseQuat.y ).multiply( mouseQuat.x );
-
-    };
-
-    this.dispose = function () {
-
-        this.domElement.removeEventListener( 'mousedown', onMouseDown, false );
-        this.domElement.removeEventListener( 'mousemove', onMouseMove, false );
-        this.domElement.removeEventListener( 'mouseup', onMouseUp, false );
-
-        window.removeEventListener( 'keydown', onKeyDown, false );
-        window.removeEventListener( 'keyup', onKeyUp, false );
-
-    };
-
-    this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-    this.domElement.addEventListener( 'mousemove', onMouseMove, false );
-    this.domElement.addEventListener( 'mouseup', onMouseUp, false );
-
-    window.addEventListener( 'keydown', onKeyDown, false );
-    window.addEventListener( 'keyup', onKeyUp, false );
-
-    this.forwardControl.addEventListener( 'click', onForward, false );
-    this.backwardControl.addEventListener( 'click', onBackward, false );
-
-}
-
-Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
-
-    get camera () {
-
-        return this._camera
-
-    },
-
-    set camera ( value ) {
-
-        if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
-        if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
-
-        this._camera = value;
-
-    },
-
-    setCamera ( value ) {
-
-        this.camera = value;
-        return this
-
-    },
-
-    /**
-     *
-     * @param path
-     */
-    setPath ( path ) {
-
-        this.currentPath = path;
-        this.cameraJump  = 1 / path.getLength();
-
-    },
-
-    /**
-     *
-     * @param paths
-     * @param nameOfFirstPathToFollow
-     */
-    setPaths ( paths, nameOfFirstPathToFollow ) {
-
-        this.paths            = paths;
-        this.currentPathIndex = 0;
-
-        var pathToFollow = this.paths[ this.currentPathIndex ];
-
-        var numberOfPaths = this.paths.length;
-
-        var firstPath      = undefined;
-        var startFirstPath = undefined;
-        var endFirstPath   = undefined;
-
-        var secondPath      = undefined;
-        var startSecondPath = undefined;
-        var endSecondPath   = undefined;
-
-        for ( var firstPathIndex = 0 ; firstPathIndex < numberOfPaths ; firstPathIndex++ ) {
-
-            firstPath      = this.paths[ firstPathIndex ];
-            startFirstPath = firstPath.getPointAt( 0 );
-            endFirstPath   = firstPath.getPointAt( 1 );
-
-            if ( nameOfFirstPathToFollow && firstPath.name === nameOfFirstPathToFollow ) {
-                pathToFollow          = firstPath;
-                this.currentPathIndex = firstPathIndex;
-            }
-
-            var closestStartDistance    = Infinity;
-            var closestEndDistance      = Infinity;
-            var indexOfClosestStartPath = undefined;
-            var indexOfClosestEndPath   = undefined;
-
-            for ( var secondPathIndex = 0 ; secondPathIndex < numberOfPaths ; secondPathIndex++ ) {
-
-                if ( firstPathIndex === secondPathIndex ) {
-                    continue
-                }
-
-                secondPath      = this.paths[ secondPathIndex ];
-                startSecondPath = secondPath.getPointAt( 0 );
-                endSecondPath   = secondPath.getPointAt( 1 );
-
-                if ( startFirstPath.distanceTo( startSecondPath ) < closestStartDistance ) {
-
-                    closestStartDistance    = startFirstPath.distanceTo( startSecondPath );
-                    indexOfClosestStartPath = secondPathIndex;
-
-                }
-
-                if ( startFirstPath.distanceTo( endSecondPath ) < closestStartDistance ) {
-
-                    closestStartDistance    = startFirstPath.distanceTo( endSecondPath );
-                    indexOfClosestStartPath = secondPathIndex;
-
-                }
-
-                if ( endFirstPath.distanceTo( startSecondPath ) < closestEndDistance ) {
-
-                    closestEndDistance    = endFirstPath.distanceTo( startSecondPath );
-                    indexOfClosestEndPath = secondPathIndex;
-
-                }
-
-                if ( endFirstPath.distanceTo( endSecondPath ) < closestEndDistance ) {
-
-                    closestEndDistance    = endFirstPath.distanceTo( endSecondPath );
-                    indexOfClosestEndPath = secondPathIndex;
-
-                }
-
-            }
-
-            this.pathsMap.set( firstPathIndex, {
-                indexOfPreviousPath: indexOfClosestStartPath,
-                indexOfNextPath:     indexOfClosestEndPath
-            } );
-
-        }
-
-        //        TLogger.log( this.pathsMap )
-
-        this.setPath( pathToFollow );
-
-    },
-
-    /**
-     *
-     * @param quat
-     */
-    setMouseQuat ( quat ) {
-
-        this.orientation.y = Math.asin( quat.y ) * 2;
-        this.orientation.x = 0;
-
-    },
-
-    /**
-     *
-     */
-    getCurrentPathPosition () {
-
-        return this.currentPath.getPointAt( this.currentPathPosition )
-
-    },
-
-    /**
-     *
-     * @return {undefined}
-     */
-    getNextPathPosition () {
-
-        var nextPosition = undefined;
-
-        if ( this.currentPathPosition + this.cameraJump > 1 ) { // end of path
-            nextPosition = this.currentPath.getPointAt( this.currentPathPosition - this.cameraJump ).negate();
-        } else {
-            nextPosition = this.currentPath.getPointAt( this.currentPathPosition + this.cameraJump );
-        }
-
-        return nextPosition
-
-    },
-
-    /**
-     *
-     * @return {number}
-     */
-    getDistanceFromStart () {
-
-        //Linear distance
-        //		var firstPosition = this.currentPath.getPointAt( 0 )
-        //		var currentPosition = this.currentPath.getPointAt( this.currentPathPosition )
-        //
-        //		return firstPosition.distanceTo( currentPosition )
-
-        // Accordingly to the fact than currentPathPosition is an multiple of cameraJump that is equals to 1 / path.getLength()
-        // Todo: need to go the projection to Tronçon
-        return this.currentPathPosition * this.currentPath.getLength()
-
-    },
-
-    /**
-     *
-     */
-    lookAtPath () {
-
-        // Set lookup point at the camera height
-        var nextPosition = this.getNextPathPosition();
-        nextPosition.y   = this.camera.position.y;
-
-        this.camera.lookAt( nextPosition );
-
-        // We need to update local orientation else on first move event the camera will return to default position !
-        this.setMouseQuat( this.camera.quaternion );
-
-    },
-
-    /**
-     *
-     * @param position
-     */
-    goTo ( position ) {
-
-        //Todo: Should use 2D instead of 3D !
-
-        var numberOfPoints    = undefined;
-        var currentPath       = undefined;
-        var currentPathPoints = undefined;
-        var closestPointIndex = undefined;
-        var closestPath       = undefined;
-        var closestPathIndex  = undefined;
-        var currentDistance   = undefined;
-        var closestDistance   = Infinity;
-
-        for ( var pathIndex = 0, numberOfPath = this.paths.length ; pathIndex < numberOfPath ; pathIndex++ ) {
-
-            currentPath       = this.paths[ pathIndex ];
-            numberOfPoints    = Math.floor( currentPath.getLength() );
-            currentPathPoints = currentPath.getSpacedPoints( numberOfPoints );
-
-            for ( var pointIndex = 0 ; pointIndex < numberOfPoints ; pointIndex++ ) {
-
-                currentDistance = position.distanceTo( currentPathPoints[ pointIndex ] );
-
-                if ( currentDistance < closestDistance ) {
-
-                    closestDistance   = currentDistance;
-                    closestPathIndex  = pathIndex;
-                    closestPath       = currentPath;
-                    closestPointIndex = pointIndex;
-
-                }
-
-            }
-
-        }
-
-        this.setPath( closestPath );
-        this.currentPathIndex    = closestPathIndex;
-        this.currentPathPosition = this.cameraJump * closestPointIndex;
-
-        this.lookAtPath();
-        this.update();
-
-        this.dispatchEvent( { type: 'moveEnd' } );
-        this.dispatchEvent( { type: 'rotateEnd' } );
-
-    }
-
-} );
-
-/**
  * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
@@ -5458,6 +4239,34 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
  * @example Todo
  *
  */
+// Waiting three-shaking fix
+//import {
+//    Box3,
+//    BoxBufferGeometry,
+//    BufferGeometry,
+//    Camera,
+//    ConeBufferGeometry,
+//    CylinderBufferGeometry,
+//    DoubleSide,
+//    EdgesGeometry,
+//    Euler,
+//    Float32BufferAttribute,
+//    Line,
+//    LineBasicMaterial,
+//    LineSegments,
+//    Mesh,
+//    MeshBasicMaterial,
+//    Object3D,
+//    OctahedronBufferGeometry,
+//    Plane,
+//    PlaneBufferGeometry,
+//    Quaternion,
+//    Raycaster,
+//    SphereBufferGeometry,
+//    TorusBufferGeometry,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
 
 // Basic Geometries
 
@@ -8025,127 +6834,44 @@ class ClippingControls extends Object3D {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
+ * @file sources/frontend/managers/CurvesManager.js
  *
  * @example Todo
  *
  */
+// Waiting three-shaking fix
+//import {
+//    ArcCurve,
+//    CatmullRomCurve3,
+//    CubicBezierCurve,
+//    CubicBezierCurve3,
+//    Curve,
+//    CurvePath,
+//    EllipseCurve,
+//    LineCurve,
+//    LineCurve3,
+//    Path,
+//    QuadraticBezierCurve,
+//    QuadraticBezierCurve3,
+//    Shape,
+//    SplineCurve
+//}                           from 'three-full'
 
-/**
- *
- * @constructor
- */
-function BufferGeometriesManager () {
+class CurvesManager extends TDataBaseManager {
 
-    TDataBaseManager.call( this );
-    this.basePath = '/buffergeometries';
+    constructor ( parameters = {} ) {
 
-}
+        const _parameters = {
+            ...{
+                basePath: '/curves'
+            },
+            ...parameters
+        };
 
-BufferGeometriesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
-
-    /**
-     *
-     */
-    constructor: BufferGeometriesManager,
-
-    /**
-     *
-     * @param data
-     * @returns {Scene|Object3D}
-     */
-    convert ( data/*, onError */ ) {
-
-        const textureType = data.type;
-        let texture       = null;
-
-        switch ( textureType ) {
-
-            case 'Scene':
-                texture = new Scene();
-                break
-
-            default:
-                texture = new Object3D();
-                break
-
-        }
-
-        // Common object properties
-
-        //        if ( textureType === 'Line' ) {
-        //
-        //        }
-
-        return texture
+        super( _parameters );
 
     }
 
-} );
-
-Object.defineProperties( BufferGeometriesManager.prototype, {
-
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
-
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-            const results = {};
-            let result    = undefined;
-
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data   = datas[ dataIndex ];
-                result = this.convert( data, onError );
-                if ( result ) { results[ data._id ] = result; }
-
-                onProgress( dataIndex / numberOfDatas );
-
-            }
-
-            onSuccess( results );
-
-        }
-    }
-
-} );
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
- */
-
-/**
- *
- * @constructor
- */
-function CurvesManager () {
-
-    TDataBaseManager.call( this );
-    this.basePath = '/curves';
-
-}
-
-CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
-
-    /**
-     *
-     */
-    constructor: CurvesManager,
-
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
     convert ( data ) {
 
         if ( !data ) {
@@ -8226,80 +6952,6 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
 
     }
 
-} );
-
-Object.defineProperties( CurvesManager.prototype, {
-
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
-
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-            const results = {};
-
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data = datas[ dataIndex ];
-
-                try {
-                    results[ data._id ] = this.convert( data );
-                } catch ( err ) {
-                    onError( err );
-                }
-
-                onProgress( dataIndex / numberOfDatas );
-
-            }
-
-            onSuccess( results );
-
-        }
-    }
-
-} );
-
-/**
- * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class ClassName
- * @classdesc Todo...
- * @example Todo...
- *
- */
-
-class FilairesManager extends TDataBaseManager {
-
-    /**
-     *
-     * @param basePath
-     * @param responseType
-     * @param bunchSize
-     * @param progressManager
-     * @param errorManager
-     */
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                basePath:               '/',
-                responseType:           ResponseType.Json,
-                bunchSize:              500,
-                requestAggregationTime: 200,
-                requestsConcurrency:    6,
-                logger:                 DefaultLogger
-            }, ...parameters
-        };
-
-        super( _parameters );
-
-    }
-
-    //// Methods
-
     _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
         // Normalize to array
@@ -8311,121 +6963,16 @@ class FilairesManager extends TDataBaseManager {
             data = datas[ dataIndex ];
 
             try {
-                results[ data.id ] = this.convert( data );
+                results[ data._id ] = this.convert( data );
             } catch ( err ) {
                 onError( err );
             }
 
-            onProgress( new ProgressEvent( 'FilairesManager', {
-                lengthComputable: true,
-                loaded:           dataIndex + 1,
-                total:            numberOfDatas
-            } ) );
+            onProgress( dataIndex / numberOfDatas );
 
         }
 
         onSuccess( results );
-
-    }
-
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
-    convert ( data ) {
-
-        if ( !data ) {
-            throw new Error( 'FilairesManager: Unable to convert null or undefined data !' )
-        }
-
-        const objectType = data.type;
-        let object       = null;
-
-        if ( isNotDefined( objectType ) ) {
-            throw new Error( `TFilaireManager.convert() : data type must be defined !!!` )
-        }
-
-        switch ( objectType ) {
-
-            case 'NaissanceVoute':
-                object = this._parseFilaire( data, 0x875100 );
-                break
-
-            case 'Radier':
-                object = this._parseFilaire( data, 0x0089af );
-                break
-
-            case 'Intrados':
-                object = this._parseFilaire( data, 0xc100b4 );
-                break
-
-            case 'Br':
-            case 'Bp':
-            case 'Src':
-                object = this._parsePoint( data, 0x00ff00 );
-                break
-
-            default:
-                throw new Error( `TFilaireManager: Unknown object of type: ${ objectType }` )
-
-        }
-
-        return object
-
-    }
-
-    _parseFilaire ( data, color ) {
-
-        const geoJson   = JSON.parse( data.geojson );
-        const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] );
-
-        if ( isNotDefined( positions ) ) {
-            throw new Error( `TFilaireManager._parseFilaire() : ${ data.type } geometry doesn't contains coordinates !!!` )
-        }
-
-        const material = new LineBasicMaterial( {
-            color: color
-        } );
-
-        const bufferGeometry = new BufferGeometry();
-        bufferGeometry.setAttribute( 'position', new Float32BufferAttribute( positions, 3 ) );
-
-        let object = new Line( bufferGeometry, material );
-        if ( !isNotDefined( data.type ) ) {
-            object.name = ''.concat( data.type, '_' ).concat( data.numero_bloc, '_' ).concat( data.id );
-        } else {
-            object.name = ''.concat( data.id );
-        }
-
-        return object
-
-    }
-
-    _parsePoint ( data, color ) {
-
-        const geoJson   = JSON.parse( data.geojson );
-        const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] );
-
-        if ( isNotDefined( positions ) ) {
-            throw new Error( 'FilairesManager._parsePoint() : '.concat( data.type, ' geometry doesn\'t contains coordinates !!!' ) )
-        }
-
-        let geometry = new SphereBufferGeometry( parseFloat( data.attribut ), 50, 50, 0, Math.PI * 2, 0, Math.PI * 2 );
-        geometry.computeVertexNormals();
-
-        let material = new MeshPhongMaterial( { color: color } );
-        let object   = new Mesh( geometry, material );
-
-        object.position.set( positions[ '0' ], positions[ '1' ], positions[ '2' ] );
-
-        if ( !isNotDefined( data.type ) ) {
-            object.name = ''.concat( data.type, '_' ).concat( data.numero_bloc, '_' ).concat( data.id );
-        } else {
-            object.name = ''.concat( data.id );
-        }
-
-        return object
 
     }
 
@@ -8445,8 +6992,59 @@ class FilairesManager extends TDataBaseManager {
  * @requires '../../../node_modules/three/src/core/BufferAttribute'
  *
  */
+// Waiting three-shaking fix
+//import {
+//    BoxBufferGeometry,
+//    BoxGeometry,
+//    BufferAttribute,
+//    BufferGeometry,
+//    CircleBufferGeometry,
+//    CircleGeometry,
+//    ConeBufferGeometry,
+//    ConeGeometry,
+//    CylinderBufferGeometry,
+//    CylinderGeometry,
+//    DodecahedronBufferGeometry,
+//    DodecahedronGeometry,
+//    EdgesGeometry,
+//    ExtrudeBufferGeometry,
+//    ExtrudeGeometry,
+//    Face3,
+//    Geometry,
+//    IcosahedronBufferGeometry,
+//    IcosahedronGeometry,
+//    InstancedBufferGeometry,
+//    LatheBufferGeometry,
+//    LatheGeometry,
+//    OctahedronBufferGeometry,
+//    OctahedronGeometry,
+//    ParametricBufferGeometry,
+//    ParametricGeometry,
+//    PlaneBufferGeometry,
+//    PlaneGeometry,
+//    PolyhedronBufferGeometry,
+//    PolyhedronGeometry,
+//    RingBufferGeometry,
+//    RingGeometry,
+//    Shape,
+//    ShapeGeometry,
+//    SphereBufferGeometry,
+//    SphereGeometry,
+//    TetrahedronBufferGeometry,
+//    TetrahedronGeometry,
+//    TextBufferGeometry,
+//    TextGeometry,
+//    TorusBufferGeometry,
+//    TorusGeometry,
+//    TorusKnotBufferGeometry,
+//    TorusKnotGeometry,
+//    TubeBufferGeometry,
+//    TubeGeometry,
+//    Vector3,
+//    WireframeGeometry
+//}                           from 'three-full'
 
-const ArrayType = {
+const ArrayType = toEnum( {
     Int8Array:         0,
     Uint8Array:        1,
     Uint8ClampedArray: 2,
@@ -8456,7 +7054,7 @@ const ArrayType = {
     Uint32Array:       6,
     Float32Array:      7,
     Float64Array:      8
-};
+} );
 
 class GeometriesManager extends TDataBaseManager {
 
@@ -9161,29 +7759,21 @@ class GeometriesManager extends TDataBaseManager {
  *
  */
 
-/**
- *
- * @constructor
- */
-function TexturesManager () {
+class TexturesManager extends TDataBaseManager {
 
-    TDataBaseManager.call( this );
-    this.basePath = '/textures';
+    constructor ( parameters = {} ) {
 
-}
+        const _parameters = {
+            ...{
+                basePath: '/textures'
+            },
+            ...parameters
+        };
 
-TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
+        super( _parameters );
 
-    /**
-     *
-     */
-    constructor: TexturesManager,
+    }
 
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
     convert ( data ) {
 
         if ( !data ) {
@@ -9207,39 +7797,30 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
 
     }
 
-} );
+    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
-Object.defineProperties( TexturesManager.prototype, {
+        // Normalize to array
+        const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+        const results = {};
 
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
+        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
 
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-            const results = {};
+            data = datas[ dataIndex ];
 
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data = datas[ dataIndex ];
-
-                try {
-                    results[ data._id ] = this.convert( data );
-                } catch ( err ) {
-                    onError( err );
-                }
-
-                onProgress( dataIndex / numberOfDatas );
-
+            try {
+                results[ data._id ] = this.convert( data );
+            } catch ( err ) {
+                onError( err );
             }
 
-            onSuccess( results );
+            onProgress( dataIndex / numberOfDatas );
+
         }
+
+        onSuccess( results );
     }
 
-} );
+}
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -10515,7 +9096,7 @@ class ObjectsManager extends TDataBaseManager {
                 object.scale.y = data.scale.y;
                 object.scale.z = data.scale.z;
             } else {
-                console.warn( 'Try to assign null scale !' );
+                this.logger.warn( 'Try to assign null scale !' );
             }
 
         }
@@ -10869,7 +9450,7 @@ class ObjectsManager extends TDataBaseManager {
 
         const geometry = geometries[ geometryId ];
         if ( !geometry ) {
-            console.error( 'Unable to retrieve geometry !!!' );
+            this.logger.error( 'Unable to retrieve geometry !!!' );
             return
         }
 
@@ -10891,7 +9472,7 @@ class ObjectsManager extends TDataBaseManager {
                 const materialId = materialIds[ 0 ];
                 const material   = materials[ materialId ];
                 if ( !material ) {
-                    console.error( 'Unable to retrieve material !!!' );
+                    this.logger.error( 'Unable to retrieve material !!!' );
                     return null
                 }
 
@@ -10904,7 +9485,7 @@ class ObjectsManager extends TDataBaseManager {
                     const materialId = materialIds[ materialIndex ];
                     const material   = materials[ materialId ];
                     if ( !material ) {
-                        console.error( 'Unable to retrieve material !!!' );
+                        this.logger.error( 'Unable to retrieve material !!!' );
                         return null
                     }
 
@@ -10916,7 +9497,7 @@ class ObjectsManager extends TDataBaseManager {
 
             const material = materials[ materialIds ];
             if ( !material ) {
-                console.error( 'Unable to retrieve material !!!' );
+                this.logger.error( 'Unable to retrieve material !!!' );
                 return
             }
 
@@ -10924,7 +9505,7 @@ class ObjectsManager extends TDataBaseManager {
 
         } else {
 
-            console.error( 'Invalid material ids, expected string or array of string' );
+            this.logger.error( 'Invalid material ids, expected string or array of string' );
 
         }
 
@@ -10941,6 +9522,15 @@ class ObjectsManager extends TDataBaseManager {
  * @example Todo...
  *
  */
+// Waiting three-shaking fix
+//import {
+//    BufferGeometry,
+//    Color,
+//    Float32BufferAttribute,
+//    LineBasicMaterial,
+//    LineSegments,
+//    VertexColors
+//} from 'three-full'
 
 class OrbitControlsHelper extends LineSegments {
 
@@ -11105,5 +9695,5 @@ class OrbitControlsHelper extends LineSegments {
 
 }
 
-export { ASCLoader, AbstractGizmo, AbstractHandle, AbstractHitbox, BufferGeometriesManager, CameraControlMode, CameraControls, CameraPathController, ClippingBox, ClippingControls, ClippingModes, CurvesManager, CylindricaHitbox, DBFLoader, FilairesManager, GeometriesManager, HighlightableLineMaterial, HighlightableMaterial, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, RZMLLoader, RotateGizmo, RotateHandle, SHPLoader, ScaleGizmo, ScaleHandle, ShapeType, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle, UniversalLoader };
+export { ASCLoader, AbstractGizmo, AbstractHandle, AbstractHitbox, CameraControlMode, CameraControls, ClippingBox, ClippingControls, ClippingModes, CurvesManager, CylindricaHitbox, DBFLoader, GeometriesManager, HighlightableLineMaterial, HighlightableMaterial, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, RotateGizmo, RotateHandle, SHPLoader, ScaleGizmo, ScaleHandle, ShapeType, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle };
 //# sourceMappingURL=itee-plugin-three.esm.js.map

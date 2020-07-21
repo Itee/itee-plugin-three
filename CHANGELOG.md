@@ -1,3 +1,11 @@
+## [1.2.10](https://github.com/Itee/itee-plugin-three/compare/v1.2.9...v1.2.10) (2020-07-21)
+
+
+### Bug Fixes
+
+* **cameracontrols:** reintroduce mode type checking in setter due to toEnum usage ([419e190](https://github.com/Itee/itee-plugin-three/commit/419e19095e66569ccd75134c8592f949cb8f7415))
+* **three:** fix global three import to allow better treeshaking ([b38f6e7](https://github.com/Itee/itee-plugin-three/commit/b38f6e7c839a18b8d600fb097b7ec00ee5c615dd))
+
 ## [1.2.9](https://github.com/Itee/itee-plugin-three/compare/v1.2.8...v1.2.9) (2020-03-26)
 
 

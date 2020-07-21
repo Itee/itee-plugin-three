@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.9 - CommonJs')
+console.log('Itee.Plugin.Three v1.2.10 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
@@ -7,6 +7,7 @@ var iteeDatabase = require('itee-database');
 var iteeMongodb = require('itee-mongodb');
 var threeFull = require('three-full');
 var iteeClient = require('itee-client');
+var iteeUtils = require('itee-utils');
 var iteeValidators = require('itee-validators');
 var iteeValidators__default = _interopDefault(iteeValidators);
 var bson = require('bson');
@@ -62,12 +63,17 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  * @example Todo...
  *
  */
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader
+//}                 from 'three-full'
 
 /**
  *
  * @type {Object}
  */
-const DBFVersion = Object.freeze( {
+const DBFVersion = iteeUtils.toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -92,7 +98,7 @@ const DBFVersion = Object.freeze( {
  *
  * @type {Object}
  */
-const DataType = Object.freeze( {
+const DataType = iteeUtils.toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',
@@ -107,40 +113,72 @@ const DataType = Object.freeze( {
     OLE:           'G'
 } );
 
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function DBFLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
+class DBFLoader {
 
-    this.manager = manager;
-    this.logger  = logger;
-    this.reader  = new iteeClient.TBinaryReader();
+    //    static Terminator    = 0x0D
+    //    static DeletedRecord = 0x1A
+    //    static YearOffset    = 1900
 
-}
+    get manager () {
+        return this._manager
+    }
 
-Object.assign( DBFLoader, {
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
 
     /**
      *
+     * @param manager
+     * @param logger
+     * @constructor
      */
-    Terminator: 0x0D,
+    constructor ( parameters = {} ) {
 
-    /**
-     *
-     */
-    DeletedRecord: 0x1A,
+        const _parameters = {
+            ...{
+                manager: threeFull.DefaultLoadingManager,
+                logger:  iteeClient.DefaultLogger,
+                reader:  new iteeClient.TBinaryReader()
+            }, ...parameters
+        };
 
-    /**
-     *
-     */
-    YearOffset: 1900
+        this.manager = _parameters.manager;
+        this.logger  = _parameters.logger;
+        this.reader  = _parameters.reader;
 
-} );
-
-Object.assign( DBFLoader.prototype, {
+    }
 
     /**
      *
@@ -161,7 +199,7 @@ Object.assign( DBFLoader.prototype, {
 
         }, onProgress, onError );
 
-    },
+    }
 
     /**
      *
@@ -188,7 +226,7 @@ Object.assign( DBFLoader.prototype, {
             datas
         }
 
-    },
+    }
 
     /**
      *
@@ -198,10 +236,9 @@ Object.assign( DBFLoader.prototype, {
      */
     _isValidVersion ( version ) {
 
-        const availablesVersionValues = Object.values( DBFVersion );
-        return ( availablesVersionValues.includes( version ) )
+        return DBFVersion.includes( version )
 
-    },
+    }
 
     /**
      *
@@ -252,7 +289,7 @@ Object.assign( DBFLoader.prototype, {
 
         return header
 
-    },
+    }
 
     /**
      *
@@ -301,7 +338,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -365,7 +402,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -437,7 +474,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -511,7 +548,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -632,7 +669,7 @@ Object.assign( DBFLoader.prototype, {
 
         return records
 
-    },
+    }
 
     /**
      *
@@ -680,7 +717,7 @@ Object.assign( DBFLoader.prototype, {
             referentialIntegrityProperties
         }
 
-    },
+    }
 
     /**
      *
@@ -708,7 +745,7 @@ Object.assign( DBFLoader.prototype, {
             widthOfDatabaseField
         }
 
-    },
+    }
 
     /**
      *
@@ -736,7 +773,7 @@ Object.assign( DBFLoader.prototype, {
             lengthOfData
         }
 
-    },
+    }
 
     /**
      *
@@ -776,7 +813,11 @@ Object.assign( DBFLoader.prototype, {
 
     }
 
-} );
+}
+
+DBFLoader.Terminator    = 0x0D;
+DBFLoader.DeletedRecord = 0x1A;
+DBFLoader.YearOffset    = 1900;
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -976,12 +1017,19 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  * @example Todo...
  *
  */
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader,
+//    Shape,
+//    Vector3
+//} from 'three-full'
 
 /**
  *
  * @type {Object}
  */
-const ShapeType = Object.freeze( {
+const ShapeType = iteeUtils.toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,
@@ -998,146 +1046,105 @@ const ShapeType = Object.freeze( {
     MultiPatch:  31
 } );
 
-// Helpers
-/**
- *
- * @param ring
- * @return {boolean}
- */
-function ringClockwise ( ring ) {
+class SHPLoader {
 
-    if ( ( n = ring.length ) < 4 ) {
-        return false
+//    static FileCode      = 9994
+//    static MinFileLength = 100
+//    static MinVersion    = 1000
+
+    get globalOffset () {
+        return this._globalOffset
     }
 
-    var i    = 0,
-        n,
-        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
-    while ( ++i < n ) {
-        area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ];
-    }
-    return area >= 0
-}
-
-/**
- *
- * @param ring
- * @param hole
- * @return {boolean}
- */
-function ringContainsSome ( ring, hole ) {
-
-    let i = 0;
-    let n = hole.length;
-
-    do {
-
-        if ( ringContains( ring, hole[ i ] ) > 0 ) {
-            return true
-        }
-
-    } while ( ++i < n )
-
-    return false
-
-}
-
-/**
- *
- * @param ring
- * @param point
- * @return {number}
- */
-function ringContains ( ring, point ) {
-
-    let x        = point[ 0 ];
-    let y        = point[ 1 ];
-    let contains = -1;
-
-    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-
-        const pi = ring[ i ];
-        const xi = pi[ 0 ];
-        const yi = pi[ 1 ];
-        const pj = ring[ j ];
-        const xj = pj[ 0 ];
-        const yj = pj[ 1 ];
-
-        if ( segmentContains( pi, pj, point ) ) {
-            contains = 0;
-        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
-            contains = -contains;
-        }
-
+    set globalOffset ( value ) {
+        this._globalOffset = value;
     }
 
-    return contains
-
-}
-
-/**
- *
- * @param p0
- * @param p1
- * @param p2
- * @return {boolean}
- */
-function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ],
-        y20 = p2[ 1 ] - p0[ 1 ];
-    if ( x20 === 0 && y20 === 0 ) {
-        return true
+    setGlobalOffset ( value ) {
+        this.globalOffset = value;
+        return this
     }
-    var x10 = p1[ 0 ] - p0[ 0 ],
-        y10 = p1[ 1 ] - p0[ 1 ];
-    if ( x10 === 0 && y10 === 0 ) {
-        return false
+
+    get worldAxis () {
+        return this._worldAxis
     }
-    var t = ( x20 * x10 + y20 * y10 ) / ( x10 * x10 + y10 * y10 );
-    return t < 0 || t > 1 ? false : t === 0 || t === 1 ? true : t * x10 === x20 && t * y10 === y20
-}
 
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function SHPLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
+    set worldAxis ( value ) {
+        this._worldAxis = value;
+    }
 
-    this.manager = manager;
-    this.logger  = logger;
+    setWorldAxis ( value ) {
+        this.worldAxis = value;
+        return this
+    }
 
-    this.globalOffset = new threeFull.Vector3();
-    this.worldAxis    = {
-        from: 'zUp',
-        to:   'zForward'
-    };
+    get manager () {
+        return this._manager
+    }
 
-    this._reader = new iteeClient.TBinaryReader();
+    set manager ( value ) {
+        this._manager = value;
+    }
 
-}
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
 
-Object.assign( SHPLoader, {
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
 
     /**
      *
+     * @param manager
+     * @param logger
+     * @constructor
      */
-    FileCode: 9994,
+    constructor ( parameters = {} ) {
 
-    /**
-     *
-     */
-    MinFileLength: 100,
+        const _parameters = {
+            ...{
+                manager:      threeFull.DefaultLoadingManager,
+                logger:       iteeClient.DefaultLogger,
+                reader:       new iteeClient.TBinaryReader(),
+                globalOffset: new threeFull.Vector3( 0, 0, 0 ),
+                worldAxis:    {
+                    from: 'zUp',
+                    to:   'zForward'
+                }
+            }, ...parameters
+        };
 
-    /**
-     *
-     */
-    MinVersion: 1000
+        this.manager      = _parameters.manager;
+        this.logger       = _parameters.logger;
+        this.reader       = _parameters.reader;
+        this.globalOffset = _parameters.globalOffset;
+        this.worldAxis    = _parameters.worldAxis;
 
-} );
-
-Object.assign( SHPLoader.prototype, {
+    }
 
     /**
      *
@@ -1158,7 +1165,7 @@ Object.assign( SHPLoader.prototype, {
 
         }, onProgress, onError );
 
-    },
+    }
 
     /**
      *
@@ -1197,7 +1204,7 @@ Object.assign( SHPLoader.prototype, {
 
         return shapes
 
-    },
+    }
 
     /**
      *
@@ -1240,7 +1247,7 @@ Object.assign( SHPLoader.prototype, {
             }
         }
 
-    },
+    }
 
     /**
      *
@@ -1356,7 +1363,7 @@ Object.assign( SHPLoader.prototype, {
 
         return datas
 
-    },
+    }
 
     /**
      *
@@ -1375,14 +1382,14 @@ Object.assign( SHPLoader.prototype, {
             contentLength
         }
 
-    },
+    }
 
-    //    _parseNull () {
-    //
-    //        this._reader.getInt32();
-    //
-    //        return null;
-    //    },
+    _parseNull () {
+
+        this._reader.getInt32();
+        return null
+
+    }
 
     /**
      *
@@ -1405,7 +1412,7 @@ Object.assign( SHPLoader.prototype, {
             y
         }
 
-    },
+    }
 
     /**
      *
@@ -1451,7 +1458,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -1495,7 +1502,7 @@ Object.assign( SHPLoader.prototype, {
 
             const ring = points.slice( value, parts[ index + 1 ] );
 
-            if ( ringClockwise( ring ) ) {
+            if ( iteeUtils.ringClockwise( ring ) ) {
 
                 polygons.push( ring );
                 //					polygons.push( [ ring ] );
@@ -1512,7 +1519,7 @@ Object.assign( SHPLoader.prototype, {
 
             polygons.some( polygon => {
 
-                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
+                if ( iteeUtils.ringContainsSome( polygon[ 0 ], hole ) ) {
                     polygon.push( hole );
                     return true
                 }
@@ -1530,7 +1537,7 @@ Object.assign( SHPLoader.prototype, {
             polygons
         }
 
-    },
+    }
 
     /**
      *
@@ -1566,7 +1573,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -1584,7 +1591,7 @@ Object.assign( SHPLoader.prototype, {
             shapeType
         }
 
-    },
+    }
 
     /**
      *
@@ -1652,7 +1659,11 @@ Object.assign( SHPLoader.prototype, {
 
     }
 
-} );
+}
+
+SHPLoader.FileCode      = 9994;
+SHPLoader.MinFileLength = 100;
+SHPLoader.MinVersion    = 1000;
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1779,7 +1790,14 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     constructor ( parameters = {} ) {
 
-        super( parameters );
+        const _parameters = {
+            ...{
+                logger: iteeClient.DefaultLogger,
+            }, ...parameters
+        };
+        super( _parameters );
+
+        this.logger = _parameters.logger;
         this.mergeStrategy = 'add';
 
         // Addition
@@ -1820,7 +1838,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         const names = dataToParse.map( _data => _data.name );
-        console.log( `ThreeToMongoDB: Saving ${ names }` );
+        this.logger.log( `ThreeToMongoDB: Saving ${ names }` );
 
         // Check startegy
         if ( parameters.mergeStrategy ) {
@@ -1886,7 +1904,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
             }
 
-            console.log( `ThreeToMongoDB: Saved ${ childrenIds }` );
+            this.logger.log( `ThreeToMongoDB: Saved ${ childrenIds }` );
             onSuccess();
 
         } catch ( error ) {
@@ -1931,7 +1949,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 const vertices = objectGeometry.vertices;
                 if ( iteeValidators.isNotDefined( vertices ) || iteeValidators.isEmptyArray( vertices ) ) {
-                    console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` );
+                    this.logger.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` );
                     return null
                 }
 
@@ -1939,18 +1957,18 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 const attributes = objectGeometry.attributes;
                 if ( iteeValidators.isNotDefined( attributes ) ) {
-                    console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` );
+                    this.logger.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` );
                     return null
                 }
 
                 const positions = attributes.position;
                 if ( iteeValidators.isNotDefined( positions ) || positions.count === 0 ) {
-                    console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` );
+                    this.logger.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` );
                     return null
                 }
 
             } else {
-                console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` );
+                this.logger.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` );
                 return null
             }
 
@@ -1961,7 +1979,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
 
             if ( iteeValidators.isNotDefined( objectGeometry ) ) {
-                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
+                this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
                 return null
             }
 
@@ -1970,7 +1988,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
 
             if ( iteeValidators.isNotDefined( objectGeometry ) ) {
-                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
+                this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
                 return null
             }
 
@@ -1989,7 +2007,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                 const material     = objectMaterials[ materialIndex ];
                 const materialType = material.type;
                 if ( !availableMaterialTypes.includes( materialType ) ) {
-                    console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` );
+                    this.logger.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` );
                     return null
                 }
 
@@ -2050,7 +2068,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                 } );
 
             } else {
-                console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` );
+                this.logger.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` );
             }
 
         } else {
