@@ -71,40 +71,72 @@ const DataType = toEnum( {
     OLE:           'G'
 } )
 
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function DBFLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+class DBFLoader {
 
-    this.manager = manager
-    this.logger  = logger
-    this.reader  = new TBinaryReader()
+    //    static Terminator    = 0x0D
+    //    static DeletedRecord = 0x1A
+    //    static YearOffset    = 1900
 
-}
+    get manager () {
+        return this._manager
+    }
 
-Object.assign( DBFLoader, {
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
+    }
 
     /**
      *
+     * @param manager
+     * @param logger
+     * @constructor
      */
-    Terminator: 0x0D,
+    constructor ( parameters = {} ) {
 
-    /**
-     *
-     */
-    DeletedRecord: 0x1A,
+        const _parameters = {
+            ...{
+                manager: DefaultLoadingManager,
+                logger:  DefaultLogger,
+                reader:  new TBinaryReader()
+            }, ...parameters
+        }
 
-    /**
-     *
-     */
-    YearOffset: 1900
+        this.manager = _parameters.manager
+        this.logger  = _parameters.logger
+        this.reader  = _parameters.reader
 
-} )
-
-Object.assign( DBFLoader.prototype, {
+    }
 
     /**
      *
@@ -125,7 +157,7 @@ Object.assign( DBFLoader.prototype, {
 
         }, onProgress, onError )
 
-    },
+    }
 
     /**
      *
@@ -152,7 +184,7 @@ Object.assign( DBFLoader.prototype, {
             datas
         }
 
-    },
+    }
 
     /**
      *
@@ -162,10 +194,9 @@ Object.assign( DBFLoader.prototype, {
      */
     _isValidVersion ( version ) {
 
-        const availablesVersionValues = Object.values( DBFVersion )
-        return ( availablesVersionValues.includes( version ) )
+        return DBFVersion.includes( version )
 
-    },
+    }
 
     /**
      *
@@ -216,7 +247,7 @@ Object.assign( DBFLoader.prototype, {
 
         return header
 
-    },
+    }
 
     /**
      *
@@ -265,7 +296,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -329,7 +360,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -401,7 +432,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -475,7 +506,7 @@ Object.assign( DBFLoader.prototype, {
             fields
         }
 
-    },
+    }
 
     /**
      *
@@ -596,7 +627,7 @@ Object.assign( DBFLoader.prototype, {
 
         return records
 
-    },
+    }
 
     /**
      *
@@ -644,7 +675,7 @@ Object.assign( DBFLoader.prototype, {
             referentialIntegrityProperties
         }
 
-    },
+    }
 
     /**
      *
@@ -672,7 +703,7 @@ Object.assign( DBFLoader.prototype, {
             widthOfDatabaseField
         }
 
-    },
+    }
 
     /**
      *
@@ -700,7 +731,7 @@ Object.assign( DBFLoader.prototype, {
             lengthOfData
         }
 
-    },
+    }
 
     /**
      *
@@ -740,6 +771,10 @@ Object.assign( DBFLoader.prototype, {
 
     }
 
-} )
+}
+
+DBFLoader.Terminator    = 0x0D
+DBFLoader.DeletedRecord = 0x1A
+DBFLoader.YearOffset    = 1900
 
 export { DBFLoader }
