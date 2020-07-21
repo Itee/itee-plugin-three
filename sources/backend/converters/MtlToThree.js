@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { MTLLoader }              from 'three-full'
+import { MTLLoader }              from 'three-full/sources/loaders/MTLLoader'
 
 class MtlToThree extends TAbstractFileConverter {
 

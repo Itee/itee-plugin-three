@@ -19,6 +19,7 @@ const path         = require( 'path' )
 const replace      = require( 'rollup-plugin-re' )
 const resolve      = require( 'rollup-plugin-node-resolve' )
 const terser       = require( 'rollup-plugin-terser' ).terser
+const alias       = require( 'rollup-plugin-alias' )
 
 function _computeBanner ( name, format ) {
 
@@ -98,6 +99,55 @@ function CreateRollupConfigs ( options ) {
                     'three-full'
                 ],
                 plugins: [
+                    ( format === 'cjs' ) && alias( {
+                        resolve: [ '.js' ],
+                        entries: [
+                            {
+                                find:        'three-full/sources/loaders/FileLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/LoadingManager',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/core/Shape',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/math/Vector3',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/ColladaLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/FBXLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/ObjectLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/MTLLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/OBJLoader2',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/STLLoader',
+                                replacement: 'three-full'
+                            },
+                            {
+                                find:        'three-full/sources/loaders/TDSLoader',
+                                replacement: 'three-full'
+                            }
+                        ]
+                    } ),
                     replace( {
                         defines: {
                             IS_REMOVE_ON_BACKEND_BUILD:  ( format !== 'cjs' ),

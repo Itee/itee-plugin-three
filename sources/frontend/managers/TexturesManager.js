@@ -11,29 +11,21 @@
 import { TDataBaseManager } from 'itee-client'
 import { isObject }         from 'itee-validators'
 
-/**
- *
- * @constructor
- */
-function TexturesManager () {
+class TexturesManager extends TDataBaseManager {
 
-    TDataBaseManager.call( this )
-    this.basePath = '/textures'
+    constructor ( parameters = {} ) {
 
-}
+        const _parameters = {
+            ...{
+                basePath: '/textures'
+            },
+            ...parameters
+        }
 
-TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
+        super( _parameters )
 
-    /**
-     *
-     */
-    constructor: TexturesManager,
+    }
 
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
     convert ( data ) {
 
         if ( !data ) {
@@ -57,38 +49,29 @@ TexturesManager.prototype = Object.assign( Object.create( TDataBaseManager.proto
 
     }
 
-} )
+    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
-Object.defineProperties( TexturesManager.prototype, {
+        // Normalize to array
+        const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
+        const results = {}
 
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
+        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
 
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
-            const results = {}
+            data = datas[ dataIndex ]
 
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data = datas[ dataIndex ]
-
-                try {
-                    results[ data._id ] = this.convert( data )
-                } catch ( err ) {
-                    onError( err )
-                }
-
-                onProgress( dataIndex / numberOfDatas )
-
+            try {
+                results[ data._id ] = this.convert( data )
+            } catch ( err ) {
+                onError( err )
             }
 
-            onSuccess( results )
+            onProgress( dataIndex / numberOfDatas )
+
         }
+
+        onSuccess( results )
     }
 
-} )
+}
 
 export { TexturesManager }

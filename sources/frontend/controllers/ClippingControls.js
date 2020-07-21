@@ -11,11 +11,11 @@
 import {
     Keys,
     Mouse
-} from 'itee-client'
+}                                   from 'itee-client'
 import {
     degreesToRadians,
     toEnum
-} from 'itee-utils'
+}                                   from 'itee-utils'
 import {
     isArray,
     isDefined,
@@ -23,34 +23,60 @@ import {
     isNotDefined,
     isNull,
     isUndefined
-} from 'itee-validators'
-import {
-    Box3,
-    BoxBufferGeometry,
-    BufferGeometry,
-    Camera,
-    ConeBufferGeometry,
-    CylinderBufferGeometry,
-    DoubleSide,
-    EdgesGeometry,
-    Euler,
-    Float32BufferAttribute,
-    Line,
-    LineBasicMaterial,
-    LineSegments,
-    Mesh,
-    MeshBasicMaterial,
-    Object3D,
-    OctahedronBufferGeometry,
-    Plane,
-    PlaneBufferGeometry,
-    Quaternion,
-    Raycaster,
-    SphereBufferGeometry,
-    TorusBufferGeometry,
-    Vector2,
-    Vector3
-} from 'three-full'
+}                                   from 'itee-validators'
+import { Camera }                   from 'three-full/sources/cameras/Camera'
+import { DoubleSide }               from 'three-full/sources/constants'
+import { Float32BufferAttribute }   from 'three-full/sources/core/BufferAttribute'
+import { BufferGeometry }           from 'three-full/sources/core/BufferGeometry'
+import { Object3D }                 from 'three-full/sources/core/Object3D'
+import { Raycaster }                from 'three-full/sources/core/Raycaster'
+import { BoxBufferGeometry }        from 'three-full/sources/geometries/BoxGeometry'
+import { ConeBufferGeometry }       from 'three-full/sources/geometries/ConeGeometry'
+import { CylinderBufferGeometry }   from 'three-full/sources/geometries/CylinderGeometry'
+import { EdgesGeometry }            from 'three-full/sources/geometries/EdgesGeometry'
+import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
+import { PlaneBufferGeometry }      from 'three-full/sources/geometries/PlaneGeometry'
+import { SphereBufferGeometry }     from 'three-full/sources/geometries/SphereGeometry'
+import { TorusBufferGeometry }      from 'three-full/sources/geometries/TorusGeometry'
+import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
+import { MeshBasicMaterial }        from 'three-full/sources/materials/MeshBasicMaterial'
+import { Box3 }                     from 'three-full/sources/math/Box3'
+import { Euler }                    from 'three-full/sources/math/Euler'
+import { Plane }                    from 'three-full/sources/math/Plane'
+import { Quaternion }               from 'three-full/sources/math/Quaternion'
+import { Vector2 }                  from 'three-full/sources/math/Vector2'
+import { Vector3 }                  from 'three-full/sources/math/Vector3'
+import { Line }                     from 'three-full/sources/objects/Line'
+import { LineSegments }             from 'three-full/sources/objects/LineSegments'
+import { Mesh }                     from 'three-full/sources/objects/Mesh'
+// Waiting three-shaking fix
+//import {
+//    Box3,
+//    BoxBufferGeometry,
+//    BufferGeometry,
+//    Camera,
+//    ConeBufferGeometry,
+//    CylinderBufferGeometry,
+//    DoubleSide,
+//    EdgesGeometry,
+//    Euler,
+//    Float32BufferAttribute,
+//    Line,
+//    LineBasicMaterial,
+//    LineSegments,
+//    Mesh,
+//    MeshBasicMaterial,
+//    Object3D,
+//    OctahedronBufferGeometry,
+//    Plane,
+//    PlaneBufferGeometry,
+//    Quaternion,
+//    Raycaster,
+//    SphereBufferGeometry,
+//    TorusBufferGeometry,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
 
 // Basic Geometries
 
@@ -1680,7 +1706,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode:   {
+            setMode: {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -1693,7 +1719,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale:     {
+            scale: {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -1701,7 +1727,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate:    {
+            rotate: {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]

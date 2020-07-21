@@ -21,19 +21,29 @@ import {
     DefaultLogger,
     Endianness,
     TBinaryReader
-} from 'itee-client'
+}                                from 'itee-client'
 import {
-    DefaultLoadingManager,
-    FileLoader,
-    Shape,
-    Vector3
-} from 'three-full'
+    ringClockwise,
+    ringContainsSome,
+    toEnum
+}                                from 'itee-utils'
+import { Shape }                 from 'three-full/sources/core/Shape'
+import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+import { Vector3 }               from 'three-full/sources/math/Vector3'
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader,
+//    Shape,
+//    Vector3
+//} from 'three-full'
 
 /**
  *
  * @type {Object}
  */
-const ShapeType = Object.freeze( {
+const ShapeType = toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,
@@ -50,146 +60,105 @@ const ShapeType = Object.freeze( {
     MultiPatch:  31
 } )
 
-// Helpers
-/**
- *
- * @param ring
- * @return {boolean}
- */
-function ringClockwise ( ring ) {
+class SHPLoader {
 
-    if ( ( n = ring.length ) < 4 ) {
-        return false
+//    static FileCode      = 9994
+//    static MinFileLength = 100
+//    static MinVersion    = 1000
+
+    get globalOffset () {
+        return this._globalOffset
     }
 
-    var i    = 0,
-        n,
-        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ]
-    while ( ++i < n ) {
-        area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ]
+    set globalOffset ( value ) {
+        this._globalOffset = value
     }
-    return area >= 0
-}
 
-/**
- *
- * @param ring
- * @param hole
- * @return {boolean}
- */
-function ringContainsSome ( ring, hole ) {
+    setGlobalOffset ( value ) {
+        this.globalOffset = value
+        return this
+    }
 
-    let i = 0
-    let n = hole.length
+    get worldAxis () {
+        return this._worldAxis
+    }
 
-    do {
+    set worldAxis ( value ) {
+        this._worldAxis = value
+    }
 
-        if ( ringContains( ring, hole[ i ] ) > 0 ) {
-            return true
+    setWorldAxis ( value ) {
+        this.worldAxis = value
+        return this
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
+    }
+
+    /**
+     *
+     * @param manager
+     * @param logger
+     * @constructor
+     */
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                manager:      DefaultLoadingManager,
+                logger:       DefaultLogger,
+                reader:       new TBinaryReader(),
+                globalOffset: new Vector3( 0, 0, 0 ),
+                worldAxis:    {
+                    from: 'zUp',
+                    to:   'zForward'
+                }
+            }, ...parameters
         }
 
-    } while ( ++i < n )
-
-    return false
-
-}
-
-/**
- *
- * @param ring
- * @param point
- * @return {number}
- */
-function ringContains ( ring, point ) {
-
-    let x        = point[ 0 ]
-    let y        = point[ 1 ]
-    let contains = -1
-
-    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-
-        const pi = ring[ i ]
-        const xi = pi[ 0 ]
-        const yi = pi[ 1 ]
-        const pj = ring[ j ]
-        const xj = pj[ 0 ]
-        const yj = pj[ 1 ]
-
-        if ( segmentContains( pi, pj, point ) ) {
-            contains = 0
-        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
-            contains = -contains
-        }
+        this.manager      = _parameters.manager
+        this.logger       = _parameters.logger
+        this.reader       = _parameters.reader
+        this.globalOffset = _parameters.globalOffset
+        this.worldAxis    = _parameters.worldAxis
 
     }
-
-    return contains
-
-}
-
-/**
- *
- * @param p0
- * @param p1
- * @param p2
- * @return {boolean}
- */
-function segmentContains ( p0, p1, p2 ) {
-    var x20 = p2[ 0 ] - p0[ 0 ],
-        y20 = p2[ 1 ] - p0[ 1 ]
-    if ( x20 === 0 && y20 === 0 ) {
-        return true
-    }
-    var x10 = p1[ 0 ] - p0[ 0 ],
-        y10 = p1[ 1 ] - p0[ 1 ]
-    if ( x10 === 0 && y10 === 0 ) {
-        return false
-    }
-    var t = ( x20 * x10 + y20 * y10 ) / ( x10 * x10 + y10 * y10 )
-    return t < 0 || t > 1 ? false : t === 0 || t === 1 ? true : t * x10 === x20 && t * y10 === y20
-}
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function SHPLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager
-    this.logger  = logger
-
-    this.globalOffset = new Vector3()
-    this.worldAxis    = {
-        from: 'zUp',
-        to:   'zForward'
-    }
-
-    this._reader = new TBinaryReader()
-
-}
-
-Object.assign( SHPLoader, {
-
-    /**
-     *
-     */
-    FileCode: 9994,
-
-    /**
-     *
-     */
-    MinFileLength: 100,
-
-    /**
-     *
-     */
-    MinVersion: 1000
-
-} )
-
-Object.assign( SHPLoader.prototype, {
 
     /**
      *
@@ -210,7 +179,7 @@ Object.assign( SHPLoader.prototype, {
 
         }, onProgress, onError )
 
-    },
+    }
 
     /**
      *
@@ -249,7 +218,7 @@ Object.assign( SHPLoader.prototype, {
 
         return shapes
 
-    },
+    }
 
     /**
      *
@@ -292,7 +261,7 @@ Object.assign( SHPLoader.prototype, {
             }
         }
 
-    },
+    }
 
     /**
      *
@@ -408,7 +377,7 @@ Object.assign( SHPLoader.prototype, {
 
         return datas
 
-    },
+    }
 
     /**
      *
@@ -427,14 +396,14 @@ Object.assign( SHPLoader.prototype, {
             contentLength
         }
 
-    },
+    }
 
-    //    _parseNull () {
-    //
-    //        this._reader.getInt32();
-    //
-    //        return null;
-    //    },
+    _parseNull () {
+
+        this._reader.getInt32()
+        return null
+
+    }
 
     /**
      *
@@ -457,7 +426,7 @@ Object.assign( SHPLoader.prototype, {
             y
         }
 
-    },
+    }
 
     /**
      *
@@ -503,7 +472,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -582,7 +551,7 @@ Object.assign( SHPLoader.prototype, {
             polygons
         }
 
-    },
+    }
 
     /**
      *
@@ -618,7 +587,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -636,7 +605,7 @@ Object.assign( SHPLoader.prototype, {
             shapeType
         }
 
-    },
+    }
 
     /**
      *
@@ -704,7 +673,11 @@ Object.assign( SHPLoader.prototype, {
 
     }
 
-} )
+}
+
+SHPLoader.FileCode      = 9994
+SHPLoader.MinFileLength = 100
+SHPLoader.MinVersion    = 1000
 
 export {
     SHPLoader,

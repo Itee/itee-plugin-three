@@ -8,6 +8,8 @@
  *
  */
 
+// TODO: The path displacement logic need to be implemented under CameraControls
+
 import {
     DefaultLogger as TLogger,
     Keys

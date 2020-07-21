@@ -401,12 +401,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Objects3D'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -428,12 +428,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Curves'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -455,12 +455,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Geometries'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -482,12 +482,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Materials'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -509,12 +509,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Textures'
             },
-            can:     {
+            can: {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read:   {
+                read: {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -547,7 +547,7 @@ export default new TMongoDBPlugin()
                     MtlToThree:     new MtlToThree(),
                     ObjToThree:     new Obj2ToThree()
                 },
-                rules:      [ {
+                rules: [ {
                     on:  '.json',
                     use: 'JsonToThree'
                 }, {
@@ -581,9 +581,9 @@ export default new TMongoDBPlugin()
                     on:  [ '.mtl', '.obj' ],
                     use: [ 'MtlToThree', 'ObjToThree' ]
                 } ],
-                inserter:   ThreeToMongoDB
+                inserter: ThreeToMongoDB
             },
-            can:     {
+            can: {
                 processFiles: {
                     on:   'post',
                     over: '/'

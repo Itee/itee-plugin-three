@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { ObjectLoader }           from 'three-full'
+import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'
 
 class JsonToThree extends TAbstractFileConverter {
 

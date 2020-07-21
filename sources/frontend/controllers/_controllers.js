@@ -9,5 +9,4 @@
  */
 
 export * from './CameraControls'
-export * from './CameraPathController'
 export * from './ClippingControls'

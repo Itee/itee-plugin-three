@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { STLLoader }              from 'three-full'
+import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
 
 class StlToThree extends TAbstractFileConverter {
 

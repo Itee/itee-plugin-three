@@ -2,54 +2,61 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
+ * @file sources/frontend/managers/CurvesManager.js
  *
  * @example Todo
  *
  */
 
-import { TDataBaseManager } from 'itee-client'
-import { isObject }         from 'itee-validators'
-import {
-    ArcCurve,
-    CatmullRomCurve3,
-    CubicBezierCurve,
-    CubicBezierCurve3,
-    Curve,
-    CurvePath,
-    EllipseCurve,
-    LineCurve,
-    LineCurve3,
-    Path,
-    QuadraticBezierCurve,
-    QuadraticBezierCurve3,
-    Shape,
-    SplineCurve
-}                           from 'three-full'
+import { TDataBaseManager }      from 'itee-client'
+import { isObject }              from 'itee-validators'
+import { CurvePath }             from 'three-full/sources/core/CurvePath'
+import { Path }                  from 'three-full/sources/core/Path'
+import { Shape }                 from 'three-full/sources/core/Shape'
+import { ArcCurve }              from 'three-full/sources/curves/ArcCurve'
+import { CatmullRomCurve3 }      from 'three-full/sources/curves/CatmullRomCurve3'
+import { CubicBezierCurve }      from 'three-full/sources/curves/CubicBezierCurve'
+import { CubicBezierCurve3 }     from 'three-full/sources/curves/CubicBezierCurve3'
+import { Curve }                 from 'three-full/sources/curves/Curve'
+import { EllipseCurve }          from 'three-full/sources/curves/EllipseCurve'
+import { LineCurve }             from 'three-full/sources/curves/LineCurve'
+import { LineCurve3 }            from 'three-full/sources/curves/LineCurve3'
+import { QuadraticBezierCurve }  from 'three-full/sources/curves/QuadraticBezierCurve'
+import { QuadraticBezierCurve3 } from 'three-full/sources/curves/QuadraticBezierCurve3'
+import { SplineCurve }           from 'three-full/sources/curves/SplineCurve'
+// Waiting three-shaking fix
+//import {
+//    ArcCurve,
+//    CatmullRomCurve3,
+//    CubicBezierCurve,
+//    CubicBezierCurve3,
+//    Curve,
+//    CurvePath,
+//    EllipseCurve,
+//    LineCurve,
+//    LineCurve3,
+//    Path,
+//    QuadraticBezierCurve,
+//    QuadraticBezierCurve3,
+//    Shape,
+//    SplineCurve
+//}                           from 'three-full'
 
-/**
- *
- * @constructor
- */
-function CurvesManager () {
+class CurvesManager extends TDataBaseManager {
 
-    TDataBaseManager.call( this )
-    this.basePath = '/curves'
+    constructor ( parameters = {} ) {
 
-}
+        const _parameters = {
+            ...{
+                basePath: '/curves'
+            },
+            ...parameters
+        }
 
-CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
+        super( _parameters )
 
-    /**
-     *
-     */
-    constructor: CurvesManager,
+    }
 
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
     convert ( data ) {
 
         if ( !data ) {
@@ -130,39 +137,30 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
 
     }
 
-} )
+    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
-Object.defineProperties( CurvesManager.prototype, {
+        // Normalize to array
+        const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
+        const results = {}
 
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
+        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
 
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
-            const results = {}
+            data = datas[ dataIndex ]
 
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data = datas[ dataIndex ]
-
-                try {
-                    results[ data._id ] = this.convert( data )
-                } catch ( err ) {
-                    onError( err )
-                }
-
-                onProgress( dataIndex / numberOfDatas )
-
+            try {
+                results[ data._id ] = this.convert( data )
+            } catch ( err ) {
+                onError( err )
             }
 
-            onSuccess( results )
+            onProgress( dataIndex / numberOfDatas )
 
         }
+
+        onSuccess( results )
+
     }
 
-} )
+}
 
 export { CurvesManager }

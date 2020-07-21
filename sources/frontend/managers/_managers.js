@@ -6,9 +6,7 @@
  *
  */
 
-export * from './BufferGeometriesManager'
 export * from './CurvesManager'
-export * from './FilairesManager'
 export * from './GeometriesManager'
 export * from './MaterialsManager'
 export * from './ObjectsManager'

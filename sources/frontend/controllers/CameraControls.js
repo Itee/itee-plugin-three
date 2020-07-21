@@ -12,26 +12,32 @@ import {
     DefaultLogger,
     Keys,
     Mouse
-} from 'itee-client'
+}                          from 'itee-client'
 import {
     degreesToRadians,
     toEnum
-} from 'itee-utils'
+}                          from 'itee-utils'
 import {
     isEmptyArray,
     isNotBoolean,
     isNotDefined,
     isNull,
     isUndefined
-} from 'itee-validators'
-import {
-    Camera,
-    EventDispatcher,
-    Object3D,
-    Spherical,
-    Vector2,
-    Vector3
-} from 'three-full'
+}                          from 'itee-validators'
+import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
+import { Object3D }        from 'three-full/sources/core/Object3D'
+import { Spherical }       from 'three-full/sources/math/Spherical'
+import { Vector2 }         from 'three-full/sources/math/Vector2'
+import { Vector3 }         from 'three-full/sources/math/Vector3'
+// Waiting three-shaking fix
+//import {
+//    Camera,
+//    EventDispatcher,
+//    Object3D,
+//    Spherical,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 )
 const BACK  = new Vector3( 0, 0, 1 )
@@ -215,15 +221,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate:           [ Mouse.LEFT.value ],
-            pan:              [ Mouse.MIDDLE.value ],
-            roll:             {
+            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate: [ Mouse.LEFT.value ],
+            pan:    [ Mouse.MIDDLE.value ],
+            roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -255,7 +261,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+        if ( !value.isCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -271,7 +277,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+        if ( !value.isObject3D ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value
 
@@ -285,7 +291,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
-        //        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
+        if ( !CameraControlMode.includes( value ) ) { throw new Error( `Mode cannot be an instance of ${ value.constructor.name }. Expect a value from TCameraControlMode enum.` ) }
 
         this._mode = value
 
@@ -936,7 +942,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -983,7 +989,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1007,7 +1013,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1031,7 +1037,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1055,7 +1061,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1285,15 +1291,15 @@ class CameraControls extends EventDispatcher {
             const cameraPosition                 = this._camera.position
             const targetPosition                 = this._target.position
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
-            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone()
+            const direction                      = ( delta > 0 ) ? FRONT.clone() : BACK.clone()
             const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize()
             const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget )
 
             cameraPosition.add( displacement )
 
             const newDistance = cameraPosition.distanceTo( targetPosition )
-            const zoomHeight = ( newDistance / 2 )
-            const zoomWidth  = ( ( newDistance * aspect ) / 2 )
+            const zoomHeight  = ( newDistance / 2 )
+            const zoomWidth   = ( ( newDistance * aspect ) / 2 )
 
             this._camera.top    = zoomHeight
             this._camera.bottom = -zoomHeight
