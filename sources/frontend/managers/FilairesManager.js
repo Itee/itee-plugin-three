@@ -8,6 +8,8 @@
  *
  */
 
+// Todo: Move in perazio stuff
+
 /* eslint-env browser */
 
 import {
