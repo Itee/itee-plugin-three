@@ -10,14 +10,14 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager }  from 'itee-client'
+import { TDataBaseManager }   from 'itee-client'
 import {
     isDefined,
     isNotBoolean,
     isNotEmptyArray,
     isNull,
     isUndefined
-}                            from 'itee-validators'
+}                             from 'itee-validators'
 import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera'
 import { PerspectiveCamera }  from 'three-full/sources/cameras/PerspectiveCamera'
 import { Object3D }           from 'three-full/sources/core/Object3D'
@@ -528,7 +528,7 @@ class ObjectsManager extends TDataBaseManager {
                 object.scale.y = data.scale.y
                 object.scale.z = data.scale.z
             } else {
-                console.warn( 'Try to assign null scale !' )
+                this.logger.warn( 'Try to assign null scale !' )
             }
 
         }
@@ -882,7 +882,7 @@ class ObjectsManager extends TDataBaseManager {
 
         const geometry = geometries[ geometryId ]
         if ( !geometry ) {
-            console.error( 'Unable to retrieve geometry !!!' )
+            this.logger.error( 'Unable to retrieve geometry !!!' )
             return
         }
 
@@ -904,7 +904,7 @@ class ObjectsManager extends TDataBaseManager {
                 const materialId = materialIds[ 0 ]
                 const material   = materials[ materialId ]
                 if ( !material ) {
-                    console.error( 'Unable to retrieve material !!!' )
+                    this.logger.error( 'Unable to retrieve material !!!' )
                     return null
                 }
 
@@ -917,7 +917,7 @@ class ObjectsManager extends TDataBaseManager {
                     const materialId = materialIds[ materialIndex ]
                     const material   = materials[ materialId ]
                     if ( !material ) {
-                        console.error( 'Unable to retrieve material !!!' )
+                        this.logger.error( 'Unable to retrieve material !!!' )
                         return null
                     }
 
@@ -929,7 +929,7 @@ class ObjectsManager extends TDataBaseManager {
 
             const material = materials[ materialIds ]
             if ( !material ) {
-                console.error( 'Unable to retrieve material !!!' )
+                this.logger.error( 'Unable to retrieve material !!!' )
                 return
             }
 
@@ -937,7 +937,7 @@ class ObjectsManager extends TDataBaseManager {
 
         } else {
 
-            console.error( 'Invalid material ids, expected string or array of string' )
+            this.logger.error( 'Invalid material ids, expected string or array of string' )
 
         }
 

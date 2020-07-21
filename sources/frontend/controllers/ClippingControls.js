@@ -11,11 +11,11 @@
 import {
     Keys,
     Mouse
-} from 'itee-client'
+}                                   from 'itee-client'
 import {
     degreesToRadians,
     toEnum
-} from 'itee-utils'
+}                                   from 'itee-utils'
 import {
     isArray,
     isDefined,
@@ -23,7 +23,7 @@ import {
     isNotDefined,
     isNull,
     isUndefined
-} from 'itee-validators'
+}                                   from 'itee-validators'
 import { Camera }                   from 'three-full/sources/cameras/Camera'
 import { DoubleSide }               from 'three-full/sources/constants'
 import { Float32BufferAttribute }   from 'three-full/sources/core/BufferAttribute'
@@ -1706,7 +1706,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode:   {
+            setMode: {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -1719,7 +1719,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale:     {
+            scale: {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -1727,7 +1727,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate:    {
+            rotate: {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]

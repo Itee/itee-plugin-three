@@ -8,6 +8,7 @@
  *
  */
 
+import { DefaultLogger }         from 'itee-client'
 import { TAbstractDataInserter } from 'itee-database'
 import {
     isArray,
@@ -21,7 +22,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     constructor ( parameters = {} ) {
 
-        super( parameters )
+        const _parameters = {
+            ...{
+                logger: DefaultLogger,
+            }, ...parameters
+        }
+        super( _parameters )
+
+        this.logger = _parameters.logger
         this.mergeStrategy = 'add'
 
         // Addition
@@ -62,7 +70,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         }
 
         const names = dataToParse.map( _data => _data.name )
-        console.log( `ThreeToMongoDB: Saving ${ names }` )
+        this.logger.log( `ThreeToMongoDB: Saving ${ names }` )
 
         // Check startegy
         if ( parameters.mergeStrategy ) {
@@ -128,7 +136,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
             }
 
-            console.log( `ThreeToMongoDB: Saved ${ childrenIds }` )
+            this.logger.log( `ThreeToMongoDB: Saved ${ childrenIds }` )
             onSuccess()
 
         } catch ( error ) {
@@ -173,7 +181,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 const vertices = objectGeometry.vertices
                 if ( isNotDefined( vertices ) || isEmptyArray( vertices ) ) {
-                    console.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
+                    this.logger.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` )
                     return null
                 }
 
@@ -181,18 +189,18 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 const attributes = objectGeometry.attributes
                 if ( isNotDefined( attributes ) ) {
-                    console.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
+                    this.logger.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` )
                     return null
                 }
 
                 const positions = attributes.position
                 if ( isNotDefined( positions ) || positions.count === 0 ) {
-                    console.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
+                    this.logger.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` )
                     return null
                 }
 
             } else {
-                console.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
+                this.logger.error( `Object ${ objectName } contain an unknown/unmanaged geometry of type ${ objectGeometry.type } ! Skip it.` )
                 return null
             }
 
@@ -203,7 +211,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
 
             if ( isNotDefined( objectGeometry ) ) {
-                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
                 return null
             }
 
@@ -212,7 +220,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
 
             if ( isNotDefined( objectGeometry ) ) {
-                console.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
+                this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` )
                 return null
             }
 
@@ -231,7 +239,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                 const material     = objectMaterials[ materialIndex ]
                 const materialType = material.type
                 if ( !availableMaterialTypes.includes( materialType ) ) {
-                    console.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
+                    this.logger.error( `Object ${ objectName } of type ${ objectType }, contain an invalid material of type ${ materialType } ! Skip it.` )
                     return null
                 }
 
@@ -292,7 +300,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                 } )
 
             } else {
-                console.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
+                this.logger.error( `Unknown/Unmanaged merge srategy ${ this.mergeStrategy }` )
             }
 
         } else {

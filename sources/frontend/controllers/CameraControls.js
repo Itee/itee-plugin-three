@@ -12,18 +12,18 @@ import {
     DefaultLogger,
     Keys,
     Mouse
-} from 'itee-client'
+}                          from 'itee-client'
 import {
     degreesToRadians,
     toEnum
-} from 'itee-utils'
+}                          from 'itee-utils'
 import {
     isEmptyArray,
     isNotBoolean,
     isNotDefined,
     isNull,
     isUndefined
-} from 'itee-validators'
+}                          from 'itee-validators'
 import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
 import { Object3D }        from 'three-full/sources/core/Object3D'
 import { Spherical }       from 'three-full/sources/math/Spherical'
@@ -221,15 +221,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate:           [ Mouse.LEFT.value ],
-            pan:              [ Mouse.MIDDLE.value ],
-            roll:             {
+            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate: [ Mouse.LEFT.value ],
+            pan:    [ Mouse.MIDDLE.value ],
+            roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -942,7 +942,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -989,7 +989,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1013,7 +1013,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1037,7 +1037,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1061,7 +1061,7 @@ class CameraControls extends EventDispatcher {
 
         } else {
 
-            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
+            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` )
 
         }
 
@@ -1291,15 +1291,15 @@ class CameraControls extends EventDispatcher {
             const cameraPosition                 = this._camera.position
             const targetPosition                 = this._target.position
             const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition )
-            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone()
+            const direction                      = ( delta > 0 ) ? FRONT.clone() : BACK.clone()
             const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize()
             const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget )
 
             cameraPosition.add( displacement )
 
             const newDistance = cameraPosition.distanceTo( targetPosition )
-            const zoomHeight = ( newDistance / 2 )
-            const zoomWidth  = ( ( newDistance * aspect ) / 2 )
+            const zoomHeight  = ( newDistance / 2 )
+            const zoomWidth   = ( ( newDistance * aspect ) / 2 )
 
             this._camera.top    = zoomHeight
             this._camera.bottom = -zoomHeight

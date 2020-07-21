@@ -119,10 +119,10 @@ class OrbitControlsHelper extends LineSegments {
                 0, 0, -1, 0, 0, 1
             )
             colors.push(
-                0, 0, 0, 1, 0, 0,   // black to red
-                0, 0, 0, 0, 1, 0,   // black to green
-                0, 0, 0, 0, 0, 1    // black to blue
-            );
+                0, 0, 0, 1, 0, 0, // black to red
+                0, 0, 0, 0, 1, 0, // black to green
+                0, 0, 0, 0, 0, 1 // black to blue
+            )
 
         }
 

@@ -49,7 +49,7 @@ function _createSchema ( Mongoose ) {
     }
 
     _schema = new Schema( {
-        array:       {
+        array: {
             type: Buffer,
             set:  ( array ) => {
 
