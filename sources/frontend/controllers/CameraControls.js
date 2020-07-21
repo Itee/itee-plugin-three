@@ -291,7 +291,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
-        //        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
+        if ( !CameraControlMode.includes( value ) ) { throw new Error( `Mode cannot be an instance of ${ value.constructor.name }. Expect a value from TCameraControlMode enum.` ) }
 
         this._mode = value
 
