@@ -2,25 +2,14 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
+ * @file sources/frontend/managers/CurvesManager.js
  *
  * @example Todo
  *
  */
 
-import { TDataBaseManager } from 'itee-client'
-import { isObject }         from 'itee-validators'
-
-/**
- *
- * @constructor
- */
-function CurvesManager () {
-
-    TDataBaseManager.call( this )
-    this.basePath = '/curves'
-
-}
+import { TDataBaseManager }      from 'itee-client'
+import { isObject }              from 'itee-validators'
 import { CurvePath }             from 'three-full/sources/core/CurvePath'
 import { Path }                  from 'three-full/sources/core/Path'
 import { Shape }                 from 'three-full/sources/core/Shape'
@@ -53,18 +42,21 @@ import { SplineCurve }           from 'three-full/sources/curves/SplineCurve'
 //    SplineCurve
 //}                           from 'three-full'
 
-CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototype ), {
+class CurvesManager extends TDataBaseManager {
 
-    /**
-     *
-     */
-    constructor: CurvesManager,
+    constructor ( parameters = {} ) {
 
-    /**
-     *
-     * @param data
-     * @return {*}
-     */
+        const _parameters = {
+            ...{
+                basePath: '/curves'
+            },
+            ...parameters
+        }
+
+        super( _parameters )
+
+    }
+
     convert ( data ) {
 
         if ( !data ) {
@@ -145,39 +137,30 @@ CurvesManager.prototype = Object.assign( Object.create( TDataBaseManager.prototy
 
     }
 
-} )
+    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
-Object.defineProperties( CurvesManager.prototype, {
+        // Normalize to array
+        const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
+        const results = {}
 
-    /**
-     *
-     */
-    _onJson: {
-        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
+        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
 
-            // Normalize to array
-            const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
-            const results = {}
+            data = datas[ dataIndex ]
 
-            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-                data = datas[ dataIndex ]
-
-                try {
-                    results[ data._id ] = this.convert( data )
-                } catch ( err ) {
-                    onError( err )
-                }
-
-                onProgress( dataIndex / numberOfDatas )
-
+            try {
+                results[ data._id ] = this.convert( data )
+            } catch ( err ) {
+                onError( err )
             }
 
-            onSuccess( results )
+            onProgress( dataIndex / numberOfDatas )
 
         }
+
+        onSuccess( results )
+
     }
 
-} )
+}
 
 export { CurvesManager }
