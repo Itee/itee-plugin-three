@@ -1,8 +1,1442 @@
-console.log('Itee.Plugin.Three v1.2.9 - Standalone')
+console.log('Itee.Plugin.Three v1.2.10 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
-this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
+this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, iteeValidators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene) {
 	'use strict';
+
+	/**
+	 * @author [Tristan Valcke]{@link https://github.com/Itee}
+	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+	 *
+	 * This class allow to split any geometries type during runtime.
+	 * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+	 *
+	 * Constructor parameter:
+	 *
+	 * size - the size of the square view
+	 *
+	 * @class Todo...
+	 * @classdesc Todo...
+	 * @example Todo...
+	 *
+	 */
+	// Waiting three-shaking fix
+	//import {
+	//    DefaultLoadingManager,
+	//    FileLoader,
+	//    Shape,
+	//    Vector3
+	//} from 'three-full'
+
+	/**
+	 *
+	 * @type {Object}
+	 */
+	const ShapeType = iteeUtils.toEnum( {
+	    NullShape:   0,
+	    Point:       1,
+	    Polyline:    3,
+	    Polygon:     5,
+	    MultiPoint:  8,
+	    PointZ:      11,
+	    PolyLineZ:   13,
+	    PolygonZ:    15,
+	    MultiPointZ: 18,
+	    PointM:      21,
+	    PolylineM:   23,
+	    PolygonM:    25,
+	    MultiPointM: 28,
+	    MultiPatch:  31
+	} );
+
+	class SHPLoader {
+
+	//    static FileCode      = 9994
+	//    static MinFileLength = 100
+	//    static MinVersion    = 1000
+
+	    get globalOffset () {
+	        return this._globalOffset
+	    }
+
+	    set globalOffset ( value ) {
+	        this._globalOffset = value;
+	    }
+
+	    setGlobalOffset ( value ) {
+	        this.globalOffset = value;
+	        return this
+	    }
+
+	    get worldAxis () {
+	        return this._worldAxis
+	    }
+
+	    set worldAxis ( value ) {
+	        this._worldAxis = value;
+	    }
+
+	    setWorldAxis ( value ) {
+	        this.worldAxis = value;
+	        return this
+	    }
+
+	    get manager () {
+	        return this._manager
+	    }
+
+	    set manager ( value ) {
+	        this._manager = value;
+	    }
+
+	    setManager ( value ) {
+	        this.manager = value;
+	        return this
+	    }
+
+	    get logger () {
+	        return this._logger
+	    }
+
+	    set logger ( value ) {
+	        this._logger = value;
+	    }
+
+	    setLogger ( value ) {
+	        this.logger = value;
+	        return this
+	    }
+
+	    get reader () {
+	        return this._reader
+	    }
+
+	    set reader ( value ) {
+	        this._reader = value;
+	    }
+
+	    setReader ( value ) {
+	        this.reader = value;
+	        return this
+	    }
+
+	    /**
+	     *
+	     * @param manager
+	     * @param logger
+	     * @constructor
+	     */
+	    constructor ( parameters = {} ) {
+
+	        const _parameters = {
+	            ...{
+	                manager:      LoadingManager.DefaultLoadingManager,
+	                logger:       iteeClient.DefaultLogger,
+	                reader:       new iteeClient.TBinaryReader(),
+	                globalOffset: new Vector3.Vector3( 0, 0, 0 ),
+	                worldAxis:    {
+	                    from: 'zUp',
+	                    to:   'zForward'
+	                }
+	            }, ...parameters
+	        };
+
+	        this.manager      = _parameters.manager;
+	        this.logger       = _parameters.logger;
+	        this.reader       = _parameters.reader;
+	        this.globalOffset = _parameters.globalOffset;
+	        this.worldAxis    = _parameters.worldAxis;
+
+	    }
+
+	    /**
+	     *
+	     * @param url
+	     * @param onLoad
+	     * @param onProgress
+	     * @param onError
+	     */
+	    load ( url, onLoad, onProgress, onError ) {
+
+	        const scope = this;
+
+	        const loader = new FileLoader.FileLoader( scope.manager );
+	        loader.setResponseType( 'arraybuffer' );
+	        loader.load( url, arrayBuffer => {
+
+	            onLoad( scope.parse( arrayBuffer ) );
+
+	        }, onProgress, onError );
+
+	    }
+
+	    /**
+	     *
+	     * @param arrayBuffer
+	     * @return {*}
+	     */
+	    parse ( arrayBuffer ) {
+
+	        this._reader
+	            .setEndianess( iteeClient.Endianness.Big )
+	            .setBuffer( arrayBuffer );
+
+	        const header = this._parseHeader();
+
+	        if ( header.fileCode !== SHPLoader.FileCode ) {
+	            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
+	            return null
+	        }
+
+	        if ( header.fileLength < SHPLoader.MinFileLength ) {
+	            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
+	            return null
+	        }
+
+	        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
+	            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
+	            return null
+	        }
+
+	        if ( header.version < SHPLoader.MinVersion ) {
+	            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
+	        }
+
+	        const datas  = this._parseDatas( header );
+	        const shapes = this._convertToObjects( datas );
+
+	        return shapes
+
+	    }
+
+	    /**
+	     *
+	     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
+	     * @private
+	     */
+	    _parseHeader () {
+
+	        const fileCode = this._reader.getInt32();
+	        this._reader.skipOffsetOf( 20 );
+	        const fileLength = this._reader.getInt32();
+
+	        this._reader.setEndianess( iteeClient.Endianness.Little );
+
+	        const version         = this._reader.getInt32();
+	        const shapeType       = this._reader.getInt32();
+	        const xMinBoundingBox = this._reader.getInt32();
+	        const yMinBoundingBox = this._reader.getInt32();
+	        const xMaxBoundingBox = this._reader.getInt32();
+	        const yMaxBoundingBox = this._reader.getInt32();
+	        const zMinBoundingBox = this._reader.getInt32();
+	        const zMaxBoundingBox = this._reader.getInt32();
+	        const mMinBoundingBox = this._reader.getInt32();
+	        const mMaxBoundingBox = this._reader.getInt32();
+
+	        return {
+	            fileCode:    fileCode,
+	            fileLength:  fileLength,
+	            version:     version,
+	            shapeType:   shapeType,
+	            boundingBox: {
+	                xMin: xMinBoundingBox,
+	                xMax: xMaxBoundingBox,
+	                yMin: yMinBoundingBox,
+	                yMax: yMaxBoundingBox,
+	                zMin: zMinBoundingBox,
+	                zMax: zMaxBoundingBox,
+	                mMin: mMinBoundingBox,
+	                mMax: mMaxBoundingBox
+	            }
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @param header
+	     * @return {Array}
+	     * @private
+	     */
+	    _parseDatas ( header ) {
+
+	        this._reader.skipOffsetTo( 100 );
+
+	        let datas         = [];
+	        let recordHeader  = undefined;
+	        let endOfRecord   = undefined;
+	        let recordContent = undefined;
+
+	        while ( !this._reader.isEndOfFile() ) {
+
+	            recordHeader = this._parseRecordHeader();
+	            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
+
+	            // All parsing methods use little below
+	            this._reader.setEndianess( iteeClient.Endianness.Little );
+
+	            switch ( header.shapeType ) {
+
+	                case ShapeType.NullShape:
+
+	                    this._reader.skipOffsetTo( endOfRecord );
+
+	                    //                    // Todo: just skip 1 byte - or - to endRecord
+	                    //                    while ( this._reader.getOffset() < endOfRecord ) {
+	                    //
+	                    //                        recordContent = this._parseNull();
+	                    //                        if ( recordContent ) {
+	                    //                            datas.push( recordContent );
+	                    //                        }
+	                    //
+	                    //                    }
+	                    break
+
+	                case ShapeType.Point:
+	                case ShapeType.PointZ:
+	                case ShapeType.PointM:
+	                    while ( this._reader.getOffset() < endOfRecord ) {
+
+	                        recordContent = this._parsePoint();
+	                        if ( recordContent ) {
+	                            datas.push( recordContent );
+	                        }
+
+	                    }
+	                    break
+
+	                case ShapeType.Polyline:
+	                case ShapeType.PolyLineZ:
+	                case ShapeType.PolylineM:
+	                    while ( this._reader.getOffset() < endOfRecord ) {
+
+	                        recordContent = this._parsePolyLine();
+	                        if ( recordContent ) {
+	                            datas.push( recordContent );
+	                        }
+
+	                    }
+	                    break
+
+	                case ShapeType.Polygon:
+	                case ShapeType.PolygonZ:
+	                case ShapeType.PolygonM:
+	                    while ( this._reader.getOffset() < endOfRecord ) {
+
+	                        recordContent = this._parsePolyLine();
+	                        //                        recordContent = this._parsePolygon();
+	                        if ( recordContent ) {
+	                            datas.push( recordContent );
+	                        }
+
+	                    }
+	                    break
+
+	                case ShapeType.MultiPoint:
+	                case ShapeType.MultiPointZ:
+	                case ShapeType.MultiPointM:
+	                    while ( this._reader.getOffset() < endOfRecord ) {
+
+	                        recordContent = this._parseMultiPoint();
+	                        if ( recordContent ) {
+	                            datas.push( recordContent );
+	                        }
+
+	                    }
+	                    break
+
+	                case ShapeType.MultiPatch:
+	                    while ( this._reader.getOffset() < endOfRecord ) {
+
+	                        recordContent = this._parseMultiPatch();
+	                        if ( recordContent ) {
+	                            datas.push( recordContent );
+	                        }
+
+	                    }
+	                    break
+
+	                default:
+	                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
+	                    break
+
+	            }
+
+	        }
+
+	        return datas
+
+	    }
+
+	    /**
+	     *
+	     * @return {{recordNumber, contentLength}}
+	     * @private
+	     */
+	    _parseRecordHeader () {
+
+	        this._reader.setEndianess( iteeClient.Endianness.Big );
+
+	        const recordNumber  = this._reader.getInt32();
+	        const contentLength = this._reader.getInt32();
+
+	        return {
+	            recordNumber,
+	            contentLength
+	        }
+
+	    }
+
+	    _parseNull () {
+
+	        this._reader.getInt32();
+	        return null
+
+	    }
+
+	    /**
+	     *
+	     * @return {*}
+	     * @private
+	     */
+	    _parsePoint () {
+
+	        const shapeType = this._reader.getInt32();
+	        if ( shapeType === ShapeType.NullShape ) {
+	            return null
+	        }
+
+	        const x = this._reader.getFloat64();
+	        const y = this._reader.getFloat64();
+
+	        return {
+	            shapeType,
+	            x,
+	            y
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {*}
+	     * @private
+	     */
+	    _parsePolyLine () {
+
+	        const shapeType = this._reader.getInt32();
+	        if ( shapeType === ShapeType.NullShape ) {
+	            return null
+	        }
+
+	        const boundingBox = {
+	            xMin: this._reader.getFloat64(),
+	            yMin: this._reader.getFloat64(),
+	            xMax: this._reader.getFloat64(),
+	            yMax: this._reader.getFloat64()
+	        };
+
+	        const numberOfParts  = this._reader.getInt32();
+	        const numberOfPoints = this._reader.getInt32();
+
+	        const parts = new Array( numberOfParts );
+	        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+	            parts[ indexParts ] = this._reader.getInt32();
+	        }
+
+	        const points = new Array( numberOfPoints );
+	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+	            points[ indexPoint ] = {
+	                x: this._reader.getFloat64(),
+	                y: this._reader.getFloat64()
+	            };
+	        }
+
+	        return {
+	            shapeType,
+	            boundingBox,
+	            numberOfParts,
+	            numberOfPoints,
+	            parts,
+	            points
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {*}
+	     * @private
+	     */
+	    _parsePolygon () {
+
+	        const shapeType = this._reader.getInt32();
+	        if ( shapeType === ShapeType.NullShape ) {
+	            return null
+	        }
+
+	        const boundingBox = {
+	            xMin: this._reader.getFloat64(),
+	            yMin: this._reader.getFloat64(),
+	            xMax: this._reader.getFloat64(),
+	            yMax: this._reader.getFloat64()
+	        };
+
+	        const numberOfParts  = this._reader.getInt32();
+	        const numberOfPoints = this._reader.getInt32();
+
+	        let parts = new Array( numberOfParts );
+	        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+	            parts[ indexParts ] = this._reader.getInt32();
+	        }
+
+	        let points = new Array( numberOfPoints );
+	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+	            points[ indexPoint ] = {
+	                x: this._reader.getFloat64(),
+	                y: this._reader.getFloat64()
+	            };
+	        }
+
+	        const polygons = [];
+	        const holes    = [];
+
+	        parts.forEach( ( value, index ) => {
+
+	            const ring = points.slice( value, parts[ index + 1 ] );
+
+	            if ( iteeUtils.ringClockwise( ring ) ) {
+
+	                polygons.push( ring );
+	                //					polygons.push( [ ring ] );
+
+	            } else {
+
+	                holes.push( ring );
+
+	            }
+
+	        } );
+
+	        holes.forEach( hole => {
+
+	            polygons.some( polygon => {
+
+	                if ( iteeUtils.ringContainsSome( polygon[ 0 ], hole ) ) {
+	                    polygon.push( hole );
+	                    return true
+	                }
+
+	            } ) || polygons.push( [ hole ] );
+
+	        } );
+
+	        return {
+	            shapeType,
+	            boundingBox,
+	            numberOfParts,
+	            numberOfPoints,
+	            parts,
+	            polygons
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {*}
+	     * @private
+	     */
+	    _parseMultiPoint () {
+
+	        const shapeType = this._reader.getInt32();
+	        if ( shapeType === ShapeType.NullShape ) {
+	            return null
+	        }
+
+	        const boundingBox = {
+	            xMin: this._reader.getFloat64(),
+	            xMax: this._reader.getFloat64(),
+	            yMin: this._reader.getFloat64(),
+	            yMax: this._reader.getFloat64()
+	        };
+
+	        const numberOfPoints = this._reader.getInt32();
+
+	        const points = new Array( numberOfPoints );
+
+	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+	            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
+	        }
+
+	        return {
+	            shapeType,
+	            boundingBox,
+	            numberOfPoints,
+	            points
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {*}
+	     * @private
+	     */
+	    _parseMultiPatch () {
+
+	        const shapeType = this._reader.getInt32();
+	        if ( shapeType === ShapeType.NullShape ) {
+	            return null
+	        }
+
+	        return {
+	            shapeType
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @param datas
+	     * @return {Array}
+	     * @private
+	     */
+	    _convertToObjects ( datas ) {
+
+	        let shapes = [];
+
+	        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
+	            let data = datas[ index ];
+
+	            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
+
+	                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
+
+	                    __createObjectsFromArrays( data.points );
+
+	                } else {
+
+	                    __createObjectFromPoints( data.points );
+
+	                }
+
+	            }
+
+	        }
+
+	        function __createObjectsFromArrays ( arrays ) {
+
+	            //Todo: need to fix parsePolygon to avoid too much array imbrication
+
+	            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
+
+	                let array = arrays[ arrayIndex ];
+
+	                if ( !array ) {
+	                    this.logger.log( 'no array, oups !' );
+	                    continue
+	                }
+
+	                if ( Array.isArray( array[ 0 ] ) ) {
+
+	                    __createObjectsFromArrays( array );
+
+	                } else {
+
+	                    __createObjectFromPoints( array );
+
+	                }
+
+	            }
+
+	        }
+
+	        function __createObjectFromPoints ( points ) {
+
+	            shapes.push( new Shape.Shape( points ) );
+
+	        }
+
+	        return shapes
+
+	    }
+
+	}
+
+	SHPLoader.FileCode      = 9994;
+	SHPLoader.MinFileLength = 100;
+	SHPLoader.MinVersion    = 1000;
+
+	/**
+	 * @author [Tristan Valcke]{@link https://github.com/Itee}
+	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+	 *
+	 * From:
+	 * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
+	 * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
+	 * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
+	 *
+	 * @class Todo...
+	 * @classdesc Todo...
+	 * @example Todo...
+	 *
+	 */
+	// Waiting three-shaking fix
+	//import {
+	//    DefaultLoadingManager,
+	//    FileLoader
+	//}                 from 'three-full'
+
+	/**
+	 *
+	 * @type {Object}
+	 */
+	const DBFVersion = iteeUtils.toEnum( {
+	    FoxPro:               0x30,
+	    FoxPro_Autoincrement: 0x31,
+
+	    dBASE_II:   0x02,
+	    FoxPro_Var: 0x32,
+
+	    dBASE_III_plus:          0x03,
+	    dBASE_III_plus_memo:     0x83,
+	    dBASE_IV_SQL_table:      0x43,
+	    dBASE_IV_SQL_system:     0x63,
+	    dBASE_IV_memo:           0x8B,
+	    dBASE_IV_memo_SQL_table: 0xCB,
+	    FoxBase:                 0xFB,
+
+	    dBase_v_7: 4,
+
+	    FoxPro_2_x:    0xF5,
+	    HiPerSix_memo: 0xE5
+	} );
+
+	/**
+	 *
+	 * @type {Object}
+	 */
+	const DataType = iteeUtils.toEnum( {
+	    Binary:        'B',
+	    Character:     'C',
+	    Date:          'D',
+	    Numeric:       'N',
+	    Logical:       'L',
+	    Memo:          'M',
+	    Timestamp:     '@',
+	    Long:          'I',
+	    Autoincrement: '+',
+	    Float:         'F',
+	    Double:        'O',
+	    OLE:           'G'
+	} );
+
+	class DBFLoader {
+
+	    //    static Terminator    = 0x0D
+	    //    static DeletedRecord = 0x1A
+	    //    static YearOffset    = 1900
+
+	    get manager () {
+	        return this._manager
+	    }
+
+	    set manager ( value ) {
+	        this._manager = value;
+	    }
+
+	    setManager ( value ) {
+	        this.manager = value;
+	        return this
+	    }
+
+	    get logger () {
+	        return this._logger
+	    }
+
+	    set logger ( value ) {
+	        this._logger = value;
+	    }
+
+	    setLogger ( value ) {
+	        this.logger = value;
+	        return this
+	    }
+
+	    get reader () {
+	        return this._reader
+	    }
+
+	    set reader ( value ) {
+	        this._reader = value;
+	    }
+
+	    setReader ( value ) {
+	        this.reader = value;
+	        return this
+	    }
+
+	    /**
+	     *
+	     * @param manager
+	     * @param logger
+	     * @constructor
+	     */
+	    constructor ( parameters = {} ) {
+
+	        const _parameters = {
+	            ...{
+	                manager: LoadingManager.DefaultLoadingManager,
+	                logger:  iteeClient.DefaultLogger,
+	                reader:  new iteeClient.TBinaryReader()
+	            }, ...parameters
+	        };
+
+	        this.manager = _parameters.manager;
+	        this.logger  = _parameters.logger;
+	        this.reader  = _parameters.reader;
+
+	    }
+
+	    /**
+	     *
+	     * @param url
+	     * @param onLoad
+	     * @param onProgress
+	     * @param onError
+	     */
+	    load ( url, onLoad, onProgress, onError ) {
+
+	        const scope = this;
+
+	        const loader = new FileLoader.FileLoader( scope.manager );
+	        loader.setResponseType( 'arraybuffer' );
+	        loader.load( url, arrayBuffer => {
+
+	            onLoad( scope.parse( arrayBuffer ) );
+
+	        }, onProgress, onError );
+
+	    }
+
+	    /**
+	     *
+	     * @param arrayBuffer
+	     * @return {*}
+	     */
+	    parse ( arrayBuffer ) {
+
+	        this.reader
+	            .setEndianess( iteeClient.Endianness.Big )
+	            .setBuffer( arrayBuffer );
+
+	        const version = this.reader.getInt8();
+	        if ( !this._isValidVersion( version ) ) {
+	            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
+	            return null
+	        }
+
+	        const header = this._parseHeader( version );
+	        const datas  = this._parseDatas( version, header );
+
+	        return {
+	            header,
+	            datas
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @param version
+	     * @return {boolean}
+	     * @private
+	     */
+	    _isValidVersion ( version ) {
+
+	        return DBFVersion.includes( version )
+
+	    }
+
+	    /**
+	     *
+	     * @param version
+	     * @return {{}}
+	     * @private
+	     */
+	    _parseHeader ( version ) {
+
+	        let header = {};
+
+	        switch ( version ) {
+
+	            case DBFVersion.FoxPro:
+	            case DBFVersion.FoxPro_Autoincrement:
+	            case DBFVersion.FoxPro_Var:
+	            case DBFVersion.dBASE_II:
+	                header = this._parseHeaderV2();
+	                break
+
+	            case DBFVersion.dBASE_III_plus:
+	            case DBFVersion.dBASE_III_plus_memo:
+	                header = this._parseHeaderV2_5();
+	                break
+
+	            case DBFVersion.dBASE_IV_memo:
+	            case DBFVersion.dBASE_IV_memo_SQL_table:
+	            case DBFVersion.dBASE_IV_SQL_system:
+	            case DBFVersion.dBASE_IV_SQL_table:
+	                header = this._parseHeaderV3();
+	                break
+
+	            case DBFVersion.dBase_v_7:
+	            case DBFVersion.FoxPro_2_x:
+	            case DBFVersion.HiPerSix_memo:
+	                header = this._parseHeaderV4();
+	                break
+
+	            default:
+	                throw new RangeError( `Invalid version parameter: ${ version }` )
+
+	        }
+
+	        // Check terminator
+	        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
+	            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
+	        }
+
+	        return header
+
+	    }
+
+	    /**
+	     *
+	     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
+	     * @private
+	     */
+	    _parseHeaderV2 () {
+
+	        const numberOfRecords     = this.reader.getInt16();
+	        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
+	        const month               = this.reader.getInt8();
+	        const day                 = this.reader.getInt8();
+	        const lengthOfEachRecords = this.reader.getInt16();
+
+	        // Field descriptor array
+	        let fields        = [];
+	        let name          = undefined;
+	        let type          = undefined;
+	        let length        = undefined;
+	        let memoryAddress = undefined;
+	        let decimalCount  = undefined;
+	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+	            name          = this.reader.getString( 11 );
+	            type          = this.reader.getChar();
+	            length        = this.reader.getUint8();
+	            memoryAddress = this.reader.getInt16();
+	            decimalCount  = this.reader.getInt8();
+
+	            fields.push( {
+	                name,
+	                type,
+	                length,
+	                memoryAddress,
+	                decimalCount
+	            } );
+
+	        }
+
+	        return {
+	            numberOfRecords,
+	            year,
+	            month,
+	            day,
+	            lengthOfEachRecords,
+	            fields
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
+	     * @private
+	     */
+	    _parseHeaderV2_5 () {
+
+	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+	        const month = this.reader.getInt8();
+	        const day   = this.reader.getInt8();
+
+	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        const numberOfRecords      = this.reader.getInt32();
+	        const numberOfByteInHeader = this.reader.getInt16();
+	        const numberOfByteInRecord = this.reader.getInt16();
+	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
+
+	        // Field descriptor array
+	        let fields        = [];
+	        let name          = undefined;
+	        let type          = undefined;
+	        let length        = undefined;
+	        let memoryAddress = undefined;
+	        let decimalCount  = undefined;
+	        let workAreaId    = undefined;
+	        let MDXFlag       = undefined;
+	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+	            name          = this.reader.getString( 11 );
+	            type          = this.reader.getChar();
+	            memoryAddress = this.reader.getInt32();
+	            length        = this.reader.getUint8();
+	            decimalCount  = this.reader.getUint8();
+	            this.reader.skipOffsetOf( 2 ); // Reserved
+	            workAreaId = this.reader.getInt8();
+	            this.reader.skipOffsetOf( 2 ); // Reserved
+	            MDXFlag = this.reader.getInt8();
+	            this.reader.skipOffsetOf( 1 ); // Reserved
+
+	            fields.push( {
+	                name,
+	                type,
+	                length,
+	                memoryAddress,
+	                decimalCount,
+	                workAreaId,
+	                MDXFlag
+	            } );
+
+	        }
+
+	        return {
+	            year,
+	            month,
+	            day,
+	            numberOfRecords,
+	            numberOfByteInHeader,
+	            numberOfByteInRecord,
+	            fields
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+	     *     (*|number), languageDriverId: (*|number), fields: Array}}
+	     * @private
+	     */
+	    _parseHeaderV3 () {
+
+	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+	        const month = this.reader.getInt8();
+	        const day   = this.reader.getInt8();
+	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        const numberOfRecords      = this.reader.getInt32();
+	        const numberOfByteInHeader = this.reader.getInt16();
+	        const numberOfByteInRecord = this.reader.getInt16();
+	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.skipOffsetOf( 2 ); // Reserved
+	        const incompleteTransactionFlag = this.reader.getInt8();
+	        const encryptionFlag            = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+	        const MDXFlag          = this.reader.getInt8();
+	        const languageDriverId = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 2 ); // Reserved
+
+	        // Field descriptor array
+	        let fields       = [];
+	        let name         = undefined;
+	        let type         = undefined;
+	        let length       = undefined;
+	        let decimalCount = undefined;
+	        let workAreaId   = undefined;
+	        let MDXFieldFlag = undefined;
+	        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
+	            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+	            name = this.reader.getString( 11 );
+	            type = this.reader.getChar();
+	            this.reader.skipOffsetOf( 4 ); // Reserved
+	            length       = this.reader.getUint8();
+	            decimalCount = this.reader.getUint8();
+	            this.reader.skipOffsetOf( 2 ); // Reserved
+	            workAreaId = this.reader.getInt8();
+	            this.reader.skipOffsetOf( 10 ); // Reserved
+	            MDXFieldFlag = this.reader.getInt8();
+
+	            fields.push( {
+	                name,
+	                type,
+	                length,
+	                decimalCount,
+	                workAreaId,
+	                MDXFieldFlag
+	            } );
+
+	        }
+
+	        return {
+	            year,
+	            month,
+	            day,
+	            numberOfRecords,
+	            numberOfByteInHeader,
+	            numberOfByteInRecord,
+	            incompleteTransactionFlag,
+	            encryptionFlag,
+	            MDXFlag,
+	            languageDriverId,
+	            fields
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+	     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
+	     * @private
+	     */
+	    _parseHeaderV4 () {
+
+	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+	        const month = this.reader.getInt8();
+	        const day   = this.reader.getInt8();
+	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        const numberOfRecords      = this.reader.getInt32();
+	        const numberOfByteInHeader = this.reader.getInt16();
+	        const numberOfByteInRecord = this.reader.getInt16();
+	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.skipOffsetOf( 2 ); // Reserved
+	        const incompleteTransactionFlag = this.reader.getInt8();
+	        const encryptionFlag            = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+	        const MDXFlag          = this.reader.getInt8();
+	        const languageDriverId = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 2 ); // Reserved
+	        const languageDriverName = this.reader.getString( 32 );
+	        this.reader.skipOffsetOf( 4 ); // Reserved
+
+	        // Field descriptor array
+	        let fields                 = [];
+	        let name                   = undefined;
+	        let type                   = undefined;
+	        let length                 = undefined;
+	        let decimalCount           = undefined;
+	        let MDXFieldFlag           = undefined;
+	        let nextAutoincrementValue = undefined;
+	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+	            name         = this.reader.getString( 32 );
+	            type         = this.reader.getChar();
+	            length       = this.reader.getUint8();
+	            decimalCount = this.reader.getUint8();
+	            this.reader.skipOffsetOf( 2 ); // Reserved
+	            MDXFieldFlag = this.reader.getInt8();
+	            this.reader.skipOffsetOf( 2 ); // Reserved
+	            nextAutoincrementValue = this.reader.getInt32();
+	            this.reader.skipOffsetOf( 4 ); // Reserved
+
+	            fields.push( {
+	                name,
+	                type,
+	                length,
+	                decimalCount,
+	                MDXFieldFlag,
+	                nextAutoincrementValue
+	            } );
+
+	        }
+
+	        return {
+	            year,
+	            month,
+	            day,
+	            numberOfRecords,
+	            numberOfByteInHeader,
+	            numberOfByteInRecord,
+	            incompleteTransactionFlag,
+	            encryptionFlag,
+	            MDXFlag,
+	            languageDriverId,
+	            languageDriverName,
+	            fields
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @param version
+	     * @param header
+	     * @return {Array}
+	     * @private
+	     */
+	    _parseDatas ( version, header ) {
+
+	        const numberOfRecords = header.numberOfRecords;
+	        const fields          = header.fields;
+
+	        // Todo: use it
+	        //        let properties = null
+	        //        if ( version === DBFVersion.dBase_v_7 ) {
+	        //            properties = this._parseFieldProperties()
+	        //        }
+
+	        let records = [];
+	        let record  = null;
+	        let field   = null;
+	        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
+
+	            record              = {};
+	            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
+
+	            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
+
+	                field = fields[ fieldIndex ];
+
+	                switch ( field.type ) {
+
+	                    case DataType.Binary: {
+	                        const binaryString   = this.reader.getString( field.length );
+	                        record[ field.name ] = parseInt( binaryString );
+	                    }
+	                        break
+
+	                    case DataType.Numeric: {
+	                        const numericString  = this.reader.getString( field.length );
+	                        record[ field.name ] = parseInt( numericString );
+	                    }
+	                        break
+
+	                    case DataType.Character: {
+	                        record[ field.name ] = this.reader.getString( field.length );
+	                    }
+	                        break
+
+	                    case DataType.Date: {
+	                        // YYYYMMDD
+	                        record[ field.name ] = this.reader.getString( field.length );
+	                    }
+	                        break
+
+	                    case DataType.Logical: {
+	                        const logical = this.reader.getChar().toLowerCase();
+	                        if ( logical === 't' || logical === 'y' ) {
+	                            record[ field.name ] = true;
+	                        } else if ( logical === 'f' || logical === 'n' ) {
+	                            record[ field.name ] = false;
+	                        } else {
+	                            record[ field.name ] = null;
+	                        }
+	                    }
+	                        break
+
+	                    case DataType.Memo: {
+	                        record[ field.name ] = this.reader.getString( field.length );
+	                    }
+	                        break
+
+	                    // 8 bytes - two longs, first for date, second for time.
+	                    // The date is the number of days since  01/01/4713 BC.
+	                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
+	                    case DataType.Timestamp:
+	                        break
+
+	                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+	                    case DataType.Long: {
+	                        record[ field.name ] = this.reader.getInt32();
+	                    }
+	                        break
+
+	                    // Same as a Long
+	                    case DataType.Autoincrement: {
+	                        record[ field.name ] = this.reader.getInt32();
+	                    }
+	                        break
+
+	                    case DataType.Float: {
+	                        const floatString    = this.reader.getString( field.length );
+	                        record[ field.name ] = parseInt( floatString );
+	                    }
+	                        break
+
+	                    case DataType.Double: {
+	                        record[ field.name ] = this.reader.getFloat64();
+	                    }
+	                        break
+
+	                    case DataType.OLE: {
+	                        record[ field.name ] = this.reader.getString( field.length );
+	                    }
+	                        break
+
+	                    default:
+	                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
+
+	                }
+
+	            }
+
+	            records.push( record );
+
+	        }
+
+	        return records
+
+	    }
+
+	    /**
+	     *
+	     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
+	     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
+	     * @private
+	     */
+	    _parseFieldProperties () {
+
+	        const numberOfStandardProperties             = this.reader.getInt16();
+	        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
+	        const numberOfCustomProperties               = this.reader.getInt16();
+	        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
+	        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
+	        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
+	        const startOfData                            = this.reader.getInt16();
+	        const sizeOfPropertiesStructure              = this.reader.getInt16();
+
+	        let standardProperties = [];
+	        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
+	            standardProperties.push( this._getStandardProperties() );
+	        }
+
+	        let customProperties = [];
+	        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
+	            customProperties.push( this._getCustomProperties() );
+	        }
+
+	        let referentialIntegrityProperties = [];
+	        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
+	            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
+	        }
+
+	        return {
+	            numberOfStandardProperties,
+	            startOfStandardPropertiesDescriptor,
+	            numberOfCustomProperties,
+	            startOfCustomPropertiesDescriptor,
+	            numberOfReferentialIntegrityProperties,
+	            startOfReferentialIntegrityDescriptor,
+	            startOfData,
+	            sizeOfPropertiesStructure,
+	            standardProperties,
+	            customProperties,
+	            referentialIntegrityProperties
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
+	     * @private
+	     */
+	    _getStandardProperties () {
+
+	        const generationalNumber = this.reader.getInt16();
+	        const tableFieldOffset   = this.reader.getInt16();
+	        const propertyDescribed  = this.reader.getInt8();
+	        const type               = this.reader.getInt8();
+	        const isConstraint       = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 4 ); // Reserved
+	        const offsetFromStart      = this.reader.getInt16();
+	        const widthOfDatabaseField = this.reader.getInt16();
+
+	        return {
+	            generationalNumber,
+	            tableFieldOffset,
+	            propertyDescribed,
+	            type,
+	            isConstraint,
+	            offsetFromStart,
+	            widthOfDatabaseField
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
+	     * @private
+	     */
+	    _getCustomProperties () {
+
+	        const generationalNumber = this.reader.getInt16();
+	        const tableFieldOffset   = this.reader.getInt16();
+	        const type               = this.reader.getInt8();
+	        this.reader.skipOffsetOf( 1 ); // Reserved
+	        const offsetFromStartOfName = this.reader.getInt16();
+	        const lengthOfName          = this.reader.getInt16();
+	        const offsetFromStartOfData = this.reader.getInt16();
+	        const lengthOfData          = this.reader.getInt16();
+
+	        return {
+	            generationalNumber,
+	            tableFieldOffset,
+	            type,
+	            offsetFromStartOfName,
+	            lengthOfName,
+	            offsetFromStartOfData,
+	            lengthOfData
+	        }
+
+	    }
+
+	    /**
+	     *
+	     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
+	     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
+	     * @private
+	     */
+	    _getReferentialIntegrityProperties () {
+
+	        const databaseState                = this.reader.getInt8();
+	        const sequentialNumberRule         = this.reader.getInt16();
+	        const offsetOfTheRIRuleName        = this.reader.getInt16();
+	        const sizeOfTheRIRuleName          = this.reader.getInt16();
+	        const offsetOfNameOfForeignTable   = this.reader.getInt16();
+	        const sizeOfNameOfForeignTable     = this.reader.getInt16();
+	        const stateBehaviour               = this.reader.getInt8();
+	        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
+	        const offsetOfLocalTableTagName    = this.reader.getInt16();
+	        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
+	        const offsetOfForeignTableTagName  = this.reader.getInt16();
+	        const sizeOfTheForeignTableTagName = this.reader.getInt16();
+
+	        return {
+	            databaseState,
+	            sequentialNumberRule,
+	            offsetOfTheRIRuleName,
+	            sizeOfTheRIRuleName,
+	            offsetOfNameOfForeignTable,
+	            sizeOfNameOfForeignTable,
+	            stateBehaviour,
+	            numberOfFieldsInLinkingKey,
+	            offsetOfLocalTableTagName,
+	            sizeOfTheLocalTableTagName,
+	            offsetOfForeignTableTagName,
+	            sizeOfTheForeignTableTagName
+	        }
+
+	    }
+
+	}
+
+	DBFLoader.Terminator    = 0x0D;
+	DBFLoader.DeletedRecord = 0x1A;
+	DBFLoader.YearOffset    = 1900;
 
 	/**
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -28,15 +1462,26 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * } );
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    Box3,
+	//    BufferAttribute,
+	//    BufferGeometry,
+	//    DefaultLoadingManager,
+	//    FileLoader,
+	//    Group,
+	//    Points,
+	//    PointsMaterial
+	//}                        from 'three-full'
 
 	class ASCLoader {
 
-	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
+	    constructor ( manager = LoadingManager.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
 
-	        this._boundingBox    = new threeFull.Box3();
+	        this._boundingBox    = new Box3.Box3();
 	        this._points         = [];
 	        this._numberOfPoints = 0;
 	        this._coloredPoints  = false;
@@ -69,11 +1514,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        //        //this.logger.time("ASCLoader")
 
-	        const loader = new threeFull.FileLoader( this.manager );
+	        const loader = new FileLoader.FileLoader( this.manager );
 	        loader.setResponseType( 'blob' );
 	        loader.load( url, function ( blob ) {
 
-	            const groupToFeed = new threeFull.Group();
+	            const groupToFeed = new Group.Group();
 	            this._parse( blob, groupToFeed, onLoad, onProgress, onError, sampling );
 	            onLoad( groupToFeed );
 
@@ -699,7 +2144,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            splice               = this._points.splice( 0, SPLIT_LIMIT );
 	            numberOfPointInSplit = splice.length;
 
-	            const geometry  = new threeFull.BufferGeometry();
+	            const geometry  = new BufferGeometry.BufferGeometry();
 	            const positions = new Float32Array( numberOfPointInSplit * 3 );
 	            const colors    = new Float32Array( numberOfPointInSplit * 3 );
 	            let bufferIndex = 0;
@@ -730,15 +2175,15 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            }
 
-	            geometry.setAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
-	            geometry.setAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
+	            geometry.setAttribute( 'position', new BufferAttribute.BufferAttribute( positions, 3 ) );
+	            geometry.setAttribute( 'color', new BufferAttribute.BufferAttribute( colors, 3 ) );
 
-	            const material = new threeFull.PointsMaterial( {
+	            const material = new PointsMaterial.PointsMaterial( {
 	                size:         0.01,
 	                vertexColors: true
 	            } );
 
-	            cloud = new threeFull.Points( geometry, material );
+	            cloud = new Points.Points( geometry, material );
 	            groupToFeed.children.push( cloud );
 	            // group.children.push(cloud);
 	        }
@@ -755,7 +2200,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    _createSubCloudPoint ( group ) {
 
 	        const numberOfPoints = this._points.length;
-	        const geometry       = new threeFull.BufferGeometry();
+	        const geometry       = new BufferGeometry.BufferGeometry();
 	        const positions      = new Float32Array( numberOfPoints * 3 );
 	        const colors         = new Float32Array( numberOfPoints * 3 );
 	        let bufferIndex      = 0;
@@ -786,15 +2231,15 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
-	        geometry.setAttribute( 'position', new threeFull.BufferAttribute( positions, 3 ) );
-	        geometry.setAttribute( 'color', new threeFull.BufferAttribute( colors, 3 ) );
+	        geometry.setAttribute( 'position', new BufferAttribute.BufferAttribute( positions, 3 ) );
+	        geometry.setAttribute( 'color', new BufferAttribute.BufferAttribute( colors, 3 ) );
 
-	        const material = new threeFull.PointsMaterial( {
+	        const material = new PointsMaterial.PointsMaterial( {
 	            size:         0.005,
 	            vertexColors: true
 	        } );
 
-	        const cloud = new threeFull.Points( geometry, material );
+	        const cloud = new Points.Points( geometry, material );
 
 	        //Todo: Apply import coordinates syteme here !
 	        cloud.rotation.x -= Math.PI / 2;
@@ -812,2178 +2257,27 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
-	 * From:
-	 * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
-	 * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
-	 * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
-	 *
-	 * @class Todo...
-	 * @classdesc Todo...
-	 * @example Todo...
-	 *
-	 */
-
-	/**
-	 *
-	 * @type {Object}
-	 */
-	const DBFVersion = Object.freeze( {
-	    FoxPro:               0x30,
-	    FoxPro_Autoincrement: 0x31,
-
-	    dBASE_II:   0x02,
-	    FoxPro_Var: 0x32,
-
-	    dBASE_III_plus:          0x03,
-	    dBASE_III_plus_memo:     0x83,
-	    dBASE_IV_SQL_table:      0x43,
-	    dBASE_IV_SQL_system:     0x63,
-	    dBASE_IV_memo:           0x8B,
-	    dBASE_IV_memo_SQL_table: 0xCB,
-	    FoxBase:                 0xFB,
-
-	    dBase_v_7: 4,
-
-	    FoxPro_2_x:    0xF5,
-	    HiPerSix_memo: 0xE5
-	} );
-
-	/**
-	 *
-	 * @type {Object}
-	 */
-	const DataType = Object.freeze( {
-	    Binary:        'B',
-	    Character:     'C',
-	    Date:          'D',
-	    Numeric:       'N',
-	    Logical:       'L',
-	    Memo:          'M',
-	    Timestamp:     '@',
-	    Long:          'I',
-	    Autoincrement: '+',
-	    Float:         'F',
-	    Double:        'O',
-	    OLE:           'G'
-	} );
-
-	/**
-	 *
-	 * @param manager
-	 * @param logger
-	 * @constructor
-	 */
-	function DBFLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
-
-	    this.manager = manager;
-	    this.logger  = logger;
-	    this.reader  = new iteeClient.TBinaryReader();
-
-	}
-
-	Object.assign( DBFLoader, {
-
-	    /**
-	     *
-	     */
-	    Terminator: 0x0D,
-
-	    /**
-	     *
-	     */
-	    DeletedRecord: 0x1A,
-
-	    /**
-	     *
-	     */
-	    YearOffset: 1900
-
-	} );
-
-	Object.assign( DBFLoader.prototype, {
-
-	    /**
-	     *
-	     * @param url
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    load ( url, onLoad, onProgress, onError ) {
-
-	        const scope = this;
-
-	        const loader = new threeFull.FileLoader( scope.manager );
-	        loader.setResponseType( 'arraybuffer' );
-	        loader.load( url, arrayBuffer => {
-
-	            onLoad( scope.parse( arrayBuffer ) );
-
-	        }, onProgress, onError );
-
-	    },
-
-	    /**
-	     *
-	     * @param arrayBuffer
-	     * @return {*}
-	     */
-	    parse ( arrayBuffer ) {
-
-	        this.reader
-	            .setEndianess( iteeClient.Endianness.Big )
-	            .setBuffer( arrayBuffer );
-
-	        const version = this.reader.getInt8();
-	        if ( !this._isValidVersion( version ) ) {
-	            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
-	            return null
-	        }
-
-	        const header = this._parseHeader( version );
-	        const datas  = this._parseDatas( version, header );
-
-	        return {
-	            header,
-	            datas
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param version
-	     * @return {boolean}
-	     * @private
-	     */
-	    _isValidVersion ( version ) {
-
-	        const availablesVersionValues = Object.values( DBFVersion );
-	        return ( availablesVersionValues.includes( version ) )
-
-	    },
-
-	    /**
-	     *
-	     * @param version
-	     * @return {{}}
-	     * @private
-	     */
-	    _parseHeader ( version ) {
-
-	        let header = {};
-
-	        switch ( version ) {
-
-	            case DBFVersion.FoxPro:
-	            case DBFVersion.FoxPro_Autoincrement:
-	            case DBFVersion.FoxPro_Var:
-	            case DBFVersion.dBASE_II:
-	                header = this._parseHeaderV2();
-	                break
-
-	            case DBFVersion.dBASE_III_plus:
-	            case DBFVersion.dBASE_III_plus_memo:
-	                header = this._parseHeaderV2_5();
-	                break
-
-	            case DBFVersion.dBASE_IV_memo:
-	            case DBFVersion.dBASE_IV_memo_SQL_table:
-	            case DBFVersion.dBASE_IV_SQL_system:
-	            case DBFVersion.dBASE_IV_SQL_table:
-	                header = this._parseHeaderV3();
-	                break
-
-	            case DBFVersion.dBase_v_7:
-	            case DBFVersion.FoxPro_2_x:
-	            case DBFVersion.HiPerSix_memo:
-	                header = this._parseHeaderV4();
-	                break
-
-	            default:
-	                throw new RangeError( `Invalid version parameter: ${ version }` )
-
-	        }
-
-	        // Check terminator
-	        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
-	            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
-	        }
-
-	        return header
-
-	    },
-
-	    /**
-	     *
-	     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
-	     * @private
-	     */
-	    _parseHeaderV2 () {
-
-	        const numberOfRecords     = this.reader.getInt16();
-	        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
-	        const month               = this.reader.getInt8();
-	        const day                 = this.reader.getInt8();
-	        const lengthOfEachRecords = this.reader.getInt16();
-
-	        // Field descriptor array
-	        let fields        = [];
-	        let name          = undefined;
-	        let type          = undefined;
-	        let length        = undefined;
-	        let memoryAddress = undefined;
-	        let decimalCount  = undefined;
-	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-	            name          = this.reader.getString( 11 );
-	            type          = this.reader.getChar();
-	            length        = this.reader.getUint8();
-	            memoryAddress = this.reader.getInt16();
-	            decimalCount  = this.reader.getInt8();
-
-	            fields.push( {
-	                name,
-	                type,
-	                length,
-	                memoryAddress,
-	                decimalCount
-	            } );
-
-	        }
-
-	        return {
-	            numberOfRecords,
-	            year,
-	            month,
-	            day,
-	            lengthOfEachRecords,
-	            fields
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
-	     * @private
-	     */
-	    _parseHeaderV2_5 () {
-
-	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-	        const month = this.reader.getInt8();
-	        const day   = this.reader.getInt8();
-
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
-	        const numberOfRecords      = this.reader.getInt32();
-	        const numberOfByteInHeader = this.reader.getInt16();
-	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
-	        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
-
-	        // Field descriptor array
-	        let fields        = [];
-	        let name          = undefined;
-	        let type          = undefined;
-	        let length        = undefined;
-	        let memoryAddress = undefined;
-	        let decimalCount  = undefined;
-	        let workAreaId    = undefined;
-	        let MDXFlag       = undefined;
-	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-	            name          = this.reader.getString( 11 );
-	            type          = this.reader.getChar();
-	            memoryAddress = this.reader.getInt32();
-	            length        = this.reader.getUint8();
-	            decimalCount  = this.reader.getUint8();
-	            this.reader.skipOffsetOf( 2 ); // Reserved
-	            workAreaId = this.reader.getInt8();
-	            this.reader.skipOffsetOf( 2 ); // Reserved
-	            MDXFlag = this.reader.getInt8();
-	            this.reader.skipOffsetOf( 1 ); // Reserved
-
-	            fields.push( {
-	                name,
-	                type,
-	                length,
-	                memoryAddress,
-	                decimalCount,
-	                workAreaId,
-	                MDXFlag
-	            } );
-
-	        }
-
-	        return {
-	            year,
-	            month,
-	            day,
-	            numberOfRecords,
-	            numberOfByteInHeader,
-	            numberOfByteInRecord,
-	            fields
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-	     *     (*|number), languageDriverId: (*|number), fields: Array}}
-	     * @private
-	     */
-	    _parseHeaderV3 () {
-
-	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-	        const month = this.reader.getInt8();
-	        const day   = this.reader.getInt8();
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
-	        const numberOfRecords      = this.reader.getInt32();
-	        const numberOfByteInHeader = this.reader.getInt16();
-	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
-	        this.reader.skipOffsetOf( 2 ); // Reserved
-	        const incompleteTransactionFlag = this.reader.getInt8();
-	        const encryptionFlag            = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-	        const MDXFlag          = this.reader.getInt8();
-	        const languageDriverId = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 2 ); // Reserved
-
-	        // Field descriptor array
-	        let fields       = [];
-	        let name         = undefined;
-	        let type         = undefined;
-	        let length       = undefined;
-	        let decimalCount = undefined;
-	        let workAreaId   = undefined;
-	        let MDXFieldFlag = undefined;
-	        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
-	            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-	            name = this.reader.getString( 11 );
-	            type = this.reader.getChar();
-	            this.reader.skipOffsetOf( 4 ); // Reserved
-	            length       = this.reader.getUint8();
-	            decimalCount = this.reader.getUint8();
-	            this.reader.skipOffsetOf( 2 ); // Reserved
-	            workAreaId = this.reader.getInt8();
-	            this.reader.skipOffsetOf( 10 ); // Reserved
-	            MDXFieldFlag = this.reader.getInt8();
-
-	            fields.push( {
-	                name,
-	                type,
-	                length,
-	                decimalCount,
-	                workAreaId,
-	                MDXFieldFlag
-	            } );
-
-	        }
-
-	        return {
-	            year,
-	            month,
-	            day,
-	            numberOfRecords,
-	            numberOfByteInHeader,
-	            numberOfByteInRecord,
-	            incompleteTransactionFlag,
-	            encryptionFlag,
-	            MDXFlag,
-	            languageDriverId,
-	            fields
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-	     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
-	     * @private
-	     */
-	    _parseHeaderV4 () {
-
-	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-	        const month = this.reader.getInt8();
-	        const day   = this.reader.getInt8();
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
-	        const numberOfRecords      = this.reader.getInt32();
-	        const numberOfByteInHeader = this.reader.getInt16();
-	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
-	        this.reader.skipOffsetOf( 2 ); // Reserved
-	        const incompleteTransactionFlag = this.reader.getInt8();
-	        const encryptionFlag            = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-	        const MDXFlag          = this.reader.getInt8();
-	        const languageDriverId = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 2 ); // Reserved
-	        const languageDriverName = this.reader.getString( 32 );
-	        this.reader.skipOffsetOf( 4 ); // Reserved
-
-	        // Field descriptor array
-	        let fields                 = [];
-	        let name                   = undefined;
-	        let type                   = undefined;
-	        let length                 = undefined;
-	        let decimalCount           = undefined;
-	        let MDXFieldFlag           = undefined;
-	        let nextAutoincrementValue = undefined;
-	        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-	            name         = this.reader.getString( 32 );
-	            type         = this.reader.getChar();
-	            length       = this.reader.getUint8();
-	            decimalCount = this.reader.getUint8();
-	            this.reader.skipOffsetOf( 2 ); // Reserved
-	            MDXFieldFlag = this.reader.getInt8();
-	            this.reader.skipOffsetOf( 2 ); // Reserved
-	            nextAutoincrementValue = this.reader.getInt32();
-	            this.reader.skipOffsetOf( 4 ); // Reserved
-
-	            fields.push( {
-	                name,
-	                type,
-	                length,
-	                decimalCount,
-	                MDXFieldFlag,
-	                nextAutoincrementValue
-	            } );
-
-	        }
-
-	        return {
-	            year,
-	            month,
-	            day,
-	            numberOfRecords,
-	            numberOfByteInHeader,
-	            numberOfByteInRecord,
-	            incompleteTransactionFlag,
-	            encryptionFlag,
-	            MDXFlag,
-	            languageDriverId,
-	            languageDriverName,
-	            fields
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param version
-	     * @param header
-	     * @return {Array}
-	     * @private
-	     */
-	    _parseDatas ( version, header ) {
-
-	        const numberOfRecords = header.numberOfRecords;
-	        const fields          = header.fields;
-
-	        // Todo: use it
-	        //        let properties = null
-	        //        if ( version === DBFVersion.dBase_v_7 ) {
-	        //            properties = this._parseFieldProperties()
-	        //        }
-
-	        let records = [];
-	        let record  = null;
-	        let field   = null;
-	        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
-
-	            record              = {};
-	            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
-
-	            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
-
-	                field = fields[ fieldIndex ];
-
-	                switch ( field.type ) {
-
-	                    case DataType.Binary: {
-	                        const binaryString   = this.reader.getString( field.length );
-	                        record[ field.name ] = parseInt( binaryString );
-	                    }
-	                        break
-
-	                    case DataType.Numeric: {
-	                        const numericString  = this.reader.getString( field.length );
-	                        record[ field.name ] = parseInt( numericString );
-	                    }
-	                        break
-
-	                    case DataType.Character: {
-	                        record[ field.name ] = this.reader.getString( field.length );
-	                    }
-	                        break
-
-	                    case DataType.Date: {
-	                        // YYYYMMDD
-	                        record[ field.name ] = this.reader.getString( field.length );
-	                    }
-	                        break
-
-	                    case DataType.Logical: {
-	                        const logical = this.reader.getChar().toLowerCase();
-	                        if ( logical === 't' || logical === 'y' ) {
-	                            record[ field.name ] = true;
-	                        } else if ( logical === 'f' || logical === 'n' ) {
-	                            record[ field.name ] = false;
-	                        } else {
-	                            record[ field.name ] = null;
-	                        }
-	                    }
-	                        break
-
-	                    case DataType.Memo: {
-	                        record[ field.name ] = this.reader.getString( field.length );
-	                    }
-	                        break
-
-	                    // 8 bytes - two longs, first for date, second for time.
-	                    // The date is the number of days since  01/01/4713 BC.
-	                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
-	                    case DataType.Timestamp:
-	                        break
-
-	                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
-	                    case DataType.Long: {
-	                        record[ field.name ] = this.reader.getInt32();
-	                    }
-	                        break
-
-	                    // Same as a Long
-	                    case DataType.Autoincrement: {
-	                        record[ field.name ] = this.reader.getInt32();
-	                    }
-	                        break
-
-	                    case DataType.Float: {
-	                        const floatString    = this.reader.getString( field.length );
-	                        record[ field.name ] = parseInt( floatString );
-	                    }
-	                        break
-
-	                    case DataType.Double: {
-	                        record[ field.name ] = this.reader.getFloat64();
-	                    }
-	                        break
-
-	                    case DataType.OLE: {
-	                        record[ field.name ] = this.reader.getString( field.length );
-	                    }
-	                        break
-
-	                    default:
-	                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
-
-	                }
-
-	            }
-
-	            records.push( record );
-
-	        }
-
-	        return records
-
-	    },
-
-	    /**
-	     *
-	     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
-	     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
-	     * @private
-	     */
-	    _parseFieldProperties () {
-
-	        const numberOfStandardProperties             = this.reader.getInt16();
-	        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
-	        const numberOfCustomProperties               = this.reader.getInt16();
-	        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
-	        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
-	        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
-	        const startOfData                            = this.reader.getInt16();
-	        const sizeOfPropertiesStructure              = this.reader.getInt16();
-
-	        let standardProperties = [];
-	        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
-	            standardProperties.push( this._getStandardProperties() );
-	        }
-
-	        let customProperties = [];
-	        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
-	            customProperties.push( this._getCustomProperties() );
-	        }
-
-	        let referentialIntegrityProperties = [];
-	        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
-	            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
-	        }
-
-	        return {
-	            numberOfStandardProperties,
-	            startOfStandardPropertiesDescriptor,
-	            numberOfCustomProperties,
-	            startOfCustomPropertiesDescriptor,
-	            numberOfReferentialIntegrityProperties,
-	            startOfReferentialIntegrityDescriptor,
-	            startOfData,
-	            sizeOfPropertiesStructure,
-	            standardProperties,
-	            customProperties,
-	            referentialIntegrityProperties
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
-	     * @private
-	     */
-	    _getStandardProperties () {
-
-	        const generationalNumber = this.reader.getInt16();
-	        const tableFieldOffset   = this.reader.getInt16();
-	        const propertyDescribed  = this.reader.getInt8();
-	        const type               = this.reader.getInt8();
-	        const isConstraint       = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 4 ); // Reserved
-	        const offsetFromStart      = this.reader.getInt16();
-	        const widthOfDatabaseField = this.reader.getInt16();
-
-	        return {
-	            generationalNumber,
-	            tableFieldOffset,
-	            propertyDescribed,
-	            type,
-	            isConstraint,
-	            offsetFromStart,
-	            widthOfDatabaseField
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
-	     * @private
-	     */
-	    _getCustomProperties () {
-
-	        const generationalNumber = this.reader.getInt16();
-	        const tableFieldOffset   = this.reader.getInt16();
-	        const type               = this.reader.getInt8();
-	        this.reader.skipOffsetOf( 1 ); // Reserved
-	        const offsetFromStartOfName = this.reader.getInt16();
-	        const lengthOfName          = this.reader.getInt16();
-	        const offsetFromStartOfData = this.reader.getInt16();
-	        const lengthOfData          = this.reader.getInt16();
-
-	        return {
-	            generationalNumber,
-	            tableFieldOffset,
-	            type,
-	            offsetFromStartOfName,
-	            lengthOfName,
-	            offsetFromStartOfData,
-	            lengthOfData
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
-	     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
-	     * @private
-	     */
-	    _getReferentialIntegrityProperties () {
-
-	        const databaseState                = this.reader.getInt8();
-	        const sequentialNumberRule         = this.reader.getInt16();
-	        const offsetOfTheRIRuleName        = this.reader.getInt16();
-	        const sizeOfTheRIRuleName          = this.reader.getInt16();
-	        const offsetOfNameOfForeignTable   = this.reader.getInt16();
-	        const sizeOfNameOfForeignTable     = this.reader.getInt16();
-	        const stateBehaviour               = this.reader.getInt8();
-	        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
-	        const offsetOfLocalTableTagName    = this.reader.getInt16();
-	        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
-	        const offsetOfForeignTableTagName  = this.reader.getInt16();
-	        const sizeOfTheForeignTableTagName = this.reader.getInt16();
-
-	        return {
-	            databaseState,
-	            sequentialNumberRule,
-	            offsetOfTheRIRuleName,
-	            sizeOfTheRIRuleName,
-	            offsetOfNameOfForeignTable,
-	            sizeOfNameOfForeignTable,
-	            stateBehaviour,
-	            numberOfFieldsInLinkingKey,
-	            offsetOfLocalTableTagName,
-	            sizeOfTheLocalTableTagName,
-	            offsetOfForeignTableTagName,
-	            sizeOfTheForeignTableTagName
-	        }
-
-	    }
-
-	} );
-
-	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @class Todo...
-	 * @classdesc Todo...
-	 * @example Todo...
-	 *
-	 */
-
-	/**
-	 *
-	 * @param manager
-	 * @param logger
-	 * @constructor
-	 */
-	function RZMLLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
-
-	    this.manager = manager;
-	    this.logger  = logger;
-
-	    this.textureLoader  = new threeFull.TextureLoader();
-	    this.imagesShotData = [];
-
-	}
-
-	Object.assign( RZMLLoader.prototype, {
-
-	    /**
-	     *
-	     */
-	    constructor: RZMLLoader,
-
-	    /**
-	     *
-	     * @param url
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    load: function ( url, onLoad, onProgress, onError ) {
-
-	        //this.logger.time( "RZMLLoader" )
-
-	        const filePath = url.replace( /[^/]*$/, '' );
-	        const loader   = new threeFull.FileLoader( this.manager );
-	        loader.setResponseType( 'text/plain' );
-	        loader.load( url, text => {
-
-	            onLoad( this._parse( text, filePath ) );
-
-	        }, onProgress, onError );
-
-	    },
-
-	    /**
-	     *
-	     * @param text
-	     * @param filePath
-	     * @return {*}
-	     * @private
-	     */
-	    _parse ( text, filePath ) {
-
-	        let document = null;
-
-	        if ( window.DOMParser ) {
-	            const parser = new DOMParser();
-	            document     = parser.parseFromString( text, 'text/xml' );
-	        } else // Internet Explorer
-	        {
-	            document       = new window.ActiveXObject( 'Microsoft.XMLDOM' );
-	            document.async = false;
-	            document.loadXML( text );
-	        }
-
-	        const shots            = document.getElementsByTagName( 'SHOT' );
-	        let shot               = null;
-	        let cfrmElement        = null;
-	        let translationElement = null;
-	        let rotationElement    = null;
-	        //        let iplnElement        = null
-
-	        for ( let i = 0, numberOfShots = shots.length ; i < numberOfShots ; ++i ) {
-	            shot               = shots[ i ];
-	            cfrmElement        = shot.children[ 0 ];
-	            //            iplnElement        = shot.children[ 1 ]
-	            translationElement = cfrmElement.children[ 0 ];
-	            rotationElement    = cfrmElement.children[ 1 ];
-
-	            // Todo: consider using array and/or create directly floating images from there
-	            this.imagesShotData.push( {
-	                imageName: shot.attributes[ 'n' ].value, //        imagePath: iplnElement.attributes["img"].value,
-	                position:  {
-	                    x: parseFloat( translationElement.attributes[ 'x' ].value ),
-	                    y: parseFloat( translationElement.attributes[ 'y' ].value ),
-	                    z: parseFloat( translationElement.attributes[ 'z' ].value )
-	                },
-	                rotation: {
-	                    x: parseFloat( rotationElement.attributes[ 'x' ].value ),
-	                    y: parseFloat( rotationElement.attributes[ 'y' ].value ),
-	                    z: parseFloat( rotationElement.attributes[ 'z' ].value )
-	                }
-	            } );
-	        }
-
-	        //this.logger.timeEnd( "RZMLLoader" );
-
-	        return this._createImagesPacks( filePath )
-	    },
-
-	    /**
-	     *
-	     * @param filePath
-	     * @return {Group}
-	     * @private
-	     */
-	    _createImagesPacks ( filePath ) {
-
-	        var imagesShots = this.imagesShotData;
-	        var planesGroup = new threeFull.Group();
-	        var imageShot   = undefined;
-	        var plane       = undefined;
-	        for ( var i = 0, numberOfShots = imagesShots.length ; i < numberOfShots ; ++i ) {
-
-	            imageShot = imagesShots[ i ];
-
-	            plane = new threeFull.Mesh(
-	                new threeFull.PlaneGeometry( 0.06528, 0.04896, 1, 1 ),
-	                new threeFull.MeshBasicMaterial( {
-	                    color: 0xffffff,
-	                    side:  threeFull.DoubleSide
-	                } ) );
-
-	            plane.name       = imageShot.imageName;
-	            plane.position.x = imageShot.position.x - 600200;
-	            plane.position.y = imageShot.position.y - 131400;
-	            plane.position.z = imageShot.position.z - 60 - 0.34;
-	            plane.rotation.x = threeFull.MathUtils.degToRad( imageShot.rotation.x );
-	            plane.rotation.y = threeFull.MathUtils.degToRad( imageShot.rotation.z ); // Need to inverse y and z due to z up import !!!
-	            plane.rotation.z = -( threeFull.MathUtils.degToRad( imageShot.rotation.y ) );
-	            // plane.visible    = false
-
-	            plane.userData = {
-	                filePath: filePath
-	            };
-
-	            planesGroup.add( plane );
-
-	        }
-
-	        planesGroup.rotateX( -( Math.PI / 2 ) );
-
-	        return planesGroup
-
-	    }
-
-	} );
-
-	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * This class allow to split any geometries type during runtime.
-	 * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
-	 *
-	 * Constructor parameter:
-	 *
-	 * size - the size of the square view
-	 *
-	 * @class Todo...
-	 * @classdesc Todo...
-	 * @example Todo...
-	 *
-	 */
-
-	/**
-	 *
-	 * @type {Object}
-	 */
-	const ShapeType = Object.freeze( {
-	    NullShape:   0,
-	    Point:       1,
-	    Polyline:    3,
-	    Polygon:     5,
-	    MultiPoint:  8,
-	    PointZ:      11,
-	    PolyLineZ:   13,
-	    PolygonZ:    15,
-	    MultiPointZ: 18,
-	    PointM:      21,
-	    PolylineM:   23,
-	    PolygonM:    25,
-	    MultiPointM: 28,
-	    MultiPatch:  31
-	} );
-
-	// Helpers
-	/**
-	 *
-	 * @param ring
-	 * @return {boolean}
-	 */
-	function ringClockwise ( ring ) {
-
-	    if ( ( n = ring.length ) < 4 ) {
-	        return false
-	    }
-
-	    var i    = 0,
-	        n,
-	        area = ring[ n - 1 ][ 1 ] * ring[ 0 ][ 0 ] - ring[ n - 1 ][ 0 ] * ring[ 0 ][ 1 ];
-	    while ( ++i < n ) {
-	        area += ring[ i - 1 ][ 1 ] * ring[ i ][ 0 ] - ring[ i - 1 ][ 0 ] * ring[ i ][ 1 ];
-	    }
-	    return area >= 0
-	}
-
-	/**
-	 *
-	 * @param ring
-	 * @param hole
-	 * @return {boolean}
-	 */
-	function ringContainsSome ( ring, hole ) {
-
-	    let i = 0;
-	    let n = hole.length;
-
-	    do {
-
-	        if ( ringContains( ring, hole[ i ] ) > 0 ) {
-	            return true
-	        }
-
-	    } while ( ++i < n )
-
-	    return false
-
-	}
-
-	/**
-	 *
-	 * @param ring
-	 * @param point
-	 * @return {number}
-	 */
-	function ringContains ( ring, point ) {
-
-	    let x        = point[ 0 ];
-	    let y        = point[ 1 ];
-	    let contains = -1;
-
-	    for ( let i = 0, n = ring.length, j = n - 1 ; i < n ; j = i++ ) {
-
-	        const pi = ring[ i ];
-	        const xi = pi[ 0 ];
-	        const yi = pi[ 1 ];
-	        const pj = ring[ j ];
-	        const xj = pj[ 0 ];
-	        const yj = pj[ 1 ];
-
-	        if ( segmentContains( pi, pj, point ) ) {
-	            contains = 0;
-	        } else if ( ( ( yi > y ) !== ( yj > y ) ) && ( ( x < ( xj - xi ) * ( y - yi ) / ( yj - yi ) + xi ) ) ) {
-	            contains = -contains;
-	        }
-
-	    }
-
-	    return contains
-
-	}
-
-	/**
-	 *
-	 * @param p0
-	 * @param p1
-	 * @param p2
-	 * @return {boolean}
-	 */
-	function segmentContains ( p0, p1, p2 ) {
-	    var x20 = p2[ 0 ] - p0[ 0 ],
-	        y20 = p2[ 1 ] - p0[ 1 ];
-	    if ( x20 === 0 && y20 === 0 ) {
-	        return true
-	    }
-	    var x10 = p1[ 0 ] - p0[ 0 ],
-	        y10 = p1[ 1 ] - p0[ 1 ];
-	    if ( x10 === 0 && y10 === 0 ) {
-	        return false
-	    }
-	    var t = ( x20 * x10 + y20 * y10 ) / ( x10 * x10 + y10 * y10 );
-	    return t < 0 || t > 1 ? false : t === 0 || t === 1 ? true : t * x10 === x20 && t * y10 === y20
-	}
-
-	/**
-	 *
-	 * @param manager
-	 * @param logger
-	 * @constructor
-	 */
-	function SHPLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
-
-	    this.manager = manager;
-	    this.logger  = logger;
-
-	    this.globalOffset = new threeFull.Vector3();
-	    this.worldAxis    = {
-	        from: 'zUp',
-	        to:   'zForward'
-	    };
-
-	    this._reader = new iteeClient.TBinaryReader();
-
-	}
-
-	Object.assign( SHPLoader, {
-
-	    /**
-	     *
-	     */
-	    FileCode: 9994,
-
-	    /**
-	     *
-	     */
-	    MinFileLength: 100,
-
-	    /**
-	     *
-	     */
-	    MinVersion: 1000
-
-	} );
-
-	Object.assign( SHPLoader.prototype, {
-
-	    /**
-	     *
-	     * @param url
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    load ( url, onLoad, onProgress, onError ) {
-
-	        const scope = this;
-
-	        const loader = new threeFull.FileLoader( scope.manager );
-	        loader.setResponseType( 'arraybuffer' );
-	        loader.load( url, arrayBuffer => {
-
-	            onLoad( scope.parse( arrayBuffer ) );
-
-	        }, onProgress, onError );
-
-	    },
-
-	    /**
-	     *
-	     * @param arrayBuffer
-	     * @return {*}
-	     */
-	    parse ( arrayBuffer ) {
-
-	        this._reader
-	            .setEndianess( iteeClient.Endianness.Big )
-	            .setBuffer( arrayBuffer );
-
-	        const header = this._parseHeader();
-
-	        if ( header.fileCode !== SHPLoader.FileCode ) {
-	            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
-	            return null
-	        }
-
-	        if ( header.fileLength < SHPLoader.MinFileLength ) {
-	            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
-	            return null
-	        }
-
-	        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
-	            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
-	            return null
-	        }
-
-	        if ( header.version < SHPLoader.MinVersion ) {
-	            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
-	        }
-
-	        const datas  = this._parseDatas( header );
-	        const shapes = this._convertToObjects( datas );
-
-	        return shapes
-
-	    },
-
-	    /**
-	     *
-	     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
-	     * @private
-	     */
-	    _parseHeader () {
-
-	        const fileCode = this._reader.getInt32();
-	        this._reader.skipOffsetOf( 20 );
-	        const fileLength = this._reader.getInt32();
-
-	        this._reader.setEndianess( iteeClient.Endianness.Little );
-
-	        const version         = this._reader.getInt32();
-	        const shapeType       = this._reader.getInt32();
-	        const xMinBoundingBox = this._reader.getInt32();
-	        const yMinBoundingBox = this._reader.getInt32();
-	        const xMaxBoundingBox = this._reader.getInt32();
-	        const yMaxBoundingBox = this._reader.getInt32();
-	        const zMinBoundingBox = this._reader.getInt32();
-	        const zMaxBoundingBox = this._reader.getInt32();
-	        const mMinBoundingBox = this._reader.getInt32();
-	        const mMaxBoundingBox = this._reader.getInt32();
-
-	        return {
-	            fileCode:    fileCode,
-	            fileLength:  fileLength,
-	            version:     version,
-	            shapeType:   shapeType,
-	            boundingBox: {
-	                xMin: xMinBoundingBox,
-	                xMax: xMaxBoundingBox,
-	                yMin: yMinBoundingBox,
-	                yMax: yMaxBoundingBox,
-	                zMin: zMinBoundingBox,
-	                zMax: zMaxBoundingBox,
-	                mMin: mMinBoundingBox,
-	                mMax: mMaxBoundingBox
-	            }
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param header
-	     * @return {Array}
-	     * @private
-	     */
-	    _parseDatas ( header ) {
-
-	        this._reader.skipOffsetTo( 100 );
-
-	        let datas         = [];
-	        let recordHeader  = undefined;
-	        let endOfRecord   = undefined;
-	        let recordContent = undefined;
-
-	        while ( !this._reader.isEndOfFile() ) {
-
-	            recordHeader = this._parseRecordHeader();
-	            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
-
-	            // All parsing methods use little below
-	            this._reader.setEndianess( iteeClient.Endianness.Little );
-
-	            switch ( header.shapeType ) {
-
-	                case ShapeType.NullShape:
-
-	                    this._reader.skipOffsetTo( endOfRecord );
-
-	                    //                    // Todo: just skip 1 byte - or - to endRecord
-	                    //                    while ( this._reader.getOffset() < endOfRecord ) {
-	                    //
-	                    //                        recordContent = this._parseNull();
-	                    //                        if ( recordContent ) {
-	                    //                            datas.push( recordContent );
-	                    //                        }
-	                    //
-	                    //                    }
-	                    break
-
-	                case ShapeType.Point:
-	                case ShapeType.PointZ:
-	                case ShapeType.PointM:
-	                    while ( this._reader.getOffset() < endOfRecord ) {
-
-	                        recordContent = this._parsePoint();
-	                        if ( recordContent ) {
-	                            datas.push( recordContent );
-	                        }
-
-	                    }
-	                    break
-
-	                case ShapeType.Polyline:
-	                case ShapeType.PolyLineZ:
-	                case ShapeType.PolylineM:
-	                    while ( this._reader.getOffset() < endOfRecord ) {
-
-	                        recordContent = this._parsePolyLine();
-	                        if ( recordContent ) {
-	                            datas.push( recordContent );
-	                        }
-
-	                    }
-	                    break
-
-	                case ShapeType.Polygon:
-	                case ShapeType.PolygonZ:
-	                case ShapeType.PolygonM:
-	                    while ( this._reader.getOffset() < endOfRecord ) {
-
-	                        recordContent = this._parsePolyLine();
-	                        //                        recordContent = this._parsePolygon();
-	                        if ( recordContent ) {
-	                            datas.push( recordContent );
-	                        }
-
-	                    }
-	                    break
-
-	                case ShapeType.MultiPoint:
-	                case ShapeType.MultiPointZ:
-	                case ShapeType.MultiPointM:
-	                    while ( this._reader.getOffset() < endOfRecord ) {
-
-	                        recordContent = this._parseMultiPoint();
-	                        if ( recordContent ) {
-	                            datas.push( recordContent );
-	                        }
-
-	                    }
-	                    break
-
-	                case ShapeType.MultiPatch:
-	                    while ( this._reader.getOffset() < endOfRecord ) {
-
-	                        recordContent = this._parseMultiPatch();
-	                        if ( recordContent ) {
-	                            datas.push( recordContent );
-	                        }
-
-	                    }
-	                    break
-
-	                default:
-	                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
-	                    break
-
-	            }
-
-	        }
-
-	        return datas
-
-	    },
-
-	    /**
-	     *
-	     * @return {{recordNumber, contentLength}}
-	     * @private
-	     */
-	    _parseRecordHeader () {
-
-	        this._reader.setEndianess( iteeClient.Endianness.Big );
-
-	        const recordNumber  = this._reader.getInt32();
-	        const contentLength = this._reader.getInt32();
-
-	        return {
-	            recordNumber,
-	            contentLength
-	        }
-
-	    },
-
-	    //    _parseNull () {
-	    //
-	    //        this._reader.getInt32();
-	    //
-	    //        return null;
-	    //    },
-
-	    /**
-	     *
-	     * @return {*}
-	     * @private
-	     */
-	    _parsePoint () {
-
-	        const shapeType = this._reader.getInt32();
-	        if ( shapeType === ShapeType.NullShape ) {
-	            return null
-	        }
-
-	        const x = this._reader.getFloat64();
-	        const y = this._reader.getFloat64();
-
-	        return {
-	            shapeType,
-	            x,
-	            y
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {*}
-	     * @private
-	     */
-	    _parsePolyLine () {
-
-	        const shapeType = this._reader.getInt32();
-	        if ( shapeType === ShapeType.NullShape ) {
-	            return null
-	        }
-
-	        const boundingBox = {
-	            xMin: this._reader.getFloat64(),
-	            yMin: this._reader.getFloat64(),
-	            xMax: this._reader.getFloat64(),
-	            yMax: this._reader.getFloat64()
-	        };
-
-	        const numberOfParts  = this._reader.getInt32();
-	        const numberOfPoints = this._reader.getInt32();
-
-	        const parts = new Array( numberOfParts );
-	        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-	            parts[ indexParts ] = this._reader.getInt32();
-	        }
-
-	        const points = new Array( numberOfPoints );
-	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-	            points[ indexPoint ] = {
-	                x: this._reader.getFloat64(),
-	                y: this._reader.getFloat64()
-	            };
-	        }
-
-	        return {
-	            shapeType,
-	            boundingBox,
-	            numberOfParts,
-	            numberOfPoints,
-	            parts,
-	            points
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {*}
-	     * @private
-	     */
-	    _parsePolygon () {
-
-	        const shapeType = this._reader.getInt32();
-	        if ( shapeType === ShapeType.NullShape ) {
-	            return null
-	        }
-
-	        const boundingBox = {
-	            xMin: this._reader.getFloat64(),
-	            yMin: this._reader.getFloat64(),
-	            xMax: this._reader.getFloat64(),
-	            yMax: this._reader.getFloat64()
-	        };
-
-	        const numberOfParts  = this._reader.getInt32();
-	        const numberOfPoints = this._reader.getInt32();
-
-	        let parts = new Array( numberOfParts );
-	        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-	            parts[ indexParts ] = this._reader.getInt32();
-	        }
-
-	        let points = new Array( numberOfPoints );
-	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-	            points[ indexPoint ] = {
-	                x: this._reader.getFloat64(),
-	                y: this._reader.getFloat64()
-	            };
-	        }
-
-	        const polygons = [];
-	        const holes    = [];
-
-	        parts.forEach( ( value, index ) => {
-
-	            const ring = points.slice( value, parts[ index + 1 ] );
-
-	            if ( ringClockwise( ring ) ) {
-
-	                polygons.push( ring );
-	                //					polygons.push( [ ring ] );
-
-	            } else {
-
-	                holes.push( ring );
-
-	            }
-
-	        } );
-
-	        holes.forEach( hole => {
-
-	            polygons.some( polygon => {
-
-	                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
-	                    polygon.push( hole );
-	                    return true
-	                }
-
-	            } ) || polygons.push( [ hole ] );
-
-	        } );
-
-	        return {
-	            shapeType,
-	            boundingBox,
-	            numberOfParts,
-	            numberOfPoints,
-	            parts,
-	            polygons
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {*}
-	     * @private
-	     */
-	    _parseMultiPoint () {
-
-	        const shapeType = this._reader.getInt32();
-	        if ( shapeType === ShapeType.NullShape ) {
-	            return null
-	        }
-
-	        const boundingBox = {
-	            xMin: this._reader.getFloat64(),
-	            xMax: this._reader.getFloat64(),
-	            yMin: this._reader.getFloat64(),
-	            yMax: this._reader.getFloat64()
-	        };
-
-	        const numberOfPoints = this._reader.getInt32();
-
-	        const points = new Array( numberOfPoints );
-
-	        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-	            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
-	        }
-
-	        return {
-	            shapeType,
-	            boundingBox,
-	            numberOfPoints,
-	            points
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @return {*}
-	     * @private
-	     */
-	    _parseMultiPatch () {
-
-	        const shapeType = this._reader.getInt32();
-	        if ( shapeType === ShapeType.NullShape ) {
-	            return null
-	        }
-
-	        return {
-	            shapeType
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param datas
-	     * @return {Array}
-	     * @private
-	     */
-	    _convertToObjects ( datas ) {
-
-	        let shapes = [];
-
-	        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
-	            let data = datas[ index ];
-
-	            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
-
-	                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
-
-	                    __createObjectsFromArrays( data.points );
-
-	                } else {
-
-	                    __createObjectFromPoints( data.points );
-
-	                }
-
-	            }
-
-	        }
-
-	        function __createObjectsFromArrays ( arrays ) {
-
-	            //Todo: need to fix parsePolygon to avoid too much array imbrication
-
-	            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
-
-	                let array = arrays[ arrayIndex ];
-
-	                if ( !array ) {
-	                    this.logger.log( 'no array, oups !' );
-	                    continue
-	                }
-
-	                if ( Array.isArray( array[ 0 ] ) ) {
-
-	                    __createObjectsFromArrays( array );
-
-	                } else {
-
-	                    __createObjectFromPoints( array );
-
-	                }
-
-	            }
-
-	        }
-
-	        function __createObjectFromPoints ( points ) {
-
-	            shapes.push( new threeFull.Shape( points ) );
-
-	        }
-
-	        return shapes
-
-	    }
-
-	} );
-
-	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @class UniversalLoader
-	 * @classdesc The TUniversalLoader allow to automatically select correct THREE loader for given files. (based on https://github.com/jeromeetienne/threex.universalloader)
-	 * @example Todo...
-	 *
-	 */
-
-	// Helpers
-	/**
-	 *
-	 * @param fileUrl
-	 * @return {string|*}
-	 */
-	function getFilePath ( fileUrl ) {
-
-	    return fileUrl.substring( 0, fileUrl.lastIndexOf( '/' ) )
-
-	}
-
-	/**
-	 *
-	 * @param fileUrl
-	 * @return {string|*}
-	 */
-	function getFileName ( fileUrl ) {
-
-	    return fileUrl.substring( fileUrl.lastIndexOf( '/' ) + 1 )
-
-	}
-
-	/**
-	 *
-	 * @param fileName
-	 */
-	function getFileExtension ( fileName ) {
-
-	    return fileName.slice( ( fileName.lastIndexOf( '.' ) - 1 >>> 0 ) + 2 )
-
-	}
-
-	/**
-	 *
-	 * @param fileUrl
-	 * @return {string|*}
-	 */
-	function computeUrl ( fileUrl ) {
-
-	    const filePath = getFilePath( fileUrl );
-	    const isBlob   = ( fileUrl.indexOf( 'blob' ) > -1 );
-
-	    return ( isBlob ) ? filePath : fileUrl
-
-	}
-
-	/**
-	 *
-	 * @param manager
-	 * @param logger
-	 * @constructor
-	 */
-	function UniversalLoader ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
-
-	    this.manager = manager;
-	    this.logger  = logger;
-
-	}
-
-	Object.assign( UniversalLoader.prototype, {
-
-	    /**
-	     *
-	     * @param files
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    load ( files, onLoad, onProgress, onError ) {
-
-	        if ( !files ) {
-	            this.logger.error( 'Unable to load null or undefined files !' );
-	            return
-	        }
-
-	        if ( files instanceof FileList ) {
-
-	            const numberOfFiles = files.length;
-	            this.logger.log( `numberOfFiles: ${ numberOfFiles }` );
-
-	            const filesUrls = [];
-	            let fileUrl     = '';
-	            let fileObject  = null;
-
-	            for ( let fileIndex = 0 ; fileIndex < numberOfFiles ; ++fileIndex ) {
-	                fileObject = files[ fileIndex ];
-	                fileUrl    = `${ URL.createObjectURL( fileObject ) }/${ fileObject.name }`;
-
-	                filesUrls.push( { url: fileUrl } );
-	            }
-
-	            this.load( filesUrls, onLoad, onProgress, onError );
-
-	        } else if ( files instanceof File ) {
-
-	            const fileUrl = `${ URL.createObjectURL( files ) }/${ files.name }`;
-	            this.loadSingleFile( { url: fileUrl }, onLoad, onProgress, onError );
-
-	        } else if ( iteeValidators.isObject( files ) ) {
-
-	            this.loadSingleFile( files, onLoad, onProgress, onError );
-
-	        } else if ( iteeValidators.isFunction( files ) ) {
-
-	            this.load( files(), onLoad, onProgress, onError );
-
-	        } else if ( iteeValidators.isArray( files ) ) {
-
-	            // Todo: need to rework logic here and use wrapper object instead of array of object to avoid
-	            // Todo: array of 2 differents files.
-	            if ( ( files.length === 2 ) && ( iteeValidators.isObject( files[ 0 ] ) && iteeValidators.isObject( files[ 1 ] ) ) ) {
-
-	                this.loadAssociatedFiles( files, onLoad, onProgress, onError );
-
-	            } else {
-
-	                for ( let fileIndex = 0, numberOfFiles = files.length ; fileIndex < numberOfFiles ; fileIndex++ ) {
-	                    this.load( files[ fileIndex ], onLoad, onProgress, onError );
-	                }
-
-	            }
-
-	        } else if ( iteeValidators.isString( files ) ) {
-
-	            this.loadSingleFile( { url: files }, onLoad, onProgress, onError );
-
-	        } else {
-
-	            this.logger.error( 'TUniversalLoader: Invalid files parameter !!!' );
-
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    loadSingleFile ( file, onLoad, onProgress, onError ) {
-
-	        const fileUrl       = file.url;
-	        const fileName      = getFileName( fileUrl );
-	        const fileExtension = getFileExtension( fileName );
-	        file.url            = computeUrl( fileUrl );
-
-	        switch ( fileExtension ) {
-
-	            case iteeClient.FileFormat.Asc.value:
-	                this._loadAsc( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Dae.value:
-	                this._loadDae( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Dbf.value:
-	                this._loadDbf( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Fbx.value:
-	                this._loadFbx( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Json.value:
-	                this._loadJson( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Obj.value:
-	                this._loadObj( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Shp.value:
-	                this._loadShp( file, onLoad, onProgress, onError );
-	                break
-
-	            case iteeClient.FileFormat.Stl.value:
-	                this._loadStl( file, onLoad, onProgress, onError );
-	                break
-
-	            default:
-	                throw new RangeError( `Invalid file extension: ${ fileExtension }. Supported formats are: ${ iteeClient.FileFormat.toString() }` )
-
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param files
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     */
-	    loadAssociatedFiles ( files, onLoad, onProgress, onError ) {
-
-	        const firstFile          = files[ 0 ];
-	        const firstUrl           = firstFile.url;
-	        const firstFileName      = getFileName( firstUrl );
-	        const firstFileExtension = getFileExtension( firstFileName );
-	        firstFile.url            = computeUrl( firstUrl );
-
-	        const secondFile          = files[ 1 ];
-	        const secondUrl           = secondFile.url;
-	        const secondFileName      = getFileName( secondUrl );
-	        const secondFileExtension = getFileExtension( secondFileName );
-	        secondFile.url            = computeUrl( secondUrl );
-
-	        if ( firstFileExtension === iteeClient.FileFormat.Mtl.value && secondFileExtension === iteeClient.FileFormat.Obj.value ) {
-
-	            this._loadObjMtlCouple( secondFile, firstFile, onLoad, onProgress, onError );
-
-	        } else if ( firstFileExtension === iteeClient.FileFormat.Obj.value && secondFileExtension === iteeClient.FileFormat.Mtl.value ) {
-
-	            this._loadObjMtlCouple( firstFile, secondFile, onLoad, onProgress, onError );
-
-	        } else if ( firstFileExtension === iteeClient.FileFormat.Shp.value && secondFileExtension === iteeClient.FileFormat.Dbf.value ) {
-
-	            this._loadShpDbfCouple( firstFile, secondFile, onLoad, onProgress, onError );
-
-	        } else if ( firstFileExtension === iteeClient.FileFormat.Dbf.value && secondFileExtension === iteeClient.FileFormat.Shp.value ) {
-
-	            this._loadShpDbfCouple( secondFile, firstFile, onLoad, onProgress, onError );
-
-	        } else {
-
-	            this.loadSingleFile( files[ 0 ], onLoad, onProgress, onError );
-	            this.loadSingleFile( files[ 1 ], onLoad, onProgress, onError );
-
-	        }
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadAsc ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new ASCLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            onLoad,
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadDae ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new threeFull.ColladaLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            data => {
-
-	                onLoad( data.scene );
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadDbf ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new DBFLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            onLoad,
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadFbx ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new threeFull.FBXLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            object => {
-
-	                const position = file.position;
-	                if ( position ) {
-	                    object.position.set( position.x, position.y, position.z );
-	                }
-
-	                onLoad( object );
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadJson ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new threeFull.ObjectLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            onLoad,
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadObj ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new threeFull.OBJLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            onLoad,
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadShp ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new SHPLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            shapes => {
-
-	                const group = new threeFull.Group();
-
-	                for ( let shapeIndex = 0, numberOfShapes = shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
-
-	                    group.add(
-	                        new threeFull.Mesh(
-	                            new threeFull.ShapeBufferGeometry( shapes[ shapeIndex ] ),
-	                            new threeFull.MeshPhongMaterial( {
-	                                color: Math.random() * 0xffffff,
-	                                side:  threeFull.DoubleSide
-	                            } )
-	                        )
-	                    );
-
-	                }
-
-	                // Todo: make proper import system from different referentiels
-	                group.rotateX( iteeUtils.degreesToRadians( -90 ) );
-
-	                onLoad( group );
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param file
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadStl ( file, onLoad, onProgress, onError ) {
-
-	        const loader = new threeFull.STLLoader( this.manager );
-	        loader.load(
-	            file.url,
-	            geometry => {
-
-	                const material = new threeFull.MeshPhongMaterial();
-	                const object   = new threeFull.Mesh( geometry, material );
-
-	                const position = file.position;
-	                if ( position ) {
-	                    object.position.set( position.x, position.y, position.z );
-	                }
-
-	                onLoad( object );
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param objFile
-	     * @param mtlFile
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadObjMtlCouple ( objFile, mtlFile, onLoad, onProgress, onError ) {
-
-	        const mtlLoader = new threeFull.MTLLoader( this.manager );
-	        const objLoader = new threeFull.OBJLoader( this.manager );
-
-	        const texturePath = mtlFile.texturePath;
-	        if ( texturePath ) {
-	            mtlLoader.setTexturePath( texturePath );
-	        }
-
-	        mtlLoader.load(
-	            mtlFile.url,
-	            materials => {
-
-	                materials.preload();
-
-	                for ( let materialIndex = 0, numberOfMaterials = materials.materials.length ; materialIndex < numberOfMaterials ; materialIndex++ ) {
-	                    const material                       = materials.materials[ materialIndex ];
-	                    material.opacity                     = 1.0;
-	                    materials.materials[ materialIndex ] = material;
-	                }
-
-	                objLoader.setMaterials( materials );
-	                objLoader.load(
-	                    objFile.url,
-	                    onLoad,
-	                    onProgress,
-	                    onError
-	                );
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	    },
-
-	    /**
-	     *
-	     * @param shpFile
-	     * @param dbfFile
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @private
-	     */
-	    _loadShpDbfCouple ( shpFile, dbfFile, onLoad, onProgress, onError ) {
-
-	        let _shapes = undefined;
-	        let _dbf    = undefined;
-
-	        const shpLoader = new SHPLoader( this.manager );
-	        shpLoader.load(
-	            shpFile.url,
-	            shapes => {
-
-	                _shapes = shapes;
-	                checkEnd();
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	        const dbfLoader = new DBFLoader( this.manager );
-	        dbfLoader.load(
-	            dbfFile.url,
-	            dbf => {
-
-	                _dbf = dbf;
-	                checkEnd();
-
-	            },
-	            onProgress,
-	            onError
-	        );
-
-	        function checkEnd () {
-
-	            if ( !_shapes || !_dbf ) {
-	                return
-	            }
-
-	            const group = new threeFull.Group();
-	            group.name  = 'Locaux';
-
-	            let mesh = undefined;
-	            for ( let shapeIndex = 0, numberOfShapes = _shapes.length ; shapeIndex < numberOfShapes ; shapeIndex++ ) {
-
-	                mesh = new threeFull.Mesh(
-	                    new threeFull.ShapeBufferGeometry( _shapes[ shapeIndex ] ),
-	                    new threeFull.MeshPhongMaterial( {
-	                        color: 0xb0f2b6,
-	                        //                        color: Math.random() * 0xffffff,
-	                        side:  threeFull.DoubleSide
-	                    } )
-	                );
-
-	                const shapeName         = _dbf.datas[ shapeIndex ][ 'CODE' ];
-	                mesh.name               = shapeName;
-	                mesh.userData[ 'Code' ] = shapeName;
-
-	                group.add( mesh );
-
-	            }
-
-	            onLoad( group );
-
-	        }
-
-	    }
-
-	} );
-
-	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
 	 * @file Todo
 	 *
 	 * @example Todo
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    Camera,
+	//    EventDispatcher,
+	//    Object3D,
+	//    Spherical,
+	//    Vector2,
+	//    Vector3
+	//} from 'three-full'
 
-	const FRONT = new threeFull.Vector3( 0, 0, -1 );
-	const BACK  = new threeFull.Vector3( 0, 0, 1 );
-	const UP    = new threeFull.Vector3( 0, 1, 0 );
-	const DOWN  = new threeFull.Vector3( 0, -1, 0 );
-	const RIGHT = new threeFull.Vector3( 1, 0, 0 );
-	const LEFT  = new threeFull.Vector3( -1, 0, 0 );
+	const FRONT = new Vector3.Vector3( 0, 0, -1 );
+	const BACK  = new Vector3.Vector3( 0, 0, 1 );
+	const UP    = new Vector3.Vector3( 0, 1, 0 );
+	const DOWN  = new Vector3.Vector3( 0, -1, 0 );
+	const RIGHT = new Vector3.Vector3( 1, 0, 0 );
+	const LEFT  = new Vector3.Vector3( -1, 0, 0 );
 
 	const State = iteeUtils.toEnum( {
 	    None:     0,
@@ -3001,7 +2295,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    Path:        4
 	} );
 
-	class CameraControls extends threeFull.EventDispatcher {
+	class CameraControls extends EventDispatcher.EventDispatcher {
 
 	    constructor ( parameters = {} ) {
 
@@ -3009,7 +2303,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                logger:     iteeClient.DefaultLogger,
 	                camera:     null,
-	                target:     new threeFull.Object3D(),
+	                target:     new Object3D.Object3D(),
 	                mode:       CameraControlMode.Orbit,
 	                domElement: window
 	            }, ...parameters
@@ -3200,7 +2494,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-	        if ( !( value instanceof threeFull.Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+	        if ( !value.isCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
 	        this._camera = value;
 
@@ -3216,7 +2510,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-	        if ( !( value instanceof threeFull.Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+	        if ( !value.isObject3D ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
 	        this._target = value;
 
@@ -3230,7 +2524,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
-	        //        if ( !( value instanceof CameraControlMode ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TCameraControlMode enum.` ) }
+	        if ( !CameraControlMode.includes( value ) ) { throw new Error( `Mode cannot be an instance of ${ value.constructor.name }. Expect a value from TCameraControlMode enum.` ) }
 
 	        this._mode = value;
 
@@ -3520,12 +2814,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else if ( actionMap.lookAtFrontLeft.includes( key ) ) {
 
-	            this._lookAt( new threeFull.Vector3( -1, 0, -1 ).normalize() );
+	            this._lookAt( new Vector3.Vector3( -1, 0, -1 ).normalize() );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.lookAtFrontRight.includes( key ) ) {
 
-	            this._lookAt( new threeFull.Vector3( 1, 0, -1 ).normalize() );
+	            this._lookAt( new Vector3.Vector3( 1, 0, -1 ).normalize() );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.lookAtBack.includes( key ) ) {
@@ -3535,12 +2829,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else if ( actionMap.lookAtBackLeft.includes( key ) ) {
 
-	            this._lookAt( new threeFull.Vector3( -1, 0, 1 ).normalize() );
+	            this._lookAt( new Vector3.Vector3( -1, 0, 1 ).normalize() );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.lookAtBackRight.includes( key ) ) {
 
-	            this._lookAt( new threeFull.Vector3( 1, 0, 1 ).normalize() );
+	            this._lookAt( new Vector3.Vector3( 1, 0, 1 ).normalize() );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.lookAtUp.includes( key ) ) {
@@ -3626,19 +2920,19 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( numberOfPreviousTouches === 2 && numberOfCurrentTouches === 2 ) {
 
-	            const previousTouchA    = new threeFull.Vector2( previousTouches[ 0 ].clientX, previousTouches[ 0 ].clientY );
-	            const previousTouchB    = new threeFull.Vector2( previousTouches[ 1 ].clientX, previousTouches[ 1 ].clientY );
+	            const previousTouchA    = new Vector2.Vector2( previousTouches[ 0 ].clientX, previousTouches[ 0 ].clientY );
+	            const previousTouchB    = new Vector2.Vector2( previousTouches[ 1 ].clientX, previousTouches[ 1 ].clientY );
 	            const previousGap       = previousTouchA.distanceTo( previousTouchB );
-	            const previousCenter    = new threeFull.Vector2().addVectors( previousTouchA, previousTouchB ).divideScalar( 2 );
-	            const previousDirection = new threeFull.Vector2().subVectors( previousTouchA, previousTouchB ).normalize();
+	            const previousCenter    = new Vector2.Vector2().addVectors( previousTouchA, previousTouchB ).divideScalar( 2 );
+	            const previousDirection = new Vector2.Vector2().subVectors( previousTouchA, previousTouchB ).normalize();
 
-	            const currentTouchA    = new threeFull.Vector2( currentTouches[ 0 ].clientX, currentTouches[ 0 ].clientY );
-	            const currentTouchB    = new threeFull.Vector2( currentTouches[ 1 ].clientX, currentTouches[ 1 ].clientY );
+	            const currentTouchA    = new Vector2.Vector2( currentTouches[ 0 ].clientX, currentTouches[ 0 ].clientY );
+	            const currentTouchB    = new Vector2.Vector2( currentTouches[ 1 ].clientX, currentTouches[ 1 ].clientY );
 	            const currentGap       = currentTouchA.distanceTo( currentTouchB );
-	            const currentCenter    = new threeFull.Vector2().addVectors( currentTouchA, currentTouchB ).divideScalar( 2 );
-	            const currentDirection = new threeFull.Vector2().subVectors( previousTouchA, previousTouchB ).normalize();
+	            const currentCenter    = new Vector2.Vector2().addVectors( currentTouchA, currentTouchB ).divideScalar( 2 );
+	            const currentDirection = new Vector2.Vector2().subVectors( previousTouchA, previousTouchB ).normalize();
 
-	            const deltaPan  = new threeFull.Vector2().subVectors( currentCenter, previousCenter );
+	            const deltaPan  = new Vector2.Vector2().subVectors( currentCenter, previousCenter );
 	            const deltaZoom = currentGap - previousGap;
 	            const deltaRoll = currentDirection.dot( previousDirection );
 
@@ -3649,7 +2943,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else if ( numberOfPreviousTouches === 1 && numberOfCurrentTouches === 1 ) {
 
-	            const deltaRotate = new threeFull.Vector2(
+	            const deltaRotate = new Vector2.Vector2(
 	                currentTouches[ 0 ].clientX - previousTouches[ 0 ].clientX,
 	                currentTouches[ 0 ].clientY - previousTouches[ 0 ].clientY
 	            ).divideScalar( 10 ); //todo: to high sensibility else !!!
@@ -3879,7 +3173,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+	            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
 	        }
 
@@ -3926,7 +3220,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+	            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
 	        }
 
@@ -3950,7 +3244,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+	            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
 	        }
 
@@ -3974,7 +3268,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+	            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
 	        }
 
@@ -3998,7 +3292,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
+	            this.logger.error( `Unmanaged displacement for camera of type ${ this._camera.type }` );
 
 	        }
 
@@ -4036,7 +3330,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            const cameraPosition = this._camera.position;
 	            const targetPosition = this._target.position;
 	            const distanceTo     = cameraPosition.distanceTo( targetPosition );
-	            const targetToCamera = new threeFull.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
+	            const targetToCamera = new Vector3.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
 	            const rotateSpeed    = this.rotateSpeed;
 
 	            switch ( this._mode ) {
@@ -4048,13 +3342,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                    const normalizedX = delta.x;
 	                    const normalizedY = delta.y;
 
-	                    const newTargetPosition = new threeFull.Vector3( -normalizedX, normalizedY, 0 )
+	                    const newTargetPosition = new Vector3.Vector3( -normalizedX, normalizedY, 0 )
 	                        .applyQuaternion( this._camera.quaternion )
 	                        .multiplyScalar( rotateSpeed )
 	                        .add( targetPosition );
 
 	                    // Protect against owl head
-	                    const cameraToTargetDirection = new threeFull.Vector3().subVectors( newTargetPosition, cameraPosition ).normalize();
+	                    const cameraToTargetDirection = new Vector3.Vector3().subVectors( newTargetPosition, cameraPosition ).normalize();
 	                    const dotProductUp            = UP.clone().dot( cameraToTargetDirection );
 	                    const dotProductRight         = RIGHT.clone().dot( cameraToTargetDirection );
 
@@ -4077,14 +3371,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                case CameraControlMode.Orbit: {
 
 	                    // restrict theta and phi between desired limits
-	                    const spherical = new threeFull.Spherical().setFromVector3( targetToCamera );
+	                    const spherical = new Spherical.Spherical().setFromVector3( targetToCamera );
 
 	                    const newTheta  = spherical.theta + ( iteeUtils.degreesToRadians( -delta.x ) * rotateSpeed );
 	                    const newPhi    = spherical.phi + ( iteeUtils.degreesToRadians( -delta.y ) * rotateSpeed );
 	                    spherical.theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, newTheta ) );
 	                    spherical.phi   = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, newPhi ) );
 
-	                    const newPosition = new threeFull.Vector3().setFromSpherical( spherical )
+	                    const newPosition = new Vector3.Vector3().setFromSpherical( spherical )
 	                                                     .multiplyScalar( distanceTo )
 	                                                     .add( targetPosition );
 
@@ -4118,7 +3412,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            const cameraPosition = this._camera.position;
 	            const targetPosition = this._target.position;
 	            const distanceTo     = cameraPosition.distanceTo( targetPosition );
-	            const displacement   = new threeFull.Vector3( -delta.x, delta.y, 0 ).applyQuaternion( this._camera.quaternion )
+	            const displacement   = new Vector3.Vector3( -delta.x, delta.y, 0 ).applyQuaternion( this._camera.quaternion )
 	                                                                      .multiplyScalar( this.panSpeed * distanceTo );
 
 	            this._camera.position.add( displacement );
@@ -4139,7 +3433,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            const cameraPosition = this._camera.position;
 	            const targetPosition = this._target.position;
-	            const targetToCamera = new threeFull.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
+	            const targetToCamera = new Vector3.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
 	            const angle          = delta * this.rollSpeed;
 
 	            this._camera.up.applyAxisAngle( targetToCamera, angle );
@@ -4184,9 +3478,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                                                                .multiplyScalar( delta * this.zoomSpeed * distanceBetweenCameraAndTarget );
 
 	                    let cameraNextPosition                   = cameraPosition.clone().add( displacement );
-	                    const currentCameraToNextCameraDirection = new threeFull.Vector3().subVectors( cameraNextPosition, cameraPosition ).normalize();
-	                    const targetToCurrentCameraDirection     = new threeFull.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
-	                    const targetToNextCameraDirection        = new threeFull.Vector3().subVectors( cameraNextPosition, targetPosition ).normalize();
+	                    const currentCameraToNextCameraDirection = new Vector3.Vector3().subVectors( cameraNextPosition, cameraPosition ).normalize();
+	                    const targetToCurrentCameraDirection     = new Vector3.Vector3().subVectors( cameraPosition, targetPosition ).normalize();
+	                    const targetToNextCameraDirection        = new Vector3.Vector3().subVectors( cameraNextPosition, targetPosition ).normalize();
 	                    const dotCurrentDirection                = currentCameraToNextCameraDirection.dot( targetToCurrentCameraDirection );
 	                    const dotNextDirection                   = currentCameraToNextCameraDirection.dot( targetToNextCameraDirection );
 	                    const nextCameraToTargetSquaredDistance  = cameraNextPosition.distanceToSquared( targetPosition );
@@ -4216,15 +3510,15 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            const cameraPosition                 = this._camera.position;
 	            const targetPosition                 = this._target.position;
 	            const distanceBetweenCameraAndTarget = cameraPosition.distanceTo( targetPosition );
-	            const direction = ( delta > 0 ) ? FRONT.clone() : BACK.clone();
+	            const direction                      = ( delta > 0 ) ? FRONT.clone() : BACK.clone();
 	            const cameraDirection                = direction.applyQuaternion( this._camera.quaternion ).normalize();
 	            const displacement                   = cameraDirection.multiplyScalar( this.zoomSpeed * distanceBetweenCameraAndTarget );
 
 	            cameraPosition.add( displacement );
 
 	            const newDistance = cameraPosition.distanceTo( targetPosition );
-	            const zoomHeight = ( newDistance / 2 );
-	            const zoomWidth  = ( ( newDistance * aspect ) / 2 );
+	            const zoomHeight  = ( newDistance / 2 );
+	            const zoomWidth   = ( ( newDistance * aspect ) / 2 );
 
 	            this._camera.top    = zoomHeight;
 	            this._camera.bottom = -zoomHeight;
@@ -4352,7 +3646,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                if ( this._lockedTarget ) {
 
-	                    const displacement = new threeFull.Vector3().subVectors( this._currentPathPosition, this.camera.position );
+	                    const displacement = new Vector3.Vector3().subVectors( this._currentPathPosition, this.camera.position );
 	                    this._camera.position.add( displacement );
 	                    this._target.position.add( displacement );
 
@@ -4368,7 +3662,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                if ( this._lockedTarget ) {
 
-	                    const displacement = new threeFull.Vector3().subVectors( this._currentPathPosition, this.target.position );
+	                    const displacement = new Vector3.Vector3().subVectors( this._currentPathPosition, this.target.position );
 	                    this._camera.position.add( displacement );
 	                    this._target.position.add( displacement );
 
@@ -4398,14 +3692,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        const nextPositiveOffset   = this._currentPathOffset + this._cameraJump;
 	        const positiveOffset       = ( nextPositiveOffset < 1 ) ? nextPositiveOffset : 1;
 	        const positivePathPosition = this._currentPath.getPointAt( positiveOffset );
-	        const positiveDisplacement = new threeFull.Vector3().subVectors( positivePathPosition, currentPathPosition );
+	        const positiveDisplacement = new Vector3.Vector3().subVectors( positivePathPosition, currentPathPosition );
 	        const positiveDirection    = positiveDisplacement.clone().normalize();
 	        const positiveDot          = cameraDirection.dot( positiveDirection );
 
 	        const nextNegativeOffset   = this._currentPathOffset - this._cameraJump;
 	        const negativeOffset       = ( nextNegativeOffset > 0 ) ? nextNegativeOffset : 0;
 	        const negativePathPosition = this._currentPath.getPointAt( negativeOffset );
-	        const negativeDisplacement = new threeFull.Vector3().subVectors( negativePathPosition, currentPathPosition );
+	        const negativeDisplacement = new Vector3.Vector3().subVectors( negativePathPosition, currentPathPosition );
 	        const negativeDirection    = negativeDisplacement.clone().normalize();
 	        const negativeDot          = cameraDirection.dot( negativeDirection );
 
@@ -4467,7 +3761,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            } else {
 
 	                this.logger.warn( 'Reach path end.' );
-	                displacement = new threeFull.Vector3();
+	                displacement = new Vector3.Vector3();
 
 	            }
 
@@ -4541,7 +3835,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            } else {
 
 	                this.logger.warn( 'Reach path start.' );
-	                displacement = new threeFull.Vector3();
+	                displacement = new Vector3.Vector3();
 
 	            }
 
@@ -4564,7 +3858,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        } else {
 
 	            this.logger.warn( 'Unable to find correct next path position.' );
-	            displacement = new threeFull.Vector3();
+	            displacement = new Vector3.Vector3();
 
 	        }
 
@@ -4589,14 +3883,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            const distanceToStart = currentPathPosition.distanceToSquared( start );
 	            let startDisplacement = undefined;
 	            if ( distanceToStart < maxDistance ) {
-	                startDisplacement = new threeFull.Vector3().subVectors( path.getPointAt( jump ), start );
+	                startDisplacement = new Vector3.Vector3().subVectors( path.getPointAt( jump ), start );
 	            }
 
 	            const end           = path.getPointAt( 1 );
 	            const distanceToEnd = currentPathPosition.distanceToSquared( end );
 	            let endDisplacement = undefined;
 	            if ( distanceToEnd < maxDistance ) {
-	                endDisplacement = new threeFull.Vector3().subVectors( path.getPointAt( 1 - jump ), end );
+	                endDisplacement = new Vector3.Vector3().subVectors( path.getPointAt( 1 - jump ), end );
 	            }
 
 	            if ( startDisplacement || endDisplacement ) {
@@ -4855,601 +4149,6 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	//}
 
 	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file Todo
-	 *
-	 * @example Todo
-	 *
-	 */
-
-	const PI_2    = Math.PI / 2;
-	const STATE   = {
-	    NONE:   -1,
-	    ROTATE: 0,
-	    ZOOM:   1,
-	    PAN:    2
-	};
-	const xVector = new threeFull.Vector3( 1, 0, 0 );
-	const yVector = new threeFull.Vector3( 0, 1, 0 );
-
-	/**
-	 *
-	 * @param camera
-	 * @param domElement
-	 * @constructor
-	 */
-	function CameraPathController ( parameters = {} ) {
-
-	    const _parameters = {
-	        ...{
-	            camera:     null,
-	            target:     new threeFull.Object3D(),
-	            mode:       CameraControlMode.Orbit,
-	            domElement: document
-	        }, ...parameters
-	    };
-
-	    const self = this;
-
-	    let currentState = STATE.NONE;
-
-	    this.camera     = _parameters.camera;
-	    this.cameraJump = 0.0;
-
-	    this.paths               = [];
-	    this.pathsMap            = new Map();
-	    this.currentPath         = undefined;
-	    this.currentPathIndex    = -1;
-	    this.currentPathPosition = 0;
-
-	    this.domElement      = _parameters.domElement;
-	    this.forwardControl  = this.domElement.children[ 0 ].children[ 0 ].children[ 0 ];
-	    this.backwardControl = this.domElement.children[ 0 ].children[ 1 ].children[ 0 ];
-	    this.timeoutId       = undefined;
-
-	    // Set to false to disable controls
-	    this.enabled = false;
-
-	    // Set to false to disable zooming
-	    this.enableZoom = true;
-	    this.zoomSpeed  = 1.0;
-
-	    // Set to false to disable rotating
-	    this.enableRotate = true;
-	    this.rotateSpeed  = 0.0025;
-
-	    // Set to false to disable panning
-	    this.enablePan   = true;
-	    this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
-
-	    this.verticalOffset = 1.5;
-
-	    this.keysCodes = {
-	        forwardKeys:  [ iteeClient.Keys.Z, iteeClient.Keys.UP_ARROW ],
-	        backwardKeys: [ iteeClient.Keys.S, iteeClient.Keys.BOTTOM_ARROW ]
-	    };
-
-	    // Mouse
-	    let mouseQuat = {
-	        x: new threeFull.Quaternion(),
-	        y: new threeFull.Quaternion()
-	    };
-
-	    this.mouseButtons = {
-	        ORBIT: threeFull.MOUSE.LEFT,
-	        ZOOM:  threeFull.MOUSE.MIDDLE,
-	        PAN:   threeFull.MOUSE.RIGHT
-	    };
-
-	    this.orientation = {
-	        x: 0,
-	        y: 0
-	    };
-
-	    // Private methods
-	    function moveForward () {
-
-	        self.currentPathPosition += self.cameraJump;
-	        if ( self.currentPathPosition > 1 ) {
-
-	            iteeClient.DefaultLogger.log( 'reachEnd' );
-	            var indexOfNextPath           = self.pathsMap.get( self.currentPathIndex ).indexOfNextPath;
-	            var indexOfNextPathOfNextPath = self.pathsMap.get( indexOfNextPath ).indexOfNextPath;
-
-	            // If next path of the next path is the current path that means flows are in the same direction
-	            // so we need to inverse the current path position to 1 to start at the right position
-	            if ( indexOfNextPathOfNextPath === self.currentPathIndex ) {
-	                self.currentPathPosition = 1;
-	            } else {
-	                self.currentPathPosition = 0;
-	            }
-
-	            self.currentPathIndex = indexOfNextPath;
-	            self.currentPath      = self.paths[ indexOfNextPath ];
-
-	        }
-
-	        self.update();
-	        self.dispatchEvent( { type: 'move' } );
-
-	    }
-
-	    function moveBackward () {
-
-	        self.currentPathPosition -= self.cameraJump;
-	        if ( self.currentPathPosition < 0 ) {
-
-	            iteeClient.DefaultLogger.log( 'reachStart' );
-	            var indexOfPreviousPath               = self.pathsMap.get( self.currentPathIndex ).indexOfPreviousPath;
-	            var indexOfPreviousPathOfPreviousPath = self.pathsMap.get( indexOfPreviousPath ).indexOfPreviousPath;
-
-	            // If previous path of the previous path is the current path that means flows have the same origin
-	            // so we need to inverse the current path position to 0 to start at the right position
-	            if ( indexOfPreviousPathOfPreviousPath === self.currentPathIndex ) {
-	                self.currentPathPosition = 0;
-	            } else {
-	                self.currentPathPosition = 1;
-	            }
-
-	            self.currentPathIndex = indexOfPreviousPath;
-	            self.currentPath      = self.paths[ indexOfPreviousPath ];
-
-	        }
-
-	        self.update();
-	        self.dispatchEvent( { type: 'move' } );
-
-	    }
-
-	    function rotate ( event ) {
-
-	        //TLogger.log( 'handleMouseMoveRotate' )
-
-	        var movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
-	        var movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-
-	        var orientation = self.orientation;
-	        orientation.y += movementX * self.rotateSpeed;
-	        orientation.x += movementY * self.rotateSpeed;
-	        orientation.x   = Math.max( -PI_2, Math.min( PI_2, orientation.x ) );
-
-	        self.update();
-	        self.dispatchEvent( { type: 'rotate' } );
-
-	    }
-
-	    // Handlers
-	    function onKeyDown ( event ) {
-
-	        if ( self.enabled === false ) {
-	            return
-	        }
-
-	        var pathCurrentPoint = self.currentPath.getPointAt( self.currentPathPosition );
-	        var pathNextPoint    = undefined;
-	        var pathDirection    = undefined;
-	        if ( self.currentPathPosition + self.cameraJump > 1 ) { // end of path
-	            pathNextPoint = self.currentPath.getPointAt( self.currentPathPosition - self.cameraJump );
-	            pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize().negate();
-	        } else {
-	            pathNextPoint = self.currentPath.getPointAt( self.currentPathPosition + self.cameraJump );
-	            pathDirection = pathNextPoint.sub( pathCurrentPoint ).normalize();
-	        }
-
-	        var cameraDirection = self.camera.getWorldDirection().normalize();
-	        var dotProduct      = cameraDirection.dot( pathDirection );
-
-	        if ( dotProduct > 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
-
-	            event.preventDefault();
-	            moveForward();
-
-	        } else if ( dotProduct < 0 && self.keysCodes.forwardKeys.includes( event.keyCode ) ) {
-
-	            event.preventDefault();
-	            moveBackward();
-
-	        } else if ( dotProduct > 0 && self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-
-	            event.preventDefault();
-	            moveBackward();
-
-	        } else if ( dotProduct < 0 && self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-
-	            event.preventDefault();
-	            moveForward();
-
-	        } else {
-
-	            iteeClient.DefaultLogger.warn( `The key event is not implemented for key code: ${ event.keyCode }` );
-
-	        }
-
-	    }
-
-	    function onKeyUp ( event ) {
-
-	        if ( self.enabled === false ) {
-	            return
-	        }
-
-	        if ( !self.keysCodes.forwardKeys.includes( event.keyCode ) && !self.keysCodes.backwardKeys.includes( event.keyCode ) ) {
-	            return
-	        }
-
-	        if ( event ) { event.preventDefault(); }
-
-	        self.dispatchEvent( { type: 'moveEnd' } );
-
-	    }
-
-	    function onMouseDown ( event ) {
-
-	        if ( self.enabled === false ) {
-	            return
-	        }
-
-	        event.preventDefault();
-
-	        if ( self.enableRotate === true && event.button === self.mouseButtons.ORBIT ) {
-
-	            currentState = STATE.ROTATE;
-
-	        } else if ( self.enableZoom === true && event.button === self.mouseButtons.ZOOM ) ; else if ( self.enablePan === true && event.button === self.mouseButtons.PAN ) ;
-
-	    }
-
-	    function onMouseMove ( event ) {
-
-	        if ( self.enabled === false ) {
-	            return
-	        }
-
-	        event.preventDefault();
-
-	        if ( currentState === STATE.ROTATE ) {
-
-	            rotate( event );
-
-	        }
-
-	    }
-
-	    function onMouseUp ( event ) {
-
-	        if ( self.enabled === false ) {
-	            return
-	        }
-
-	        if ( event ) { event.preventDefault(); }
-
-	        currentState = STATE.NONE;
-
-	        self.dispatchEvent( { type: 'rotateEnd' } );
-
-	    }
-
-	    function onForward ( event ) {
-
-	        clearTimeout( self.timeoutId );
-
-	        event.keyCode = iteeClient.Keys.UP_ARROW;
-	        onKeyDown( event );
-
-	        self.timeoutId = setTimeout( onKeyUp.bind( self ), 750 );
-
-	    }
-
-	    function onBackward ( event ) {
-
-	        clearTimeout( self.timeoutId );
-
-	        event.keyCode = iteeClient.Keys.BOTTOM_ARROW;
-	        onKeyDown( event );
-
-	        self.timeoutId = setTimeout( onKeyUp.bind( self ), 750 );
-
-	    }
-
-	    // Public function that access private methods
-	    this.update = function () {
-
-	        if ( this.enabled === false ) {
-	            return
-	        }
-
-	        // Update position
-	        var newPosition        = this.currentPath.getPointAt( this.currentPathPosition );
-	        this.camera.position.x = newPosition.x;
-	        this.camera.position.y = newPosition.y + this.verticalOffset;
-	        this.camera.position.z = newPosition.z;
-
-	        // Update rotation
-	        mouseQuat.x.setFromAxisAngle( xVector, this.orientation.x );
-	        mouseQuat.y.setFromAxisAngle( yVector, this.orientation.y );
-	        this.camera.quaternion.copy( mouseQuat.y ).multiply( mouseQuat.x );
-
-	    };
-
-	    this.dispose = function () {
-
-	        this.domElement.removeEventListener( 'mousedown', onMouseDown, false );
-	        this.domElement.removeEventListener( 'mousemove', onMouseMove, false );
-	        this.domElement.removeEventListener( 'mouseup', onMouseUp, false );
-
-	        window.removeEventListener( 'keydown', onKeyDown, false );
-	        window.removeEventListener( 'keyup', onKeyUp, false );
-
-	    };
-
-	    this.domElement.addEventListener( 'mousedown', onMouseDown, false );
-	    this.domElement.addEventListener( 'mousemove', onMouseMove, false );
-	    this.domElement.addEventListener( 'mouseup', onMouseUp, false );
-
-	    window.addEventListener( 'keydown', onKeyDown, false );
-	    window.addEventListener( 'keyup', onKeyUp, false );
-
-	    this.forwardControl.addEventListener( 'click', onForward, false );
-	    this.backwardControl.addEventListener( 'click', onBackward, false );
-
-	}
-
-	Object.assign( CameraPathController.prototype, threeFull.EventDispatcher.prototype, {
-
-	    get camera () {
-
-	        return this._camera
-
-	    },
-
-	    set camera ( value ) {
-
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-	        if ( !( value instanceof threeFull.Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
-
-	        this._camera = value;
-
-	    },
-
-	    setCamera ( value ) {
-
-	        this.camera = value;
-	        return this
-
-	    },
-
-	    /**
-	     *
-	     * @param path
-	     */
-	    setPath ( path ) {
-
-	        this.currentPath = path;
-	        this.cameraJump  = 1 / path.getLength();
-
-	    },
-
-	    /**
-	     *
-	     * @param paths
-	     * @param nameOfFirstPathToFollow
-	     */
-	    setPaths ( paths, nameOfFirstPathToFollow ) {
-
-	        this.paths            = paths;
-	        this.currentPathIndex = 0;
-
-	        var pathToFollow = this.paths[ this.currentPathIndex ];
-
-	        var numberOfPaths = this.paths.length;
-
-	        var firstPath      = undefined;
-	        var startFirstPath = undefined;
-	        var endFirstPath   = undefined;
-
-	        var secondPath      = undefined;
-	        var startSecondPath = undefined;
-	        var endSecondPath   = undefined;
-
-	        for ( var firstPathIndex = 0 ; firstPathIndex < numberOfPaths ; firstPathIndex++ ) {
-
-	            firstPath      = this.paths[ firstPathIndex ];
-	            startFirstPath = firstPath.getPointAt( 0 );
-	            endFirstPath   = firstPath.getPointAt( 1 );
-
-	            if ( nameOfFirstPathToFollow && firstPath.name === nameOfFirstPathToFollow ) {
-	                pathToFollow          = firstPath;
-	                this.currentPathIndex = firstPathIndex;
-	            }
-
-	            var closestStartDistance    = Infinity;
-	            var closestEndDistance      = Infinity;
-	            var indexOfClosestStartPath = undefined;
-	            var indexOfClosestEndPath   = undefined;
-
-	            for ( var secondPathIndex = 0 ; secondPathIndex < numberOfPaths ; secondPathIndex++ ) {
-
-	                if ( firstPathIndex === secondPathIndex ) {
-	                    continue
-	                }
-
-	                secondPath      = this.paths[ secondPathIndex ];
-	                startSecondPath = secondPath.getPointAt( 0 );
-	                endSecondPath   = secondPath.getPointAt( 1 );
-
-	                if ( startFirstPath.distanceTo( startSecondPath ) < closestStartDistance ) {
-
-	                    closestStartDistance    = startFirstPath.distanceTo( startSecondPath );
-	                    indexOfClosestStartPath = secondPathIndex;
-
-	                }
-
-	                if ( startFirstPath.distanceTo( endSecondPath ) < closestStartDistance ) {
-
-	                    closestStartDistance    = startFirstPath.distanceTo( endSecondPath );
-	                    indexOfClosestStartPath = secondPathIndex;
-
-	                }
-
-	                if ( endFirstPath.distanceTo( startSecondPath ) < closestEndDistance ) {
-
-	                    closestEndDistance    = endFirstPath.distanceTo( startSecondPath );
-	                    indexOfClosestEndPath = secondPathIndex;
-
-	                }
-
-	                if ( endFirstPath.distanceTo( endSecondPath ) < closestEndDistance ) {
-
-	                    closestEndDistance    = endFirstPath.distanceTo( endSecondPath );
-	                    indexOfClosestEndPath = secondPathIndex;
-
-	                }
-
-	            }
-
-	            this.pathsMap.set( firstPathIndex, {
-	                indexOfPreviousPath: indexOfClosestStartPath,
-	                indexOfNextPath:     indexOfClosestEndPath
-	            } );
-
-	        }
-
-	        //        TLogger.log( this.pathsMap )
-
-	        this.setPath( pathToFollow );
-
-	    },
-
-	    /**
-	     *
-	     * @param quat
-	     */
-	    setMouseQuat ( quat ) {
-
-	        this.orientation.y = Math.asin( quat.y ) * 2;
-	        this.orientation.x = 0;
-
-	    },
-
-	    /**
-	     *
-	     */
-	    getCurrentPathPosition () {
-
-	        return this.currentPath.getPointAt( this.currentPathPosition )
-
-	    },
-
-	    /**
-	     *
-	     * @return {undefined}
-	     */
-	    getNextPathPosition () {
-
-	        var nextPosition = undefined;
-
-	        if ( this.currentPathPosition + this.cameraJump > 1 ) { // end of path
-	            nextPosition = this.currentPath.getPointAt( this.currentPathPosition - this.cameraJump ).negate();
-	        } else {
-	            nextPosition = this.currentPath.getPointAt( this.currentPathPosition + this.cameraJump );
-	        }
-
-	        return nextPosition
-
-	    },
-
-	    /**
-	     *
-	     * @return {number}
-	     */
-	    getDistanceFromStart () {
-
-	        //Linear distance
-	        //		var firstPosition = this.currentPath.getPointAt( 0 )
-	        //		var currentPosition = this.currentPath.getPointAt( this.currentPathPosition )
-	        //
-	        //		return firstPosition.distanceTo( currentPosition )
-
-	        // Accordingly to the fact than currentPathPosition is an multiple of cameraJump that is equals to 1 / path.getLength()
-	        // Todo: need to go the projection to Tronçon
-	        return this.currentPathPosition * this.currentPath.getLength()
-
-	    },
-
-	    /**
-	     *
-	     */
-	    lookAtPath () {
-
-	        // Set lookup point at the camera height
-	        var nextPosition = this.getNextPathPosition();
-	        nextPosition.y   = this.camera.position.y;
-
-	        this.camera.lookAt( nextPosition );
-
-	        // We need to update local orientation else on first move event the camera will return to default position !
-	        this.setMouseQuat( this.camera.quaternion );
-
-	    },
-
-	    /**
-	     *
-	     * @param position
-	     */
-	    goTo ( position ) {
-
-	        //Todo: Should use 2D instead of 3D !
-
-	        var numberOfPoints    = undefined;
-	        var currentPath       = undefined;
-	        var currentPathPoints = undefined;
-	        var closestPointIndex = undefined;
-	        var closestPath       = undefined;
-	        var closestPathIndex  = undefined;
-	        var currentDistance   = undefined;
-	        var closestDistance   = Infinity;
-
-	        for ( var pathIndex = 0, numberOfPath = this.paths.length ; pathIndex < numberOfPath ; pathIndex++ ) {
-
-	            currentPath       = this.paths[ pathIndex ];
-	            numberOfPoints    = Math.floor( currentPath.getLength() );
-	            currentPathPoints = currentPath.getSpacedPoints( numberOfPoints );
-
-	            for ( var pointIndex = 0 ; pointIndex < numberOfPoints ; pointIndex++ ) {
-
-	                currentDistance = position.distanceTo( currentPathPoints[ pointIndex ] );
-
-	                if ( currentDistance < closestDistance ) {
-
-	                    closestDistance   = currentDistance;
-	                    closestPathIndex  = pathIndex;
-	                    closestPath       = currentPath;
-	                    closestPointIndex = pointIndex;
-
-	                }
-
-	            }
-
-	        }
-
-	        this.setPath( closestPath );
-	        this.currentPathIndex    = closestPathIndex;
-	        this.currentPathPosition = this.cameraJump * closestPointIndex;
-
-	        this.lookAtPath();
-	        this.update();
-
-	        this.dispatchEvent( { type: 'moveEnd' } );
-	        this.dispatchEvent( { type: 'rotateEnd' } );
-
-	    }
-
-	} );
-
-	/**
 	 * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
@@ -5458,54 +4157,82 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * @example Todo
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    Box3,
+	//    BoxBufferGeometry,
+	//    BufferGeometry,
+	//    Camera,
+	//    ConeBufferGeometry,
+	//    CylinderBufferGeometry,
+	//    DoubleSide,
+	//    EdgesGeometry,
+	//    Euler,
+	//    Float32BufferAttribute,
+	//    Line,
+	//    LineBasicMaterial,
+	//    LineSegments,
+	//    Mesh,
+	//    MeshBasicMaterial,
+	//    Object3D,
+	//    OctahedronBufferGeometry,
+	//    Plane,
+	//    PlaneBufferGeometry,
+	//    Quaternion,
+	//    Raycaster,
+	//    SphereBufferGeometry,
+	//    TorusBufferGeometry,
+	//    Vector2,
+	//    Vector3
+	//} from 'three-full'
 
 	// Basic Geometries
 
-	class LineGeometry extends threeFull.BufferGeometry {
+	class LineGeometry extends BufferGeometry.BufferGeometry {
 
-	    constructor ( pointA = new threeFull.Vector3( 0, 0, 0 ), pointB = new threeFull.Vector3( 1, 0, 0 ) ) {
+	    constructor ( pointA = new Vector3.Vector3( 0, 0, 0 ), pointB = new Vector3.Vector3( 1, 0, 0 ) ) {
 	        super();
 
 	        this.type = 'LineGeometry';
-	        this.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+	        this.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
 
 	    }
 
 	}
 
-	class ClippingBox extends threeFull.LineSegments {
+	class ClippingBox extends LineSegments.LineSegments {
 
 	    constructor () {
 	        super();
 
 	        this.margin = 0.01;
 
-	        this.geometry         = new threeFull.EdgesGeometry( new threeFull.BoxBufferGeometry( 2, 2, 2 ) );
-	        this.material         = new threeFull.LineBasicMaterial( {
+	        this.geometry         = new EdgesGeometry.EdgesGeometry( new BoxGeometry.BoxBufferGeometry( 2, 2, 2 ) );
+	        this.material         = new LineBasicMaterial.LineBasicMaterial( {
 	            color: 0xffffff
 	        } );
 	        this.matrixAutoUpdate = false;
 
 	        // Planes
 	        this.normalPlanes = {
-	            normalRightSide:  new threeFull.Vector3( -1, 0, 0 ),
-	            normalLeftSide:   new threeFull.Vector3( 1, 0, 0 ),
-	            normalFrontSide:  new threeFull.Vector3( 0, -1, 0 ),
-	            normalBackSide:   new threeFull.Vector3( 0, 1, 0 ),
-	            normalTopSide:    new threeFull.Vector3( 0, 0, -1 ),
-	            normalBottomSide: new threeFull.Vector3( 0, 0, 1 )
+	            normalRightSide:  new Vector3.Vector3( -1, 0, 0 ),
+	            normalLeftSide:   new Vector3.Vector3( 1, 0, 0 ),
+	            normalFrontSide:  new Vector3.Vector3( 0, -1, 0 ),
+	            normalBackSide:   new Vector3.Vector3( 0, 1, 0 ),
+	            normalTopSide:    new Vector3.Vector3( 0, 0, -1 ),
+	            normalBottomSide: new Vector3.Vector3( 0, 0, 1 )
 	        };
 
 	        this.planes = {
-	            rightSidePlane:  new threeFull.Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
-	            leftSidePlane:   new threeFull.Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
-	            frontSidePlane:  new threeFull.Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
-	            backSidePlane:   new threeFull.Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
-	            topSidePlane:    new threeFull.Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
-	            bottomSidePlane: new threeFull.Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
+	            rightSidePlane:  new Plane.Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
+	            leftSidePlane:   new Plane.Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
+	            frontSidePlane:  new Plane.Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
+	            backSidePlane:   new Plane.Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
+	            topSidePlane:    new Plane.Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
+	            bottomSidePlane: new Plane.Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
 	        };
 
-	        this._boundingBox = new threeFull.Box3();
+	        this._boundingBox = new Box3.Box3();
 
 	    }
 
@@ -5580,7 +4307,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	// Materials
 
-	class HighlightableMaterial extends threeFull.MeshBasicMaterial {
+	class HighlightableMaterial extends MeshBasicMaterial.MeshBasicMaterial {
 
 	    constructor ( parameters ) {
 	        super( parameters );
@@ -5590,7 +4317,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.depthTest   = false;
 	        this.depthWrite  = false;
 	        this.fog         = false;
-	        this.side        = threeFull.DoubleSide;
+	        this.side        = constants.DoubleSide;
 	        this.transparent = true;
 	        this.oldColor    = this.color.clone();
 
@@ -5619,7 +4346,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	}
 
-	class HighlightableLineMaterial extends threeFull.LineBasicMaterial {
+	class HighlightableLineMaterial extends LineBasicMaterial.LineBasicMaterial {
 
 	    constructor ( parameters ) {
 	        super( parameters );
@@ -5660,19 +4387,19 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	// Pickers
 
-	class AbstractHitbox extends threeFull.Mesh {
+	class AbstractHitbox extends Mesh.Mesh {
 
 	    constructor ( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
-	                geometry: new threeFull.BufferGeometry(),
-	                material: new threeFull.MeshBasicMaterial( {
+	                geometry: new BufferGeometry.BufferGeometry(),
+	                material: new MeshBasicMaterial.MeshBasicMaterial( {
 	                    visible:    false,
 	                    depthTest:  false,
 	                    depthWrite: false,
 	                    fog:        false,
-	                    side:       threeFull.DoubleSide
+	                    side:       constants.DoubleSide
 	                    //                    opacity:     0.0,
 	                    //                    transparent: true
 	                } )
@@ -5691,7 +4418,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    constructor ( parameters = {} ) {
 
-	        const cylinderGeometry = new threeFull.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
+	        const cylinderGeometry = new CylinderGeometry.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
 	        cylinderGeometry.translate( 0, 0.5, 0 );
 	        const _parameters = {
 	            ...{
@@ -5721,8 +4448,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            0, 1, 2,
 	            2, 3, 0
 	        ];
-	        const planeBufferGeometry = new threeFull.BufferGeometry();
-	        planeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
+	        const planeBufferGeometry = new BufferGeometry.BufferGeometry();
+	        planeBufferGeometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( planePositions, 3 ) );
 	        planeBufferGeometry.setIndex( planeIndexes );
 
 	        const _parameters = {
@@ -5754,8 +4481,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            0, 1, 2,
 	            2, 3, 0
 	        ];
-	        const positionBufferAttribute = new threeFull.Float32BufferAttribute( lozengePositions, 3 );
-	        const lozengeBufferGeometry   = new threeFull.BufferGeometry();
+	        const positionBufferAttribute = new BufferAttribute.Float32BufferAttribute( lozengePositions, 3 );
+	        const lozengeBufferGeometry   = new BufferGeometry.BufferGeometry();
 	        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
 	        lozengeBufferGeometry.setIndex( lozengeIndexes );
 
@@ -5779,7 +4506,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const _parameters = {
 	            ...{
-	                geometry: new threeFull.OctahedronBufferGeometry( 1.2, 0 )
+	                geometry: new OctahedronGeometry.OctahedronBufferGeometry( 1.2, 0 )
 	            }, ...parameters
 	        };
 
@@ -5797,7 +4524,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const _parameters = {
 	            ...{
-	                geometry: new threeFull.SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
+	                geometry: new SphereGeometry.SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
 	            }, ...parameters
 	        };
 
@@ -5815,7 +4542,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const _parameters = {
 	            ...{
-	                geometry: new threeFull.TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI )
+	                geometry: new TorusGeometry.TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI )
 	            }, ...parameters
 	        };
 
@@ -5828,7 +4555,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	}
 
 	// Handles
-	class AbstractHandle extends threeFull.Object3D {
+	class AbstractHandle extends Object3D.Object3D {
 
 	    constructor ( parameters = {} ) {
 
@@ -5847,7 +4574,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.color  = _parameters.color;
 	        this.hitbox = _parameters.hitbox;
 
-	        this.baseQuaternion = new threeFull.Quaternion();
+	        this.baseQuaternion = new Quaternion.Quaternion();
 
 	    }
 
@@ -5954,7 +4681,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                color:     0xffffff,
 	                hitbox:    new CylindricaHitbox(),
-	                direction: new threeFull.Vector3( 0, 1, 0 )
+	                direction: new Vector3.Vector3( 0, 1, 0 )
 	            }, ...parameters
 	        };
 
@@ -5962,16 +4689,16 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.isTranslateHandle = true;
 	        this.type              = 'TranslateHandle';
 
-	        const lineGeometry    = new LineGeometry( new threeFull.Vector3( 0, 0, 0 ), new threeFull.Vector3( 0, 0.8, 0 ) );
+	        const lineGeometry    = new LineGeometry( new Vector3.Vector3( 0, 0, 0 ), new Vector3.Vector3( 0, 0.8, 0 ) );
 	        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
-	        const line            = new threeFull.Line( lineGeometry, lineMaterial );
+	        const line            = new Line.Line( lineGeometry, lineMaterial );
 	        line.matrixAutoUpdate = false;
 	        this.add( line );
 
-	        const coneGeometry = new threeFull.ConeBufferGeometry( 0.05, 0.2, 12, 1, false );
+	        const coneGeometry = new ConeGeometry.ConeBufferGeometry( 0.05, 0.2, 12, 1, false );
 	        coneGeometry.translate( 0, 0.9, 0 );
 	        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } );
-	        const cone            = new threeFull.Mesh( coneGeometry, coneMaterial );
+	        const cone            = new Mesh.Mesh( coneGeometry, coneMaterial );
 	        cone.matrixAutoUpdate = false;
 	        this.add( cone );
 
@@ -5989,7 +4716,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+	        if ( !( value instanceof Vector3.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
 
@@ -6003,7 +4730,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            const axis    = new threeFull.Vector3( value.z, 0, -value.x ).normalize();
+	            const axis    = new Vector3.Vector3( value.z, 0, -value.x ).normalize();
 	            const radians = Math.acos( value.y );
 
 	            this.quaternion.setFromAxisAngle( axis, radians );
@@ -6049,7 +4776,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                color:     0xffffff,
 	                hitbox:    new CylindricaHitbox(),
-	                direction: new threeFull.Vector3( 0, 1, 0 )
+	                direction: new Vector3.Vector3( 0, 1, 0 )
 	            }, ...parameters
 	        };
 
@@ -6057,16 +4784,16 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.isScaleHandle = true;
 	        this.type          = 'ScaleHandle';
 
-	        const lineGeometry    = new LineGeometry( new threeFull.Vector3( 0, 0, 0 ), new threeFull.Vector3( 0, 0.88, 0 ) );
+	        const lineGeometry    = new LineGeometry( new Vector3.Vector3( 0, 0, 0 ), new Vector3.Vector3( 0, 0.88, 0 ) );
 	        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
-	        const line            = new threeFull.Line( lineGeometry, lineMaterial );
+	        const line            = new Line.Line( lineGeometry, lineMaterial );
 	        line.matrixAutoUpdate = false;
 	        this.add( line );
 
-	        const boxGeometry = new threeFull.BoxBufferGeometry( 0.12, 0.12, 0.12 );
+	        const boxGeometry = new BoxGeometry.BoxBufferGeometry( 0.12, 0.12, 0.12 );
 	        boxGeometry.translate( 0, 0.94, 0 );
 	        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } );
-	        const box            = new threeFull.Mesh( boxGeometry, boxMaterial );
+	        const box            = new Mesh.Mesh( boxGeometry, boxMaterial );
 	        box.matrixAutoUpdate = false;
 	        this.add( box );
 
@@ -6084,7 +4811,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+	        if ( !( value instanceof Vector3.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
 
@@ -6098,7 +4825,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            const axis    = new threeFull.Vector3( value.z, 0, -value.x ).normalize();
+	            const axis    = new Vector3.Vector3( value.z, 0, -value.x ).normalize();
 	            const radians = Math.acos( value.y );
 
 	            this.quaternion.setFromAxisAngle( axis, radians );
@@ -6168,7 +4895,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                color:     0xffffff,
 	                hitbox:    new PlanarHitbox(),
-	                direction: new threeFull.Vector3( 0, 1, 0 )
+	                direction: new Vector3.Vector3( 0, 1, 0 )
 	            }, ...parameters
 	        };
 
@@ -6177,14 +4904,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.type          = 'PlaneHandle';
 
 	        // Edge line
-	        const lineBufferGeometry = new threeFull.BufferGeometry();
-	        lineBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
+	        const lineBufferGeometry = new BufferGeometry.BufferGeometry();
+	        lineBufferGeometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
 
 	        const lineMaterial = new HighlightableLineMaterial( {
 	            color: _parameters.color
 	        } );
 
-	        const line            = new threeFull.Line( lineBufferGeometry, lineMaterial );
+	        const line            = new Line.Line( lineBufferGeometry, lineMaterial );
 	        line.matrixAutoUpdate = false;
 	        this.add( line );
 
@@ -6199,8 +4926,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            0, 1, 2,
 	            2, 3, 0
 	        ];
-	        const planeBufferGeometry = new threeFull.BufferGeometry();
-	        planeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( planePositions, 3 ) );
+	        const planeBufferGeometry = new BufferGeometry.BufferGeometry();
+	        planeBufferGeometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( planePositions, 3 ) );
 	        planeBufferGeometry.setIndex( planeIndexes );
 
 	        const planeMaterial    = new HighlightableMaterial( {
@@ -6208,17 +4935,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            transparent: true,
 	            opacity:     0.35
 	        } );
-	        const plane            = new threeFull.Mesh( planeBufferGeometry, planeMaterial );
+	        const plane            = new Mesh.Mesh( planeBufferGeometry, planeMaterial );
 	        plane.matrixAutoUpdate = false;
 	        this.add( plane );
 
-	        this.xAxis = new threeFull.Vector3( 1, 0, 0 );
-	        this.yAxis = new threeFull.Vector3( 0, 1, 0 );
-	        this.zAxis = new threeFull.Vector3( 0, 0, 1 );
+	        this.xAxis = new Vector3.Vector3( 1, 0, 0 );
+	        this.yAxis = new Vector3.Vector3( 0, 1, 0 );
+	        this.zAxis = new Vector3.Vector3( 0, 0, 1 );
 
-	        this.xDirection = new threeFull.Vector3( _parameters.direction.x, 0, 0 );
-	        this.yDirection = new threeFull.Vector3( 0, _parameters.direction.y, 0 );
-	        this.zDirection = new threeFull.Vector3( 0, 0, _parameters.direction.z );
+	        this.xDirection = new Vector3.Vector3( _parameters.direction.x, 0, 0 );
+	        this.yDirection = new Vector3.Vector3( 0, _parameters.direction.y, 0 );
+	        this.zDirection = new Vector3.Vector3( 0, 0, _parameters.direction.z );
 	        this.direction  = _parameters.direction;
 
 	    }
@@ -6233,7 +4960,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+	        if ( !( value instanceof Vector3.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
 
@@ -6244,9 +4971,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        super.update( cameraDirection );
 
 	        // Decompose direction by main orientation
-	        const xDirection = new threeFull.Vector3( this._direction.x, 0, 0 );
-	        const yDirection = new threeFull.Vector3( 0, this._direction.y, 0 );
-	        const zDirection = new threeFull.Vector3( 0, 0, this._direction.z );
+	        const xDirection = new Vector3.Vector3( this._direction.x, 0, 0 );
+	        const yDirection = new Vector3.Vector3( 0, this._direction.y, 0 );
+	        const zDirection = new Vector3.Vector3( 0, 0, this._direction.z );
 	        const xDot       = xDirection.dot( cameraDirection );
 	        const yDot       = yDirection.dot( cameraDirection );
 	        const zDot       = zDirection.dot( cameraDirection );
@@ -6386,7 +5113,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                color:     0xffffff,
 	                hitbox:    new LozengeHitbox(),
-	                direction: new threeFull.Vector3( 1, 1, 0 )
+	                direction: new Vector3.Vector3( 1, 1, 0 )
 	            }, ...parameters
 	        };
 
@@ -6395,14 +5122,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.type          = 'PlaneHandle';
 
 	        // Edge line
-	        const lineBufferGeometry = new threeFull.BufferGeometry();
-	        lineBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
+	        const lineBufferGeometry = new BufferGeometry.BufferGeometry();
+	        lineBufferGeometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
 
 	        const lineMaterial = new HighlightableLineMaterial( {
 	            color: _parameters.color
 	        } );
 
-	        const line            = new threeFull.Line( lineBufferGeometry, lineMaterial );
+	        const line            = new Line.Line( lineBufferGeometry, lineMaterial );
 	        line.matrixAutoUpdate = false;
 	        this.add( line );
 
@@ -6417,8 +5144,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            0, 1, 2,
 	            2, 3, 0
 	        ];
-	        const lozengeBufferGeometry = new threeFull.BufferGeometry();
-	        lozengeBufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( lozengePositions, 3 ) );
+	        const lozengeBufferGeometry = new BufferGeometry.BufferGeometry();
+	        lozengeBufferGeometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( lozengePositions, 3 ) );
 	        lozengeBufferGeometry.setIndex( lozengeIndexes );
 
 	        const lozengeMaterial    = new HighlightableMaterial( {
@@ -6426,17 +5153,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            transparent: true,
 	            opacity:     0.35
 	        } );
-	        const lozenge            = new threeFull.Mesh( lozengeBufferGeometry, lozengeMaterial );
+	        const lozenge            = new Mesh.Mesh( lozengeBufferGeometry, lozengeMaterial );
 	        lozenge.matrixAutoUpdate = false;
 	        this.add( lozenge );
 
 	        this.direction  = _parameters.direction;
-	        this.xDirection = new threeFull.Vector3( _parameters.direction.x, 0, 0 );
-	        this.yDirection = new threeFull.Vector3( 0, _parameters.direction.y, 0 );
-	        this.zDirection = new threeFull.Vector3( 0, 0, _parameters.direction.z );
-	        this.xAxis      = new threeFull.Vector3( 1, 0, 0 );
-	        this.yAxis      = new threeFull.Vector3( 0, 1, 0 );
-	        this.zAxis      = new threeFull.Vector3( 0, 0, 1 );
+	        this.xDirection = new Vector3.Vector3( _parameters.direction.x, 0, 0 );
+	        this.yDirection = new Vector3.Vector3( 0, _parameters.direction.y, 0 );
+	        this.zDirection = new Vector3.Vector3( 0, 0, _parameters.direction.z );
+	        this.xAxis      = new Vector3.Vector3( 1, 0, 0 );
+	        this.yAxis      = new Vector3.Vector3( 0, 1, 0 );
+	        this.zAxis      = new Vector3.Vector3( 0, 0, 1 );
 	    }
 
 	    get direction () {
@@ -6449,7 +5176,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+	        if ( !( value instanceof Vector3.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
 
@@ -6578,22 +5305,22 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.isOmnidirectionalHandle = true;
 	        this.type                    = 'OmnidirectionalHandle';
 
-	        const octahedronGeometry    = new threeFull.OctahedronBufferGeometry( 0.1, 0 );
+	        const octahedronGeometry    = new OctahedronGeometry.OctahedronBufferGeometry( 0.1, 0 );
 	        const octahedronMaterial    = new HighlightableMaterial( {
 	            color:       _parameters.color,
 	            transparent: true,
 	            opacity:     0.55
 	        } );
-	        const octahedron            = new threeFull.Mesh( octahedronGeometry, octahedronMaterial );
+	        const octahedron            = new Mesh.Mesh( octahedronGeometry, octahedronMaterial );
 	        octahedron.matrixAutoUpdate = false;
 	        this.add( octahedron );
 
-	        const edgesGeometry    = new threeFull.EdgesGeometry( octahedronGeometry );
+	        const edgesGeometry    = new EdgesGeometry.EdgesGeometry( octahedronGeometry );
 	        const edgesMaterial    = new HighlightableLineMaterial( {
 	            color:     _parameters.color,
 	            linewidth: 4
 	        } );
-	        const edges            = new threeFull.LineSegments( edgesGeometry, edgesMaterial );
+	        const edges            = new LineSegments.LineSegments( edgesGeometry, edgesMaterial );
 	        edges.matrixAutoUpdate = false;
 	        this.add( edges );
 
@@ -6610,7 +5337,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	// Gizmos
 
-	class AbstractGizmo extends threeFull.Object3D {
+	class AbstractGizmo extends Object3D.Object3D {
 
 	    constructor () {
 
@@ -6623,20 +5350,20 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    init () {
 
-	        this.handles                  = new threeFull.Object3D();
+	        this.handles                  = new Object3D.Object3D();
 	        this.handles.matrixAutoUpdate = false;
 
 	        this.add( this.handles );
 
 	        //// PLANES
-	        const planeGeometry                  = new threeFull.PlaneBufferGeometry( 50, 50, 2, 2 );
-	        const planeMaterial                  = new threeFull.MeshBasicMaterial( {
-	            side:    threeFull.DoubleSide,
+	        const planeGeometry                  = new PlaneGeometry.PlaneBufferGeometry( 50, 50, 2, 2 );
+	        const planeMaterial                  = new MeshBasicMaterial.MeshBasicMaterial( {
+	            side:    constants.DoubleSide,
 	            visible: false
 	            //            transparent: true,
 	            //            opacity:     0.1
 	        } );
-	        this.intersectPlane                  = new threeFull.Mesh( planeGeometry, planeMaterial );
+	        this.intersectPlane                  = new Mesh.Mesh( planeGeometry, planeMaterial );
 	        this.intersectPlane.matrixAutoUpdate = false;
 	        this.intersectPlane.visible          = true;
 
@@ -6757,35 +5484,35 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            X: new TranslateHandle( {
 	                color:     0xaa0000,
-	                direction: new threeFull.Vector3( 1, 0, 0 )
+	                direction: new Vector3.Vector3( 1, 0, 0 )
 	            } ),
 
 	            Y: new TranslateHandle( {
 	                color:     0x00aa00,
-	                direction: new threeFull.Vector3( 0, 1, 0 )
+	                direction: new Vector3.Vector3( 0, 1, 0 )
 	            } ),
 
 	            Z: new TranslateHandle( {
 	                color:     0x0000aa,
-	                direction: new threeFull.Vector3( 0, 0, 1 )
+	                direction: new Vector3.Vector3( 0, 0, 1 )
 	            } ),
 
 	            XY: new LozengeHandle( {
 	                color:     0xaaaa00,
-	                direction: new threeFull.Vector3( 1, 1, 0 )
+	                direction: new Vector3.Vector3( 1, 1, 0 )
 	            } ).setScale( 0.33, 0.33, 1.0 ),
 
 	            YZ: new LozengeHandle( {
 	                color:     0x00aaaa,
-	                direction: new threeFull.Vector3( 0, 1, 1 )
+	                direction: new Vector3.Vector3( 0, 1, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
+	               .setRotationFromAxisAndAngle( new Vector3.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
 
 	            XZ: new LozengeHandle( {
 	                color:     0xaa00aa,
-	                direction: new threeFull.Vector3( 1, 0, 1 )
+	                direction: new Vector3.Vector3( 1, 0, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
+	               .setRotationFromAxisAndAngle( new Vector3.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
 
 	            XYZ: new OctahedricalHandle( {
 	                color: 0xaaaaaa
@@ -6809,7 +5536,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const CircleGeometry = ( radius, facing, arc ) => {
 
-	            const geometry = new threeFull.BufferGeometry();
+	            const geometry = new BufferGeometry.BufferGeometry();
 	            let vertices   = [];
 	            arc            = arc ? arc : 1;
 
@@ -6827,25 +5554,25 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            }
 
-	            geometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( vertices, 3 ) );
+	            geometry.setAttribute( 'position', new BufferAttribute.Float32BufferAttribute( vertices, 3 ) );
 	            return geometry
 
 	        };
 
 	        this.handleGizmos = {
 
-	            X: [ [ new threeFull.Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+	            X: [ [ new Line.Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+	                 [ new Mesh.Mesh( new OctahedronGeometry.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-	            Y: [ [ new threeFull.Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+	            Y: [ [ new Line.Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+	                 [ new Mesh.Mesh( new OctahedronGeometry.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
 
-	            Z: [ [ new threeFull.Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+	            Z: [ [ new Line.Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+	                 [ new Mesh.Mesh( new OctahedronGeometry.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
 
-	            E: [ [ new threeFull.Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
+	            E: [ [ new Line.Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
-	            XYZ: [ [ new threeFull.Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
+	            XYZ: [ [ new Line.Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
 
 	        };
 
@@ -6947,34 +5674,34 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            XY: new PlaneHandle( {
 	                color:     0xaaaa00,
-	                direction: new threeFull.Vector3( 1, 1, 0 )
+	                direction: new Vector3.Vector3( 1, 1, 0 )
 	            } ).setScale( 0.33, 0.33, 1.0 ),
 
 	            YZ: new PlaneHandle( {
 	                color:     0x00aaaa,
-	                direction: new threeFull.Vector3( 0, 1, 1 )
+	                direction: new Vector3.Vector3( 0, 1, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
+	               .setRotationFromAxisAndAngle( new Vector3.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
 
 	            XZ: new PlaneHandle( {
 	                color:     0xaa00aa,
-	                direction: new threeFull.Vector3( 1, 0, 1 )
+	                direction: new Vector3.Vector3( 1, 0, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
+	               .setRotationFromAxisAndAngle( new Vector3.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
 
 	            X: new ScaleHandle( {
 	                color:     0xaa0000,
-	                direction: new threeFull.Vector3( 1, 0, 0 )
+	                direction: new Vector3.Vector3( 1, 0, 0 )
 	            } ),
 
 	            Y: new ScaleHandle( {
 	                color:     0x00aa00,
-	                direction: new threeFull.Vector3( 0, 1, 0 )
+	                direction: new Vector3.Vector3( 0, 1, 0 )
 	            } ),
 
 	            Z: new ScaleHandle( {
 	                color:     0x0000aa,
-	                direction: new threeFull.Vector3( 0, 0, 1 )
+	                direction: new Vector3.Vector3( 0, 0, 1 )
 	            } )
 
 	        };
@@ -6993,7 +5720,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    Scale:     'Scale'
 	} );
 
-	class ClippingControls extends threeFull.Object3D {
+	class ClippingControls extends Object3D.Object3D {
 
 	    constructor ( parameters = {} ) {
 
@@ -7002,7 +5729,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                camera:        null,
 	                domElement:    window,
 	                mode:          ClippingModes.None,
-	                objectsToClip: new threeFull.Object3D()
+	                objectsToClip: new Object3D.Object3D()
 	            }, ...parameters
 	        };
 
@@ -7040,9 +5767,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        };
 
 	        // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
-	        this._objectsToClipBoundingBox = new threeFull.Box3();
-	        this._objectsToClipSize        = new threeFull.Vector3();
-	        this._objectsToClipCenter      = new threeFull.Vector3();
+	        this._objectsToClipBoundingBox = new Box3.Box3();
+	        this._objectsToClipSize        = new Vector3.Vector3();
+	        this._objectsToClipCenter      = new Vector3.Vector3();
 
 	        this._clippingBox = new ClippingBox();
 	        this.add( this._clippingBox );
@@ -7061,17 +5788,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        this.size = 1;
 
 	        this._dragging          = false;
-	        this._firstPoint        = new threeFull.Vector3();
-	        this._secondPoint       = new threeFull.Vector3();
-	        this._mouseDisplacement = new threeFull.Vector3();
-	        this._offset            = new threeFull.Vector3();
-	        this._raycaster         = new threeFull.Raycaster();
-	        this._pointerVector     = new threeFull.Vector2();
-	        this._directionToMouse  = new threeFull.Vector3();
-	        this._cameraPosition    = new threeFull.Vector3();
-	        this._cameraDirection   = new threeFull.Vector3();
-	        this._worldPosition     = new threeFull.Vector3();
-	        this._worldRotation     = new threeFull.Euler();
+	        this._firstPoint        = new Vector3.Vector3();
+	        this._secondPoint       = new Vector3.Vector3();
+	        this._mouseDisplacement = new Vector3.Vector3();
+	        this._offset            = new Vector3.Vector3();
+	        this._raycaster         = new Raycaster.Raycaster();
+	        this._pointerVector     = new Vector2.Vector2();
+	        this._directionToMouse  = new Vector3.Vector3();
+	        this._cameraPosition    = new Vector3.Vector3();
+	        this._cameraDirection   = new Vector3.Vector3();
+	        this._worldPosition     = new Vector3.Vector3();
+	        this._worldRotation     = new Euler.Euler();
 
 	        this._gizmos = {
 	            //            'None':      null,
@@ -7125,7 +5852,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
-	        if ( !( value instanceof threeFull.Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+	        if ( !( value instanceof Object3D.Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
 	        this._objectsToClip = value;
 	        this.updateClipping();
@@ -7140,7 +5867,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-	        if ( !( value instanceof threeFull.Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+	        if ( !( value instanceof Camera.Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
 	        this._camera = value;
 
@@ -8025,127 +6752,44 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
-	 * @file Todo
+	 * @file sources/frontend/managers/CurvesManager.js
 	 *
 	 * @example Todo
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    ArcCurve,
+	//    CatmullRomCurve3,
+	//    CubicBezierCurve,
+	//    CubicBezierCurve3,
+	//    Curve,
+	//    CurvePath,
+	//    EllipseCurve,
+	//    LineCurve,
+	//    LineCurve3,
+	//    Path,
+	//    QuadraticBezierCurve,
+	//    QuadraticBezierCurve3,
+	//    Shape,
+	//    SplineCurve
+	//}                           from 'three-full'
 
-	/**
-	 *
-	 * @constructor
-	 */
-	function BufferGeometriesManager () {
+	class CurvesManager extends iteeClient.TDataBaseManager {
 
-	    iteeClient.TDataBaseManager.call( this );
-	    this.basePath = '/buffergeometries';
+	    constructor ( parameters = {} ) {
 
-	}
+	        const _parameters = {
+	            ...{
+	                basePath: '/curves'
+	            },
+	            ...parameters
+	        };
 
-	BufferGeometriesManager.prototype = Object.assign( Object.create( iteeClient.TDataBaseManager.prototype ), {
-
-	    /**
-	     *
-	     */
-	    constructor: BufferGeometriesManager,
-
-	    /**
-	     *
-	     * @param data
-	     * @returns {Scene|Object3D}
-	     */
-	    convert ( data/*, onError */ ) {
-
-	        const textureType = data.type;
-	        let texture       = null;
-
-	        switch ( textureType ) {
-
-	            case 'Scene':
-	                texture = new threeFull.Scene();
-	                break
-
-	            default:
-	                texture = new threeFull.Object3D();
-	                break
-
-	        }
-
-	        // Common object properties
-
-	        //        if ( textureType === 'Line' ) {
-	        //
-	        //        }
-
-	        return texture
+	        super( _parameters );
 
 	    }
 
-	} );
-
-	Object.defineProperties( BufferGeometriesManager.prototype, {
-
-	    /**
-	     *
-	     */
-	    _onJson: {
-	        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
-
-	            // Normalize to array
-	            const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-	            const results = {};
-	            let result    = undefined;
-
-	            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-	                data   = datas[ dataIndex ];
-	                result = this.convert( data, onError );
-	                if ( result ) { results[ data._id ] = result; }
-
-	                onProgress( dataIndex / numberOfDatas );
-
-	            }
-
-	            onSuccess( results );
-
-	        }
-	    }
-
-	} );
-
-	/**
-	 * @author [Tristan Valcke]{@link https://github.com/Itee}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file Todo
-	 *
-	 * @example Todo
-	 *
-	 */
-
-	/**
-	 *
-	 * @constructor
-	 */
-	function CurvesManager () {
-
-	    iteeClient.TDataBaseManager.call( this );
-	    this.basePath = '/curves';
-
-	}
-
-	CurvesManager.prototype = Object.assign( Object.create( iteeClient.TDataBaseManager.prototype ), {
-
-	    /**
-	     *
-	     */
-	    constructor: CurvesManager,
-
-	    /**
-	     *
-	     * @param data
-	     * @return {*}
-	     */
 	    convert ( data ) {
 
 	        if ( !data ) {
@@ -8158,61 +6802,61 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        switch ( curveType ) {
 
 	            case 'ArcCurve':
-	                curve = new threeFull.ArcCurve();
+	                curve = new ArcCurve.ArcCurve();
 	                break
 
 	            case 'CatmullRomCurve3':
-	                curve = new threeFull.CatmullRomCurve3();
+	                curve = new CatmullRomCurve3.CatmullRomCurve3();
 	                break
 
 	            case 'CubicBezierCurve':
-	                curve = new threeFull.CubicBezierCurve();
+	                curve = new CubicBezierCurve.CubicBezierCurve();
 	                break
 
 	            case 'CubicBezierCurve3':
-	                curve = new threeFull.CubicBezierCurve3();
+	                curve = new CubicBezierCurve3.CubicBezierCurve3();
 	                break
 
 	            case 'Curve':
-	                curve = new threeFull.Curve();
+	                curve = new Curve.Curve();
 	                break
 
 	            case 'CurvePath':
-	                curve = new threeFull.CurvePath();
+	                curve = new CurvePath.CurvePath();
 	                break
 
 	            case 'EllipseCurve':
-	                curve = new threeFull.EllipseCurve();
+	                curve = new EllipseCurve.EllipseCurve();
 	                break
 
 	            case 'LineCurve':
-	                curve = new threeFull.LineCurve();
+	                curve = new LineCurve.LineCurve();
 	                break
 
 	            case 'LineCurve3':
-	                curve = new threeFull.LineCurve3();
+	                curve = new LineCurve3.LineCurve3();
 	                break
 
 	            // Missing NURBSCurve
 
 	            case 'Path':
-	                curve = new threeFull.Path();
+	                curve = new Path.Path();
 	                break
 
 	            case 'QuadraticBezierCurve':
-	                curve = new threeFull.QuadraticBezierCurve();
+	                curve = new QuadraticBezierCurve.QuadraticBezierCurve();
 	                break
 
 	            case 'QuadraticBezierCurve3':
-	                curve = new threeFull.QuadraticBezierCurve3();
+	                curve = new QuadraticBezierCurve3.QuadraticBezierCurve3();
 	                break
 
 	            case 'SplineCurve':
-	                curve = new threeFull.SplineCurve();
+	                curve = new SplineCurve.SplineCurve();
 	                break
 
 	            case 'Shape':
-	                curve = new threeFull.Shape();
+	                curve = new Shape.Shape();
 	                break
 
 	            default:
@@ -8226,80 +6870,6 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    }
 
-	} );
-
-	Object.defineProperties( CurvesManager.prototype, {
-
-	    /**
-	     *
-	     */
-	    _onJson: {
-	        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
-
-	            // Normalize to array
-	            const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-	            const results = {};
-
-	            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-	                data = datas[ dataIndex ];
-
-	                try {
-	                    results[ data._id ] = this.convert( data );
-	                } catch ( err ) {
-	                    onError( err );
-	                }
-
-	                onProgress( dataIndex / numberOfDatas );
-
-	            }
-
-	            onSuccess( results );
-
-	        }
-	    }
-
-	} );
-
-	/**
-	 * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
-	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @class ClassName
-	 * @classdesc Todo...
-	 * @example Todo...
-	 *
-	 */
-
-	class FilairesManager extends iteeClient.TDataBaseManager {
-
-	    /**
-	     *
-	     * @param basePath
-	     * @param responseType
-	     * @param bunchSize
-	     * @param progressManager
-	     * @param errorManager
-	     */
-	    constructor ( parameters = {} ) {
-
-	        const _parameters = {
-	            ...{
-	                basePath:               '/',
-	                responseType:           iteeClient.ResponseType.Json,
-	                bunchSize:              500,
-	                requestAggregationTime: 200,
-	                requestsConcurrency:    6,
-	                logger:                 iteeClient.DefaultLogger
-	            }, ...parameters
-	        };
-
-	        super( _parameters );
-
-	    }
-
-	    //// Methods
-
 	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
@@ -8311,121 +6881,16 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            data = datas[ dataIndex ];
 
 	            try {
-	                results[ data.id ] = this.convert( data );
+	                results[ data._id ] = this.convert( data );
 	            } catch ( err ) {
 	                onError( err );
 	            }
 
-	            onProgress( new ProgressEvent( 'FilairesManager', {
-	                lengthComputable: true,
-	                loaded:           dataIndex + 1,
-	                total:            numberOfDatas
-	            } ) );
+	            onProgress( dataIndex / numberOfDatas );
 
 	        }
 
 	        onSuccess( results );
-
-	    }
-
-	    /**
-	     *
-	     * @param data
-	     * @return {*}
-	     */
-	    convert ( data ) {
-
-	        if ( !data ) {
-	            throw new Error( 'FilairesManager: Unable to convert null or undefined data !' )
-	        }
-
-	        const objectType = data.type;
-	        let object       = null;
-
-	        if ( iteeValidators.isNotDefined( objectType ) ) {
-	            throw new Error( `TFilaireManager.convert() : data type must be defined !!!` )
-	        }
-
-	        switch ( objectType ) {
-
-	            case 'NaissanceVoute':
-	                object = this._parseFilaire( data, 0x875100 );
-	                break
-
-	            case 'Radier':
-	                object = this._parseFilaire( data, 0x0089af );
-	                break
-
-	            case 'Intrados':
-	                object = this._parseFilaire( data, 0xc100b4 );
-	                break
-
-	            case 'Br':
-	            case 'Bp':
-	            case 'Src':
-	                object = this._parsePoint( data, 0x00ff00 );
-	                break
-
-	            default:
-	                throw new Error( `TFilaireManager: Unknown object of type: ${ objectType }` )
-
-	        }
-
-	        return object
-
-	    }
-
-	    _parseFilaire ( data, color ) {
-
-	        const geoJson   = JSON.parse( data.geojson );
-	        const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] );
-
-	        if ( iteeValidators.isNotDefined( positions ) ) {
-	            throw new Error( `TFilaireManager._parseFilaire() : ${ data.type } geometry doesn't contains coordinates !!!` )
-	        }
-
-	        const material = new threeFull.LineBasicMaterial( {
-	            color: color
-	        } );
-
-	        const bufferGeometry = new threeFull.BufferGeometry();
-	        bufferGeometry.setAttribute( 'position', new threeFull.Float32BufferAttribute( positions, 3 ) );
-
-	        let object = new threeFull.Line( bufferGeometry, material );
-	        if ( !iteeValidators.isNotDefined( data.type ) ) {
-	            object.name = ''.concat( data.type, '_' ).concat( data.numero_bloc, '_' ).concat( data.id );
-	        } else {
-	            object.name = ''.concat( data.id );
-	        }
-
-	        return object
-
-	    }
-
-	    _parsePoint ( data, color ) {
-
-	        const geoJson   = JSON.parse( data.geojson );
-	        const positions = geoJson.coordinates.reduce( ( acc, val ) => acc.concat( val ), [] );
-
-	        if ( iteeValidators.isNotDefined( positions ) ) {
-	            throw new Error( 'FilairesManager._parsePoint() : '.concat( data.type, ' geometry doesn\'t contains coordinates !!!' ) )
-	        }
-
-	        let geometry = new threeFull.SphereBufferGeometry( parseFloat( data.attribut ), 50, 50, 0, Math.PI * 2, 0, Math.PI * 2 );
-	        geometry.computeVertexNormals();
-
-	        let material = new threeFull.MeshPhongMaterial( { color: color } );
-	        let object   = new threeFull.Mesh( geometry, material );
-
-	        object.position.set( positions[ '0' ], positions[ '1' ], positions[ '2' ] );
-
-	        if ( !iteeValidators.isNotDefined( data.type ) ) {
-	            object.name = ''.concat( data.type, '_' ).concat( data.numero_bloc, '_' ).concat( data.id );
-	        } else {
-	            object.name = ''.concat( data.id );
-	        }
-
-	        return object
 
 	    }
 
@@ -8445,8 +6910,59 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * @requires '../../../node_modules/three/src/core/BufferAttribute'
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    BoxBufferGeometry,
+	//    BoxGeometry,
+	//    BufferAttribute,
+	//    BufferGeometry,
+	//    CircleBufferGeometry,
+	//    CircleGeometry,
+	//    ConeBufferGeometry,
+	//    ConeGeometry,
+	//    CylinderBufferGeometry,
+	//    CylinderGeometry,
+	//    DodecahedronBufferGeometry,
+	//    DodecahedronGeometry,
+	//    EdgesGeometry,
+	//    ExtrudeBufferGeometry,
+	//    ExtrudeGeometry,
+	//    Face3,
+	//    Geometry,
+	//    IcosahedronBufferGeometry,
+	//    IcosahedronGeometry,
+	//    InstancedBufferGeometry,
+	//    LatheBufferGeometry,
+	//    LatheGeometry,
+	//    OctahedronBufferGeometry,
+	//    OctahedronGeometry,
+	//    ParametricBufferGeometry,
+	//    ParametricGeometry,
+	//    PlaneBufferGeometry,
+	//    PlaneGeometry,
+	//    PolyhedronBufferGeometry,
+	//    PolyhedronGeometry,
+	//    RingBufferGeometry,
+	//    RingGeometry,
+	//    Shape,
+	//    ShapeGeometry,
+	//    SphereBufferGeometry,
+	//    SphereGeometry,
+	//    TetrahedronBufferGeometry,
+	//    TetrahedronGeometry,
+	//    TextBufferGeometry,
+	//    TextGeometry,
+	//    TorusBufferGeometry,
+	//    TorusGeometry,
+	//    TorusKnotBufferGeometry,
+	//    TorusKnotGeometry,
+	//    TubeBufferGeometry,
+	//    TubeGeometry,
+	//    Vector3,
+	//    WireframeGeometry
+	//}                           from 'three-full'
 
-	const ArrayType = {
+	const ArrayType = iteeUtils.toEnum( {
 	    Int8Array:         0,
 	    Uint8Array:        1,
 	    Uint8ClampedArray: 2,
@@ -8456,7 +6972,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	    Uint32Array:       6,
 	    Float32Array:      7,
 	    Float64Array:      8
-	};
+	} );
 
 	class GeometriesManager extends iteeClient.TDataBaseManager {
 
@@ -8677,95 +7193,95 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        switch ( geometryType ) {
 
 	            case 'BoxGeometry':
-	                geometry = new threeFull.BoxGeometry();
+	                geometry = new BoxGeometry.BoxGeometry();
 	                break
 
 	            case 'CircleGeometry':
-	                geometry = new threeFull.CircleGeometry();
+	                geometry = new CircleGeometry.CircleGeometry();
 	                break
 
 	            case 'CylinderGeometry':
-	                geometry = new threeFull.CylinderGeometry();
+	                geometry = new CylinderGeometry.CylinderGeometry();
 	                break
 
 	            case 'ConeGeometry':
-	                geometry = new threeFull.ConeGeometry();
+	                geometry = new ConeGeometry.ConeGeometry();
 	                break
 
 	            case 'EdgesGeometry':
-	                geometry = new threeFull.EdgesGeometry();
+	                geometry = new EdgesGeometry.EdgesGeometry();
 	                break
 
 	            case 'DodecahedronGeometry':
-	                geometry = new threeFull.DodecahedronGeometry();
+	                geometry = new DodecahedronGeometry.DodecahedronGeometry();
 	                break
 
 	            case 'ExtrudeGeometry':
-	                geometry = new threeFull.ExtrudeGeometry();
+	                geometry = new ExtrudeGeometry.ExtrudeGeometry();
 	                break
 
 	            case 'Geometry':
-	                geometry = new threeFull.Geometry();
+	                geometry = new Geometry.Geometry();
 	                break
 
 	            case 'IcosahedronGeometry':
-	                geometry = new threeFull.IcosahedronGeometry();
+	                geometry = new IcosahedronGeometry.IcosahedronGeometry();
 	                break
 
 	            case 'LatheGeometry':
-	                geometry = new threeFull.LatheGeometry();
+	                geometry = new LatheGeometry.LatheGeometry();
 	                break
 
 	            case 'OctahedronGeometry':
-	                geometry = new threeFull.OctahedronGeometry();
+	                geometry = new OctahedronGeometry.OctahedronGeometry();
 	                break
 
 	            case 'ParametricGeometry':
-	                geometry = new threeFull.ParametricGeometry();
+	                geometry = new ParametricGeometry.ParametricGeometry();
 	                break
 
 	            case 'PlaneGeometry':
-	                geometry = new threeFull.PlaneGeometry();
+	                geometry = new PlaneGeometry.PlaneGeometry();
 	                break
 
 	            case 'PolyhedronGeometry':
-	                geometry = new threeFull.PolyhedronGeometry();
+	                geometry = new PolyhedronGeometry.PolyhedronGeometry();
 	                break
 
 	            case 'RingGeometry':
-	                geometry = new threeFull.RingGeometry();
+	                geometry = new RingGeometry.RingGeometry();
 	                break
 
 	            case 'ShapeGeometry':
-	                geometry = new threeFull.ShapeGeometry();
+	                geometry = new ShapeGeometry.ShapeGeometry();
 	                break
 
 	            case 'TetrahedronGeometry':
-	                geometry = new threeFull.TetrahedronGeometry();
+	                geometry = new TetrahedronGeometry.TetrahedronGeometry();
 	                break
 
 	            case 'TextGeometry':
-	                geometry = new threeFull.TextGeometry();
+	                geometry = new TextGeometry.TextGeometry();
 	                break
 
 	            case 'TorusGeometry':
-	                geometry = new threeFull.TorusGeometry();
+	                geometry = new TorusGeometry.TorusGeometry();
 	                break
 
 	            case 'TorusKnotGeometry':
-	                geometry = new threeFull.TorusKnotGeometry();
+	                geometry = new TorusKnotGeometry.TorusKnotGeometry();
 	                break
 
 	            case 'TubeGeometry':
-	                geometry = new threeFull.TubeGeometry();
+	                geometry = new TubeGeometry.TubeGeometry();
 	                break
 
 	            case 'SphereGeometry':
-	                geometry = new threeFull.SphereGeometry();
+	                geometry = new SphereGeometry.SphereGeometry();
 	                break
 
 	            case 'WireframeGeometry':
-	                geometry = new threeFull.WireframeGeometry();
+	                geometry = new WireframeGeometry.WireframeGeometry();
 	                break
 
 	            default:
@@ -8782,7 +7298,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        for ( var index = 0, numberOfVertices = data.vertices.length ; index < numberOfVertices ; ++index ) {
 
 	            vertex = data.vertices[ index ];
-	            vertices.push( new threeFull.Vector3( vertex.x, vertex.y, vertex.z ) );
+	            vertices.push( new Vector3.Vector3( vertex.x, vertex.y, vertex.z ) );
 
 	        }
 	        geometry.vertices = vertices;
@@ -8792,7 +7308,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        var face  = undefined;
 	        for ( var faceIndex = 0, numberOfFaces = data.faces.length ; faceIndex < numberOfFaces ; faceIndex++ ) {
 	            face = data.faces[ faceIndex ];
-	            faces.push( new threeFull.Face3( face.a, face.b, face.c, face.normal, face.color, face.materialIndex ) );
+	            faces.push( new Face3.Face3( face.a, face.b, face.c, face.normal, face.color, face.materialIndex ) );
 	        }
 	        geometry.faces         = faces;
 	        //                geometry.faceVertexUvs           = [ [ Number ] ]
@@ -8820,92 +7336,92 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        switch ( bufferGeometryType ) {
 
 	            case 'BoxBufferGeometry':
-	                bufferGeometry = new threeFull.BoxBufferGeometry();
+	                bufferGeometry = new BoxGeometry.BoxBufferGeometry();
 	                break
 
 	            case 'BufferGeometry':
-	                bufferGeometry = new threeFull.BufferGeometry();
+	                bufferGeometry = new BufferGeometry.BufferGeometry();
 	                break
 
 	            case 'CircleBufferGeometry':
-	                bufferGeometry = new threeFull.CircleBufferGeometry();
+	                bufferGeometry = new CircleGeometry.CircleBufferGeometry();
 	                break
 
 	            case 'CylinderBufferGeometry':
-	                bufferGeometry = new threeFull.CylinderBufferGeometry();
+	                bufferGeometry = new CylinderGeometry.CylinderBufferGeometry();
 	                break
 
 	            case 'ConeBufferGeometry':
-	                bufferGeometry = new threeFull.ConeBufferGeometry();
+	                bufferGeometry = new ConeGeometry.ConeBufferGeometry();
 	                break
 
 	            case 'DodecahedronBufferGeometry':
-	                bufferGeometry = new threeFull.DodecahedronBufferGeometry();
+	                bufferGeometry = new DodecahedronGeometry.DodecahedronBufferGeometry();
 	                break
 
 	            case 'ExtrudeBufferGeometry':
-	                bufferGeometry = new threeFull.ExtrudeBufferGeometry();
+	                bufferGeometry = new ExtrudeGeometry.ExtrudeBufferGeometry();
 	                break
 
 	            case 'IcosahedronBufferGeometry':
-	                bufferGeometry = new threeFull.IcosahedronBufferGeometry();
+	                bufferGeometry = new IcosahedronGeometry.IcosahedronBufferGeometry();
 	                break
 
 	            case 'LatheBufferGeometry':
-	                bufferGeometry = new threeFull.LatheBufferGeometry();
+	                bufferGeometry = new LatheGeometry.LatheBufferGeometry();
 	                break
 
 	            case 'OctahedronBufferGeometry':
-	                bufferGeometry = new threeFull.OctahedronBufferGeometry();
+	                bufferGeometry = new OctahedronGeometry.OctahedronBufferGeometry();
 	                break
 
 	            case 'ParametricBufferGeometry':
-	                bufferGeometry = new threeFull.ParametricBufferGeometry();
+	                bufferGeometry = new ParametricGeometry.ParametricBufferGeometry();
 	                break
 
 	            case 'PlaneBufferGeometry':
-	                bufferGeometry = new threeFull.PlaneBufferGeometry();
+	                bufferGeometry = new PlaneGeometry.PlaneBufferGeometry();
 	                break
 
 	            case 'PolyhedronBufferGeometry':
-	                bufferGeometry = new threeFull.PolyhedronBufferGeometry();
+	                bufferGeometry = new PolyhedronGeometry.PolyhedronBufferGeometry();
 	                break
 
 	            case 'RingBufferGeometry':
-	                bufferGeometry = new threeFull.RingBufferGeometry();
+	                bufferGeometry = new RingGeometry.RingBufferGeometry();
 	                break
 
 	            case 'ShapeBufferGeometry':
-	                bufferGeometry = new threeFull.BufferGeometry();
+	                bufferGeometry = new BufferGeometry.BufferGeometry();
 	                //                bufferGeometry = new ShapeBufferGeometry(  )
 	                break
 
 	            case 'TetrahedronBufferGeometry':
-	                bufferGeometry = new threeFull.TetrahedronBufferGeometry();
+	                bufferGeometry = new TetrahedronGeometry.TetrahedronBufferGeometry();
 	                break
 
 	            case 'TextBufferGeometry':
-	                bufferGeometry = new threeFull.TextBufferGeometry();
+	                bufferGeometry = new TextGeometry.TextBufferGeometry();
 	                break
 
 	            case 'TorusBufferGeometry':
-	                bufferGeometry = new threeFull.TorusBufferGeometry();
+	                bufferGeometry = new TorusGeometry.TorusBufferGeometry();
 	                break
 
 	            case 'TorusKnotBufferGeometry':
-	                bufferGeometry = new threeFull.TorusKnotBufferGeometry();
+	                bufferGeometry = new TorusKnotGeometry.TorusKnotBufferGeometry();
 	                break
 
 	            case 'TubeBufferGeometry':
-	                bufferGeometry = new threeFull.TubeBufferGeometry();
+	                bufferGeometry = new TubeGeometry.TubeBufferGeometry();
 	                break
 
 	            case 'SphereBufferGeometry':
-	                bufferGeometry = new threeFull.SphereBufferGeometry();
+	                bufferGeometry = new SphereGeometry.SphereBufferGeometry();
 	                break
 
 	            case 'InstancedBufferGeometry':
-	                bufferGeometry = new threeFull.InstancedBufferGeometry();
+	                bufferGeometry = new InstancedBufferGeometry.InstancedBufferGeometry();
 	                break
 
 	            default:
@@ -8924,7 +7440,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            const arrayBuffer    = this.__convertBase64ToArrayBuffer( dataIndexes.array );
 	            const typedArray     = this.__convertArrayBufferToTypedArray( arrayBuffer );
-	            bufferGeometry.index = new threeFull.BufferAttribute( typedArray, dataIndexes.itemSize, dataIndexes.normalized );
+	            bufferGeometry.index = new BufferAttribute.BufferAttribute( typedArray, dataIndexes.itemSize, dataIndexes.normalized );
 
 	        }
 
@@ -8966,7 +7482,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                }
 
-	                attributes[ 'position' ] = new threeFull.BufferAttribute( positionArray, positionAttributes.itemSize, positionAttributes.normalized );
+	                attributes[ 'position' ] = new BufferAttribute.BufferAttribute( positionArray, positionAttributes.itemSize, positionAttributes.normalized );
 
 	            }
 
@@ -8975,7 +7491,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                const arrayBuffer      = this.__convertBase64ToArrayBuffer( normalAttributes.array );
 	                const typedArray       = this.__convertArrayBufferToTypedArray( arrayBuffer );
-	                attributes[ 'normal' ] = new threeFull.BufferAttribute( typedArray, normalAttributes.itemSize, normalAttributes.normalized );
+	                attributes[ 'normal' ] = new BufferAttribute.BufferAttribute( typedArray, normalAttributes.itemSize, normalAttributes.normalized );
 
 	            }
 
@@ -8984,7 +7500,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                const arrayBuffer  = this.__convertBase64ToArrayBuffer( uvAttributes.array );
 	                const typedArray   = this.__convertArrayBufferToTypedArray( arrayBuffer );
-	                attributes[ 'uv' ] = new threeFull.BufferAttribute( typedArray, uvAttributes.itemSize, uvAttributes.normalized );
+	                attributes[ 'uv' ] = new BufferAttribute.BufferAttribute( typedArray, uvAttributes.itemSize, uvAttributes.normalized );
 
 	            }
 
@@ -9012,7 +7528,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( bufferGeometryType === 'ShapeBufferGeometry' ) {
 
-	            bufferGeometry.shapes        = data.shapes.map( jsonShape => {return new threeFull.Shape().fromJSON( jsonShape )} );
+	            bufferGeometry.shapes        = data.shapes.map( jsonShape => {return new Shape.Shape().fromJSON( jsonShape )} );
 	            bufferGeometry.curveSegments = data.curveSegments;
 
 	        }
@@ -9161,29 +7677,21 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 *
 	 */
 
-	/**
-	 *
-	 * @constructor
-	 */
-	function TexturesManager () {
+	class TexturesManager extends iteeClient.TDataBaseManager {
 
-	    iteeClient.TDataBaseManager.call( this );
-	    this.basePath = '/textures';
+	    constructor ( parameters = {} ) {
 
-	}
+	        const _parameters = {
+	            ...{
+	                basePath: '/textures'
+	            },
+	            ...parameters
+	        };
 
-	TexturesManager.prototype = Object.assign( Object.create( iteeClient.TDataBaseManager.prototype ), {
+	        super( _parameters );
 
-	    /**
-	     *
-	     */
-	    constructor: TexturesManager,
+	    }
 
-	    /**
-	     *
-	     * @param data
-	     * @return {*}
-	     */
 	    convert ( data ) {
 
 	        if ( !data ) {
@@ -9207,39 +7715,30 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    }
 
-	} );
+	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
 
-	Object.defineProperties( TexturesManager.prototype, {
+	        // Normalize to array
+	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+	        const results = {};
 
-	    /**
-	     *
-	     */
-	    _onJson: {
-	        value: function _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
 
-	            // Normalize to array
-	            const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
-	            const results = {};
+	            data = datas[ dataIndex ];
 
-	            for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
-
-	                data = datas[ dataIndex ];
-
-	                try {
-	                    results[ data._id ] = this.convert( data );
-	                } catch ( err ) {
-	                    onError( err );
-	                }
-
-	                onProgress( dataIndex / numberOfDatas );
-
+	            try {
+	                results[ data._id ] = this.convert( data );
+	            } catch ( err ) {
+	                onError( err );
 	            }
 
-	            onSuccess( results );
+	            onProgress( dataIndex / numberOfDatas );
+
 	        }
+
+	        onSuccess( results );
 	    }
 
-	} );
+	}
 
 	/**
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -9252,7 +7751,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 *
 	 */
 
-	const DEFAULT_IMAGE = new threeFull.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
+	const DEFAULT_IMAGE = new ImageLoader.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
 	class MaterialsManager extends iteeClient.TDataBaseManager {
 
@@ -9272,7 +7771,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            ...{
 	                basePath:         '/materials',
 	                texturesPath:     '/textures',
-	                texturesProvider: new threeFull.TextureLoader(),
+	                texturesProvider: new TextureLoader.TextureLoader(),
 	                generateMipmap:   false,
 	                autoFillTextures: true
 	            }, ...parameters
@@ -9311,7 +7810,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
-	        if ( !( value instanceof TexturesManager ) && !( value instanceof threeFull.TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TTexturesManager.` ) }
+	        if ( !( value instanceof TexturesManager ) && !( value instanceof TextureLoader.TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TTexturesManager.` ) }
 
 	        this._texturesProvider = value;
 
@@ -9423,7 +7922,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        switch ( type ) {
 
 	            case 'MeshPhongMaterial': {
-	                material = new threeFull.MeshPhongMaterial();
+	                material = new MeshPhongMaterial.MeshPhongMaterial();
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
@@ -9585,7 +8084,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'MeshLambertMaterial': {
-	                material = new threeFull.MeshLambertMaterial();
+	                material = new MeshLambertMaterial.MeshLambertMaterial();
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
@@ -9702,7 +8201,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'LineBasicMaterial': {
-	                material = new threeFull.LineBasicMaterial();
+	                material = new LineBasicMaterial.LineBasicMaterial();
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
@@ -9714,7 +8213,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'PointsMaterial': {
-	                material = new threeFull.PointsMaterial();
+	                material = new PointsMaterial.PointsMaterial();
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
@@ -9941,7 +8440,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            throw new Error( 'MaterialsManager: Unable to convert null or undefined vector 2 !' )
 	        }
 
-	        return new threeFull.Vector2( x, y )
+	        return new Vector2.Vector2( x, y )
 
 	    }
 
@@ -9954,7 +8453,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	            throw new Error( 'MaterialsManager: Unable to convert null or undefined color !' )
 	        }
 
-	        return new threeFull.Color( r, g, b )
+	        return new Color.Color( r, g, b )
 
 	    }
 
@@ -10022,8 +8521,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                        if ( !this._generateMipmap ) {
 	                            texture.generateMipmaps = false;
-	                            texture.magFilter       = threeFull.LinearFilter;
-	                            texture.minFilter       = threeFull.LinearFilter;
+	                            texture.magFilter       = constants.LinearFilter;
+	                            texture.minFilter       = constants.LinearFilter;
 	                        }
 
 	                        localCache[ texturePath ] = texture;
@@ -10249,18 +8748,18 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        switch ( objectType ) {
 
 	            case 'Object3D':
-	                object = new threeFull.Object3D();
+	                object = new Object3D.Object3D();
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'Scene':
-	                object = new threeFull.Scene();
+	                object = new Scene.Scene();
 	                this._fillBaseObjectsData( object, data );
 	                if ( iteeValidators.isDefined( data.background ) ) {
 
 	                    if ( Number.isInteger( data.background ) ) {
 
-	                        object.background = new threeFull.Color( data.background );
+	                        object.background = new Color.Color( data.background );
 
 	                    }
 
@@ -10269,11 +8768,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	                    if ( data.fog.type === 'Fog' ) {
 
-	                        object.fog = new threeFull.Fog( data.fog.color, data.fog.near, data.fog.far );
+	                        object.fog = new Fog.Fog( data.fog.color, data.fog.near, data.fog.far );
 
 	                    } else if ( data.fog.type === 'FogExp2' ) {
 
-	                        object.fog = new threeFull.FogExp2( data.fog.color, data.fog.density );
+	                        object.fog = new FogExp2.FogExp2( data.fog.color, data.fog.density );
 
 	                    }
 
@@ -10283,7 +8782,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'PerspectiveCamera':
-	                object = new threeFull.PerspectiveCamera();
+	                object = new PerspectiveCamera.PerspectiveCamera();
 	                this._fillBaseObjectsData( object, data );
 	                object.fov    = data.fov;
 	                object.aspect = data.aspect;
@@ -10307,42 +8806,42 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'OrthographicCamera':
-	                object = new threeFull.OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
+	                object = new OrthographicCamera.OrthographicCamera( data.left, data.right, data.top, data.bottom, data.near, data.far );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'AmbientLight':
-	                object = new threeFull.AmbientLight( data.color, data.intensity );
+	                object = new AmbientLight.AmbientLight( data.color, data.intensity );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'DirectionalLight':
-	                object = new threeFull.DirectionalLight( data.color, data.intensity );
+	                object = new DirectionalLight.DirectionalLight( data.color, data.intensity );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'PointLight':
-	                object = new threeFull.PointLight( data.color, data.intensity, data.distance, data.decay );
+	                object = new PointLight.PointLight( data.color, data.intensity, data.distance, data.decay );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'RectAreaLight':
-	                object = new threeFull.RectAreaLight( data.color, data.intensity, data.width, data.height );
+	                object = new RectAreaLight.RectAreaLight( data.color, data.intensity, data.width, data.height );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'SpotLight':
-	                object = new threeFull.SpotLight( data.color, data.intensity, data.distance, data.angle, data.penumbra, data.decay );
+	                object = new SpotLight.SpotLight( data.color, data.intensity, data.distance, data.angle, data.penumbra, data.decay );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'HemisphereLight':
-	                object = new threeFull.HemisphereLight( data.color, data.groundColor, data.intensity );
+	                object = new HemisphereLight.HemisphereLight( data.color, data.groundColor, data.intensity );
 	                this._fillBaseObjectsData( object, data );
 	                break
 
 	            case 'SkinnedMesh':
-	                object = new threeFull.SkinnedMesh();
+	                object = new SkinnedMesh.SkinnedMesh();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry          = data.geometry;
 	                object.material          = data.material;
@@ -10353,7 +8852,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'Mesh':
-	                object = new threeFull.Mesh();
+	                object = new Mesh.Mesh();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry = data.geometry;
 	                object.material = data.material;
@@ -10361,13 +8860,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'LOD':
-	                object = new threeFull.LOD();
+	                object = new LOD.LOD();
 	                this._fillBaseObjectsData( object, data );
 	                object.levels = data.levels;
 	                break
 
 	            case 'Line':
-	                object = new threeFull.Line();
+	                object = new Line.Line();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry = data.geometry;
 	                object.material = data.material;
@@ -10375,7 +8874,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'LineLoop':
-	                object = new threeFull.LineLoop();
+	                object = new LineLoop.LineLoop();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry = data.geometry;
 	                object.material = data.material;
@@ -10383,7 +8882,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'LineSegments':
-	                object = new threeFull.LineSegments();
+	                object = new LineSegments.LineSegments();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry = data.geometry;
 	                object.material = data.material;
@@ -10391,7 +8890,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'Points':
-	                object = new threeFull.Points();
+	                object = new Points.Points();
 	                this._fillBaseObjectsData( object, data );
 	                object.geometry = data.geometry;
 	                object.material = data.material;
@@ -10399,13 +8898,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                break
 
 	            case 'Sprite':
-	                object = new threeFull.Sprite();
+	                object = new Sprite.Sprite();
 	                this._fillBaseObjectsData( object, data );
 	                object.material = data.material;
 	                break
 
 	            case 'Group':
-	                object = new threeFull.Group();
+	                object = new Group.Group();
 	                this._fillBaseObjectsData( object, data );
 	                break
 
@@ -10515,7 +9014,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                object.scale.y = data.scale.y;
 	                object.scale.z = data.scale.z;
 	            } else {
-	                console.warn( 'Try to assign null scale !' );
+	                this.logger.warn( 'Try to assign null scale !' );
 	            }
 
 	        }
@@ -10869,7 +9368,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const geometry = geometries[ geometryId ];
 	        if ( !geometry ) {
-	            console.error( 'Unable to retrieve geometry !!!' );
+	            this.logger.error( 'Unable to retrieve geometry !!!' );
 	            return
 	        }
 
@@ -10891,7 +9390,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                const materialId = materialIds[ 0 ];
 	                const material   = materials[ materialId ];
 	                if ( !material ) {
-	                    console.error( 'Unable to retrieve material !!!' );
+	                    this.logger.error( 'Unable to retrieve material !!!' );
 	                    return null
 	                }
 
@@ -10904,7 +9403,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                    const materialId = materialIds[ materialIndex ];
 	                    const material   = materials[ materialId ];
 	                    if ( !material ) {
-	                        console.error( 'Unable to retrieve material !!!' );
+	                        this.logger.error( 'Unable to retrieve material !!!' );
 	                        return null
 	                    }
 
@@ -10916,7 +9415,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	            const material = materials[ materialIds ];
 	            if ( !material ) {
-	                console.error( 'Unable to retrieve material !!!' );
+	                this.logger.error( 'Unable to retrieve material !!!' );
 	                return
 	            }
 
@@ -10924,7 +9423,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        } else {
 
-	            console.error( 'Invalid material ids, expected string or array of string' );
+	            this.logger.error( 'Invalid material ids, expected string or array of string' );
 
 	        }
 
@@ -10941,8 +9440,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	 * @example Todo...
 	 *
 	 */
+	// Waiting three-shaking fix
+	//import {
+	//    BufferGeometry,
+	//    Color,
+	//    Float32BufferAttribute,
+	//    LineBasicMaterial,
+	//    LineSegments,
+	//    VertexColors
+	//} from 'three-full'
 
-	class OrbitControlsHelper extends threeFull.LineSegments {
+	class OrbitControlsHelper extends LineSegments.LineSegments {
 
 	    constructor ( parameters = {} ) {
 
@@ -10952,8 +9460,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	                radials:    16,
 	                circles:    2,
 	                divisions:  64,
-	                innerColor: new threeFull.Color( 0x444444 ),
-	                outerColor: new threeFull.Color( 0x888888 )
+	                innerColor: new Color.Color( 0x444444 ),
+	                outerColor: new Color.Color( 0x888888 )
 	            }, ...parameters
 	        };
 
@@ -11042,13 +9550,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        }
 
-	        const positionBufferAttribute = new threeFull.Float32BufferAttribute( vertices, 3 );
+	        const positionBufferAttribute = new BufferAttribute.Float32BufferAttribute( vertices, 3 );
 	        positionBufferAttribute.name  = 'TOrbitControlsHelperPositionBufferAttribute';
 
-	        const colorBufferAttribute = new threeFull.Float32BufferAttribute( colors, 3 );
+	        const colorBufferAttribute = new BufferAttribute.Float32BufferAttribute( colors, 3 );
 	        colorBufferAttribute.name  = 'TOrbitControlsHelperColorBufferAttribute';
 
-	        const geometry = new threeFull.BufferGeometry();
+	        const geometry = new BufferGeometry.BufferGeometry();
 	        geometry.setAttribute( 'position', positionBufferAttribute );
 	        geometry.setAttribute( 'color', colorBufferAttribute );
 	        geometry.name = 'TOrbitControlsHelperGeometry';
@@ -11059,7 +9567,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	    static _createInternalMaterial () {
 
-	        const material       = new threeFull.LineBasicMaterial( { vertexColors: threeFull.VertexColors } );
+	        const material       = new LineBasicMaterial.LineBasicMaterial( { vertexColors: constants.VertexColors } );
 	        material.transparent = true;
 	        material.opacity     = 0.0;
 	        material.name        = 'TOrbitControlsHelperMaterial';
@@ -11109,17 +9617,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	exports.AbstractGizmo = AbstractGizmo;
 	exports.AbstractHandle = AbstractHandle;
 	exports.AbstractHitbox = AbstractHitbox;
-	exports.BufferGeometriesManager = BufferGeometriesManager;
 	exports.CameraControlMode = CameraControlMode;
 	exports.CameraControls = CameraControls;
-	exports.CameraPathController = CameraPathController;
 	exports.ClippingBox = ClippingBox;
 	exports.ClippingControls = ClippingControls;
 	exports.ClippingModes = ClippingModes;
 	exports.CurvesManager = CurvesManager;
 	exports.CylindricaHitbox = CylindricaHitbox;
 	exports.DBFLoader = DBFLoader;
-	exports.FilairesManager = FilairesManager;
 	exports.GeometriesManager = GeometriesManager;
 	exports.HighlightableLineMaterial = HighlightableLineMaterial;
 	exports.HighlightableMaterial = HighlightableMaterial;
@@ -11132,7 +9637,6 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	exports.OrbitControlsHelper = OrbitControlsHelper;
 	exports.PlanarHitbox = PlanarHitbox;
 	exports.PlaneHandle = PlaneHandle;
-	exports.RZMLLoader = RZMLLoader;
 	exports.RotateGizmo = RotateGizmo;
 	exports.RotateHandle = RotateHandle;
 	exports.SHPLoader = SHPLoader;
@@ -11144,9 +9648,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	exports.TorusHitbox = TorusHitbox;
 	exports.TranslateGizmo = TranslateGizmo;
 	exports.TranslateHandle = TranslateHandle;
-	exports.UniversalLoader = UniversalLoader;
 
 	return exports;
 
-}({}, Itee.Client, Three, Itee.Utils, Itee.Validators));
+}({}, Itee.Client, Itee.Utils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, Itee.Validators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene));
 //# sourceMappingURL=itee-plugin-three.iife.js.map
