@@ -60,59 +60,105 @@ const ShapeType = toEnum( {
     MultiPatch:  31
 } )
 
+class SHPLoader {
 
+//    static FileCode      = 9994
+//    static MinFileLength = 100
+//    static MinVersion    = 1000
 
+    get globalOffset () {
+        return this._globalOffset
     }
 
-
+    set globalOffset ( value ) {
+        this._globalOffset = value
     }
 
-
-
-    }
-    }
-
-/**
- *
- * @param manager
- * @param logger
- * @constructor
- */
-function SHPLoader ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
-
-    this.manager = manager
-    this.logger  = logger
-
-    this.globalOffset = new Vector3()
-    this.worldAxis    = {
-        from: 'zUp',
-        to:   'zForward'
+    setGlobalOffset ( value ) {
+        this.globalOffset = value
+        return this
     }
 
-    this._reader = new TBinaryReader()
+    get worldAxis () {
+        return this._worldAxis
+    }
 
-}
+    set worldAxis ( value ) {
+        this._worldAxis = value
+    }
 
-Object.assign( SHPLoader, {
+    setWorldAxis ( value ) {
+        this.worldAxis = value
+        return this
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
+    }
 
     /**
      *
+     * @param manager
+     * @param logger
+     * @constructor
      */
-    FileCode: 9994,
+    constructor ( parameters = {} ) {
 
-    /**
-     *
-     */
-    MinFileLength: 100,
+        const _parameters = {
+            ...{
+                manager:      DefaultLoadingManager,
+                logger:       DefaultLogger,
+                reader:       new TBinaryReader(),
+                globalOffset: new Vector3( 0, 0, 0 ),
+                worldAxis:    {
+                    from: 'zUp',
+                    to:   'zForward'
+                }
+            }, ...parameters
+        }
 
-    /**
-     *
-     */
-    MinVersion: 1000
+        this.manager      = _parameters.manager
+        this.logger       = _parameters.logger
+        this.reader       = _parameters.reader
+        this.globalOffset = _parameters.globalOffset
+        this.worldAxis    = _parameters.worldAxis
 
-} )
-
-Object.assign( SHPLoader.prototype, {
+    }
 
     /**
      *
@@ -133,7 +179,7 @@ Object.assign( SHPLoader.prototype, {
 
         }, onProgress, onError )
 
-    },
+    }
 
     /**
      *
@@ -172,7 +218,7 @@ Object.assign( SHPLoader.prototype, {
 
         return shapes
 
-    },
+    }
 
     /**
      *
@@ -215,7 +261,7 @@ Object.assign( SHPLoader.prototype, {
             }
         }
 
-    },
+    }
 
     /**
      *
@@ -331,7 +377,7 @@ Object.assign( SHPLoader.prototype, {
 
         return datas
 
-    },
+    }
 
     /**
      *
@@ -350,14 +396,14 @@ Object.assign( SHPLoader.prototype, {
             contentLength
         }
 
-    },
+    }
 
-    //    _parseNull () {
-    //
-    //        this._reader.getInt32();
-    //
-    //        return null;
-    //    },
+    _parseNull () {
+
+        this._reader.getInt32()
+        return null
+
+    }
 
     /**
      *
@@ -380,7 +426,7 @@ Object.assign( SHPLoader.prototype, {
             y
         }
 
-    },
+    }
 
     /**
      *
@@ -426,7 +472,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -505,7 +551,7 @@ Object.assign( SHPLoader.prototype, {
             polygons
         }
 
-    },
+    }
 
     /**
      *
@@ -541,7 +587,7 @@ Object.assign( SHPLoader.prototype, {
             points
         }
 
-    },
+    }
 
     /**
      *
@@ -559,7 +605,7 @@ Object.assign( SHPLoader.prototype, {
             shapeType
         }
 
-    },
+    }
 
     /**
      *
@@ -627,7 +673,11 @@ Object.assign( SHPLoader.prototype, {
 
     }
 
-} )
+}
+
+SHPLoader.FileCode      = 9994
+SHPLoader.MinFileLength = 100
+SHPLoader.MinVersion    = 1000
 
 export {
     SHPLoader,
