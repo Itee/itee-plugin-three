@@ -8,6 +8,8 @@
  *
  */
 
+// TODO: DEPRECATED keep logic about dbf/shp then remove
+
 /* eslint-env browser */
 
 import {
