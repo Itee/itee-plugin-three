@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { TDSLoader }              from 'three-full'
+import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
 
 class TdsToThree extends TAbstractFileConverter {
 

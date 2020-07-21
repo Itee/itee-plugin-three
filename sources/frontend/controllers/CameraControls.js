@@ -24,14 +24,20 @@ import {
     isNull,
     isUndefined
 } from 'itee-validators'
-import {
-    Camera,
-    EventDispatcher,
-    Object3D,
-    Spherical,
-    Vector2,
-    Vector3
-} from 'three-full'
+import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
+import { Object3D }        from 'three-full/sources/core/Object3D'
+import { Spherical }       from 'three-full/sources/math/Spherical'
+import { Vector2 }         from 'three-full/sources/math/Vector2'
+import { Vector3 }         from 'three-full/sources/math/Vector3'
+// Waiting three-shaking fix
+//import {
+//    Camera,
+//    EventDispatcher,
+//    Object3D,
+//    Spherical,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 )
 const BACK  = new Vector3( 0, 0, 1 )
@@ -255,7 +261,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+        if ( !value.isCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
         this._camera = value
 
@@ -271,7 +277,7 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
-        if ( !( value instanceof Object3D ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+        if ( !value.isObject3D ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
         this._target = value
 

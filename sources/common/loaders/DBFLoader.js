@@ -18,10 +18,13 @@ import {
     Endianness,
     TBinaryReader
 } from 'itee-client'
-import {
-    DefaultLoadingManager,
-    FileLoader
-} from 'three-full'
+import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader
+//}                 from 'three-full'
 
 /**
  *

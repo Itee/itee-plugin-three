@@ -23,11 +23,17 @@ import {
     TBinaryReader
 } from 'itee-client'
 import {
-    DefaultLoadingManager,
-    FileLoader,
-    Shape,
-    Vector3
-} from 'three-full'
+import { Shape }                 from 'three-full/sources/core/Shape'
+import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+import { Vector3 }               from 'three-full/sources/math/Vector3'
+// Waiting three-shaking fix
+//import {
+//    DefaultLoadingManager,
+//    FileLoader,
+//    Shape,
+//    Vector3
+//} from 'three-full'
 
 /**
  *

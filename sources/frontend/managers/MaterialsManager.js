@@ -25,18 +25,28 @@ import {
     isString,
     isUndefined
 }                           from 'itee-validators'
-import {
-    Color,
-    ImageLoader,
-    LinearFilter,
-    LineBasicMaterial,
-    MeshLambertMaterial,
-    MeshPhongMaterial,
-    PointsMaterial,
-    TextureLoader,
-    Vector2
-}                           from 'three-full'
-import { TexturesManager }  from './TexturesManager'
+import { LinearFilter }        from 'three-full/sources/constants'
+import { ImageLoader }         from 'three-full/sources/loaders/ImageLoader'
+import { TextureLoader }       from 'three-full/sources/loaders/TextureLoader'
+import { LineBasicMaterial }   from 'three-full/sources/materials/LineBasicMaterial'
+import { MeshLambertMaterial } from 'three-full/sources/materials/MeshLambertMaterial'
+import { MeshPhongMaterial }   from 'three-full/sources/materials/MeshPhongMaterial'
+import { PointsMaterial }      from 'three-full/sources/materials/PointsMaterial'
+import { Color }               from 'three-full/sources/math/Color'
+import { Vector2 }             from 'three-full/sources/math/Vector2'
+// Waiting three-shaking fix
+//import {
+//    Color,
+//    ImageLoader,
+//    LinearFilter,
+//    LineBasicMaterial,
+//    MeshLambertMaterial,
+//    MeshPhongMaterial,
+//    PointsMaterial,
+//    TextureLoader,
+//    Vector2
+//}                           from 'three-full'
+import { TexturesManager }     from './TexturesManager'
 
 const DEFAULT_IMAGE = new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )
 

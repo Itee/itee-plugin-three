@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { FBXLoader }              from 'three-full'
+import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
 
 class FbxToThree extends TAbstractFileConverter {
 

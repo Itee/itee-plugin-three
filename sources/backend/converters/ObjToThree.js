@@ -9,7 +9,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { OBJLoader }              from 'three-full'
+import { OBJLoader }              from 'three-full/sources/loaders/OBJLoader'
 
 class ObjToThree extends TAbstractFileConverter {
 
