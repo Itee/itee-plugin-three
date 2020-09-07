@@ -1,10 +1,8 @@
 /**
+ * @module Schemas/Curves/Curve
+ * @desc Export the ThreeJs Curve Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema = undefined

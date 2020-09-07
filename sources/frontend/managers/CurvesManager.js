@@ -1,8 +1,8 @@
 /**
+ * @module Managers/CurvesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file sources/frontend/managers/CurvesManager.js
  *
  * @example Todo
  *

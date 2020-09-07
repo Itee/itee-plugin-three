@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Curves/CubicBezierCurve3
+ * @desc Export the ThreeJs CubicBezierCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve } = require( './Curve' )

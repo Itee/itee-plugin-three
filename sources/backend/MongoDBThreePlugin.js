@@ -1,11 +1,12 @@
 /**
+ * @module MongoDBThreePlugin
+ * @desc Three way to register Types and Schema
+ * using cjs module under types and schemas folder.
+ * using FunctionRegistrator for type and add to plugin using .addType( myFunctionRegistrator ), extending class AbstractMongooseRegistrator for Schema and add to plugin using .addSchema(
+ * MySchemaRegistrator ) using direct registration importing mongoose in the file (care to the loading order ! An no output about what is registered.)
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [MIT]{@link https://opensource.org/licenses/MIT}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 import { TAbstractConverterManager } from 'itee-database'
@@ -206,12 +207,6 @@ import { Vector2Type }    from './types/Vector2'
 import { Vector3Type }    from './types/Vector3'
 import { Vector4Type }    from './types/Vector4'
 
-/**
- * Three way to register Types and Schema
- * using cjs module under types and schemas folder.
- * using FunctionRegistrator for type and add to plugin using .addType( myFunctionRegistrator ), extending class AbstractMongooseRegistrator for Schema and add to plugin using .addSchema(
- * MySchemaRegistrator ) using direct registration importing mongoose in the file (care to the loading order ! An no output about what is registered.)
- */
 export default new TMongoDBPlugin()
     .addType( ColorType )
     .addType( EulerType )

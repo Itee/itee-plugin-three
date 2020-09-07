@@ -1,8 +1,8 @@
 /**
+ * @module Controllers/ClippingController
+ *
  * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
  *
  * @example Todo
  *

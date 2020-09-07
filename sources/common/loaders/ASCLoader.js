@@ -1,24 +1,30 @@
 /**
+ * @module Loader/ASCLoader
+ * @desc A loader for ASC cloud point files.
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file A loader for ASC cloud point files.
- *
  * @example
- *    var loader = new ASCLoader();
- *    loader.load('/path/to/file.asc', function (geometry) {
  *
- *		scene.add( new Mesh( geometry ) );
+ * import { ASCLoader } from 'itee-plugin-three'
  *
- *	} );
+ * const loader = new ASCLoader();
  *
- * If the ASC file need to be offset,
- * it can be set before loading file.
- *
+ * // If the ASC file need to be offseted, it can be set before loading file.
  * loader.setOffset( {
- *	x: 1.0,
- *  y: 52.0,
- *  z: -5.0
+ *      x: 1.0,
+ *      y: 52.0,
+ *      z: -5.0
+ * } );
+ *
+ * // Then load the file and get the threejs Point Geometry
+ * loader.load('/path/to/file.asc', function (geometry) {
+ *
+ *      scene.add( new Mesh( geometry ) );
+ *
  * } );
  *
  */
@@ -46,8 +52,19 @@ import { Points }                from 'three-full/sources/objects/Points'
 //    PointsMaterial
 //}                        from 'three-full'
 
+/**
+ * The ASCLoader class definition.
+ * It allow to load and parse an .asc file
+ *
+ * @class
+ */
 class ASCLoader {
 
+    /**
+     * @constructor
+     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
+     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
+     */
     constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
         this.manager = manager
@@ -75,12 +92,13 @@ class ASCLoader {
     }
 
     /**
+     * Will load the file at the given URL then parse it. It will return a Three.Group as onLoad argument.
      *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @param sampling
+     * @param {DOMString|URL} url - Path to the file to load
+     * @param {callback} onLoad - A success callback
+     * @param {callback} onProgress - A progress callback
+     * @param {callback} onError - A error callback
+     * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
     load ( url, onLoad, onProgress, onError, sampling ) {
 
@@ -99,8 +117,9 @@ class ASCLoader {
     }
 
     /**
+     * An alternative setter to offset property
      *
-     * @param offset
+     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
     setOffset ( offset ) {
 
@@ -108,6 +127,8 @@ class ASCLoader {
 
         this._offset     = offset
         this._autoOffset = false
+
+        //TODO: that allow chaining.
 
     }
 

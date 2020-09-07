@@ -1,10 +1,11 @@
 /**
+ * @module Schemas/Core/Geometry
+ * @desc Export the ThreeJs Geometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Face3 Schemas/Core/Face3}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 import { Face3 } from './Face3'

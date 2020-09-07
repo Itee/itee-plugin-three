@@ -111,6 +111,7 @@ Object3D._createModel    = Mongoose => {
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
+    // Care here, the model contains an S char, not the discriminator !
     Object3D._model = Mongoose.model( 'Objects3D', Object3D.getSchemaFrom( Mongoose ) )
     Object3D._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) )
 

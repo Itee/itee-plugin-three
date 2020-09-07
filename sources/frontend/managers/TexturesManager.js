@@ -1,16 +1,18 @@
 /**
+ * @module Managers/TexturesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 import { TDataBaseManager } from 'itee-client'
 import { isObject }         from 'itee-validators'
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class TexturesManager extends TDataBaseManager {
 
     constructor ( parameters = {} ) {

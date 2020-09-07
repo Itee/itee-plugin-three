@@ -1,11 +1,12 @@
 /**
+ * @module Schemas/Core/CurvePath
+ * @desc Export the ThreeJs CurvePath Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ * @augments module:Schemas/Curves/Curve
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve } = require( '../curves/Curve' )

@@ -1,10 +1,8 @@
 /**
+ * @module Managers/ObjectsManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class ClassName
- * @classdesc Todo...
- * @example Todo...
  *
  */
 
@@ -68,6 +66,11 @@ import { Scene }              from 'three-full/sources/scenes/Scene'
 import { GeometriesManager }  from './GeometriesManager'
 import { MaterialsManager }   from './MaterialsManager'
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class ObjectsManager extends TDataBaseManager {
 
     /**
@@ -589,6 +592,13 @@ class ObjectsManager extends TDataBaseManager {
 
     //// Callback
 
+    /**
+     *
+     * @param objects
+     * @param {GlobalFunction} onSuccess
+     * @param {GlobalCallback} onProgress
+     * @param {module:Managers/ObjectsManager~ObjectsManager~ClassCallback} onError
+     */
     fillObjects3D ( objects, onSuccess, onProgress, onError ) {
 
         const self = this

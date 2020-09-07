@@ -1,4 +1,5 @@
 /**
+ * @module Loader/DBFLoader
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
@@ -7,9 +8,6 @@
  * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
  * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
  *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
  *
  */
 
@@ -71,6 +69,11 @@ const DataType = toEnum( {
     OLE:           'G'
 } )
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class DBFLoader {
 
     //    static Terminator    = 0x0D

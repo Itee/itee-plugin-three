@@ -1,10 +1,11 @@
 /**
+ * @module Schemas/Core/BufferGeometry
+ * @desc Export the ThreeJs BufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferAttribute Schemas/Core/BufferAttribute}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/BufferGeometry
- *
- * @description Todo...
  */
 
 const { BufferAttribute } = require( './BufferAttribute' )

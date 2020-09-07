@@ -1,16 +1,13 @@
 /**
+ * @module Loader/SHPLoader
+ * @desc Export SHPLoader to load .shp files
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- *
- * Constructor parameter:
- *
- * size - the size of the square view
- *
- * @class Todo...
- * @classdesc Todo...
  * @example Todo...
  *
  */
@@ -60,6 +57,12 @@ const ShapeType = toEnum( {
     MultiPatch:  31
 } )
 
+/**
+ * @class
+ * @classdesc This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ * @export
+ */
 class SHPLoader {
 
 //    static FileCode      = 9994
@@ -132,6 +135,8 @@ class SHPLoader {
     }
 
     /**
+     *
+     * Because ctor is blablabla
      *
      * @param manager
      * @param logger

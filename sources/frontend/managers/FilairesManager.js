@@ -1,10 +1,9 @@
 /**
+ * @module Managers/FilairesManager
+ *
  * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @class ClassName
- * @classdesc Todo...
- * @example Todo...
  *
  */
 
@@ -31,6 +30,11 @@ import {
     SphereBufferGeometry
 } from 'three-full'
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class FilairesManager extends TDataBaseManager {
 
     /**

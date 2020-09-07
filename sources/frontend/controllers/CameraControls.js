@@ -1,10 +1,18 @@
 /**
+ * @module Controllers/CameraControls
+ * @desc This module export CameraControls class and CameraControlMode enum values.
+ *
+ * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
+ * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
+ * @example
  *
- * @example Todo
+ * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
  *
  */
 
@@ -46,6 +54,20 @@ const DOWN  = new Vector3( 0, -1, 0 )
 const RIGHT = new Vector3( 1, 0, 0 )
 const LEFT  = new Vector3( -1, 0, 0 )
 
+/**
+ * Enum values to define the internal state of CameraControl
+ *
+ * @type {Enum}
+ * @name State
+ * @property {number} [None=0] - The default state when nothing happen.
+ * @property {number} [Rotating=1] - The state when current action is interpreted as Rotating.
+ * @property {number} [Panning=2] - The state when current action is interpreted as Panning.
+ * @property {number} [Rolling=3] - The state when current action is interpreted as Rolling.
+ * @property {number} [Zooming=4] - The state when current action is interpreted as Zooming.
+ * @property {number} [Moving=5] - The state when current action is interpreted as Moving.
+ * @constant
+ * @private
+ */
 const State = toEnum( {
     None:     0,
     Rotating: 1,
@@ -55,6 +77,17 @@ const State = toEnum( {
     Moving:   5
 } )
 
+/**
+ * Enum values to set the current mode of displacement for Camera.
+ *
+ * @typedef {Enum} module:Controllers/CameraControls.CameraControlMode
+ * @property {number} [FirstPerson=1] - The state when current action is interpreted as Rotating.
+ * @property {number} [Orbit=2] - The state when current action is interpreted as Panning.
+ * @property {number} [Fly=3] - The state when current action is interpreted as Rolling.
+ * @property {number} [Path=4] - The state when current action is interpreted as Zooming.
+ * @constant
+ * @public
+ */
 const CameraControlMode = toEnum( {
     FirstPerson: 1,
     Orbit:       2,
@@ -62,8 +95,56 @@ const CameraControlMode = toEnum( {
     Path:        4
 } )
 
+/**
+ * @class
+ * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
+ * It manage keyboard and mouse binding to different camera actions.
+ * @augments EventDispatcher
+ */
 class CameraControls extends EventDispatcher {
 
+    // Internal events
+    /**
+     * Move event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#move
+     * @type {object}
+     * @property {String} [type=move] - Indicates the type of fired event
+     */
+
+    /**
+     * Scale event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#scale
+     * @type {object}
+     * @property {String} [type=scale] - Indicates the type of fired event
+     */
+
+    /**
+     * Rotate event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#rotate
+     * @type {object}
+     * @property {String} [type=rotate] - Indicates the type of fired event
+     */
+
+    /**
+     * Change event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#change
+     * @type {object}
+     * @property {String} [type=change] - Indicates the type of fired event
+     */
+
+    /**
+     * @constructor
+     * @param {Object} parameters - A parameters object containing properties initialization
+     * @param {THREE.Camera} parameters.camera - The camera to use
+     * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
+     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+     * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
+     * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
+     */
     constructor ( parameters = {} ) {
 
         const _parameters = {
@@ -95,11 +176,29 @@ class CameraControls extends EventDispatcher {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         }
+        this.logger    = _parameters.logger
 
-        this.logger     = _parameters.logger
-        this.camera     = _parameters.camera
-        this.target     = _parameters.target
-        this.mode       = _parameters.mode
+        /**
+         *
+         * Get/Set the value of the name property.
+         * @function module:Controllers/CameraControls~CameraControls~camera
+         * @property camera
+         * @throws Will throw an error if the argument is null.
+         * @param {string} newName
+         * @returns {string}
+         *
+         */
+        this.camera = _parameters.camera
+
+        /**
+         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
+         */
+        this.target = _parameters.target
+
+        /**
+         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+         */
+        this.mode = _parameters.mode
         this.domElement = _parameters.domElement
 
         // Set to false to disable controls
@@ -221,15 +320,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate: [ Mouse.LEFT.value ],
-            pan:    [ Mouse.MIDDLE.value ],
-            roll:   {
+            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate:           [ Mouse.LEFT.value ],
+            pan:              [ Mouse.MIDDLE.value ],
+            roll:             {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
@@ -257,6 +356,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
+     * @param value
+     * @throws Will throw an error if the argument is null.
+     */
     set camera ( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
@@ -356,6 +460,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for camera property
+     *
+     * @param {THREE~Camera} value - The camera to manage
+     * @return {module:Controllers/CameraControls~CameraControls} The current instance (this, chainable)
+     */
     setCamera ( value ) {
 
         this.camera = value
@@ -363,6 +473,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for target property
+     *
+     * @param {THREE~Object3D} value - The target to use
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setTarget ( value ) {
 
         this.target = value
@@ -370,6 +486,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for mode property
+     *
+     * @param {Enum.State} value - The target to use
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setMode ( value ) {
 
         this.mode = value
@@ -377,6 +499,13 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for mode
+     *
+     * @param {State} value - The target to use
+     * @throws {BadERROR} a bad error
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setPaths ( value ) {
 
         this.paths = value
@@ -486,6 +615,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Mon blablabla...
+     * @param {external:THREE~Vector3} newTargetPosition - The new target position
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setTargetPosition ( newTargetPosition ) {
 
         this._target.position.copy( newTargetPosition )
@@ -951,6 +1085,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     */
     _back () {
 
         if ( !this.canMove || !this.canBack ) { return }
@@ -998,6 +1137,13 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     * @fires module:Controllers/CameraControls~CameraControls#move
+     * @fires module:Controllers/CameraControls~CameraControls#change
+     */
     _up () {
 
         if ( !this.canMove || !this.canUp ) { return }
@@ -1022,6 +1168,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     */
     _down () {
 
         if ( !this.canMove || !this.canDown ) { return }
@@ -1046,6 +1197,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     *
+     * @private
+     * @return {void}
+     */
     _left () {
 
         if ( !this.canMove || !this.canLeft ) { return }
