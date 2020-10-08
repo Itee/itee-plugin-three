@@ -153,77 +153,9 @@ class TObjects3DController extends TMongooseController {
 
         return result
 
-        //        //        console.time( 'Children.Map: ' )
-        //        //        const result      = {
-        //        //            children:   [],
-        //        //            geometries: [],
-        //        //            materials:  []
-        //        //        }
-        //        //        result.children   = children.map( child => child._id )
-        //        //        result.geometries = children.map( child => child.geometry ).filter( geometry => geometry )
-        //        //        result.materials  = children.map( child => child.material ).filter( material => material )
-        //        //        console.timeEnd( 'Children.Map: ' )
-        //
-        //        // Alt
-        //        //        console.time( 'Children.Reduce: ' )
-        //        const result = {
-        //            children:   [],
-        //            geometries: [],
-        //            materials:  []
-        //        }
-        //        children.reduce( ( accumulator, child ) => {
-        //
-        //            accumulator.children.push( child._id.toString() )
-        //
-        //            const childGeometry = child.geometry
-        //            if ( isDefined( childGeometry ) ) {
-        //                accumulator.geometries.push( child.geometry.toString() )
-        //            }
-        //
-        //            const childMaterials = child.material
-        //            if ( childMaterials ) {
-        //                const _materials = isArray( childMaterials ) ? childMaterials.map( mat => mat.toString() ) : [ childMaterials.toString() ]
-        //                accumulator.materials.push( ..._materials )
-        //            }
-        //
-        //            return accumulator
-        //
-        //        }, result )
-        //        //        console.timeEnd( 'Children.Reduce: ' )
-        //
-        //        if ( recursive ) {
-        //
-        //            const getAllChildrenPromises = []
-        //            for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
-        //                const child        = children[ childIndex ]
-        //                const childId      = child._id
-        //                const childPromise = this.getAllChildrenIds( childId, recursive )
-        //                getAllChildrenPromises.push( childPromise )
-        //            }
-        //            const promisesResults = await Promise.all( getAllChildrenPromises )
-        //            promisesResults.reduce( ( accumulator, child ) => {
-        //
-        //                result.children.push( ...child.children )
-        //                result.geometries.push( ...child.geometries )
-        //                result.materials.push( ...child.materials )
-        //
-        //                return result
-        //
-        //            }, result )
-        //
-        //        }
-        //
-        //                return {
-        //                    children:   [ ...new Set( result.children ) ],
-        //                    geometries: [ ...new Set( result.geometries ) ],
-        //                    materials:  [ ...new Set( result.materials ) ]
-        //                }
-
     }
 
     async _deleteOne ( id, response ) {
-
-        console.time( '_deleteOne' )
 
         try {
 
@@ -268,17 +200,11 @@ class TObjects3DController extends TMongooseController {
 
             TMongooseController.returnError( error, response )
 
-        } finally {
-
-            console.timeEnd( '_deleteOne' )
-
         }
 
     }
 
     async _deleteDocuments ( type, documentIds ) {
-
-        //        console.log( `Delete many: [${ documentIds }]` )
 
         const deleteResult = await this._driver
                                        .model( type )
@@ -304,7 +230,7 @@ class TObjects3DController extends TMongooseController {
     async _deleteDocument ( document ) {
         if ( isNotDefined( document ) ) { return null }
 
-        console.log( `Delete: ${ document.name } [${ document._id }]` )
+//        console.log( `Delete: ${ document.name } [${ document._id }]` )
 
         const deleteResult = await this._driver
                                        .model( document.type )
