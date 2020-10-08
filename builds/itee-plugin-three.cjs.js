@@ -1,35 +1,418 @@
-console.log('Itee.Plugin.Three v1.2.10 - CommonJs')
+console.log('Itee.Plugin.Three v1.3.0 - CommonJs')
 'use strict';
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var iteeDatabase = require('itee-database');
 var iteeMongodb = require('itee-mongodb');
+var iteeValidators = require('itee-validators');
+var iteeValidators__default = _interopDefault(iteeValidators);
 var threeFull = require('three-full');
 var iteeClient = require('itee-client');
 var iteeUtils = require('itee-utils');
-var iteeValidators = require('itee-validators');
-var iteeValidators__default = _interopDefault(iteeValidators);
 var bson = require('bson');
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
- *
- * @example Todo
+ * @see [IFC Standard]{@link http://standards.buildingsmart.org/IFC/RELEASE/IFC4_1/FINAL/HTML/}
  *
  */
 
+class TObjects3DController extends iteeMongodb.TMongooseController {
+
+    constructor ( parameters = {} ) {
+        super( parameters );
+    }
+
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    async _readOneDocument ( type, query ) {
+
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+            return null
+        }
+
+        const model = await this._driver
+                                .model( type )
+                                .findOne( query )
+                                .exec();
+
+        return ( iteeValidators.isDefined( model ) ) ? model._doc : null
+
+    }
+
+    // Todo: Rename to _readDocuments
+    /**
+     * Read all document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
+    async _readManyDocument ( type, query ) {
+
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+            return null
+        }
+
+        let models = await this._driver
+                               .model( type )
+                               .find( query )
+                               .exec();
+
+        return models.map( model => model._doc )
+
+    }
+
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to update
+     * @param {Object} updateQuery - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @param {Object} queryOptions - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    async _updateDocument ( document, updateQuery, queryOptions ) {
+
+        if ( iteeValidators.isNotDefined( document ) ) {
+            return null
+        }
+
+        return await this._driver
+                         .model( document.type )
+                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                         .exec()
+
+    }
+
+    async getAllChildrenIds ( parentId, recursive = false ) {
+
+        const result              = {
+            children:   [],
+            geometries: [],
+            materials:  []
+        };
+        const subChildrenPromises = [];
+        const children            = await this._readManyDocument( 'Objects3D', { parent: parentId } );
+        for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
+
+            const child   = children[ childIndex ];
+            const childId = child._id.toString();
+
+            if ( iteeValidators.isDefined( childId ) ) {
+                result.children.push( childId );
+            }
+
+            const childGeometry = child.geometry;
+            if ( iteeValidators.isDefined( childGeometry ) ) {
+                result.geometries.push( childGeometry.toString() );
+            }
+
+            const childMaterials = child.material;
+            if ( childMaterials ) {
+                const _materials = iteeValidators.isArray( childMaterials ) ? childMaterials.map( mat => mat.toString() ) : [ childMaterials.toString() ];
+                result.materials.push( ..._materials );
+            }
+
+            const subChildren = child.children;
+            if ( subChildren ) {
+                const subChildrenPromise = this.getAllChildrenIds( childId, recursive );
+                subChildrenPromises.push( subChildrenPromise );
+            }
+
+        }
+
+        // Merge children results
+        if ( subChildrenPromises.length > 0 ) {
+
+            const promisesResults = await Promise.all( subChildrenPromises );
+            for ( let resultIndex = 0, numberOfResults = promisesResults.length ; resultIndex < numberOfResults ; resultIndex++ ) {
+                const promisesResult = promisesResults[ resultIndex ];
+                result.children.push( ...promisesResult.children );
+                result.geometries.push( ...promisesResult.geometries );
+                result.materials.push( ...promisesResult.materials );
+            }
+
+        }
+
+
+        return result
+
+    }
+
+    async _deleteOne ( id, response ) {
+
+        try {
+
+            const alternative = [ 'oneByOne', 'allInOne' ][ 1 ];
+            if ( alternative === 'oneByOne' ) {
+
+                const document        = await this._readOneDocument( 'Objects3D', { _id: id } );
+                const parentResult    = await this._removeParentReference( document );
+                const childrenResults = await this._removeChildDocument( document );
+                const deleteResult    = {
+                    ...childrenResults,
+                    parent: parentResult
+                };
+
+                iteeMongodb.TMongooseController.returnData( deleteResult, response );
+
+
+            } else {
+
+                const results = await this.getAllChildrenIds( id, true );
+                results.children.push( id );
+
+                const cleanResults = {
+                    children:   [ ...new Set( results.children ) ],
+                    geometries: [ ...new Set( results.geometries ) ],
+                    materials:  [ ...new Set( results.materials ) ]
+                };
+
+                const deletedObjectsCount     = await this._deleteDocuments( 'Objects3D', cleanResults.children );
+                const deletedGeometriesResult = await this._deleteDocuments( 'Geometries', cleanResults.geometries );
+                const deletedMaterialsResult  = await this._deleteDocuments( 'Materials', cleanResults.materials );
+
+                iteeMongodb.TMongooseController.returnData( {
+                    deletedObjectsCount,
+                    deletedGeometriesResult,
+                    deletedMaterialsResult
+                }, response );
+
+            }
+
+        } catch ( error ) {
+
+            iteeMongodb.TMongooseController.returnError( error, response );
+
+        }
+
+    }
+
+    async _deleteDocuments ( type, documentIds ) {
+
+        const deleteResult = await this._driver
+                                       .model( type )
+                                       .deleteMany( {
+                                           _id: {
+                                               $in: documentIds
+                                           }
+                                       } )
+                                       .exec();
+
+        return deleteResult.deletedCount
+
+    }
+
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    async _deleteDocument ( document ) {
+        if ( iteeValidators.isNotDefined( document ) ) { return null }
+
+//        console.log( `Delete: ${ document.name } [${ document._id }]` )
+
+        const deleteResult = await this._driver
+                                       .model( document.type )
+                                       .findByIdAndDelete( document._id )
+                                       .exec();
+
+        return ( deleteResult && deleteResult._doc ) ? deleteResult._doc._id : null
+
+    }
+
+    ///
+
+    async _removeParentReference ( document ) {
+        const parentId = document.parent;
+        if ( iteeValidators.isNotDefined( parentId ) ) { return null }
+
+        const parentDocument         = await this._readOneDocument( 'Objects3D', { _id: parentId } );
+        const childrenIds            = parentDocument.children;
+        const indexOfCurrentDocument = childrenIds.indexOf( document._id );
+        childrenIds.splice( indexOfCurrentDocument, 1 );
+
+        const updateResult = await this._updateDocument( parentDocument, {
+            $set: {
+                children: childrenIds
+            }
+        } );
+
+        return updateResult
+    }
+
+    /**
+     * Remove documents in safe and recursive way over children, and others referenced objects.
+     *
+     * @param {Array<Mongoose.Document>} documents - The documents to deletes
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
+    async _removeChildrenDocuments ( documents ) {
+
+        let removed = [];
+        for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
+            removed.push( this._removeChildDocument( documents[ childIndex ] ) );
+        }
+        return Promise.all( removed )
+
+    }
+
+    /**
+     * Remove a document from database after remove his children and other related stuff like geometry, materials etc...
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _removeChildDocument ( document ) {
+
+        // Remove children recursively
+        const children        = await this._readManyDocument( 'Objects3D', { parent: document._id } );
+        const childrenResults = await this._removeChildrenDocuments( children );
+
+        // Remove geometry only if current object is the last that reference it
+        const geometryResult = await this._removeOrphanGeometryWithId( document.geometry );
+
+        // Remove material only if current object is the last that reference it
+        const materialsResult = await this._removeOrphanMaterialsWithIds( document.material || [] );
+
+        // finally remove the incriminated document
+        const documentResult = await this._deleteDocument( document );
+
+        return {
+            object:    documentResult,
+            children:  childrenResults,
+            geometry:  geometryResult,
+            materials: materialsResult
+        }
+
+    }
+
+    /**
+     * Remove geometry only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} geometryId - The geometry id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _removeOrphanGeometryWithId ( geometryId ) {
+
+        if ( iteeValidators.isNotDefined( geometryId ) ) { return }
+
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
+        if ( referencingObjects.length > 1 ) { return }
+
+        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } );
+        const deleteResult     = await this._deleteDocument( geometryDocument );
+
+        return deleteResult
+    }
+
+    // Remove only orphan materials
+    /**
+     * Remove materials only in case they are orphan and no objects still reference them.
+     *
+     * @param {Array<Mongoose.ObjectId|String>} materialsIds - The materials ids to match for deletion
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
+    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+
+        const removed = [];
+        for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
+            removed.push( this._removeOrphanMaterialWithId( materialsIds[ index ] ) );
+        }
+
+        return Promise.all( removed )
+
+    }
+
+    /**
+     * Remove material only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} materialsIds - The material id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
+    async _removeOrphanMaterialWithId ( materialId ) {
+
+        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
+        if ( referencingObjects.length > 1 ) { return }
+
+        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } );
+        const deleteResult     = await this._deleteDocument( materialDocument );
+        return deleteResult
+    }
+
+}
+
+/**
+ * @module Converters/ColladaToThree
+ * @desc Export JsonToThree converter class about .dae files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+/**
+ * This class allow to convert .dae files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {ArrayBuffer} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -50,6 +433,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Loader/DBFLoader
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
@@ -58,9 +442,6 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
  * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
  *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
  *
  */
 // Waiting three-shaking fix
@@ -113,50 +494,16 @@ const DataType = iteeUtils.toEnum( {
     OLE:           'G'
 } );
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class DBFLoader {
 
     //    static Terminator    = 0x0D
     //    static DeletedRecord = 0x1A
     //    static YearOffset    = 1900
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
 
     /**
      *
@@ -178,6 +525,45 @@ class DBFLoader {
         this.logger  = _parameters.logger;
         this.reader  = _parameters.reader;
 
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
     }
 
     /**
@@ -820,21 +1206,42 @@ DBFLoader.DeletedRecord = 0x1A;
 DBFLoader.YearOffset    = 1900;
 
 /**
+ * @module Converters/DbfToThree
+ * @desc Export JsonToThree converter class about .dbf files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link module:Loader/DBFLoader Loader/DBFLoader}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .dbf files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class DbfToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( { dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {ArrayBuffer} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -855,23 +1262,44 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/FbxToThree
+ * @desc Export JsonToThree converter class about .fbx files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .fbx files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class FbxToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {ArrayBuffer} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -892,23 +1320,44 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/JsonToThree
+ * @desc Export JsonToThree converter class about .json files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .json files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class JsonToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {JSON} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -929,23 +1378,44 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/MtlToThree
+ * @desc Export JsonToThree converter class about .mtl files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .mtl files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class MtlToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.String
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {String} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -965,23 +1435,44 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/Obj2ToThree
+ * @desc Export JsonToThree converter class about .obj files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .obj files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {JSON} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -1002,18 +1493,15 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Loader/SHPLoader
+ * @desc Export SHPLoader to load .shp files
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- *
- * Constructor parameter:
- *
- * size - the size of the square view
- *
- * @class Todo...
- * @classdesc Todo...
  * @example Todo...
  *
  */
@@ -1046,78 +1534,21 @@ const ShapeType = iteeUtils.toEnum( {
     MultiPatch:  31
 } );
 
+/**
+ * @class
+ * @classdesc This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ * @export
+ */
 class SHPLoader {
 
-//    static FileCode      = 9994
-//    static MinFileLength = 100
-//    static MinVersion    = 1000
-
-    get globalOffset () {
-        return this._globalOffset
-    }
-
-    set globalOffset ( value ) {
-        this._globalOffset = value;
-    }
-
-    setGlobalOffset ( value ) {
-        this.globalOffset = value;
-        return this
-    }
-
-    get worldAxis () {
-        return this._worldAxis
-    }
-
-    set worldAxis ( value ) {
-        this._worldAxis = value;
-    }
-
-    setWorldAxis ( value ) {
-        this.worldAxis = value;
-        return this
-    }
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
+    //    static FileCode      = 9994
+    //    static MinFileLength = 100
+    //    static MinVersion    = 1000
 
     /**
+     *
+     * Because ctor is blablabla
      *
      * @param manager
      * @param logger
@@ -1144,6 +1575,71 @@ class SHPLoader {
         this.globalOffset = _parameters.globalOffset;
         this.worldAxis    = _parameters.worldAxis;
 
+    }
+
+    get globalOffset () {
+        return this._globalOffset
+    }
+
+    set globalOffset ( value ) {
+        this._globalOffset = value;
+    }
+
+    get worldAxis () {
+        return this._worldAxis
+    }
+
+    set worldAxis ( value ) {
+        this._worldAxis = value;
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setGlobalOffset ( value ) {
+        this.globalOffset = value;
+        return this
+    }
+
+    setWorldAxis ( value ) {
+        this.worldAxis = value;
+        return this
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
     }
 
     /**
@@ -1666,23 +2162,44 @@ SHPLoader.MinFileLength = 100;
 SHPLoader.MinVersion    = 1000;
 
 /**
+ * @module Converters/ShpToThree
+ * @desc Export JsonToThree converter class about .shp files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link module:Loader/SHPLoader Loader/SHPLoader}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .shp files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class ShpToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {ArrayBuffer} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -1703,23 +2220,44 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/StlToThree
+ * @desc Export JsonToThree converter class about .stl files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .shp files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class StlToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @param {JSON} data - The dumped data to convert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {onSuccessCallback} onSuccess - A callback that will handle the parsed result
+     * @param {onProgressCallback} onProgress - A callback that will handle the parsing progress
+     * @param {onErrorCallback} onError - A callback that will handle the parsing errors
+     * @return {Object}
+     * @private
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -1740,23 +2278,44 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Converters/TdsToThree
+ * @desc Export JsonToThree converter class about .3ds files
+
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to convert .3ds files into ThreeJs types
+ *
+ * @class
+ * @augments TAbstractFileConverter
+ */
 class TdsToThree extends iteeDatabase.TAbstractFileConverter {
 
+    /**
+     * @constructor
+     */
     constructor () {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
+    /**
+     * This private method will run the convertion of data into ThreeJs common stuff
+     *
+     * @private
+     * @param {File} data - The file descriptor to load and convert
+     * @param {Object} parameters
+     * @param {callback} onSuccess A callback that will handle the parsed result
+     * @param {callback} onProgress A callback that will handle the parsing progress
+     * @param {callback} onError A callback that will handle the parsing errors
+     * @return {Object}
+     */
     _convert ( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
@@ -1777,27 +2336,40 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
 }
 
 /**
+ * @module Inserters/ThreeToMongoDB
+ * @desc Export ThreeToMongoDB mongodb inserter class.
+
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * This class allow to insert ThreeJs stuff in MongoDB database.
+ *
+ * @class
+ * @augments TAbstractDataInserter
+ */
 class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
+    /**
+     * @constructor
+     * @param {Object} [parameters={}] - An object containing all parameters to pas throw the inheritance chain and for initialize this instance
+     * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
+     */
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
-                logger: iteeClient.DefaultLogger,
+                logger: iteeClient.DefaultLogger
             }, ...parameters
         };
         super( _parameters );
 
-        this.logger = _parameters.logger;
+        this.logger        = _parameters.logger;
         this.mergeStrategy = 'add';
 
         // Addition
@@ -1811,6 +2383,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     }
 
     // Utils
+    // Todo: Use itee-utils
     static _arrayify ( data ) {
 
         let array = [];
@@ -1829,6 +2402,18 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Main entry point to insert data into database; It apply merge strategy over data to insert.
+     *
+     * @param {Object} data - The ThreeJs data to insert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {String} [parameters.mergeStrategy=add] - The merging strategy to apply during insert process
+     * @param {callback} onSuccess - A callback that will handle the parsed result
+     * @param {callback} onProgress - A callback that will handle the parsing progress
+     * @param {callback} onError - A callback that will handle the parsing errors
+     * @returns {Promise<void>}
+     * @private
+     */
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = ThreeToMongoDB._arrayify( data );
@@ -1913,6 +2498,16 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to parse multiple objects on parallel.
+     * In case objects is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [objects=[]] - The objects to parse
+     * @param {String} [parentId=null] - The mongodb parent id to apply to current objects
+     * @returns {Promise<Array<Mongoose.Query|null>>|null}
+     * @private
+     */
     async _parseObjects ( objects = [], parentId = null ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects );
@@ -1929,6 +2524,14 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to parse one object. In function of the mergingStrategy it will perform any database CRUD operation.
+     *
+     * @param {Object} objects - The object to parse
+     * @param {String} [parentId=null] - The mongodb parent id to apply to current object
+     * @returns {Promise<Mongoose.Query|null>|null}
+     * @private
+     */
     async _parseObject ( object, parentId = null ) {
 
         if ( iteeValidators.isNotDefined( object ) ) {
@@ -2096,6 +2699,15 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to update or create multiple objects on parallel. It create object only if it does not exist in database, else it perform an update based on given data.
+     * In case objects parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [objects=[]] - The objects to updates or creates if not exist
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _getOrCreateDocuments ( objects = [] ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects );
@@ -2112,6 +2724,15 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    // Todo: Rename to _updateOrCreateDocument
+    /**
+     * Update or create an object. It create object only if it does not exist in database, else it perform an update based on given data.
+     * If the given data is null or undefined it return null.
+     *
+     * @param {Object} data - The data to update or create if not exist
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _getOrCreateDocument ( data ) {
 
         if ( iteeValidators.isNotDefined( data ) ) {
@@ -2129,8 +2750,15 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
-    // Create
-    // Todo non async createDocument to allow multi promises at once
+    /**
+     * Create new database entries based on given datas.
+     * In case datas parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [datas=[]] - The objects to creates
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _createDocuments ( datas = [] ) {
 
         const _datas = ThreeToMongoDB._arrayify( datas );
@@ -2147,6 +2775,14 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Create new database entry based on given data.
+     * If the given data is null or undefined it return null.
+     *
+     * @param {Object} data - The object to create
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _createDocument ( data ) {
 
         if ( iteeValidators.isNotDefined( data ) ) {
@@ -2159,7 +2795,16 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
-    // Read
+    // Todo: Rename to _readDocument
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _readOneDocument ( type, query ) {
 
         if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
@@ -2175,6 +2820,16 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    // Todo: Rename to _readDocuments
+    /**
+     * Read all document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _readManyDocument ( type, query ) {
 
         if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
@@ -2182,15 +2837,25 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         let models = await this._driver
-                                  .model( type )
-                                  .find( query )
-                                  .exec();
+                               .model( type )
+                               .find( query )
+                               .exec();
 
         return models.map( model => model._doc )
 
     }
 
-    // Update
+    /**
+     * Update database entries based on given datas.
+     * In case documents parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Array<Mongoose.Document>|Mongoose.Document} documents - The documents to updates
+     * @param {Object} updateQuery - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @param {Object} queryOptions - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents );
@@ -2207,6 +2872,16 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to update
+     * @param {Object} updateQuery - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @param {Object} queryOptions - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _updateDocument ( document, updateQuery, queryOptions ) {
 
         if ( iteeValidators.isNotDefined( document ) ) {
@@ -2220,7 +2895,15 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
-    // Delete
+    /**
+     * Delete database entries based on given documents.
+     * In case documents parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Array<Mongoose.Document>|Mongoose.Document} documents - The documents to deletes
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _deleteDocuments ( documents = [] ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents );
@@ -2237,6 +2920,14 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _deleteDocument ( document ) {
 
         if ( iteeValidators.isNotDefined( document ) ) {
@@ -2251,6 +2942,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     }
 
     ///
+    /**
+     * Remove documents in safe and recursive way over children, and others referenced objects.
+     *
+     * @param {Array<Mongoose.Document>} documents - The documents to deletes
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
     async _removeChildrenDocuments ( documents ) {
 
         let removed = [];
@@ -2261,6 +2959,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
+    /**
+     * Remove a document from database after remove his children and other related stuff like geometry, materials etc...
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeChildDocument ( document ) {
 
         // Remove children recursively
@@ -2278,7 +2983,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
-    // Remove orphan geometry
+    /**
+     * Remove geometry only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} geometryId - The geometry id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeOrphanGeometryWithId ( geometryId ) {
 
         if ( iteeValidators.isNotDefined( geometryId ) ) { return }
@@ -2292,6 +3003,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     }
 
     // Remove only orphan materials
+    /**
+     * Remove materials only in case they are orphan and no objects still reference them.
+     *
+     * @param {Array<Mongoose.ObjectId|String>} materialsIds - The materials ids to match for deletion
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
 
         const removed = [];
@@ -2303,7 +3021,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     }
 
-    // Remove only orphan material
+    /**
+     * Remove material only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} materialsIds - The material id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeOrphanMaterialWithId ( materialId ) {
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
@@ -2316,6 +3040,11 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
 }
 
+/**
+ * Allow to check if Materials correspond to expected Mesh type
+ * @type {string[]}
+ */
+// Todo: Find a way to validate this on schema
 ThreeToMongoDB.AvailableCurveTypes = [
     'Curve',
     'ArcCurve',
@@ -2332,13 +3061,10 @@ ThreeToMongoDB.AvailableCurveTypes = [
     'Path',
     'Shape'
 ];
-
-ThreeToMongoDB.AvailableLineTypes         = [ 'Line', 'LineLoop', 'LineSegments' ];
-ThreeToMongoDB.AvailableLineMaterialTypes = [ 'LineBasicMaterial', 'LineDashedMaterial' ];
-
-ThreeToMongoDB.AvailablePointTypes         = [ 'Points' ];
-ThreeToMongoDB.AvailablePointMaterialTypes = [ 'PointsMaterial' ];
-
+ThreeToMongoDB.AvailableLineTypes           = [ 'Line', 'LineLoop', 'LineSegments' ];
+ThreeToMongoDB.AvailableLineMaterialTypes   = [ 'LineBasicMaterial', 'LineDashedMaterial' ];
+ThreeToMongoDB.AvailablePointTypes          = [ 'Points' ];
+ThreeToMongoDB.AvailablePointMaterialTypes  = [ 'PointsMaterial' ];
 ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ];
 ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ];
 
@@ -2399,7 +3125,7 @@ Object3D._createSchema   = Mongoose => {
         matrixWorldNeedsUpdate: Boolean,
         layers:                 {
             type: Number,
-            set:  value => ( value.mask )
+            set:  value => value.mask
         },
         visible:       Boolean,
         castShadow:    Boolean,
@@ -2453,6 +3179,7 @@ Object3D._createModel    = Mongoose => {
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
+    // Care here, the model contains an S char, not the discriminator !
     Object3D._model = Mongoose.model( 'Objects3D', Object3D.getSchemaFrom( Mongoose ) );
     Object3D._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) );
 
@@ -2475,13 +3202,13 @@ var Object3D$1 = /*#__PURE__*/Object.freeze({
 });
 
 /**
+ * @module Schemas/Audio/Audio
+ * @desc Export the ThreeJs Audio Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$2 } = Object3D$1;
@@ -2534,20 +3261,22 @@ function registerModelTo ( Mongoose ) {
 
 }
 
+
 var Audio_1 = {
+    name:            'Audio',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo
 };
 
 /**
+ * @module Schemas/Audio/AudioListener
+ * @desc Export the ThreeJs AudioListener Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$3 } = Object3D$1;
@@ -2601,19 +3330,20 @@ function registerModelTo$1 ( Mongoose ) {
 }
 
 var AudioListener_1 = {
+    name:            'AudioListener',
     getSchemaFrom:   getSchemaFrom$1,
     getModelFrom:    getModelFrom$1,
     registerModelTo: registerModelTo$1
 };
 
 /**
+ * @module Schemas/Audio/PositionalAudio
+ * @desc Export the ThreeJs PositionalAudio Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$4 } = Object3D$1;
@@ -2667,20 +3397,22 @@ function registerModelTo$2 ( Mongoose ) {
 }
 
 var PositionalAudio_1 = {
+    name:            'PositionalAudio',
     getSchemaFrom:   getSchemaFrom$2,
     getModelFrom:    getModelFrom$2,
     registerModelTo: registerModelTo$2
 };
 
 /**
+ * @module Schemas/Camera/ArrayCamera
+ * @desc Export the ThreeJs ArrayCamera Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
+
 
 const { Object3D: Object3D$5 } = Object3D$1;
 
@@ -2733,20 +3465,22 @@ function registerModelTo$3 ( Mongoose ) {
 }
 
 var ArrayCamera_1 = {
+    name:            'ArrayCamera',
     getSchemaFrom:   getSchemaFrom$3,
     getModelFrom:    getModelFrom$3,
     registerModelTo: registerModelTo$3
 };
 
 /**
+ * @module Schemas/Camera/Camera
+ * @desc Export the ThreeJs Camera Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
+
 
 const { Object3D: Object3D$6 } = Object3D$1;
 
@@ -2799,19 +3533,20 @@ function registerModelTo$4 ( Mongoose ) {
 }
 
 var Camera_1 = {
+    name:            'Camera',
     getSchemaFrom:   getSchemaFrom$4,
     getModelFrom:    getModelFrom$4,
     registerModelTo: registerModelTo$4
 };
 
 /**
+ * @module Schemas/Camera/CubeCamera
+ * @desc Export the ThreeJs CubeCamera Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$7 } = Object3D$1;
@@ -2865,19 +3600,20 @@ function registerModelTo$5 ( Mongoose ) {
 }
 
 var CubeCamera_1 = {
+    name:            'CubeCamera',
     getSchemaFrom:   getSchemaFrom$5,
     getModelFrom:    getModelFrom$5,
     registerModelTo: registerModelTo$5
 };
 
 /**
+ * @module Schemas/Camera/OrthographicCamera
+ * @desc Export the ThreeJs OrthographicCamera Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$8 } = Object3D$1;
@@ -2931,19 +3667,20 @@ function registerModelTo$6 ( Mongoose ) {
 }
 
 var OrthographicCamera_1 = {
+    name:            'OrthographicCamera',
     getSchemaFrom:   getSchemaFrom$6,
     getModelFrom:    getModelFrom$6,
     registerModelTo: registerModelTo$6
 };
 
 /**
+ * @module Schemas/Camera/PerspectiveCamera
+ * @desc Export the ThreeJs PerspectiveCamera Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$9 } = Object3D$1;
@@ -2997,18 +3734,20 @@ function registerModelTo$7 ( Mongoose ) {
 }
 
 var PerspectiveCamera_1 = {
+    name:            'PerspectiveCamera',
     getSchemaFrom:   getSchemaFrom$7,
     getModelFrom:    getModelFrom$7,
     registerModelTo: registerModelTo$7
 };
 
 /**
+ * @module Schemas/Core/BufferAttribute
+ * @desc Export the ThreeJs BufferAttribute Model and Schema for Mongoose.
+ *
+ * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = iteeValidators__default;
@@ -3187,25 +3926,22 @@ function _createSchema$8 ( Mongoose ) {
 }
 
 var BufferAttribute_1 = {
+    name:            'BufferAttribute',
     getSchemaFrom:   getSchemaFrom$8,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
-var BufferAttribute = {
-	BufferAttribute: BufferAttribute_1
-};
-
 /**
+ * @module Schemas/Core/BufferGeometry
+ * @desc Export the ThreeJs BufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferAttribute Schemas/Core/BufferAttribute}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/BufferGeometry
- *
- * @description Todo...
  */
-
-const { BufferAttribute: BufferAttribute$1 } = BufferAttribute;
+//const { BufferAttribute } = require( './BufferAttribute' )
 
 let _schema$9 = undefined;
 let _model$8  = undefined;
@@ -3227,7 +3963,7 @@ function _createSchema$9 ( Mongoose ) {
     const Mixed   = Types.Mixed;
     const Vector3 = Types.Vector3;
 
-    const BufferAttributeSchema = BufferAttribute$1.getSchemaFrom( Mongoose );
+    const BufferAttributeSchema = BufferAttribute_1.getSchemaFrom( Mongoose );
 
     _schema$9 = new Schema( {
         uuid:       String,
@@ -3287,23 +4023,25 @@ function registerModelTo$8 ( Mongoose ) {
 
 }
 
-var BufferGeometry_1 = {
+const BufferGeometry = {
     getSchemaFrom:   getSchemaFrom$9,
     getModelFrom:    getModelFrom$8,
     registerModelTo: registerModelTo$8
 };
 
-var BufferGeometry = {
-	BufferGeometry: BufferGeometry_1
-};
+
+//module.exports.BufferGeometry =
+
+var BufferGeometry$1 = /*#__PURE__*/Object.freeze({
+	__proto__: null,
+	BufferGeometry: BufferGeometry
+});
 
 /**
+ * @module Schemas/Curves/Curve
+ * @desc Export the ThreeJs Curve Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema$a = undefined;
@@ -3367,6 +4105,7 @@ function registerModelTo$9 ( Mongoose ) {
 }
 
 var Curve_1 = {
+    name: 'Curve',
     getSchemaFrom: getSchemaFrom$a,
     getModelFrom: getModelFrom$9,
     registerModelTo: registerModelTo$9
@@ -3377,13 +4116,14 @@ var Curve = {
 };
 
 /**
+ * @module Schemas/Core/CurvePath
+ * @desc Export the ThreeJs CurvePath Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ * @augments module:Schemas/Curves/Curve
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$1 } = Curve;
@@ -3454,18 +4194,17 @@ function registerModelTo$a ( Mongoose ) {
 }
 
 var CurvePath_1 = {
+    name:            'CurvePath',
     getSchemaFrom:   getSchemaFrom$b,
     getModelFrom:    getModelFrom$a,
     registerModelTo: registerModelTo$a
 };
 
 /**
+ * @module Schemas/Core/Face3
+ * @desc Export the ThreeJs Face3 Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Face3
- *
- * @description Todo...
  */
 
 let _schema$c = undefined;
@@ -3504,18 +4243,20 @@ function _createSchema$c ( Mongoose ) {
 }
 
 var Face3_1 = {
+    name:            'Face3',
     getSchemaFrom:   getSchemaFrom$c,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Core/Geometry
+ * @desc Export the ThreeJs Geometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Face3 Schemas/Core/Face3}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema$d = undefined;
@@ -3604,6 +4345,7 @@ function registerModelTo$b ( Mongoose ) {
 }
 
 const Geometry = {
+    name: 'Geometry',
     getSchemaFrom: getSchemaFrom$d,
     getModelFrom: getModelFrom$b,
     registerModelTo: registerModelTo$b
@@ -3615,13 +4357,13 @@ var Geometry$1 = /*#__PURE__*/Object.freeze({
 });
 
 /**
+ * @module Schemas/Core/Path
+ * @desc Export the ThreeJs Path Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$2 } = Curve;
@@ -3702,19 +4444,20 @@ function registerModelTo$c ( Mongoose ) {
 }
 
 var Path_1 = {
+    name:            'Path',
     getSchemaFrom:   getSchemaFrom$e,
     getModelFrom:    getModelFrom$c,
     registerModelTo: registerModelTo$c
 };
 
 /**
+ * @module Schemas/Core/Shape
+ * @desc Export the ThreeJs Shape Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$3 } = Curve;
@@ -3814,19 +4557,20 @@ function registerModelTo$d ( Mongoose ) {
 }
 
 var Shape_1 = {
+    name:            'Shape',
     getSchemaFrom:   getSchemaFrom$f,
     getModelFrom:    getModelFrom$d,
     registerModelTo: registerModelTo$d
 };
 
 /**
+ * @module Schemas/Curves/ArcCurve
+ * @desc Export the ThreeJs ArcCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$4 } = Curve;
@@ -3890,19 +4634,20 @@ function registerModelTo$e ( Mongoose ) {
 }
 
 var ArcCurve_1 = {
+    name:            'ArcCurve',
     getSchemaFrom:   getSchemaFrom$g,
     getModelFrom:    getModelFrom$e,
     registerModelTo: registerModelTo$e
 };
 
 /**
+ * @module Schemas/Curves/CatmullRomCurve3
+ * @desc Export the ThreeJs CatmullRomCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$5 } = Curve;
@@ -3963,19 +4708,20 @@ function registerModelTo$f ( Mongoose ) {
 }
 
 var CatmullRomCurve3_1 = {
+    name:            'CatmullRomCurve3',
     getSchemaFrom:   getSchemaFrom$h,
     getModelFrom:    getModelFrom$f,
     registerModelTo: registerModelTo$f
 };
 
 /**
+ * @module Schemas/Curves/CubicBezierCurve
+ * @desc Export the ThreeJs CubicBezierCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$6 } = Curve;
@@ -4036,19 +4782,20 @@ function registerModelTo$g ( Mongoose ) {
 }
 
 var CubicBezierCurve_1 = {
+    name:            'CubicBezierCurve',
     getSchemaFrom:   getSchemaFrom$i,
     getModelFrom:    getModelFrom$g,
     registerModelTo: registerModelTo$g
 };
 
 /**
+ * @module Schemas/Curves/CubicBezierCurve3
+ * @desc Export the ThreeJs CubicBezierCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$7 } = Curve;
@@ -4109,19 +4856,20 @@ function registerModelTo$h ( Mongoose ) {
 }
 
 var CubicBezierCurve3_1 = {
+    name:            'CubicBezierCurve3',
     getSchemaFrom:   getSchemaFrom$j,
     getModelFrom:    getModelFrom$h,
     registerModelTo: registerModelTo$h
 };
 
 /**
+ * @module Schemas/Curves/CurveExtras
+ * @desc Export the ThreeJs CurveExtras Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$8 } = Curve;
@@ -4175,19 +4923,20 @@ function registerModelTo$i ( Mongoose ) {
 }
 
 var CurveExtras_1 = {
+    name:            'CurveExtras',
     getSchemaFrom:   getSchemaFrom$k,
     getModelFrom:    getModelFrom$i,
     registerModelTo: registerModelTo$i
 };
 
 /**
+ * @module Schemas/Curves/EllipseCurve
+ * @desc Export the ThreeJs EllipseCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$9 } = Curve;
@@ -4250,19 +4999,20 @@ function registerModelTo$j ( Mongoose ) {
 }
 
 var EllipseCurve_1 = {
+    name:            'EllipseCurve',
     getSchemaFrom:   getSchemaFrom$l,
     getModelFrom:    getModelFrom$j,
     registerModelTo: registerModelTo$j
 };
 
 /**
+ * @module Schemas/Curves/LineCurve
+ * @desc Export the ThreeJs LineCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$a } = Curve;
@@ -4321,19 +5071,20 @@ function registerModelTo$k ( Mongoose ) {
 }
 
 var LineCurve_1 = {
+    name:            'LineCurve',
     getSchemaFrom:   getSchemaFrom$m,
     getModelFrom:    getModelFrom$k,
     registerModelTo: registerModelTo$k
 };
 
 /**
+ * @module Schemas/Curves/LineCurve3
+ * @desc Export the ThreeJs LineCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$b } = Curve;
@@ -4392,19 +5143,20 @@ function registerModelTo$l ( Mongoose ) {
 }
 
 var LineCurve3_1 = {
+    name:            'LineCurve3',
     getSchemaFrom:   getSchemaFrom$n,
     getModelFrom:    getModelFrom$l,
     registerModelTo: registerModelTo$l
 };
 
 /**
+ * @module Schemas/Curves/NURBSCurve
+ * @desc Export the ThreeJs NURBSCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$c } = Curve;
@@ -4458,19 +5210,20 @@ function registerModelTo$m ( Mongoose ) {
 }
 
 var NURBSCurve_1 = {
+    name:            'NURBSCurve',
     getSchemaFrom:   getSchemaFrom$o,
     getModelFrom:    getModelFrom$m,
     registerModelTo: registerModelTo$m
 };
 
 /**
+ * @module Schemas/Curves/NURBSSurface
+ * @desc Export the ThreeJs NURBSSurface Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$d } = Curve;
@@ -4524,19 +5277,20 @@ function registerModelTo$n ( Mongoose ) {
 }
 
 var NURBSSurface_1 = {
+    name:            'NURBSSurface',
     getSchemaFrom:   getSchemaFrom$p,
     getModelFrom:    getModelFrom$n,
     registerModelTo: registerModelTo$n
 };
 
 /**
+ * @module Schemas/Curves/QuadraticBezierCurve
+ * @desc Export the ThreeJs QuadraticBezierCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$e } = Curve;
@@ -4596,19 +5350,20 @@ function registerModelTo$o ( Mongoose ) {
 }
 
 var QuadraticBezierCurve_1 = {
+    name:            'QuadraticBezierCurve',
     getSchemaFrom:   getSchemaFrom$q,
     getModelFrom:    getModelFrom$o,
     registerModelTo: registerModelTo$o
 };
 
 /**
+ * @module Schemas/Curves/QuadraticBezierCurve3
+ * @desc Export the ThreeJs QuadraticBezierCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$f } = Curve;
@@ -4668,19 +5423,20 @@ function registerModelTo$p ( Mongoose ) {
 }
 
 var QuadraticBezierCurve3_1 = {
+    name:            'QuadraticBezierCurve3',
     getSchemaFrom:   getSchemaFrom$r,
     getModelFrom:    getModelFrom$p,
     registerModelTo: registerModelTo$p
 };
 
 /**
+ * @module Schemas/Curves/SplineCurve
+ * @desc Export the ThreeJs SplineCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve: Curve$g } = Curve;
@@ -4738,22 +5494,23 @@ function registerModelTo$q ( Mongoose ) {
 }
 
 var SplineCurve_1 = {
+    name:            'SplineCurve',
     getSchemaFrom:   getSchemaFrom$s,
     getModelFrom:    getModelFrom$q,
     registerModelTo: registerModelTo$q
 };
 
 /**
+ * @module Schemas/Geometries/BoxBufferGeometry
+ * @desc Export the ThreeJs BoxBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$1 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$2 } = BufferGeometry$1;
 
 let _schema$t = undefined;
 let _model$r  = undefined;
@@ -4788,7 +5545,7 @@ function getModelFrom$r ( Mongoose ) {
 
 function _createModel$r ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$1.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
     _model$r                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom$t( Mongoose ) );
 
 }
@@ -4804,19 +5561,20 @@ function registerModelTo$r ( Mongoose ) {
 }
 
 var BoxBufferGeometry_1 = {
+    name:            'BoxBufferGeometry',
     getSchemaFrom:   getSchemaFrom$t,
     getModelFrom:    getModelFrom$r,
     registerModelTo: registerModelTo$r
 };
 
 /**
+ * @module Schemas/Geometries/BoxGeometry
+ * @desc Export the ThreeJs BoxGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$2 } = Geometry$1;
@@ -4870,22 +5628,23 @@ function registerModelTo$s ( Mongoose ) {
 }
 
 var BoxGeometry_1 = {
+    name:            'BoxGeometry',
     getSchemaFrom:   getSchemaFrom$u,
     getModelFrom:    getModelFrom$s,
     registerModelTo: registerModelTo$s
 };
 
 /**
+ * @module Schemas/Geometries/CircleBufferGeometry
+ * @desc Export the ThreeJs CircleBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$2 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$3 } = BufferGeometry$1;
 
 let _schema$v = undefined;
 let _model$t  = undefined;
@@ -4920,7 +5679,7 @@ function getModelFrom$t ( Mongoose ) {
 
 function _createModel$t ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
     _model$t                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom$v( Mongoose ) );
 
 }
@@ -4936,19 +5695,20 @@ function registerModelTo$t ( Mongoose ) {
 }
 
 var CircleBufferGeometry_1 = {
+    name:            'CircleBufferGeometry',
     getSchemaFrom:   getSchemaFrom$v,
     getModelFrom:    getModelFrom$t,
     registerModelTo: registerModelTo$t
 };
 
 /**
+ * @module Schemas/Geometries/CircleGeometry
+ * @desc Export the ThreeJs CircleGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$3 } = Geometry$1;
@@ -5002,22 +5762,23 @@ function registerModelTo$u ( Mongoose ) {
 }
 
 var CircleGeometry_1 = {
+    name:            'CircleGeometry',
     getSchemaFrom:   getSchemaFrom$w,
     getModelFrom:    getModelFrom$u,
     registerModelTo: registerModelTo$u
 };
 
 /**
+ * @module Schemas/Geometries/ConeBufferGeometry
+ * @desc Export the ThreeJs ConeBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$3 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$4 } = BufferGeometry$1;
 
 let _schema$x = undefined;
 let _model$v  = undefined;
@@ -5052,7 +5813,7 @@ function getModelFrom$v ( Mongoose ) {
 
 function _createModel$v ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
     _model$v                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom$x( Mongoose ) );
 
 }
@@ -5068,19 +5829,20 @@ function registerModelTo$v ( Mongoose ) {
 }
 
 var ConeBufferGeometry_1 = {
+    name:            'ConeBufferGeometry',
     getSchemaFrom:   getSchemaFrom$x,
     getModelFrom:    getModelFrom$v,
     registerModelTo: registerModelTo$v
 };
 
 /**
+ * @module Schemas/Geometries/ConeGeometry
+ * @desc Export the ThreeJs ConeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$4 } = Geometry$1;
@@ -5134,19 +5896,20 @@ function registerModelTo$w ( Mongoose ) {
 }
 
 var ConeGeometry_1 = {
+    name:            'ConeGeometry',
     getSchemaFrom:   getSchemaFrom$y,
     getModelFrom:    getModelFrom$w,
     registerModelTo: registerModelTo$w
 };
 
 /**
+ * @module Schemas/Geometries/ConvexGeometry
+ * @desc Export the ThreeJs ConvexGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$5 } = Geometry$1;
@@ -5200,22 +5963,23 @@ function registerModelTo$x ( Mongoose ) {
 }
 
 var ConvexGeometry_1 = {
+    name:            'ConvexGeometry',
     getSchemaFrom:   getSchemaFrom$z,
     getModelFrom:    getModelFrom$x,
     registerModelTo: registerModelTo$x
 };
 
 /**
+ * @module Schemas/Geometries/CylinderBufferGeometry
+ * @desc Export the ThreeJs CylinderBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$4 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$5 } = BufferGeometry$1;
 
 let _schema$A = undefined;
 let _model$y  = undefined;
@@ -5250,7 +6014,7 @@ function getModelFrom$y ( Mongoose ) {
 
 function _createModel$y ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
     _model$y                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom$A( Mongoose ) );
 
 }
@@ -5266,19 +6030,20 @@ function registerModelTo$y ( Mongoose ) {
 }
 
 var CylinderBufferGeometry_1 = {
+    name:            'CylinderBufferGeometry',
     getSchemaFrom:   getSchemaFrom$A,
     getModelFrom:    getModelFrom$y,
     registerModelTo: registerModelTo$y
 };
 
 /**
+ * @module Schemas/Geometries/CylinderGeometry
+ * @desc Export the ThreeJs CylinderGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$6 } = Geometry$1;
@@ -5332,19 +6097,20 @@ function registerModelTo$z ( Mongoose ) {
 }
 
 var CylinderGeometry_1 = {
+    name:            'CylinderGeometry',
     getSchemaFrom:   getSchemaFrom$B,
     getModelFrom:    getModelFrom$z,
     registerModelTo: registerModelTo$z
 };
 
 /**
+ * @module Schemas/Geometries/DecalGeometry
+ * @desc Export the ThreeJs DecalGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$7 } = Geometry$1;
@@ -5398,19 +6164,20 @@ function registerModelTo$A ( Mongoose ) {
 }
 
 var DecalGeometry_1 = {
+    name:            'DecalGeometry',
     getSchemaFrom:   getSchemaFrom$C,
     getModelFrom:    getModelFrom$A,
     registerModelTo: registerModelTo$A
 };
 
 /**
+ * @module Schemas/Geometries/DodecahedronGeometry
+ * @desc Export the ThreeJs DodecahedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$8 } = Geometry$1;
@@ -5464,19 +6231,20 @@ function registerModelTo$B ( Mongoose ) {
 }
 
 var DodecahedronGeometry_1 = {
+    name:            'DodecahedronGeometry',
     getSchemaFrom:   getSchemaFrom$D,
     getModelFrom:    getModelFrom$B,
     registerModelTo: registerModelTo$B
 };
 
 /**
+ * @module Schemas/Geometries/EdgesGeometry
+ * @desc Export the ThreeJs EdgesGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$9 } = Geometry$1;
@@ -5530,22 +6298,23 @@ function registerModelTo$C ( Mongoose ) {
 }
 
 var EdgesGeometry_1 = {
+    name:            'EdgesGeometry',
     getSchemaFrom:   getSchemaFrom$E,
     getModelFrom:    getModelFrom$C,
     registerModelTo: registerModelTo$C
 };
 
 /**
+ * @module Schemas/Geometries/ExtrudeBufferGeometry
+ * @desc Export the ThreeJs ExtrudeBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$5 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$6 } = BufferGeometry$1;
 
 let _schema$F = undefined;
 let _model$D  = undefined;
@@ -5580,7 +6349,7 @@ function getModelFrom$D ( Mongoose ) {
 
 function _createModel$D ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
     _model$D                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom$F( Mongoose ) );
 
 }
@@ -5596,19 +6365,20 @@ function registerModelTo$D ( Mongoose ) {
 }
 
 var ExtrudeBufferGeometry_1 = {
+    name:            'ExtrudeBufferGeometry',
     getSchemaFrom:   getSchemaFrom$F,
     getModelFrom:    getModelFrom$D,
     registerModelTo: registerModelTo$D
 };
 
 /**
+ * @module Schemas/Geometries/ExtrudeGeometry
+ * @desc Export the ThreeJs ExtrudeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$a } = Geometry$1;
@@ -5662,22 +6432,23 @@ function registerModelTo$E ( Mongoose ) {
 }
 
 var ExtrudeGeometry_1 = {
+    name:            'ExtrudeGeometry',
     getSchemaFrom:   getSchemaFrom$G,
     getModelFrom:    getModelFrom$E,
     registerModelTo: registerModelTo$E
 };
 
 /**
+ * @module Schemas/Geometries/IcosahedronBufferGeometry
+ * @desc Export the ThreeJs IcosahedronBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$6 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$7 } = BufferGeometry$1;
 
 let _schema$H = undefined;
 let _model$F  = undefined;
@@ -5712,7 +6483,7 @@ function getModelFrom$F ( Mongoose ) {
 
 function _createModel$F ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
     _model$F                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom$H( Mongoose ) );
 
 }
@@ -5728,19 +6499,20 @@ function registerModelTo$F ( Mongoose ) {
 }
 
 var IcosahedronBufferGeometry_1 = {
+    name:            'IcosahedronBufferGeometry',
     getSchemaFrom:   getSchemaFrom$H,
     getModelFrom:    getModelFrom$F,
     registerModelTo: registerModelTo$F
 };
 
 /**
+ * @module Schemas/Geometries/IcosahedronGeometry
+ * @desc Export the ThreeJs IcosahedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$b } = Geometry$1;
@@ -5794,22 +6566,23 @@ function registerModelTo$G ( Mongoose ) {
 }
 
 var IcosahedronGeometry_1 = {
+    name:            'IcosahedronGeometry',
     getSchemaFrom:   getSchemaFrom$I,
     getModelFrom:    getModelFrom$G,
     registerModelTo: registerModelTo$G
 };
 
 /**
+ * @module Schemas/Geometries/InstancedBufferGeometry
+ * @desc Export the ThreeJs InstancedBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$7 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$8 } = BufferGeometry$1;
 
 let _schema$J = undefined;
 let _model$H  = undefined;
@@ -5844,7 +6617,7 @@ function getModelFrom$H ( Mongoose ) {
 
 function _createModel$H ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
     _model$H                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom$J( Mongoose ) );
 
 }
@@ -5860,22 +6633,23 @@ function registerModelTo$H ( Mongoose ) {
 }
 
 var InstancedBufferGeometry_1 = {
+    name:            'InstancedBufferGeometry',
     getSchemaFrom:   getSchemaFrom$J,
     getModelFrom:    getModelFrom$H,
     registerModelTo: registerModelTo$H
 };
 
 /**
+ * @module Schemas/Geometries/LatheBufferGeometry
+ * @desc Export the ThreeJs LatheBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$8 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$9 } = BufferGeometry$1;
 
 let _schema$K = undefined;
 let _model$I  = undefined;
@@ -5910,7 +6684,7 @@ function getModelFrom$I ( Mongoose ) {
 
 function _createModel$I ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
     _model$I                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom$K( Mongoose ) );
 
 }
@@ -5926,19 +6700,20 @@ function registerModelTo$I ( Mongoose ) {
 }
 
 var LatheBufferGeometry_1 = {
+    name:            'LatheBufferGeometry',
     getSchemaFrom:   getSchemaFrom$K,
     getModelFrom:    getModelFrom$I,
     registerModelTo: registerModelTo$I
 };
 
 /**
+ * @module Schemas/Geometries/LatheGeometry
+ * @desc Export the ThreeJs LatheGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$c } = Geometry$1;
@@ -5992,22 +6767,23 @@ function registerModelTo$J ( Mongoose ) {
 }
 
 var LatheGeometry_1 = {
+    name:            'LatheGeometry',
     getSchemaFrom:   getSchemaFrom$L,
     getModelFrom:    getModelFrom$J,
     registerModelTo: registerModelTo$J
 };
 
 /**
+ * @module Schemas/Geometries/OctahedronBufferGeometry
+ * @desc Export the ThreeJs OctahedronBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$9 } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$a } = BufferGeometry$1;
 
 let _schema$M = undefined;
 let _model$K  = undefined;
@@ -6042,7 +6818,7 @@ function getModelFrom$K ( Mongoose ) {
 
 function _createModel$K ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
     _model$K                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom$M( Mongoose ) );
 
 }
@@ -6058,19 +6834,20 @@ function registerModelTo$K ( Mongoose ) {
 }
 
 var OctahedronBufferGeometry_1 = {
+    name:            'OctahedronBufferGeometry',
     getSchemaFrom:   getSchemaFrom$M,
     getModelFrom:    getModelFrom$K,
     registerModelTo: registerModelTo$K
 };
 
 /**
+ * @module Schemas/Geometries/OctahedronGeometry
+ * @desc Export the ThreeJs OctahedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$d } = Geometry$1;
@@ -6124,22 +6901,23 @@ function registerModelTo$L ( Mongoose ) {
 }
 
 var OctahedronGeometry_1 = {
+    name:            'OctahedronGeometry',
     getSchemaFrom:   getSchemaFrom$N,
     getModelFrom:    getModelFrom$L,
     registerModelTo: registerModelTo$L
 };
 
 /**
+ * @module Schemas/Geometries/ParametricBufferGeometry
+ * @desc Export the ThreeJs ParametricBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$a } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$b } = BufferGeometry$1;
 
 let _schema$O = undefined;
 let _model$M  = undefined;
@@ -6174,7 +6952,7 @@ function getModelFrom$M ( Mongoose ) {
 
 function _createModel$M ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$b.getModelFrom( Mongoose );
     _model$M                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom$O( Mongoose ) );
 
 }
@@ -6190,19 +6968,20 @@ function registerModelTo$M ( Mongoose ) {
 }
 
 var ParametricBufferGeometry_1 = {
+    name:            'ParametricBufferGeometry',
     getSchemaFrom:   getSchemaFrom$O,
     getModelFrom:    getModelFrom$M,
     registerModelTo: registerModelTo$M
 };
 
 /**
+ * @module Schemas/Geometries/ParametricGeometry
+ * @desc Export the ThreeJs ParametricGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$e } = Geometry$1;
@@ -6256,22 +7035,23 @@ function registerModelTo$N ( Mongoose ) {
 }
 
 var ParametricGeometry_1 = {
+    name:            'ParametricGeometry',
     getSchemaFrom:   getSchemaFrom$P,
     getModelFrom:    getModelFrom$N,
     registerModelTo: registerModelTo$N
 };
 
 /**
+ * @module Schemas/Geometries/PlaneBufferGeometry
+ * @desc Export the ThreeJs PlaneBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$b } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$c } = BufferGeometry$1;
 
 let _schema$Q = undefined;
 let _model$O  = undefined;
@@ -6306,7 +7086,7 @@ function getModelFrom$O ( Mongoose ) {
 
 function _createModel$O ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$b.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
     _model$O                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom$Q( Mongoose ) );
 
 }
@@ -6322,19 +7102,20 @@ function registerModelTo$O ( Mongoose ) {
 }
 
 var PlaneBufferGeometry_1 = {
+    name:            'PlaneBufferGeometry',
     getSchemaFrom:   getSchemaFrom$Q,
     getModelFrom:    getModelFrom$O,
     registerModelTo: registerModelTo$O
 };
 
 /**
+ * @module Schemas/Geometries/PlaneGeometry
+ * @desc Export the ThreeJs PlaneGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$f } = Geometry$1;
@@ -6388,22 +7169,23 @@ function registerModelTo$P ( Mongoose ) {
 }
 
 var PlaneGeometry_1 = {
+    name:            'PlaneGeometry',
     getSchemaFrom:   getSchemaFrom$R,
     getModelFrom:    getModelFrom$P,
     registerModelTo: registerModelTo$P
 };
 
 /**
+ * @module Schemas/Geometries/PolyhedronBufferGeometry
+ * @desc Export the ThreeJs PolyhedronBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$c } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$d } = BufferGeometry$1;
 
 let _schema$S = undefined;
 let _model$Q  = undefined;
@@ -6438,7 +7220,7 @@ function getModelFrom$Q ( Mongoose ) {
 
 function _createModel$Q ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
     _model$Q                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom$S( Mongoose ) );
 
 }
@@ -6454,19 +7236,20 @@ function registerModelTo$Q ( Mongoose ) {
 }
 
 var PolyhedronBufferGeometry_1 = {
+    name:            'PolyhedronBufferGeometry',
     getSchemaFrom:   getSchemaFrom$S,
     getModelFrom:    getModelFrom$Q,
     registerModelTo: registerModelTo$Q
 };
 
 /**
+ * @module Schemas/Geometries/PolyhedronGeometry
+ * @desc Export the ThreeJs PolyhedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$g } = Geometry$1;
@@ -6520,22 +7303,23 @@ function registerModelTo$R ( Mongoose ) {
 }
 
 var PolyhedronGeometry_1 = {
+    name:            'PolyhedronGeometry',
     getSchemaFrom:   getSchemaFrom$T,
     getModelFrom:    getModelFrom$R,
     registerModelTo: registerModelTo$R
 };
 
 /**
+ * @module Schemas/Geometries/RingBufferGeometry
+ * @desc Export the ThreeJs RingBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$d } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$e } = BufferGeometry$1;
 
 let _schema$U = undefined;
 let _model$S  = undefined;
@@ -6570,7 +7354,7 @@ function getModelFrom$S ( Mongoose ) {
 
 function _createModel$S ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
     _model$S                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom$U( Mongoose ) );
 
 }
@@ -6586,19 +7370,20 @@ function registerModelTo$S ( Mongoose ) {
 }
 
 var RingBufferGeometry_1 = {
+    name:            'RingBufferGeometry',
     getSchemaFrom:   getSchemaFrom$U,
     getModelFrom:    getModelFrom$S,
     registerModelTo: registerModelTo$S
 };
 
 /**
+ * @module Schemas/Geometries/RingGeometry
+ * @desc Export the ThreeJs RingGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$h } = Geometry$1;
@@ -6652,22 +7437,23 @@ function registerModelTo$T ( Mongoose ) {
 }
 
 var RingGeometry_1 = {
+    name:            'RingGeometry',
     getSchemaFrom:   getSchemaFrom$V,
     getModelFrom:    getModelFrom$T,
     registerModelTo: registerModelTo$T
 };
 
 /**
+ * @module Schemas/Geometries/ShapeBufferGeometry
+ * @desc Export the ThreeJs ShapeBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$e } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$f } = BufferGeometry$1;
 
 let _schema$W = undefined;
 let _model$U  = undefined;
@@ -6756,7 +7542,7 @@ function getModelFrom$U ( Mongoose ) {
 
 function _createModel$U ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
     _model$U                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom$W( Mongoose ) );
 
 }
@@ -6772,19 +7558,20 @@ function registerModelTo$U ( Mongoose ) {
 }
 
 var ShapeBufferGeometry_1 = {
+    name:            'ShapeBufferGeometry',
     getSchemaFrom:   getSchemaFrom$W,
     getModelFrom:    getModelFrom$U,
     registerModelTo: registerModelTo$U
 };
 
 /**
+ * @module Schemas/Geometries/ShapeGeometry
+ * @desc Export the ThreeJs ShapeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$i } = Geometry$1;
@@ -6838,22 +7625,23 @@ function registerModelTo$V ( Mongoose ) {
 }
 
 var ShapeGeometry_1 = {
+    name:            'ShapeGeometry',
     getSchemaFrom:   getSchemaFrom$X,
     getModelFrom:    getModelFrom$V,
     registerModelTo: registerModelTo$V
 };
 
 /**
+ * @module Schemas/Geometries/SphereBufferGeometry
+ * @desc Export the ThreeJs SphereBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$f } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$g } = BufferGeometry$1;
 
 let _schema$Y = undefined;
 let _model$W  = undefined;
@@ -6888,7 +7676,7 @@ function getModelFrom$W ( Mongoose ) {
 
 function _createModel$W ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
     _model$W                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom$Y( Mongoose ) );
 
 }
@@ -6904,19 +7692,20 @@ function registerModelTo$W ( Mongoose ) {
 }
 
 var SphereBufferGeometry_1 = {
+    name:            'SphereBufferGeometry',
     getSchemaFrom:   getSchemaFrom$Y,
     getModelFrom:    getModelFrom$W,
     registerModelTo: registerModelTo$W
 };
 
 /**
+ * @module Schemas/Geometries/SphereGeometry
+ * @desc Export the ThreeJs SphereGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$j } = Geometry$1;
@@ -6970,22 +7759,23 @@ function registerModelTo$X ( Mongoose ) {
 }
 
 var SphereGeometry_1 = {
+    name:            'SphereGeometry',
     getSchemaFrom:   getSchemaFrom$Z,
     getModelFrom:    getModelFrom$X,
     registerModelTo: registerModelTo$X
 };
 
 /**
+ * @module Schemas/Geometries/TeapotBufferGeometry
+ * @desc Export the ThreeJs TeapotBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$g } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$h } = BufferGeometry$1;
 
 let _schema$_ = undefined;
 let _model$Y  = undefined;
@@ -7020,7 +7810,7 @@ function getModelFrom$Y ( Mongoose ) {
 
 function _createModel$Y ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
     _model$Y                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom$_( Mongoose ) );
 
 }
@@ -7036,22 +7826,23 @@ function registerModelTo$Y ( Mongoose ) {
 }
 
 var TeapotBufferGeometry = {
+    name:            'TeapotBufferGeometry',
     getSchemaFrom:   getSchemaFrom$_,
     getModelFrom:    getModelFrom$Y,
     registerModelTo: registerModelTo$Y
 };
 
 /**
+ * @module Schemas/Geometries/TetrahedronBufferGeometry
+ * @desc Export the ThreeJs TetrahedronBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$h } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$i } = BufferGeometry$1;
 
 let _schema$$ = undefined;
 let _model$Z  = undefined;
@@ -7086,7 +7877,7 @@ function getModelFrom$Z ( Mongoose ) {
 
 function _createModel$Z ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
     _model$Z                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom$$( Mongoose ) );
 
 }
@@ -7102,19 +7893,20 @@ function registerModelTo$Z ( Mongoose ) {
 }
 
 var TetrahedronBufferGeometry_1 = {
+    name:            'TetrahedronBufferGeometry',
     getSchemaFrom:   getSchemaFrom$$,
     getModelFrom:    getModelFrom$Z,
     registerModelTo: registerModelTo$Z
 };
 
 /**
+ * @module Schemas/Geometries/TetrahedronGeometry
+ * @desc Export the ThreeJs TetrahedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$k } = Geometry$1;
@@ -7168,22 +7960,23 @@ function registerModelTo$_ ( Mongoose ) {
 }
 
 var TetrahedronGeometry_1 = {
+    name:            'TetrahedronGeometry',
     getSchemaFrom:   getSchemaFrom$10,
     getModelFrom:    getModelFrom$_,
     registerModelTo: registerModelTo$_
 };
 
 /**
+ * @module Schemas/Geometries/TextBufferGeometry
+ * @desc Export the ThreeJs TextBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$i } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$j } = BufferGeometry$1;
 
 let _schema$11 = undefined;
 let _model$$  = undefined;
@@ -7218,7 +8011,7 @@ function getModelFrom$$ ( Mongoose ) {
 
 function _createModel$$ ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
     _model$$                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom$11( Mongoose ) );
 
 }
@@ -7234,19 +8027,20 @@ function registerModelTo$$ ( Mongoose ) {
 }
 
 var TextBufferGeometry_1 = {
+    name:            'TextBufferGeometry',
     getSchemaFrom:   getSchemaFrom$11,
     getModelFrom:    getModelFrom$$,
     registerModelTo: registerModelTo$$
 };
 
 /**
+ * @module Schemas/Geometries/TextGeometry
+ * @desc Export the ThreeJs TextGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$l } = Geometry$1;
@@ -7300,22 +8094,23 @@ function registerModelTo$10 ( Mongoose ) {
 }
 
 var TextGeometry_1 = {
+    name:            'TextGeometry',
     getSchemaFrom:   getSchemaFrom$12,
     getModelFrom:    getModelFrom$10,
     registerModelTo: registerModelTo$10
 };
 
 /**
+ * @module Schemas/Geometries/TorusBufferGeometry
+ * @desc Export the ThreeJs TorusBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$j } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$k } = BufferGeometry$1;
 
 let _schema$13 = undefined;
 let _model$11  = undefined;
@@ -7350,7 +8145,7 @@ function getModelFrom$11 ( Mongoose ) {
 
 function _createModel$11 ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
     _model$11                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom$13( Mongoose ) );
 
 }
@@ -7366,19 +8161,20 @@ function registerModelTo$11 ( Mongoose ) {
 }
 
 var TorusBufferGeometry_1 = {
+    name:            'TorusBufferGeometry',
     getSchemaFrom:   getSchemaFrom$13,
     getModelFrom:    getModelFrom$11,
     registerModelTo: registerModelTo$11
 };
 
 /**
+ * @module Schemas/Geometries/TorusGeometry
+ * @desc Export the ThreeJs TorusGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$m } = Geometry$1;
@@ -7432,22 +8228,23 @@ function registerModelTo$12 ( Mongoose ) {
 }
 
 var TorusGeometry_1 = {
+    name:            'TorusGeometry',
     getSchemaFrom:   getSchemaFrom$14,
     getModelFrom:    getModelFrom$12,
     registerModelTo: registerModelTo$12
 };
 
 /**
+ * @module Schemas/Geometries/TorusKnotBufferGeometry
+ * @desc Export the ThreeJs TorusKnotBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$k } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$l } = BufferGeometry$1;
 
 let _schema$15 = undefined;
 let _model$13  = undefined;
@@ -7482,7 +8279,7 @@ function getModelFrom$13 ( Mongoose ) {
 
 function _createModel$13 ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$l.getModelFrom( Mongoose );
     _model$13                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom$15( Mongoose ) );
 
 }
@@ -7498,19 +8295,20 @@ function registerModelTo$13 ( Mongoose ) {
 }
 
 var TorusKnotBufferGeometry_1 = {
+    name:            'TorusKnotBufferGeometry',
     getSchemaFrom:   getSchemaFrom$15,
     getModelFrom:    getModelFrom$13,
     registerModelTo: registerModelTo$13
 };
 
 /**
+ * @module Schemas/Geometries/TorusKnotGeometry
+ * @desc Export the ThreeJs TorusKnotGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$n } = Geometry$1;
@@ -7564,22 +8362,23 @@ function registerModelTo$14 ( Mongoose ) {
 }
 
 var TorusKnotGeometry_1 = {
+    name:            'TorusKnotGeometry',
     getSchemaFrom:   getSchemaFrom$16,
     getModelFrom:    getModelFrom$14,
     registerModelTo: registerModelTo$14
 };
 
 /**
+ * @module Schemas/Geometries/TubeBufferGeometry
+ * @desc Export the ThreeJs TubeBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
-const { BufferGeometry: BufferGeometry$l } = BufferGeometry;
+const { BufferGeometry: BufferGeometry$m } = BufferGeometry$1;
 
 let _schema$17 = undefined;
 let _model$15  = undefined;
@@ -7614,7 +8413,7 @@ function getModelFrom$15 ( Mongoose ) {
 
 function _createModel$15 ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$l.getModelFrom( Mongoose );
+    const BufferGeometryBaseModel = BufferGeometry$m.getModelFrom( Mongoose );
     _model$15                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom$17( Mongoose ) );
 
 }
@@ -7630,19 +8429,20 @@ function registerModelTo$15 ( Mongoose ) {
 }
 
 var TubeBufferGeometry_1 = {
+    name:            'TubeBufferGeometry',
     getSchemaFrom:   getSchemaFrom$17,
     getModelFrom:    getModelFrom$15,
     registerModelTo: registerModelTo$15
 };
 
 /**
+ * @module Schemas/Geometries/TubeGeometry
+ * @desc Export the ThreeJs TubeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$o } = Geometry$1;
@@ -7696,19 +8496,20 @@ function registerModelTo$16 ( Mongoose ) {
 }
 
 var TubeGeometry_1 = {
+    name:            'TubeGeometry',
     getSchemaFrom:   getSchemaFrom$18,
     getModelFrom:    getModelFrom$16,
     registerModelTo: registerModelTo$16
 };
 
 /**
+ * @module Schemas/Geometries/WireframeGeometry
+ * @desc Export the ThreeJs WireframeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry: Geometry$p } = Geometry$1;
@@ -7762,19 +8563,20 @@ function registerModelTo$17 ( Mongoose ) {
 }
 
 var WireframeGeometry_1 = {
+    name:            'WireframeGeometry',
     getSchemaFrom:   getSchemaFrom$19,
     getModelFrom:    getModelFrom$17,
     registerModelTo: registerModelTo$17
 };
 
 /**
+ * @module Schemas/Helpers/ArrowHelper
+ * @desc Export the ThreeJs ArrowHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$a } = Object3D$1;
@@ -7828,19 +8630,20 @@ function registerModelTo$18 ( Mongoose ) {
 }
 
 var ArrowHelper_1 = {
+    name:            'ArrowHelper',
     getSchemaFrom:   getSchemaFrom$1a,
     getModelFrom:    getModelFrom$18,
     registerModelTo: registerModelTo$18
 };
 
 /**
+ * @module Schemas/Helpers/AxesHelper
+ * @desc Export the ThreeJs AxesHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$b } = Object3D$1;
@@ -7894,19 +8697,20 @@ function registerModelTo$19 ( Mongoose ) {
 }
 
 var AxesHelper_1 = {
+    name:            'AxesHelper',
     getSchemaFrom:   getSchemaFrom$1b,
     getModelFrom:    getModelFrom$19,
     registerModelTo: registerModelTo$19
 };
 
 /**
+ * @module Schemas/Helpers/Box3Helper
+ * @desc Export the ThreeJs Box3Helper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$c } = Object3D$1;
@@ -7960,19 +8764,20 @@ function registerModelTo$1a ( Mongoose ) {
 }
 
 var Box3Helper_1 = {
+    name:            'Box3Helper',
     getSchemaFrom:   getSchemaFrom$1c,
     getModelFrom:    getModelFrom$1a,
     registerModelTo: registerModelTo$1a
 };
 
 /**
+ * @module Schemas/Helpers/BoxHelper
+ * @desc Export the ThreeJs BoxHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$d } = Object3D$1;
@@ -8026,19 +8831,20 @@ function registerModelTo$1b ( Mongoose ) {
 }
 
 var BoxHelper_1 = {
+    name:            'BoxHelper',
     getSchemaFrom:   getSchemaFrom$1d,
     getModelFrom:    getModelFrom$1b,
     registerModelTo: registerModelTo$1b
 };
 
 /**
+ * @module Schemas/Helpers/CameraHelper
+ * @desc Export the ThreeJs CameraHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$e } = Object3D$1;
@@ -8092,19 +8898,20 @@ function registerModelTo$1c ( Mongoose ) {
 }
 
 var CameraHelper_1 = {
+    name:            'CameraHelper',
     getSchemaFrom:   getSchemaFrom$1e,
     getModelFrom:    getModelFrom$1c,
     registerModelTo: registerModelTo$1c
 };
 
 /**
+ * @module Schemas/Helpers/DirectionalLightHelper
+ * @desc Export the ThreeJs DirectionalLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$f } = Object3D$1;
@@ -8158,19 +8965,20 @@ function registerModelTo$1d ( Mongoose ) {
 }
 
 var DirectionalLightHelper_1 = {
+    name:            'DirectionalLightHelper',
     getSchemaFrom:   getSchemaFrom$1f,
     getModelFrom:    getModelFrom$1d,
     registerModelTo: registerModelTo$1d
 };
 
 /**
+ * @module Schemas/Helpers/FaceNormalsHelper
+ * @desc Export the ThreeJs FaceNormalsHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$g } = Object3D$1;
@@ -8224,19 +9032,20 @@ function registerModelTo$1e ( Mongoose ) {
 }
 
 var FaceNormalsHelper_1 = {
+    name:            'FaceNormalsHelper',
     getSchemaFrom:   getSchemaFrom$1g,
     getModelFrom:    getModelFrom$1e,
     registerModelTo: registerModelTo$1e
 };
 
 /**
+ * @module Schemas/Helpers/GridHelper
+ * @desc Export the ThreeJs GridHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$h } = Object3D$1;
@@ -8290,19 +9099,20 @@ function registerModelTo$1f ( Mongoose ) {
 }
 
 var GridHelper_1 = {
+    name:            'GridHelper',
     getSchemaFrom:   getSchemaFrom$1h,
     getModelFrom:    getModelFrom$1f,
     registerModelTo: registerModelTo$1f
 };
 
 /**
+ * @module Schemas/Helpers/HemisphereLightHelper
+ * @desc Export the ThreeJs HemisphereLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$i } = Object3D$1;
@@ -8356,19 +9166,20 @@ function registerModelTo$1g ( Mongoose ) {
 }
 
 var HemisphereLightHelper_1 = {
+    name:            'HemisphereLightHelper',
     getSchemaFrom:   getSchemaFrom$1i,
     getModelFrom:    getModelFrom$1g,
     registerModelTo: registerModelTo$1g
 };
 
 /**
+ * @module Schemas/Helpers/PlaneHelper
+ * @desc Export the ThreeJs PlaneHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$j } = Object3D$1;
@@ -8422,19 +9233,20 @@ function registerModelTo$1h ( Mongoose ) {
 }
 
 var PlaneHelper_1 = {
+    name:            'PlaneHelper',
     getSchemaFrom:   getSchemaFrom$1j,
     getModelFrom:    getModelFrom$1h,
     registerModelTo: registerModelTo$1h
 };
 
 /**
+ * @module Schemas/Helpers/PointLightHelper
+ * @desc Export the ThreeJs PointLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$k } = Object3D$1;
@@ -8488,19 +9300,20 @@ function registerModelTo$1i ( Mongoose ) {
 }
 
 var PointLightHelper_1 = {
+    name:            'PointLightHelper',
     getSchemaFrom:   getSchemaFrom$1k,
     getModelFrom:    getModelFrom$1i,
     registerModelTo: registerModelTo$1i
 };
 
 /**
+ * @module Schemas/Helpers/PolarGridHelper
+ * @desc Export the ThreeJs PolarGridHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$l } = Object3D$1;
@@ -8554,19 +9367,20 @@ function registerModelTo$1j ( Mongoose ) {
 }
 
 var PolarGridHelper_1 = {
+    name:            'PolarGridHelper',
     getSchemaFrom:   getSchemaFrom$1l,
     getModelFrom:    getModelFrom$1j,
     registerModelTo: registerModelTo$1j
 };
 
 /**
+ * @module Schemas/Helpers/RectAreaLightHelper
+ * @desc Export the ThreeJs RectAreaLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$m } = Object3D$1;
@@ -8620,19 +9434,20 @@ function registerModelTo$1k ( Mongoose ) {
 }
 
 var RectAreaLightHelper_1 = {
+    name:            'RectAreaLightHelper',
     getSchemaFrom:   getSchemaFrom$1m,
     getModelFrom:    getModelFrom$1k,
     registerModelTo: registerModelTo$1k
 };
 
 /**
+ * @module Schemas/Helpers/SkeletonHelper
+ * @desc Export the ThreeJs SkeletonHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$n } = Object3D$1;
@@ -8686,19 +9501,20 @@ function registerModelTo$1l ( Mongoose ) {
 }
 
 var SkeletonHelper_1 = {
+    name:            'SkeletonHelper',
     getSchemaFrom:   getSchemaFrom$1n,
     getModelFrom:    getModelFrom$1l,
     registerModelTo: registerModelTo$1l
 };
 
 /**
+ * @module Schemas/Helpers/SpotLightHelper
+ * @desc Export the ThreeJs SpotLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$o } = Object3D$1;
@@ -8752,19 +9568,20 @@ function registerModelTo$1m ( Mongoose ) {
 }
 
 var SpotLightHelper_1 = {
+    name:            'SpotLightHelper',
     getSchemaFrom:   getSchemaFrom$1o,
     getModelFrom:    getModelFrom$1m,
     registerModelTo: registerModelTo$1m
 };
 
 /**
+ * @module Schemas/Helpers/VertexNormalsHelper
+ * @desc Export the ThreeJs VertexNormalsHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$p } = Object3D$1;
@@ -8818,19 +9635,20 @@ function registerModelTo$1n ( Mongoose ) {
 }
 
 var VertexNormalsHelper_1 = {
+    name:            'VertexNormalsHelper',
     getSchemaFrom:   getSchemaFrom$1p,
     getModelFrom:    getModelFrom$1n,
     registerModelTo: registerModelTo$1n
 };
 
 /**
+ * @module Schemas/Lights/AmbientLight
+ * @desc Export the ThreeJs AmbientLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$q } = Object3D$1;
@@ -8884,19 +9702,20 @@ function registerModelTo$1o ( Mongoose ) {
 }
 
 var AmbientLight_1 = {
+    name:            'AmbientLight',
     getSchemaFrom:   getSchemaFrom$1q,
     getModelFrom:    getModelFrom$1o,
     registerModelTo: registerModelTo$1o
 };
 
 /**
+ * @module Schemas/Lights/DirectionalLight
+ * @desc Export the ThreeJs DirectionalLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$r } = Object3D$1;
@@ -8950,19 +9769,20 @@ function registerModelTo$1p ( Mongoose ) {
 }
 
 var DirectionalLight_1 = {
+    name:            'DirectionalLight',
     getSchemaFrom:   getSchemaFrom$1r,
     getModelFrom:    getModelFrom$1p,
     registerModelTo: registerModelTo$1p
 };
 
 /**
+ * @module Schemas/Lights/HemisphereLight
+ * @desc Export the ThreeJs HemisphereLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$s } = Object3D$1;
@@ -9016,19 +9836,20 @@ function registerModelTo$1q ( Mongoose ) {
 }
 
 var HemisphereLight_1 = {
+    name:            'HemisphereLight',
     getSchemaFrom:   getSchemaFrom$1s,
     getModelFrom:    getModelFrom$1q,
     registerModelTo: registerModelTo$1q
 };
 
 /**
+ * @module Schemas/Lights/Light
+ * @desc Export the ThreeJs Light Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$t } = Object3D$1;
@@ -9082,19 +9903,20 @@ function registerModelTo$1r ( Mongoose ) {
 }
 
 var Light_1 = {
+    name:            'Light',
     getSchemaFrom:   getSchemaFrom$1t,
     getModelFrom:    getModelFrom$1r,
     registerModelTo: registerModelTo$1r
 };
 
 /**
+ * @module Schemas/Lights/PointLight
+ * @desc Export the ThreeJs PointLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$u } = Object3D$1;
@@ -9148,19 +9970,20 @@ function registerModelTo$1s ( Mongoose ) {
 }
 
 var PointLight_1 = {
+    name:            'PointLight',
     getSchemaFrom:   getSchemaFrom$1u,
     getModelFrom:    getModelFrom$1s,
     registerModelTo: registerModelTo$1s
 };
 
 /**
+ * @module Schemas/Lights/RectAreaLight
+ * @desc Export the ThreeJs RectAreaLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$v } = Object3D$1;
@@ -9214,19 +10037,20 @@ function registerModelTo$1t ( Mongoose ) {
 }
 
 var RectAreaLight_1 = {
+    name:            'RectAreaLight',
     getSchemaFrom:   getSchemaFrom$1v,
     getModelFrom:    getModelFrom$1t,
     registerModelTo: registerModelTo$1t
 };
 
 /**
+ * @module Schemas/Lights/SpotLight
+ * @desc Export the ThreeJs SpotLight Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$w } = Object3D$1;
@@ -9280,18 +10104,18 @@ function registerModelTo$1u ( Mongoose ) {
 }
 
 var SpotLight_1 = {
+    name:            'SpotLight',
     getSchemaFrom:   getSchemaFrom$1w,
     getModelFrom:    getModelFrom$1u,
     registerModelTo: registerModelTo$1u
 };
 
 /**
+ * @module Schemas/Materials/Material
+ * @desc Export the ThreeJs Material Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Material
- *
- * @description Todo...
  */
 
 let _schema$1x = undefined;
@@ -9387,6 +10211,7 @@ function registerModelTo$1v ( Mongoose ) {
 }
 
 var Material_1 = {
+    name:            'Material',
     getSchemaFrom:   getSchemaFrom$1x,
     getModelFrom:    getModelFrom$1v,
     registerModelTo: registerModelTo$1v
@@ -9397,13 +10222,13 @@ var Material = {
 };
 
 /**
+ * @module Schemas/Materials/LineBasicMaterial
+ * @desc Export the ThreeJs LineBasicMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$1 } = Material;
@@ -9465,19 +10290,20 @@ function registerModelTo$1w ( Mongoose ) {
 }
 
 var LineBasicMaterial_1 = {
+    name:            'LineBasicMaterial',
     getSchemaFrom:   getSchemaFrom$1y,
     getModelFrom:    getModelFrom$1w,
     registerModelTo: registerModelTo$1w
 };
 
 /**
+ * @module Schemas/Materials/LineDashedMaterial
+ * @desc Export the ThreeJs LineDashedMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$2 } = Material;
@@ -9545,19 +10371,20 @@ function registerModelTo$1x ( Mongoose ) {
 }
 
 var LineDashedMaterial_1 = {
+    name:            'LineDashedMaterial',
     getSchemaFrom:   getSchemaFrom$1z,
     getModelFrom:    getModelFrom$1x,
     registerModelTo: registerModelTo$1x
 };
 
 /**
+ * @module Schemas/Materials/MeshBasicMaterial
+ * @desc Export the ThreeJs MeshBasicMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$3 } = Material;
@@ -9634,19 +10461,20 @@ function registerModelTo$1y ( Mongoose ) {
 }
 
 var MeshBasicMaterial_1 = {
+    name:            'MeshBasicMaterial',
     getSchemaFrom:   getSchemaFrom$1A,
     getModelFrom:    getModelFrom$1y,
     registerModelTo: registerModelTo$1y
 };
 
 /**
+ * @module Schemas/Materials/MeshDepthMaterial
+ * @desc Export the ThreeJs MeshDepthMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$4 } = Material;
@@ -9715,19 +10543,20 @@ function registerModelTo$1z ( Mongoose ) {
 }
 
 var MeshDepthMaterial_1 = {
+    name:            'MeshDepthMaterial',
     getSchemaFrom:   getSchemaFrom$1B,
     getModelFrom:    getModelFrom$1z,
     registerModelTo: registerModelTo$1z
 };
 
 /**
+ * @module Schemas/Materials/MeshLambertMaterial
+ * @desc Export the ThreeJs MeshLambertMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$5 } = Material;
@@ -9807,19 +10636,20 @@ function registerModelTo$1A ( Mongoose ) {
 }
 
 var MeshLambertMaterial_1 = {
+    name:            'MeshLambertMaterial',
     getSchemaFrom:   getSchemaFrom$1C,
     getModelFrom:    getModelFrom$1A,
     registerModelTo: registerModelTo$1A
 };
 
 /**
+ * @module Schemas/Materials/MeshNormalMaterial
+ * @desc Export the ThreeJs MeshNormalMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$6 } = Material;
@@ -9891,19 +10721,20 @@ function registerModelTo$1B ( Mongoose ) {
 }
 
 var MeshNormalMaterial_1 = {
+    name:            'MeshNormalMaterial',
     getSchemaFrom:   getSchemaFrom$1D,
     getModelFrom:    getModelFrom$1B,
     registerModelTo: registerModelTo$1B
 };
 
 /**
+ * @module Schemas/Materials/MeshPhongMaterial
+ * @desc Export the ThreeJs MeshPhongMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$7 } = Material;
@@ -9993,19 +10824,20 @@ function registerModelTo$1C ( Mongoose ) {
 }
 
 var MeshPhongMaterial_1 = {
+    name:            'MeshPhongMaterial',
     getSchemaFrom:   getSchemaFrom$1E,
     getModelFrom:    getModelFrom$1C,
     registerModelTo: registerModelTo$1C
 };
 
 /**
+ * @module Schemas/Materials/MeshPhysicalMaterial
+ * @desc Export the ThreeJs MeshPhysicalMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$8 } = Material;
@@ -10063,19 +10895,20 @@ function registerModelTo$1D ( Mongoose ) {
 }
 
 var MeshPhysicalMaterial_1 = {
+    name:            'MeshPhysicalMaterial',
     getSchemaFrom:   getSchemaFrom$1F,
     getModelFrom:    getModelFrom$1D,
     registerModelTo: registerModelTo$1D
 };
 
 /**
+ * @module Schemas/Materials/MeshStandardMaterial
+ * @desc Export the ThreeJs MeshStandardMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$9 } = Material;
@@ -10165,19 +10998,20 @@ function registerModelTo$1E ( Mongoose ) {
 }
 
 var MeshStandardMaterial_1 = {
+    name:            'MeshStandardMaterial',
     getSchemaFrom:   getSchemaFrom$1G,
     getModelFrom:    getModelFrom$1E,
     registerModelTo: registerModelTo$1E
 };
 
 /**
+ * @module Schemas/Materials/MeshToonMaterial
+ * @desc Export the ThreeJs MeshToonMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$a } = Material;
@@ -10271,19 +11105,20 @@ function registerModelTo$1F ( Mongoose ) {
 }
 
 var MeshToonMaterial_1 = {
+    name:            'MeshToonMaterial',
     getSchemaFrom:   getSchemaFrom$1H,
     getModelFrom:    getModelFrom$1F,
     registerModelTo: registerModelTo$1F
 };
 
 /**
+ * @module Schemas/Materials/PointsMaterial
+ * @desc Export the ThreeJs PointsMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$b } = Material;
@@ -10346,19 +11181,20 @@ function registerModelTo$1G ( Mongoose ) {
 }
 
 var PointsMaterial_1 = {
+    name:            'PointsMaterial',
     getSchemaFrom:   getSchemaFrom$1I,
     getModelFrom:    getModelFrom$1G,
     registerModelTo: registerModelTo$1G
 };
 
 /**
+ * @module Schemas/Materials/RawShaderMaterial
+ * @desc Export the ThreeJs RawShaderMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$c } = Material;
@@ -10435,19 +11271,20 @@ function registerModelTo$1H ( Mongoose ) {
 }
 
 var RawShaderMaterial_1 = {
+    name:            'RawShaderMaterial',
     getSchemaFrom:   getSchemaFrom$1J,
     getModelFrom:    getModelFrom$1H,
     registerModelTo: registerModelTo$1H
 };
 
 /**
+ * @module Schemas/Materials/ShaderMaterial
+ * @desc Export the ThreeJs ShaderMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$d } = Material;
@@ -10521,19 +11358,20 @@ function registerModelTo$1I ( Mongoose ) {
 }
 
 var ShaderMaterial_1 = {
+    name:            'ShaderMaterial',
     getSchemaFrom:   getSchemaFrom$1K,
     getModelFrom:    getModelFrom$1I,
     registerModelTo: registerModelTo$1I
 };
 
 /**
+ * @module Schemas/Materials/ShadowMaterial
+ * @desc Export the ThreeJs ShadowMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$e } = Material;
@@ -10594,19 +11432,20 @@ function registerModelTo$1J ( Mongoose ) {
 }
 
 var ShadowMaterial_1 = {
+    name:            'ShadowMaterial',
     getSchemaFrom:   getSchemaFrom$1L,
     getModelFrom:    getModelFrom$1J,
     registerModelTo: registerModelTo$1J
 };
 
 /**
+ * @module Schemas/Materials/SpriteMaterial
+ * @desc Export the ThreeJs SpriteMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material: Material$f } = Material;
@@ -10669,18 +11508,18 @@ function registerModelTo$1K ( Mongoose ) {
 }
 
 var SpriteMaterial_1 = {
+    name:            'SpriteMaterial',
     getSchemaFrom:   getSchemaFrom$1M,
     getModelFrom:    getModelFrom$1K,
     registerModelTo: registerModelTo$1K
 };
 
 /**
+ * @module Schemas/Math/Box2
+ * @desc Export the ThreeJs Box2 Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Box2
- *
- * @description The database counterpart of Three.Box2
  */
 
 let _schema$1N = undefined;
@@ -10712,19 +11551,18 @@ function _createSchema$1N ( Mongoose ) {
 }
 
 var Box2_1 = {
+    name:            'Box2',
     getSchemaFrom:   getSchemaFrom$1N,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Box3
+ * @desc Export the ThreeJs Box3 Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 let _schema$1O = undefined;
@@ -10756,18 +11594,18 @@ function _createSchema$1O ( Mongoose ) {
 }
 
 var Box3_1 = {
+    name:            'Box3',
     getSchemaFrom:   getSchemaFrom$1O,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Line3
+ * @desc Export the ThreeJs Line3 Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Face3
- *
- * @description Todo...
  */
 
 let _schema$1P = undefined;
@@ -10799,18 +11637,18 @@ function _createSchema$1P ( Mongoose ) {
 }
 
 var Line3_1 = {
+    name:            'Line3',
     getSchemaFrom:   getSchemaFrom$1P,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Plane
+ * @desc Export the ThreeJs Plane Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema$1Q = undefined;
@@ -10842,18 +11680,18 @@ function _createSchema$1Q ( Mongoose ) {
 }
 
 var Plane_1 = {
+    name:            'Plane',
     getSchemaFrom:   getSchemaFrom$1Q,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Ray
+ * @desc Export the ThreeJs Ray Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema$1R = undefined;
@@ -10885,18 +11723,18 @@ function _createSchema$1R ( Mongoose ) {
 }
 
 var Ray_1 = {
+    name:            'Ray',
     getSchemaFrom:   getSchemaFrom$1R,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Sphere
+ * @desc Export the ThreeJs Sphere Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema$1S = undefined;
@@ -10928,18 +11766,18 @@ function _createSchema$1S ( Mongoose ) {
 }
 
 var Sphere_1 = {
+    name:            'Sphere',
     getSchemaFrom:   getSchemaFrom$1S,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Spherical
+ * @desc Export the ThreeJs Spherical Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema$1T = undefined;
@@ -10970,18 +11808,18 @@ function _createSchema$1T ( Mongoose ) {
 }
 
 var Spherical_1 = {
+    name:            'Spherical',
     getSchemaFrom:   getSchemaFrom$1T,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Math/Triangle
+ * @desc Export the ThreeJs Triangle Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema$1U = undefined;
@@ -11014,19 +11852,20 @@ function _createSchema$1U ( Mongoose ) {
 }
 
 var Triangle_1 = {
+    name:            'Triangle',
     getSchemaFrom:   getSchemaFrom$1U,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
 /**
+ * @module Schemas/Objects/Bone
+ * @desc Export the ThreeJs Bone Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$x } = Object3D$1;
@@ -11080,19 +11919,20 @@ function registerModelTo$1L ( Mongoose ) {
 }
 
 var Bone_1 = {
+    name:            'Bone',
     getSchemaFrom:   getSchemaFrom$1V,
     getModelFrom:    getModelFrom$1L,
     registerModelTo: registerModelTo$1L
 };
 
 /**
+ * @module Schemas/Objects/Group
+ * @desc Export the ThreeJs Group Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 let _schema$1W = undefined;
@@ -11144,19 +11984,20 @@ function registerModelTo$1M ( Mongoose ) {
 }
 
 const Group = {
+    name:            'Group',
     getSchemaFrom:   getSchemaFrom$1W,
     getModelFrom:    getModelFrom$1M,
     registerModelTo: registerModelTo$1M
 };
 
 /**
+ * @module Schemas/Objects/ImmediateRenderObject
+ * @desc Export the ThreeJs ImmediateRenderObject Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$y } = Object3D$1;
@@ -11210,19 +12051,20 @@ function registerModelTo$1N ( Mongoose ) {
 }
 
 var ImmediateRenderObject_1 = {
+    name:            'ImmediateRenderObject',
     getSchemaFrom:   getSchemaFrom$1X,
     getModelFrom:    getModelFrom$1N,
     registerModelTo: registerModelTo$1N
 };
 
 /**
+ * @module Schemas/Objects/LensFlare
+ * @desc Export the ThreeJs LensFlare Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$z } = Object3D$1;
@@ -11295,19 +12137,20 @@ function registerModelTo$1O ( Mongoose ) {
 }
 
 var LensFlare = {
+    name:            'LensFlare',
     getSchemaFrom:   getSchemaFrom$1Y,
     getModelFrom:    getModelFrom$1O,
     registerModelTo: registerModelTo$1O
 };
 
 /**
+ * @module Schemas/Objects/Line
+ * @desc Export the ThreeJs Line Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$A } = Object3D$1;
@@ -11373,19 +12216,20 @@ function registerModelTo$1P ( Mongoose ) {
 }
 
 var Line_1 = {
+    name:            'Line',
     getSchemaFrom:   getSchemaFrom$1Z,
     getModelFrom:    getModelFrom$1P,
     registerModelTo: registerModelTo$1P
 };
 
 /**
+ * @module Schemas/Objects/LineLoop
+ * @desc Export the ThreeJs LineLoop Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$B } = Object3D$1;
@@ -11451,19 +12295,20 @@ function registerModelTo$1Q ( Mongoose ) {
 }
 
 var LineLoop_1 = {
+    name:            'LineLoop',
     getSchemaFrom:   getSchemaFrom$1_,
     getModelFrom:    getModelFrom$1Q,
     registerModelTo: registerModelTo$1Q
 };
 
 /**
+ * @module Schemas/Objects/LineSegments
+ * @desc Export the ThreeJs LineSegments Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$C } = Object3D$1;
@@ -11529,19 +12374,20 @@ function registerModelTo$1R ( Mongoose ) {
 }
 
 var LineSegments_1 = {
+    name:            'LineSegments',
     getSchemaFrom:   getSchemaFrom$1$,
     getModelFrom:    getModelFrom$1R,
     registerModelTo: registerModelTo$1R
 };
 
 /**
+ * @module Schemas/Objects/LOD
+ * @desc Export the ThreeJs LOD Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$D } = Object3D$1;
@@ -11599,19 +12445,20 @@ function registerModelTo$1S ( Mongoose ) {
 }
 
 var LOD_1 = {
+    name:            'LOD',
     getSchemaFrom:   getSchemaFrom$20,
     getModelFrom:    getModelFrom$1S,
     registerModelTo: registerModelTo$1S
 };
 
 /**
+ * @module Schemas/Objects/Mesh
+ * @desc Export the ThreeJs Mesh Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$E } = Object3D$1;
@@ -11677,19 +12524,20 @@ function registerModelTo$1T ( Mongoose ) {
 }
 
 var Mesh_1 = {
+    name:            'Mesh',
     getSchemaFrom:   getSchemaFrom$21,
     getModelFrom:    getModelFrom$1T,
     registerModelTo: registerModelTo$1T
 };
 
 /**
+ * @module Schemas/Objects/Points
+ * @desc Export the ThreeJs Points Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$F } = Object3D$1;
@@ -11755,19 +12603,20 @@ function registerModelTo$1U ( Mongoose ) {
 }
 
 var Points_1 = {
+    name:            'Points',
     getSchemaFrom:   getSchemaFrom$22,
     getModelFrom:    getModelFrom$1U,
     registerModelTo: registerModelTo$1U
 };
 
 /**
+ * @module Schemas/Objects/Skeleton
+ * @desc Export the ThreeJs Skeleton Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$G } = Object3D$1;
@@ -11826,19 +12675,20 @@ function registerModelTo$1V ( Mongoose ) {
 }
 
 var Skeleton_1 = {
+    name:            'Skeleton',
     getSchemaFrom:   getSchemaFrom$23,
     getModelFrom:    getModelFrom$1V,
     registerModelTo: registerModelTo$1V
 };
 
 /**
+ * @module Schemas/Objects/SkinnedMesh
+ * @desc Export the ThreeJs SkinnedMesh Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$H } = Object3D$1;
@@ -11911,19 +12761,20 @@ function registerModelTo$1W ( Mongoose ) {
 }
 
 var SkinnedMesh_1 = {
+    name:            'SkinnedMesh',
     getSchemaFrom:   getSchemaFrom$24,
     getModelFrom:    getModelFrom$1W,
     registerModelTo: registerModelTo$1W
 };
 
 /**
+ * @module Schemas/Objects/Sprite
+ * @desc Export the ThreeJs Sprite Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Object3D: Object3D$I } = Object3D$1;
@@ -11984,19 +12835,20 @@ function registerModelTo$1X ( Mongoose ) {
 }
 
 var Sprite_1 = {
+    name:            'Sprite',
     getSchemaFrom:   getSchemaFrom$25,
     getModelFrom:    getModelFrom$1X,
     registerModelTo: registerModelTo$1X
 };
 
 /**
+ * @module Schemas/Scenes/Fog
+ * @desc Export the ThreeJs Fog Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Scenes/Scene Schemas/Scenes/Scene}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 let _schema$26 = undefined;
@@ -12036,6 +12888,7 @@ function _createSchema$26 ( Mongoose ) {
 }
 
 var Fog_1 = {
+    name:            'Fog',
     getSchemaFrom:   getSchemaFrom$26,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
@@ -12044,6 +12897,17 @@ var Fog_1 = {
 var Fog = {
 	Fog: Fog_1
 };
+
+/**
+ * @module Schemas/Scenes/FogExp2
+ * @desc Export the ThreeJs FogExp2 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ * @requires {@link module:Schemas/Scenes/Fog Schemas/Scenes/Fog}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 const { Object3D: Object3D$J } = Object3D$1;
 const { Fog: Fog$1 }      = Fog;
@@ -12105,18 +12969,17 @@ function registerModelTo$1Y ( Mongoose ) {
 }
 
 var Scene_1 = {
+    name: 'Scene',
     getSchemaFrom: getSchemaFrom$27,
     getModelFrom: getModelFrom$1Y,
     registerModelTo: registerModelTo$1Y
 };
 
 /**
+ * @module Schemas/Textures/Texture
+ * @desc Export the ThreeJs Texture Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema$28 = undefined;
@@ -12203,6 +13066,7 @@ function registerModelTo$1Z ( Mongoose ) {
 }
 
 var Texture_1 = {
+    name: 'Texture',
     getSchemaFrom: getSchemaFrom$28,
     getModelFrom: getModelFrom$1Z,
     registerModelTo: registerModelTo$1Z
@@ -12213,14 +13077,15 @@ var Texture = {
 };
 
 /**
+ * @module Schemas/Textures/CanvasTexture
+ * @desc Export the ThreeJs CanvasTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
+
 
 const { Texture: Texture$1 } = Texture;
 
@@ -12275,19 +13140,20 @@ function registerModelTo$1_ ( Mongoose ) {
 }
 
 var CanvasTexture_1 = {
+    name:            'CanvasTexture',
     getSchemaFrom:   getSchemaFrom$29,
     getModelFrom:    getModelFrom$1_,
     registerModelTo: registerModelTo$1_
 };
 
 /**
+ * @module Schemas/Textures/CompressedTexture
+ * @desc Export the ThreeJs CompressedTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture: Texture$2 } = Texture;
@@ -12341,19 +13207,20 @@ function registerModelTo$1$ ( Mongoose ) {
 }
 
 var CompressedTexture_1 = {
+    name:            'CompressedTexture',
     getSchemaFrom:   getSchemaFrom$2a,
     getModelFrom:    getModelFrom$1$,
     registerModelTo: registerModelTo$1$
 };
 
 /**
+ * @module Schemas/Textures/CubeTexture
+ * @desc Export the ThreeJs CubeTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture: Texture$3 } = Texture;
@@ -12407,19 +13274,20 @@ function registerModelTo$20 ( Mongoose ) {
 }
 
 var CubeTexture_1 = {
+    name:            'CubeTexture',
     getSchemaFrom:   getSchemaFrom$2b,
     getModelFrom:    getModelFrom$20,
     registerModelTo: registerModelTo$20
 };
 
 /**
+ * @module Schemas/Textures/DataTexture
+ * @desc Export the ThreeJs DataTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture: Texture$4 } = Texture;
@@ -12473,19 +13341,20 @@ function registerModelTo$21 ( Mongoose ) {
 }
 
 var DataTexture_1 = {
+    name:            'DataTexture',
     getSchemaFrom:   getSchemaFrom$2c,
     getModelFrom:    getModelFrom$21,
     registerModelTo: registerModelTo$21
 };
 
 /**
+ * @module Schemas/Textures/DepthTexture
+ * @desc Export the ThreeJs DepthTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture: Texture$5 } = Texture;
@@ -12539,19 +13408,20 @@ function registerModelTo$22 ( Mongoose ) {
 }
 
 var DepthTexture_1 = {
+    name:            'DepthTexture',
     getSchemaFrom:   getSchemaFrom$2d,
     getModelFrom:    getModelFrom$22,
     registerModelTo: registerModelTo$22
 };
 
 /**
+ * @module Schemas/Textures/VideoTexture
+ * @desc Export the ThreeJs VideoTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture: Texture$6 } = Texture;
@@ -12605,35 +13475,70 @@ function registerModelTo$23 ( Mongoose ) {
 }
 
 var VideoTexture_1 = {
+    name:            'VideoTexture',
     getSchemaFrom:   getSchemaFrom$2e,
     getModelFrom:    getModelFrom$23,
     registerModelTo: registerModelTo$23
 };
 
 /**
+ * @module Types/Color
+ * @desc Export the three js Color type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Color type
+ * @returns {Mongoose}
+ */
 function ColorType ( Mongoose ) {
 
+    /**
+     * The Color type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
     class Color extends Mongoose.SchemaType {
 
-        constructor ( key, options ) {
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @constructor
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-            super( key, options, 'Color' );
+            super( path, options, 'Color' );
 
         }
 
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Color|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Color.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains r property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument r property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains g property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument g property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains b property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument b property is not a number.
+         * @returns {{r: Number, b: Number, g: Number}}
+         */
         cast ( value ) {
 
             if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Color instance` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }
 
             if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain r property` ) }
             if ( iteeValidators.isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
@@ -12654,6 +13559,12 @@ function ColorType ( Mongoose ) {
 
     }
 
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
     Color.COLOR_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
@@ -12664,45 +13575,76 @@ function ColorType ( Mongoose ) {
 }
 
 /**
+ * @module Types/Euler
+ * @desc Export the three js Euler type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Euler type
+ * @returns {Mongoose}
+ */
 function EulerType ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Euler type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Euler extends Mongoose.SchemaType {
 
-    // Declare type
-    function Euler ( key, options ) {
-        SchemaType.call( this, key, options, 'Euler' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Euler.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Euler' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Euler|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Euler.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains x property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument x property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains y property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains z property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains order property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument order property is not a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'].
+         * @returns {{x: Number, y: Number, z: Number, order: String}}
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Euler: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isEuler ) { throw new Error( `Euler: ${ value } is not a object or Euler instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( `Euler: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Euler: ${ value } expected x to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected x to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( `Euler: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Euler: ${ value } expected y to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected y to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( `Euler: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Euler: ${ value } expected z to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected z to be a number` ) }
 
-            if ( !( 'order' in value ) ) { throw new Error( `Euler: ${ value } does not contain order property` ) }
-            if ( iteeValidators.isNotString( value.order ) ) { throw new Error( `Euler: ${ value } expected order to be a string` ) }
-            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Error( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
+            if ( !( 'order' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain order property` ) }
+            if ( iteeValidators.isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
+            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
                 x:     value.x,
@@ -12713,41 +13655,76 @@ function EulerType ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Euler.EULER_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
-    Types.Euler = Euler;
+    Mongoose.Schema.Types.Euler = Euler;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Matrix3
+ * @desc Export the three js Matrix3 type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix3 type
+ * @returns {Mongoose}
+ */
 function Matrix3Type ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Matrix3 type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Matrix3 extends Mongoose.SchemaType {
 
-    // Declare type
-    function Matrix3 ( key, options ) {
-        SchemaType.call( this, key, options, 'Matrix3' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Matrix3.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Matrix3' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Matrix3|Array.<Number>|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an array nor an instance of Three.Matrix3.
+         * @throws {Mongoose~CastError} Will throw an error if the argument internal array length is different from 9.
+         * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
+         * @returns {Array.<Number>} The validated array of length 9
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix3: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix3 ) { throw new Error( `Matrix3: ${ value } is not a object or Matrix3 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotArray( value ) && !value.isMatrix3 ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is not an array or Matrix3 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix3 ) {
@@ -12759,7 +13736,7 @@ function Matrix3Type ( Mongoose ) {
             // Check number of values
             const numberOfValues = result.length;
             if ( numberOfValues !== 9 ) {
-                throw new Error( `Matrix3: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
+                throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
             }
 
             // Check values are numbers in the range [0 - 1]
@@ -12768,11 +13745,11 @@ function Matrix3Type ( Mongoose ) {
                 val = result[ index ];
 
                 if ( iteeValidators.isNotNumber( val ) ) {
-                    throw new Error( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
                 if ( iteeValidators.isNaN( val ) ) {
-                    throw new Error( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
             }
@@ -12781,41 +13758,76 @@ function Matrix3Type ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Matrix3.MATRIX3_BSON_TYPE = bson.BSON_DATA_ARRAY;
 
     // Register type
-    Types.Matrix3 = Matrix3;
+    Mongoose.Schema.Types.Matrix3 = Matrix3;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Matrix4
+ * @desc Export the three js Matrix4 type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix4 type
+ * @returns {Mongoose}
+ */
 function Matrix4Type ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Matrix4 type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Matrix4 extends Mongoose.SchemaType {
 
-    // Declare type
-    function Matrix4 ( key, options ) {
-        SchemaType.call( this, key, options, 'Matrix4' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Matrix4.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Matrix4' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Matrix4|Array.<Number>|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an array nor an instance of Three.Matrix4.
+         * @throws {Mongoose~CastError} Will throw an error if the argument internal array length is different from 16.
+         * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
+         * @returns {Array.<Number>} The validated array of length 9
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Matrix4: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix4 ) { throw new Error( `Matrix4: ${ value } is not a object or Matrix4 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix4 ) {
@@ -12827,7 +13839,7 @@ function Matrix4Type ( Mongoose ) {
             // Check number of values
             const numberOfValues = result.length;
             if ( numberOfValues !== 16 ) {
-                throw new Error( `Matrix4: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
+                throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } does not contain the right number of values. Expect 9 values and found ${ numberOfValues }` )
             }
 
             // Check values are numbers in the range [0 - 1]
@@ -12836,11 +13848,11 @@ function Matrix4Type ( Mongoose ) {
                 val = result[ index ];
 
                 if ( iteeValidators.isNotNumber( val ) ) {
-                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
                 if ( iteeValidators.isNaN( val ) ) {
-                    throw new Error( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
+                    throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
             }
@@ -12849,53 +13861,94 @@ function Matrix4Type ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Matrix4.MATRIX4_BSON_TYPE = bson.BSON_DATA_ARRAY;
 
     // Register type
-    Types.Matrix4 = Matrix4;
+    Mongoose.Schema.Types.Matrix4 = Matrix4;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Quaternion
+ * @desc Export the three js Quaternion type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Quaternion type
+ * @returns {Mongoose}
+ */
 function QuaternionType ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Quaternion type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Quaternion extends Mongoose.SchemaType {
 
-    // Declare type
-    function Quaternion ( key, options ) {
-        SchemaType.call( this, key, options, 'Quaternion' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Quaternion.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Quaternion' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Quaternion|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Quaternion.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains x property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument x property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains y property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains z property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains w property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
+         * @returns {{x: Number, y: Number, z: Number, w: Number}}
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Quaternion: ${ value } is null or undefined` ) }
-            //if ( isNotObject( value ) && !value.isQuaternion ) { throw new Error( `Quaternion: ${value} is not a object or Quaternion instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
-            if ( !( 'w' in value ) ) { throw new Error( `Quaternion: ${ value } does not contain w property` ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Quaternion: ${ value } expected to be a number` ) }
+            if ( !( 'w' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain w property` ) }
+            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -12906,47 +13959,84 @@ function QuaternionType ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Quaternion.QUATERNION_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
-    Types.Quaternion = Quaternion;
+    Mongoose.Schema.Types.Quaternion = Quaternion;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Vector2
+ * @desc Export the three js Vector2 type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Vector2 type
+ * @returns {Mongoose}
+ */
 function Vector2Type ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Vector2 type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Vector2 extends Mongoose.SchemaType {
 
-    // Declare type
-    function Vector2 ( key, options ) {
-        SchemaType.call( this, key, options, 'Vector2' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Vector2.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Vector2' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Vector2|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Vector2.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains x property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument x property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains y property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
+         * @returns {{x: Number, y: Number}}
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector2: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector2 ) { throw new Error( `Vector2: ${ value } is not a object or Vector2 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( `Vector2: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( `Vector2: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector2: ${ value } expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -12955,50 +14045,89 @@ function Vector2Type ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Vector2.VECTOR2_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
-    Types.Vector2 = Vector2;
+    Mongoose.Schema.Types.Vector2 = Vector2;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Vector3
+ * @desc Export the three js Vector3 type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Vector3 type
+ * @returns {Mongoose}
+ */
 function Vector3Type ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Vector3 type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Vector3 extends Mongoose.SchemaType {
 
-    // Declare type
-    function Vector3 ( key, options ) {
-        SchemaType.call( this, key, options, 'Vector3' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Vector3.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Vector3' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Vector3|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Vector3.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains x property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument x property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains y property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains z property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
+         * @returns {{x: Number, y: Number, z: Number}}
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector3: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector3 ) { throw new Error( `Vector3: ${ value } is not a object or Vector3 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector3 ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is not a object or Vector3 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( `Vector3: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( `Vector3: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( `Vector3: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector3: ${ value } expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13008,53 +14137,94 @@ function Vector3Type ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Vector3.VECTOR3_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
-    Types.Vector3 = Vector3;
+    Mongoose.Schema.Types.Vector3 = Vector3;
+
     return Mongoose
 
 }
 
 /**
+ * @module Types/Vector4
+ * @desc Export the three js Vector4 type for Mongoose.
+ *
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * The type registering function.
+ *
+ * @param Mongoose {Mongoose} - A mongoose instance where register the Vector4 type
+ * @returns {Mongoose}
+ */
 function Vector4Type ( Mongoose ) {
 
-    const SchemaType = Mongoose.SchemaType;
-    const Schema     = Mongoose.Schema;
-    const Types      = Schema.Types;
+    /**
+     * The Vector4 type definition class
+     *
+     * @class
+     * @augments Mongoose.SchemaType
+     */
+    class Vector4 extends Mongoose.SchemaType {
 
-    // Declare type
-    function Vector4 ( key, options ) {
-        SchemaType.call( this, key, options, 'Vector4' );
-    }
+        /**
+         * Do **not** instantiate `SchemaType` directly.
+         * Mongoose converts your schema paths into SchemaTypes automatically.
+         *
+         * @param {String} path
+         * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
+         */
+        constructor ( path, options ) {
 
-    Vector4.prototype = Object.assign( Object.create( SchemaType.prototype ), {
+            super( path, options, 'Vector4' );
 
+        }
+
+        /**
+         * The function used to cast arbitrary values to this type.
+         *
+         * @param {THREE~Vector4|Object|*} value The value to cast
+         * @throws {Mongoose~CastError} Will throw an error if the argument is null or undefined.
+         * @throws {Mongoose~CastError} Will throw an error if the argument is not an object nor an instance of Three.Vector4.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains x property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument x property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains y property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains z property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
+         * @throws {Mongoose~CastError} Will throw an error if the argument not contains w property.
+         * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
+         * @returns {{x: Number, y: Number, z: Number, w: Number}}
+         */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Error( `Vector4: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector4 ) { throw new Error( `Vector4: ${ value } is not a object or Vector4 instance` ) }
+            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is null or undefined` ) }
+            if ( iteeValidators.isNotObject( value ) && !value.isVector4 ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is not a object or Vector4 instance` ) }
 
-            if ( !( 'x' in value ) ) { throw new Error( `Vector4: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
+            if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain x property` ) }
+            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'y' in value ) ) { throw new Error( `Vector4: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
+            if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain y property` ) }
+            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'z' in value ) ) { throw new Error( `Vector4: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
+            if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain z property` ) }
+            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
-            if ( !( 'w' in value ) ) { throw new Error( `Vector4: ${ value } does not contain w property` ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Error( `Vector4: ${ value } expected to be a number` ) }
+            if ( !( 'w' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain w property` ) }
+            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -13065,30 +14235,34 @@ function Vector4Type ( Mongoose ) {
 
         }
 
-    } );
+    }
+
+    /**
+     * Define the underlying bson type.
+     *
+     * @static
+     * @type {bson.BSON_DATA_OBJECT}
+     */
+    Vector4.VECTOR4_BSON_TYPE = bson.BSON_DATA_OBJECT;
 
     // Register type
-    Types.Vector4 = Vector4;
+    Mongoose.Schema.Types.Vector4 = Vector4;
+
     return Mongoose
 
 }
 
 /**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [MIT]{@link https://opensource.org/licenses/MIT}
- *
- * @file Todo
- *
- * @example Todo
- *
- */
-
-/**
- * Three way to register Types and Schema
+ * @module MongoDBThreePlugin
+ * @desc Three way to register Types and Schema
  * using cjs module under types and schemas folder.
  * using FunctionRegistrator for type and add to plugin using .addType( myFunctionRegistrator ), extending class AbstractMongooseRegistrator for Schema and add to plugin using .addSchema(
  * MySchemaRegistrator ) using direct registration importing mongoose in the file (care to the loading order ! An no output about what is registered.)
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [MIT]{@link https://opensource.org/licenses/MIT}
  */
+
 var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
     .addType( ColorType )
     .addType( EulerType )
@@ -13098,6 +14272,9 @@ var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
     .addType( Vector2Type )
     .addType( Vector3Type )
     .addType( Vector4Type )
+    //    .addSchema( KeyframeTrack )
+    //    .addSchema( BooleanKeyframeTrack )
+    //    .addSchema( ColorKeyframeTrack )
     .addSchema( Audio_1 )
     .addSchema( AudioListener_1 )
     .addSchema( PositionalAudio_1 )
@@ -13107,7 +14284,7 @@ var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
     .addSchema( OrthographicCamera_1 )
     .addSchema( PerspectiveCamera_1 )
     .addSchema( BufferAttribute_1 )
-    .addSchema( BufferGeometry_1 )
+    .addSchema( BufferGeometry )
     .addSchema( CurvePath_1 )
     .addSchema( Face3_1 )
     .addSchema( Geometry )
@@ -13270,11 +14447,11 @@ var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
     .addSchema( DepthTexture_1 )
     .addSchema( Texture_1 )
     .addSchema( VideoTexture_1 )
-    .addController( iteeMongodb.TMongooseController )
+    .addController( TObjects3DController )
     .addDescriptor( {
         route:      '/objects',
         controller: {
-            name:    'TMongooseController',
+            name:    'TObjects3DController',
             options: {
                 schemaName: 'Objects3D'
             },
@@ -13298,6 +14475,7 @@ var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
             }
         }
     } )
+    .addController( iteeMongodb.TMongooseController )
     .addDescriptor( {
         route:      '/curves',
         controller: {

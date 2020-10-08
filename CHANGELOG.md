@@ -1,3 +1,21 @@
+# [1.3.0](https://github.com/Itee/itee-plugin-three/compare/v1.2.10...v1.3.0) (2020-10-08)
+
+
+### Bug Fixes
+
+* **abstractmongoosemodel:** add missing abastract class ([4a43b71](https://github.com/Itee/itee-plugin-three/commit/4a43b710ce1d6ef001e8fb636dacb4e03068b44f))
+* **global:** add names to all schemas ([f533ed8](https://github.com/Itee/itee-plugin-three/commit/f533ed83f24766adc361d816a685a206f047bff6))
+* **global:** fix lint errors ([a46e5f4](https://github.com/Itee/itee-plugin-three/commit/a46e5f46d17760e834b83a78b468b267c153f992))
+* **lint:** fix latest lint errors ([7218ef2](https://github.com/Itee/itee-plugin-three/commit/7218ef2712e1b5e1f6d6817f0f51e5f03a05ad8d))
+* **object3d:** fix layers assignment value ([79b1f95](https://github.com/Itee/itee-plugin-three/commit/79b1f95718cd316646969c8a8e63c16b566edaec))
+* **quaternion:** add missing validator import ([6e0a308](https://github.com/Itee/itee-plugin-three/commit/6e0a30897a3a87a260c025632957dece29fceeb2))
+
+
+### Features
+
+* **keyframetrack:** add keyframetrack, booleankeyframetrack and colorkeyframetrack models ([c33a3ce](https://github.com/Itee/itee-plugin-three/commit/c33a3ce068c3ccf785adf2152147197b76152b9f))
+* **tobjects3dcontroller:** add specific class to manage object3d collection and allow better perfs ([c735a8b](https://github.com/Itee/itee-plugin-three/commit/c735a8b80e76782748114777039358cebd9d6f53))
+
 ## [1.2.10](https://github.com/Itee/itee-plugin-three/compare/v1.2.9...v1.2.10) (2020-07-21)
 
 

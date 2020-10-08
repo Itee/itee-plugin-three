@@ -1,22 +1,19 @@
-console.log('Itee.Plugin.Three v1.2.10 - Standalone')
+console.log('Itee.Plugin.Three v1.3.0 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, iteeValidators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene) {
 	'use strict';
 
 	/**
+	 * @module Loader/SHPLoader
+	 * @desc Export SHPLoader to load .shp files
+	 *
+	 * @requires {@link https://github.com/Itee/itee-client itee-client}
+	 * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+	 * @requires {@link https://github.com/Itee/three-full three-full}
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * This class allow to split any geometries type during runtime.
-	 * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
-	 *
-	 * Constructor parameter:
-	 *
-	 * size - the size of the square view
-	 *
-	 * @class Todo...
-	 * @classdesc Todo...
 	 * @example Todo...
 	 *
 	 */
@@ -49,78 +46,21 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    MultiPatch:  31
 	} );
 
+	/**
+	 * @class
+	 * @classdesc This class allow to split any geometries type during runtime.
+	 * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+	 * @export
+	 */
 	class SHPLoader {
 
-	//    static FileCode      = 9994
-	//    static MinFileLength = 100
-	//    static MinVersion    = 1000
-
-	    get globalOffset () {
-	        return this._globalOffset
-	    }
-
-	    set globalOffset ( value ) {
-	        this._globalOffset = value;
-	    }
-
-	    setGlobalOffset ( value ) {
-	        this.globalOffset = value;
-	        return this
-	    }
-
-	    get worldAxis () {
-	        return this._worldAxis
-	    }
-
-	    set worldAxis ( value ) {
-	        this._worldAxis = value;
-	    }
-
-	    setWorldAxis ( value ) {
-	        this.worldAxis = value;
-	        return this
-	    }
-
-	    get manager () {
-	        return this._manager
-	    }
-
-	    set manager ( value ) {
-	        this._manager = value;
-	    }
-
-	    setManager ( value ) {
-	        this.manager = value;
-	        return this
-	    }
-
-	    get logger () {
-	        return this._logger
-	    }
-
-	    set logger ( value ) {
-	        this._logger = value;
-	    }
-
-	    setLogger ( value ) {
-	        this.logger = value;
-	        return this
-	    }
-
-	    get reader () {
-	        return this._reader
-	    }
-
-	    set reader ( value ) {
-	        this._reader = value;
-	    }
-
-	    setReader ( value ) {
-	        this.reader = value;
-	        return this
-	    }
+	    //    static FileCode      = 9994
+	    //    static MinFileLength = 100
+	    //    static MinVersion    = 1000
 
 	    /**
+	     *
+	     * Because ctor is blablabla
 	     *
 	     * @param manager
 	     * @param logger
@@ -147,6 +87,71 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	        this.globalOffset = _parameters.globalOffset;
 	        this.worldAxis    = _parameters.worldAxis;
 
+	    }
+
+	    get globalOffset () {
+	        return this._globalOffset
+	    }
+
+	    set globalOffset ( value ) {
+	        this._globalOffset = value;
+	    }
+
+	    get worldAxis () {
+	        return this._worldAxis
+	    }
+
+	    set worldAxis ( value ) {
+	        this._worldAxis = value;
+	    }
+
+	    get manager () {
+	        return this._manager
+	    }
+
+	    set manager ( value ) {
+	        this._manager = value;
+	    }
+
+	    get logger () {
+	        return this._logger
+	    }
+
+	    set logger ( value ) {
+	        this._logger = value;
+	    }
+
+	    get reader () {
+	        return this._reader
+	    }
+
+	    set reader ( value ) {
+	        this._reader = value;
+	    }
+
+	    setGlobalOffset ( value ) {
+	        this.globalOffset = value;
+	        return this
+	    }
+
+	    setWorldAxis ( value ) {
+	        this.worldAxis = value;
+	        return this
+	    }
+
+	    setManager ( value ) {
+	        this.manager = value;
+	        return this
+	    }
+
+	    setLogger ( value ) {
+	        this.logger = value;
+	        return this
+	    }
+
+	    setReader ( value ) {
+	        this.reader = value;
+	        return this
 	    }
 
 	    /**
@@ -669,6 +674,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	SHPLoader.MinVersion    = 1000;
 
 	/**
+	 * @module Loader/DBFLoader
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
@@ -677,9 +683,6 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	 * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
 	 * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
 	 *
-	 * @class Todo...
-	 * @classdesc Todo...
-	 * @example Todo...
 	 *
 	 */
 	// Waiting three-shaking fix
@@ -732,50 +735,16 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    OLE:           'G'
 	} );
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class DBFLoader {
 
 	    //    static Terminator    = 0x0D
 	    //    static DeletedRecord = 0x1A
 	    //    static YearOffset    = 1900
-
-	    get manager () {
-	        return this._manager
-	    }
-
-	    set manager ( value ) {
-	        this._manager = value;
-	    }
-
-	    setManager ( value ) {
-	        this.manager = value;
-	        return this
-	    }
-
-	    get logger () {
-	        return this._logger
-	    }
-
-	    set logger ( value ) {
-	        this._logger = value;
-	    }
-
-	    setLogger ( value ) {
-	        this.logger = value;
-	        return this
-	    }
-
-	    get reader () {
-	        return this._reader
-	    }
-
-	    set reader ( value ) {
-	        this._reader = value;
-	    }
-
-	    setReader ( value ) {
-	        this.reader = value;
-	        return this
-	    }
 
 	    /**
 	     *
@@ -797,6 +766,45 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	        this.logger  = _parameters.logger;
 	        this.reader  = _parameters.reader;
 
+	    }
+
+	    get manager () {
+	        return this._manager
+	    }
+
+	    set manager ( value ) {
+	        this._manager = value;
+	    }
+
+	    get logger () {
+	        return this._logger
+	    }
+
+	    set logger ( value ) {
+	        this._logger = value;
+	    }
+
+	    get reader () {
+	        return this._reader
+	    }
+
+	    set reader ( value ) {
+	        this._reader = value;
+	    }
+
+	    setManager ( value ) {
+	        this.manager = value;
+	        return this
+	    }
+
+	    setLogger ( value ) {
+	        this.logger = value;
+	        return this
+	    }
+
+	    setReader ( value ) {
+	        this.reader = value;
+	        return this
 	    }
 
 	    /**
@@ -1439,26 +1447,32 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	DBFLoader.YearOffset    = 1900;
 
 	/**
+	 * @module Loader/ASCLoader
+	 * @desc A loader for ASC cloud point files.
+	 *
+	 * @requires {@link https://github.com/Itee/itee-client itee-client}
+	 * @requires {@link https://github.com/Itee/three-full three-full}
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file A loader for ASC cloud point files.
-	 *
 	 * @example
-	 *    var loader = new ASCLoader();
-	 *    loader.load('/path/to/file.asc', function (geometry) {
 	 *
-	 *		scene.add( new Mesh( geometry ) );
+	 * import { ASCLoader } from 'itee-plugin-three'
 	 *
-	 *	} );
+	 * const loader = new ASCLoader();
 	 *
-	 * If the ASC file need to be offset,
-	 * it can be set before loading file.
-	 *
+	 * // If the ASC file need to be offseted, it can be set before loading file.
 	 * loader.setOffset( {
-	 *	x: 1.0,
-	 *  y: 52.0,
-	 *  z: -5.0
+	 *      x: 1.0,
+	 *      y: 52.0,
+	 *      z: -5.0
+	 * } );
+	 *
+	 * // Then load the file and get the threejs Point Geometry
+	 * loader.load('/path/to/file.asc', function (geometry) {
+	 *
+	 *      scene.add( new Mesh( geometry ) );
+	 *
 	 * } );
 	 *
 	 */
@@ -1474,8 +1488,19 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	//    PointsMaterial
 	//}                        from 'three-full'
 
+	/**
+	 * The ASCLoader class definition.
+	 * It allow to load and parse an .asc file
+	 *
+	 * @class
+	 */
 	class ASCLoader {
 
+	    /**
+	     * @constructor
+	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
+	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
+	     */
 	    constructor ( manager = LoadingManager.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
 
 	        this.manager = manager;
@@ -1503,12 +1528,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    }
 
 	    /**
+	     * Will load the file at the given URL then parse it. It will return a Three.Group as onLoad argument.
 	     *
-	     * @param url
-	     * @param onLoad
-	     * @param onProgress
-	     * @param onError
-	     * @param sampling
+	     * @param {DOMString|URL} url - Path to the file to load
+	     * @param {callback} onLoad - A success callback
+	     * @param {callback} onProgress - A progress callback
+	     * @param {callback} onError - A error callback
+	     * @param {Number} [sampling=100] - A sampling in percent to apply over file
 	     */
 	    load ( url, onLoad, onProgress, onError, sampling ) {
 
@@ -1527,8 +1553,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    }
 
 	    /**
+	     * An alternative setter to offset property
 	     *
-	     * @param offset
+	     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
 	     */
 	    setOffset ( offset ) {
 
@@ -1536,6 +1563,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	        this._offset     = offset;
 	        this._autoOffset = false;
+
+	        //TODO: that allow chaining.
 
 	    }
 
@@ -2254,12 +2283,20 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Controllers/CameraControls
+	 * @desc This module export CameraControls class and CameraControlMode enum values.
+	 *
+	 * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
+	 * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
+	 * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+	 * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
-	 * @file Todo
+	 * @example
 	 *
-	 * @example Todo
+	 * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
 	 *
 	 */
 	// Waiting three-shaking fix
@@ -2279,6 +2316,20 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	const RIGHT = new Vector3.Vector3( 1, 0, 0 );
 	const LEFT  = new Vector3.Vector3( -1, 0, 0 );
 
+	/**
+	 * Enum values to define the internal state of CameraControl
+	 *
+	 * @type {Enum}
+	 * @name State
+	 * @property {number} [None=0] - The default state when nothing happen.
+	 * @property {number} [Rotating=1] - The state when current action is interpreted as Rotating.
+	 * @property {number} [Panning=2] - The state when current action is interpreted as Panning.
+	 * @property {number} [Rolling=3] - The state when current action is interpreted as Rolling.
+	 * @property {number} [Zooming=4] - The state when current action is interpreted as Zooming.
+	 * @property {number} [Moving=5] - The state when current action is interpreted as Moving.
+	 * @constant
+	 * @private
+	 */
 	const State = iteeUtils.toEnum( {
 	    None:     0,
 	    Rotating: 1,
@@ -2288,6 +2339,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    Moving:   5
 	} );
 
+	/**
+	 * Enum values to set the current mode of displacement for Camera.
+	 *
+	 * @typedef {Enum} module:Controllers/CameraControls.CameraControlMode
+	 * @property {number} [FirstPerson=1] - The state when current action is interpreted as Rotating.
+	 * @property {number} [Orbit=2] - The state when current action is interpreted as Panning.
+	 * @property {number} [Fly=3] - The state when current action is interpreted as Rolling.
+	 * @property {number} [Path=4] - The state when current action is interpreted as Zooming.
+	 * @constant
+	 * @public
+	 */
 	const CameraControlMode = iteeUtils.toEnum( {
 	    FirstPerson: 1,
 	    Orbit:       2,
@@ -2295,8 +2357,56 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    Path:        4
 	} );
 
+	/**
+	 * @class
+	 * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
+	 * It manage keyboard and mouse binding to different camera actions.
+	 * @augments EventDispatcher
+	 */
 	class CameraControls extends EventDispatcher.EventDispatcher {
 
+	    // Internal events
+	    /**
+	     * Move event.
+	     *
+	     * @event module:Controllers/CameraControls~CameraControls#move
+	     * @type {object}
+	     * @property {String} [type=move] - Indicates the type of fired event
+	     */
+
+	    /**
+	     * Scale event.
+	     *
+	     * @event module:Controllers/CameraControls~CameraControls#scale
+	     * @type {object}
+	     * @property {String} [type=scale] - Indicates the type of fired event
+	     */
+
+	    /**
+	     * Rotate event.
+	     *
+	     * @event module:Controllers/CameraControls~CameraControls#rotate
+	     * @type {object}
+	     * @property {String} [type=rotate] - Indicates the type of fired event
+	     */
+
+	    /**
+	     * Change event.
+	     *
+	     * @event module:Controllers/CameraControls~CameraControls#change
+	     * @type {object}
+	     * @property {String} [type=change] - Indicates the type of fired event
+	     */
+
+	    /**
+	     * @constructor
+	     * @param {Object} parameters - A parameters object containing properties initialization
+	     * @param {THREE.Camera} parameters.camera - The camera to use
+	     * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
+	     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+	     * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
+	     * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
+	     */
 	    constructor ( parameters = {} ) {
 
 	        const _parameters = {
@@ -2328,11 +2438,29 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	            onKeyDown:     this._onKeyDown.bind( this ),
 	            onKeyUp:       this._onKeyUp.bind( this )
 	        };
+	        this.logger    = _parameters.logger;
 
-	        this.logger     = _parameters.logger;
-	        this.camera     = _parameters.camera;
-	        this.target     = _parameters.target;
-	        this.mode       = _parameters.mode;
+	        /**
+	         *
+	         * Get/Set the value of the name property.
+	         * @function module:Controllers/CameraControls~CameraControls~camera
+	         * @property camera
+	         * @throws Will throw an error if the argument is null.
+	         * @param {string} newName
+	         * @returns {string}
+	         *
+	         */
+	        this.camera = _parameters.camera;
+
+	        /**
+	         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
+	         */
+	        this.target = _parameters.target;
+
+	        /**
+	         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+	         */
+	        this.mode = _parameters.mode;
 	        this.domElement = _parameters.domElement;
 
 	        // Set to false to disable controls
@@ -2490,6 +2618,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
+	     * @param value
+	     * @throws Will throw an error if the argument is null.
+	     */
 	    set camera ( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
@@ -2589,6 +2722,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * Chainable setter for camera property
+	     *
+	     * @param {THREE~Camera} value - The camera to manage
+	     * @return {module:Controllers/CameraControls~CameraControls} The current instance (this, chainable)
+	     */
 	    setCamera ( value ) {
 
 	        this.camera = value;
@@ -2596,6 +2735,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * Chainable setter for target property
+	     *
+	     * @param {THREE~Object3D} value - The target to use
+	     * @return {CameraControls} The current instance (this, chainable)
+	     */
 	    setTarget ( value ) {
 
 	        this.target = value;
@@ -2603,6 +2748,12 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * Chainable setter for mode property
+	     *
+	     * @param {Enum.State} value - The target to use
+	     * @return {CameraControls} The current instance (this, chainable)
+	     */
 	    setMode ( value ) {
 
 	        this.mode = value;
@@ -2610,6 +2761,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * Chainable setter for mode
+	     *
+	     * @param {State} value - The target to use
+	     * @throws {BadERROR} a bad error
+	     * @return {CameraControls} The current instance (this, chainable)
+	     */
 	    setPaths ( value ) {
 
 	        this.paths = value;
@@ -2719,6 +2877,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * Mon blablabla...
+	     * @param {external:THREE~Vector3} newTargetPosition - The new target position
+	     * @return {CameraControls} The current instance (this, chainable)
+	     */
 	    setTargetPosition ( newTargetPosition ) {
 
 	        this._target.position.copy( newTargetPosition );
@@ -3182,6 +3345,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * @method
+	     * @private
+	     * @return {void}
+	     */
 	    _back () {
 
 	        if ( !this.canMove || !this.canBack ) { return }
@@ -3229,6 +3397,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * @method
+	     * @private
+	     * @return {void}
+	     * @fires module:Controllers/CameraControls~CameraControls#move
+	     * @fires module:Controllers/CameraControls~CameraControls#change
+	     */
 	    _up () {
 
 	        if ( !this.canMove || !this.canUp ) { return }
@@ -3253,6 +3428,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * @method
+	     * @private
+	     * @return {void}
+	     */
 	    _down () {
 
 	        if ( !this.canMove || !this.canDown ) { return }
@@ -3277,6 +3457,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     *
+	     * @private
+	     * @return {void}
+	     */
 	    _left () {
 
 	        if ( !this.canMove || !this.canLeft ) { return }
@@ -4149,10 +4334,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	//}
 
 	/**
+	 * @module Controllers/ClippingController
+	 *
 	 * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file Todo
 	 *
 	 * @example Todo
 	 *
@@ -6749,10 +6934,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Managers/CurvesManager
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file sources/frontend/managers/CurvesManager.js
 	 *
 	 * @example Todo
 	 *
@@ -6897,12 +7082,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Managers/GeometriesManager
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @class GeometriesManager
-	 * @classdesc Todo...
-	 * @example Todo...
 	 *
 	 * @requires {@link TDataBaseManager}
 	 * @requires '../../../node_modules/three/src/core/Geometry'
@@ -6974,6 +7157,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    Float64Array:      8
 	} );
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class GeometriesManager extends iteeClient.TDataBaseManager {
 
 	    /**
@@ -7668,15 +7856,17 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Managers/TexturesManager
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @file Todo
-	 *
-	 * @example Todo
-	 *
 	 */
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class TexturesManager extends iteeClient.TDataBaseManager {
 
 	    constructor ( parameters = {} ) {
@@ -7741,18 +7931,22 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Managers/MaterialsManager
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
-	 * @class TScenesManager
-	 * @classdesc Todo...
-	 * @example Todo...
 	 * @requires TDataBaseManager
 	 *
 	 */
 
 	const DEFAULT_IMAGE = new ImageLoader.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class MaterialsManager extends iteeClient.TDataBaseManager {
 
 	    /**
@@ -8545,15 +8739,18 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Managers/ObjectsManager
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
-	 * @class ClassName
-	 * @classdesc Todo...
-	 * @example Todo...
-	 *
 	 */
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class ObjectsManager extends iteeClient.TDataBaseManager {
 
 	    /**
@@ -9075,6 +9272,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    //// Callback
 
+	    /**
+	     *
+	     * @param objects
+	     * @param {GlobalFunction} onSuccess
+	     * @param {GlobalCallback} onProgress
+	     * @param {module:Managers/ObjectsManager~ObjectsManager~ClassCallback} onError
+	     */
 	    fillObjects3D ( objects, onSuccess, onProgress, onError ) {
 
 	        const self = this;
@@ -9432,12 +9636,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	}
 
 	/**
+	 * @module Objects3D/OrbitControlsHelper
+	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
-	 *
-	 * @class OrbitControlsHelper
-	 * @classdesc Todo...
-	 * @example Todo...
 	 *
 	 */
 	// Waiting three-shaking fix
@@ -9450,6 +9652,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	//    VertexColors
 	//} from 'three-full'
 
+	/**
+	 * @class
+	 * @classdesc Todo...
+	 * @example Todo...
+	 */
 	class OrbitControlsHelper extends LineSegments.LineSegments {
 
 	    constructor ( parameters = {} ) {

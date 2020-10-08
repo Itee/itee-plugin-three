@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.2.10 - EsModule')
+console.log('Itee.Plugin.Three v1.3.0 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { Shape } from 'three-full/sources/core/Shape';
@@ -87,18 +87,15 @@ import { FogExp2 } from 'three-full/sources/scenes/FogExp2';
 import { Scene } from 'three-full/sources/scenes/Scene';
 
 /**
+ * @module Loader/SHPLoader
+ * @desc Export SHPLoader to load .shp files
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- *
- * Constructor parameter:
- *
- * size - the size of the square view
- *
- * @class Todo...
- * @classdesc Todo...
  * @example Todo...
  *
  */
@@ -131,78 +128,21 @@ const ShapeType = toEnum( {
     MultiPatch:  31
 } );
 
+/**
+ * @class
+ * @classdesc This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ * @export
+ */
 class SHPLoader {
 
-//    static FileCode      = 9994
-//    static MinFileLength = 100
-//    static MinVersion    = 1000
-
-    get globalOffset () {
-        return this._globalOffset
-    }
-
-    set globalOffset ( value ) {
-        this._globalOffset = value;
-    }
-
-    setGlobalOffset ( value ) {
-        this.globalOffset = value;
-        return this
-    }
-
-    get worldAxis () {
-        return this._worldAxis
-    }
-
-    set worldAxis ( value ) {
-        this._worldAxis = value;
-    }
-
-    setWorldAxis ( value ) {
-        this.worldAxis = value;
-        return this
-    }
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
+    //    static FileCode      = 9994
+    //    static MinFileLength = 100
+    //    static MinVersion    = 1000
 
     /**
+     *
+     * Because ctor is blablabla
      *
      * @param manager
      * @param logger
@@ -229,6 +169,71 @@ class SHPLoader {
         this.globalOffset = _parameters.globalOffset;
         this.worldAxis    = _parameters.worldAxis;
 
+    }
+
+    get globalOffset () {
+        return this._globalOffset
+    }
+
+    set globalOffset ( value ) {
+        this._globalOffset = value;
+    }
+
+    get worldAxis () {
+        return this._worldAxis
+    }
+
+    set worldAxis ( value ) {
+        this._worldAxis = value;
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setGlobalOffset ( value ) {
+        this.globalOffset = value;
+        return this
+    }
+
+    setWorldAxis ( value ) {
+        this.worldAxis = value;
+        return this
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
     }
 
     /**
@@ -751,6 +756,7 @@ SHPLoader.MinFileLength = 100;
 SHPLoader.MinVersion    = 1000;
 
 /**
+ * @module Loader/DBFLoader
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
@@ -759,9 +765,6 @@ SHPLoader.MinVersion    = 1000;
  * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
  * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
  *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
  *
  */
 // Waiting three-shaking fix
@@ -814,50 +817,16 @@ const DataType = toEnum( {
     OLE:           'G'
 } );
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class DBFLoader {
 
     //    static Terminator    = 0x0D
     //    static DeletedRecord = 0x1A
     //    static YearOffset    = 1900
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
 
     /**
      *
@@ -879,6 +848,45 @@ class DBFLoader {
         this.logger  = _parameters.logger;
         this.reader  = _parameters.reader;
 
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
     }
 
     /**
@@ -1521,26 +1529,32 @@ DBFLoader.DeletedRecord = 0x1A;
 DBFLoader.YearOffset    = 1900;
 
 /**
+ * @module Loader/ASCLoader
+ * @desc A loader for ASC cloud point files.
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file A loader for ASC cloud point files.
- *
  * @example
- *    var loader = new ASCLoader();
- *    loader.load('/path/to/file.asc', function (geometry) {
  *
- *		scene.add( new Mesh( geometry ) );
+ * import { ASCLoader } from 'itee-plugin-three'
  *
- *	} );
+ * const loader = new ASCLoader();
  *
- * If the ASC file need to be offset,
- * it can be set before loading file.
- *
+ * // If the ASC file need to be offseted, it can be set before loading file.
  * loader.setOffset( {
- *	x: 1.0,
- *  y: 52.0,
- *  z: -5.0
+ *      x: 1.0,
+ *      y: 52.0,
+ *      z: -5.0
+ * } );
+ *
+ * // Then load the file and get the threejs Point Geometry
+ * loader.load('/path/to/file.asc', function (geometry) {
+ *
+ *      scene.add( new Mesh( geometry ) );
+ *
  * } );
  *
  */
@@ -1556,8 +1570,19 @@ DBFLoader.YearOffset    = 1900;
 //    PointsMaterial
 //}                        from 'three-full'
 
+/**
+ * The ASCLoader class definition.
+ * It allow to load and parse an .asc file
+ *
+ * @class
+ */
 class ASCLoader {
 
+    /**
+     * @constructor
+     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
+     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
+     */
     constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
         this.manager = manager;
@@ -1585,12 +1610,13 @@ class ASCLoader {
     }
 
     /**
+     * Will load the file at the given URL then parse it. It will return a Three.Group as onLoad argument.
      *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     * @param sampling
+     * @param {DOMString|URL} url - Path to the file to load
+     * @param {callback} onLoad - A success callback
+     * @param {callback} onProgress - A progress callback
+     * @param {callback} onError - A error callback
+     * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
     load ( url, onLoad, onProgress, onError, sampling ) {
 
@@ -1609,8 +1635,9 @@ class ASCLoader {
     }
 
     /**
+     * An alternative setter to offset property
      *
-     * @param offset
+     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
     setOffset ( offset ) {
 
@@ -1618,6 +1645,8 @@ class ASCLoader {
 
         this._offset     = offset;
         this._autoOffset = false;
+
+        //TODO: that allow chaining.
 
     }
 
@@ -2336,12 +2365,20 @@ class ASCLoader {
 }
 
 /**
+ * @module Controllers/CameraControls
+ * @desc This module export CameraControls class and CameraControlMode enum values.
+ *
+ * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
+ * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
+ * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @file Todo
+ * @example
  *
- * @example Todo
+ * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
  *
  */
 // Waiting three-shaking fix
@@ -2361,6 +2398,20 @@ const DOWN  = new Vector3( 0, -1, 0 );
 const RIGHT = new Vector3( 1, 0, 0 );
 const LEFT  = new Vector3( -1, 0, 0 );
 
+/**
+ * Enum values to define the internal state of CameraControl
+ *
+ * @type {Enum}
+ * @name State
+ * @property {number} [None=0] - The default state when nothing happen.
+ * @property {number} [Rotating=1] - The state when current action is interpreted as Rotating.
+ * @property {number} [Panning=2] - The state when current action is interpreted as Panning.
+ * @property {number} [Rolling=3] - The state when current action is interpreted as Rolling.
+ * @property {number} [Zooming=4] - The state when current action is interpreted as Zooming.
+ * @property {number} [Moving=5] - The state when current action is interpreted as Moving.
+ * @constant
+ * @private
+ */
 const State = toEnum( {
     None:     0,
     Rotating: 1,
@@ -2370,6 +2421,17 @@ const State = toEnum( {
     Moving:   5
 } );
 
+/**
+ * Enum values to set the current mode of displacement for Camera.
+ *
+ * @typedef {Enum} module:Controllers/CameraControls.CameraControlMode
+ * @property {number} [FirstPerson=1] - The state when current action is interpreted as Rotating.
+ * @property {number} [Orbit=2] - The state when current action is interpreted as Panning.
+ * @property {number} [Fly=3] - The state when current action is interpreted as Rolling.
+ * @property {number} [Path=4] - The state when current action is interpreted as Zooming.
+ * @constant
+ * @public
+ */
 const CameraControlMode = toEnum( {
     FirstPerson: 1,
     Orbit:       2,
@@ -2377,8 +2439,56 @@ const CameraControlMode = toEnum( {
     Path:        4
 } );
 
+/**
+ * @class
+ * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
+ * It manage keyboard and mouse binding to different camera actions.
+ * @augments EventDispatcher
+ */
 class CameraControls extends EventDispatcher {
 
+    // Internal events
+    /**
+     * Move event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#move
+     * @type {object}
+     * @property {String} [type=move] - Indicates the type of fired event
+     */
+
+    /**
+     * Scale event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#scale
+     * @type {object}
+     * @property {String} [type=scale] - Indicates the type of fired event
+     */
+
+    /**
+     * Rotate event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#rotate
+     * @type {object}
+     * @property {String} [type=rotate] - Indicates the type of fired event
+     */
+
+    /**
+     * Change event.
+     *
+     * @event module:Controllers/CameraControls~CameraControls#change
+     * @type {object}
+     * @property {String} [type=change] - Indicates the type of fired event
+     */
+
+    /**
+     * @constructor
+     * @param {Object} parameters - A parameters object containing properties initialization
+     * @param {THREE.Camera} parameters.camera - The camera to use
+     * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
+     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+     * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
+     * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
+     */
     constructor ( parameters = {} ) {
 
         const _parameters = {
@@ -2410,11 +2520,29 @@ class CameraControls extends EventDispatcher {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         };
+        this.logger    = _parameters.logger;
 
-        this.logger     = _parameters.logger;
-        this.camera     = _parameters.camera;
-        this.target     = _parameters.target;
-        this.mode       = _parameters.mode;
+        /**
+         *
+         * Get/Set the value of the name property.
+         * @function module:Controllers/CameraControls~CameraControls~camera
+         * @property camera
+         * @throws Will throw an error if the argument is null.
+         * @param {string} newName
+         * @returns {string}
+         *
+         */
+        this.camera = _parameters.camera;
+
+        /**
+         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
+         */
+        this.target = _parameters.target;
+
+        /**
+         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+         */
+        this.mode = _parameters.mode;
         this.domElement = _parameters.domElement;
 
         // Set to false to disable controls
@@ -2572,6 +2700,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
+     * @param value
+     * @throws Will throw an error if the argument is null.
+     */
     set camera ( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
@@ -2671,6 +2804,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for camera property
+     *
+     * @param {THREE~Camera} value - The camera to manage
+     * @return {module:Controllers/CameraControls~CameraControls} The current instance (this, chainable)
+     */
     setCamera ( value ) {
 
         this.camera = value;
@@ -2678,6 +2817,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for target property
+     *
+     * @param {THREE~Object3D} value - The target to use
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setTarget ( value ) {
 
         this.target = value;
@@ -2685,6 +2830,12 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for mode property
+     *
+     * @param {Enum.State} value - The target to use
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setMode ( value ) {
 
         this.mode = value;
@@ -2692,6 +2843,13 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Chainable setter for mode
+     *
+     * @param {State} value - The target to use
+     * @throws {BadERROR} a bad error
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setPaths ( value ) {
 
         this.paths = value;
@@ -2801,6 +2959,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * Mon blablabla...
+     * @param {external:THREE~Vector3} newTargetPosition - The new target position
+     * @return {CameraControls} The current instance (this, chainable)
+     */
     setTargetPosition ( newTargetPosition ) {
 
         this._target.position.copy( newTargetPosition );
@@ -3264,6 +3427,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     */
     _back () {
 
         if ( !this.canMove || !this.canBack ) { return }
@@ -3311,6 +3479,13 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     * @fires module:Controllers/CameraControls~CameraControls#move
+     * @fires module:Controllers/CameraControls~CameraControls#change
+     */
     _up () {
 
         if ( !this.canMove || !this.canUp ) { return }
@@ -3335,6 +3510,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @method
+     * @private
+     * @return {void}
+     */
     _down () {
 
         if ( !this.canMove || !this.canDown ) { return }
@@ -3359,6 +3539,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     *
+     * @private
+     * @return {void}
+     */
     _left () {
 
         if ( !this.canMove || !this.canLeft ) { return }
@@ -4231,10 +4416,10 @@ class CameraControls extends EventDispatcher {
 //}
 
 /**
+ * @module Controllers/ClippingController
+ *
  * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
  *
  * @example Todo
  *
@@ -6831,10 +7016,10 @@ class ClippingControls extends Object3D {
 }
 
 /**
+ * @module Managers/CurvesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file sources/frontend/managers/CurvesManager.js
  *
  * @example Todo
  *
@@ -6979,12 +7164,10 @@ class CurvesManager extends TDataBaseManager {
 }
 
 /**
+ * @module Managers/GeometriesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class GeometriesManager
- * @classdesc Todo...
- * @example Todo...
  *
  * @requires {@link TDataBaseManager}
  * @requires '../../../node_modules/three/src/core/Geometry'
@@ -7056,6 +7239,11 @@ const ArrayType = toEnum( {
     Float64Array:      8
 } );
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class GeometriesManager extends TDataBaseManager {
 
     /**
@@ -7750,15 +7938,17 @@ class GeometriesManager extends TDataBaseManager {
 }
 
 /**
+ * @module Managers/TexturesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class TexturesManager extends TDataBaseManager {
 
     constructor ( parameters = {} ) {
@@ -7823,18 +8013,22 @@ class TexturesManager extends TDataBaseManager {
 }
 
 /**
+ * @module Managers/MaterialsManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @class TScenesManager
- * @classdesc Todo...
- * @example Todo...
  * @requires TDataBaseManager
  *
  */
 
 const DEFAULT_IMAGE = new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class MaterialsManager extends TDataBaseManager {
 
     /**
@@ -8627,15 +8821,18 @@ class MaterialsManager extends TDataBaseManager {
 }
 
 /**
+ * @module Managers/ObjectsManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @class ClassName
- * @classdesc Todo...
- * @example Todo...
- *
  */
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class ObjectsManager extends TDataBaseManager {
 
     /**
@@ -9157,6 +9354,13 @@ class ObjectsManager extends TDataBaseManager {
 
     //// Callback
 
+    /**
+     *
+     * @param objects
+     * @param {GlobalFunction} onSuccess
+     * @param {GlobalCallback} onProgress
+     * @param {module:Managers/ObjectsManager~ObjectsManager~ClassCallback} onError
+     */
     fillObjects3D ( objects, onSuccess, onProgress, onError ) {
 
         const self = this;
@@ -9514,12 +9718,10 @@ class ObjectsManager extends TDataBaseManager {
 }
 
 /**
+ * @module Objects3D/OrbitControlsHelper
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class OrbitControlsHelper
- * @classdesc Todo...
- * @example Todo...
  *
  */
 // Waiting three-shaking fix
@@ -9532,6 +9734,11 @@ class ObjectsManager extends TDataBaseManager {
 //    VertexColors
 //} from 'three-full'
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class OrbitControlsHelper extends LineSegments {
 
     constructor ( parameters = {} ) {

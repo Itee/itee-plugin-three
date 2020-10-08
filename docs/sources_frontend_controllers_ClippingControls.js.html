@@ -1,0 +1,2943 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Source: sources/frontend/controllers/ClippingControls.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Building.html">Building</a></li><li><a href="module-Config-EsLint.html">Config-EsLint</a></li><li><a href="module-Config-JsDoc.html">Config-JsDoc</a></li><li><a href="module-Config-Karma-Benchs.html">Config-Karma-Benchs</a></li><li><a href="module-Config-Karma-Units.html">Config-Karma-Units</a></li><li><a href="module-Config-Rollup.html">Config-Rollup</a></li><li><a href="module-Config-Rollup-Test.html">Config-Rollup-Test</a></li><li><a href="module-Controllers_CameraControls.html">Controllers/CameraControls</a></li><li><a href="module-Controllers_CameraPathController.html">Controllers/CameraPathController</a></li><li><a href="module-Controllers_ClippingController.html">Controllers/ClippingController</a></li><li><a href="module-Converters_AscToThree.html">Converters/AscToThree</a></li><li><a href="module-Converters_ColladaToThree.html">Converters/ColladaToThree</a></li><li><a href="module-Converters_DbfToThree.html">Converters/DbfToThree</a></li><li><a href="module-Converters_FbxToThree.html">Converters/FbxToThree</a></li><li><a href="module-Converters_JsonToThree.html">Converters/JsonToThree</a></li><li><a href="module-Converters_MtlToThree.html">Converters/MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree.html">Converters/Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree.html">Converters/ObjToThree</a></li><li><a href="module-Converters_ShpToThree.html">Converters/ShpToThree</a></li><li><a href="module-Converters_StlToThree.html">Converters/StlToThree</a></li><li><a href="module-Converters_TdsToThree.html">Converters/TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB.html">Inserters/ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader.html">Loader/ASCLoader</a></li><li><a href="module-Loader_DBFLoader.html">Loader/DBFLoader</a></li><li><a href="module-Loader_SHPLoader.html">Loader/SHPLoader</a></li><li><a href="module-Loaders_UniversalLoader.html">Loaders/UniversalLoader</a></li><li><a href="module-Managers_CurvesManager.html">Managers/CurvesManager</a></li><li><a href="module-Managers_FilairesManager.html">Managers/FilairesManager</a></li><li><a href="module-Managers_GeometriesManager.html">Managers/GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager.html">Managers/MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager.html">Managers/ObjectsManager</a></li><li><a href="module-Managers_TexturesManager.html">Managers/TexturesManager</a></li><li><a href="module-MongoDBThreePlugin.html">MongoDBThreePlugin</a></li><li><a href="module-Objects3D_OrbitControlsHelper.html">Objects3D/OrbitControlsHelper</a></li><li><a href="module-Schemas_Animation_AnimationAction.html">Schemas/Animation/AnimationAction</a></li><li><a href="module-Schemas_Animation_AnimationClip.html">Schemas/Animation/AnimationClip</a></li><li><a href="module-Schemas_Animation_AnimationClipCreator.html">Schemas/Animation/AnimationClipCreator</a></li><li><a href="module-Schemas_Animation_AnimationMixer.html">Schemas/Animation/AnimationMixer</a></li><li><a href="module-Schemas_Animation_AnimationObjectGroup.html">Schemas/Animation/AnimationObjectGroup</a></li><li><a href="module-Schemas_Animation_Tracks_BooleanKeyframeTrack.html">Schemas/Animation/Tracks/BooleanKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_ColorKeyframeTrack.html">Schemas/Animation/Tracks/ColorKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_KeyframeTrack.html">Schemas/Animation/Tracks/KeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_NumberKeyframeTrack.html">Schemas/Animation/Tracks/NumberKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_QuaternionKeyframeTrack.html">Schemas/Animation/Tracks/QuaternionKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_StringKeyframeTrack.html">Schemas/Animation/Tracks/StringKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_VectorKeyframeTrack.html">Schemas/Animation/Tracks/VectorKeyframeTrack</a></li><li><a href="module-Schemas_Audio_Audio.html">Schemas/Audio/Audio</a></li><li><a href="module-Schemas_Audio_AudioAnalyser.html">Schemas/Audio/AudioAnalyser</a></li><li><a href="module-Schemas_Audio_AudioContext.html">Schemas/Audio/AudioContext</a></li><li><a href="module-Schemas_Audio_AudioListener.html">Schemas/Audio/AudioListener</a></li><li><a href="module-Schemas_Audio_PositionalAudio.html">Schemas/Audio/PositionalAudio</a></li><li><a href="module-Schemas_Audio_VolumeSlice.html">Schemas/Audio/VolumeSlice</a></li><li><a href="module-Schemas_Camera_ArrayCamera.html">Schemas/Camera/ArrayCamera</a></li><li><a href="module-Schemas_Camera_Camera.html">Schemas/Camera/Camera</a></li><li><a href="module-Schemas_Camera_CinematiqueCamera.html">Schemas/Camera/CinematiqueCamera</a></li><li><a href="module-Schemas_Camera_CubeCamera.html">Schemas/Camera/CubeCamera</a></li><li><a href="module-Schemas_Camera_OrthographicCamera.html">Schemas/Camera/OrthographicCamera</a></li><li><a href="module-Schemas_Camera_PerspectiveCamera.html">Schemas/Camera/PerspectiveCamera</a></li><li><a href="module-Schemas_Camera_StereoCamera.html">Schemas/Camera/StereoCamera</a></li><li><a href="module-Schemas_Core_BufferAttribute.html">Schemas/Core/BufferAttribute</a></li><li><a href="module-Schemas_Core_BufferGeometry.html">Schemas/Core/BufferGeometry</a></li><li><a href="module-Schemas_Core_Clock.html">Schemas/Core/Clock</a></li><li><a href="module-Schemas_Core_CurvePath.html">Schemas/Core/CurvePath</a></li><li><a href="module-Schemas_Core_DirectGeometry.html">Schemas/Core/DirectGeometry</a></li><li><a href="module-Schemas_Core_EventDispatcher.html">Schemas/Core/EventDispatcher</a></li><li><a href="module-Schemas_Core_Face3.html">Schemas/Core/Face3</a></li><li><a href="module-Schemas_Core_Font.html">Schemas/Core/Font</a></li><li><a href="module-Schemas_Core_Geometry.html">Schemas/Core/Geometry</a></li><li><a href="module-Schemas_Core_InstancedBufferAttribute.html">Schemas/Core/InstancedBufferAttribute</a></li><li><a href="module-Schemas_Core_InstancedBufferGeometry.html">Schemas/Core/InstancedBufferGeometry</a></li><li><a href="module-Schemas_Core_InstancedInterleavedBuffer.html">Schemas/Core/InstancedInterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBuffer.html">Schemas/Core/InterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBufferAttribute.html">Schemas/Core/InterleavedBufferAttribute</a></li><li><a href="module-Schemas_Core_Interpolations.html">Schemas/Core/Interpolations</a></li><li><a href="module-Schemas_Core_Layers.html">Schemas/Core/Layers</a></li><li><a href="module-Schemas_Core_Path.html">Schemas/Core/Path</a></li><li><a href="module-Schemas_Core_Raycaster.html">Schemas/Core/Raycaster</a></li><li><a href="module-Schemas_Core_Shape.html">Schemas/Core/Shape</a></li><li><a href="module-Schemas_Core_ShapePath.html">Schemas/Core/ShapePath</a></li><li><a href="module-Schemas_Core_Uniform.html">Schemas/Core/Uniform</a></li><li><a href="module-Schemas_Curves_ArcCurve.html">Schemas/Curves/ArcCurve</a></li><li><a href="module-Schemas_Curves_CatmullRomCurve3.html">Schemas/Curves/CatmullRomCurve3</a></li><li><a href="module-Schemas_Curves_CubicBezierCurve.html">Schemas/Curves/CubicBezierCurve</a></li><li><a href="module-Schemas_Curves_CubicBezierCurve3.html">Schemas/Curves/CubicBezierCurve3</a></li><li><a href="module-Schemas_Curves_Curve.html">Schemas/Curves/Curve</a></li><li><a href="module-Schemas_Curves_CurveExtras.html">Schemas/Curves/CurveExtras</a></li><li><a href="module-Schemas_Curves_EllipseCurve.html">Schemas/Curves/EllipseCurve</a></li><li><a href="module-Schemas_Curves_LineCurve.html">Schemas/Curves/LineCurve</a></li><li><a href="module-Schemas_Curves_LineCurve3.html">Schemas/Curves/LineCurve3</a></li><li><a href="module-Schemas_Curves_NURBSCurve.html">Schemas/Curves/NURBSCurve</a></li><li><a href="module-Schemas_Curves_NURBSSurface.html">Schemas/Curves/NURBSSurface</a></li><li><a href="module-Schemas_Curves_QuadraticBezierCurve.html">Schemas/Curves/QuadraticBezierCurve</a></li><li><a href="module-Schemas_Curves_QuadraticBezierCurve3.html">Schemas/Curves/QuadraticBezierCurve3</a></li><li><a href="module-Schemas_Curves_SplineCurve.html">Schemas/Curves/SplineCurve</a></li><li><a href="module-Schemas_Geometries_BoxBufferGeometry.html">Schemas/Geometries/BoxBufferGeometry</a></li><li><a href="module-Schemas_Geometries_BoxGeometry.html">Schemas/Geometries/BoxGeometry</a></li><li><a href="module-Schemas_Geometries_CircleBufferGeometry.html">Schemas/Geometries/CircleBufferGeometry</a></li><li><a href="module-Schemas_Geometries_CircleGeometry.html">Schemas/Geometries/CircleGeometry</a></li><li><a href="module-Schemas_Geometries_ConeBufferGeometry.html">Schemas/Geometries/ConeBufferGeometry</a></li><li><a href="module-Schemas_Geometries_ConeGeometry.html">Schemas/Geometries/ConeGeometry</a></li><li><a href="module-Schemas_Geometries_ConvexGeometry.html">Schemas/Geometries/ConvexGeometry</a></li><li><a href="module-Schemas_Geometries_CylinderBufferGeometry.html">Schemas/Geometries/CylinderBufferGeometry</a></li><li><a href="module-Schemas_Geometries_CylinderGeometry.html">Schemas/Geometries/CylinderGeometry</a></li><li><a href="module-Schemas_Geometries_DecalGeometry.html">Schemas/Geometries/DecalGeometry</a></li><li><a href="module-Schemas_Geometries_DodecahedronGeometry.html">Schemas/Geometries/DodecahedronGeometry</a></li><li><a href="module-Schemas_Geometries_EdgesGeometry.html">Schemas/Geometries/EdgesGeometry</a></li><li><a href="module-Schemas_Geometries_ExtrudeBufferGeometry.html">Schemas/Geometries/ExtrudeBufferGeometry</a></li><li><a href="module-Schemas_Geometries_ExtrudeGeometry.html">Schemas/Geometries/ExtrudeGeometry</a></li><li><a href="module-Schemas_Geometries_IcosahedronBufferGeometry.html">Schemas/Geometries/IcosahedronBufferGeometry</a></li><li><a href="module-Schemas_Geometries_IcosahedronGeometry.html">Schemas/Geometries/IcosahedronGeometry</a></li><li><a href="module-Schemas_Geometries_InstancedBufferGeometry.html">Schemas/Geometries/InstancedBufferGeometry</a></li><li><a href="module-Schemas_Geometries_LatheBufferGeometry.html">Schemas/Geometries/LatheBufferGeometry</a></li><li><a href="module-Schemas_Geometries_LatheGeometry.html">Schemas/Geometries/LatheGeometry</a></li><li><a href="module-Schemas_Geometries_OctahedronBufferGeometry.html">Schemas/Geometries/OctahedronBufferGeometry</a></li><li><a href="module-Schemas_Geometries_OctahedronGeometry.html">Schemas/Geometries/OctahedronGeometry</a></li><li><a href="module-Schemas_Geometries_ParametricBufferGeometry.html">Schemas/Geometries/ParametricBufferGeometry</a></li><li><a href="module-Schemas_Geometries_ParametricGeometry.html">Schemas/Geometries/ParametricGeometry</a></li><li><a href="module-Schemas_Geometries_PlaneBufferGeometry.html">Schemas/Geometries/PlaneBufferGeometry</a></li><li><a href="module-Schemas_Geometries_PlaneGeometry.html">Schemas/Geometries/PlaneGeometry</a></li><li><a href="module-Schemas_Geometries_PolyhedronBufferGeometry.html">Schemas/Geometries/PolyhedronBufferGeometry</a></li><li><a href="module-Schemas_Geometries_PolyhedronGeometry.html">Schemas/Geometries/PolyhedronGeometry</a></li><li><a href="module-Schemas_Geometries_RingBufferGeometry.html">Schemas/Geometries/RingBufferGeometry</a></li><li><a href="module-Schemas_Geometries_RingGeometry.html">Schemas/Geometries/RingGeometry</a></li><li><a href="module-Schemas_Geometries_ShapeBufferGeometry.html">Schemas/Geometries/ShapeBufferGeometry</a></li><li><a href="module-Schemas_Geometries_ShapeGeometry.html">Schemas/Geometries/ShapeGeometry</a></li><li><a href="module-Schemas_Geometries_SphereBufferGeometry.html">Schemas/Geometries/SphereBufferGeometry</a></li><li><a href="module-Schemas_Geometries_SphereGeometry.html">Schemas/Geometries/SphereGeometry</a></li><li><a href="module-Schemas_Geometries_TeapotBufferGeometry.html">Schemas/Geometries/TeapotBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TetrahedronBufferGeometry.html">Schemas/Geometries/TetrahedronBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TetrahedronGeometry.html">Schemas/Geometries/TetrahedronGeometry</a></li><li><a href="module-Schemas_Geometries_TextBufferGeometry.html">Schemas/Geometries/TextBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TextGeometry.html">Schemas/Geometries/TextGeometry</a></li><li><a href="module-Schemas_Geometries_TorusBufferGeometry.html">Schemas/Geometries/TorusBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TorusGeometry.html">Schemas/Geometries/TorusGeometry</a></li><li><a href="module-Schemas_Geometries_TorusKnotBufferGeometry.html">Schemas/Geometries/TorusKnotBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TorusKnotGeometry.html">Schemas/Geometries/TorusKnotGeometry</a></li><li><a href="module-Schemas_Geometries_TubeBufferGeometry.html">Schemas/Geometries/TubeBufferGeometry</a></li><li><a href="module-Schemas_Geometries_TubeGeometry.html">Schemas/Geometries/TubeGeometry</a></li><li><a href="module-Schemas_Geometries_WireframeGeometry.html">Schemas/Geometries/WireframeGeometry</a></li><li><a href="module-Schemas_Helpers_ArrowHelper.html">Schemas/Helpers/ArrowHelper</a></li><li><a href="module-Schemas_Helpers_AxesHelper.html">Schemas/Helpers/AxesHelper</a></li><li><a href="module-Schemas_Helpers_Box3Helper.html">Schemas/Helpers/Box3Helper</a></li><li><a href="module-Schemas_Helpers_BoxHelper.html">Schemas/Helpers/BoxHelper</a></li><li><a href="module-Schemas_Helpers_CameraHelper.html">Schemas/Helpers/CameraHelper</a></li><li><a href="module-Schemas_Helpers_DirectionalLightHelper.html">Schemas/Helpers/DirectionalLightHelper</a></li><li><a href="module-Schemas_Helpers_FaceNormalsHelper.html">Schemas/Helpers/FaceNormalsHelper</a></li><li><a href="module-Schemas_Helpers_GridHelper.html">Schemas/Helpers/GridHelper</a></li><li><a href="module-Schemas_Helpers_HemisphereLightHelper.html">Schemas/Helpers/HemisphereLightHelper</a></li><li><a href="module-Schemas_Helpers_PlaneHelper.html">Schemas/Helpers/PlaneHelper</a></li><li><a href="module-Schemas_Helpers_PointLightHelper.html">Schemas/Helpers/PointLightHelper</a></li><li><a href="module-Schemas_Helpers_PolarGridHelper.html">Schemas/Helpers/PolarGridHelper</a></li><li><a href="module-Schemas_Helpers_RectAreaLightHelper.html">Schemas/Helpers/RectAreaLightHelper</a></li><li><a href="module-Schemas_Helpers_SkeletonHelper.html">Schemas/Helpers/SkeletonHelper</a></li><li><a href="module-Schemas_Helpers_SpotLightHelper.html">Schemas/Helpers/SpotLightHelper</a></li><li><a href="module-Schemas_Helpers_VertexNormalsHelper.html">Schemas/Helpers/VertexNormalsHelper</a></li><li><a href="module-Schemas_Lights_AmbientLight.html">Schemas/Lights/AmbientLight</a></li><li><a href="module-Schemas_Lights_DirectionalLight.html">Schemas/Lights/DirectionalLight</a></li><li><a href="module-Schemas_Lights_DirectionalLightShadow.html">Schemas/Lights/DirectionalLightShadow</a></li><li><a href="module-Schemas_Lights_HemisphereLight.html">Schemas/Lights/HemisphereLight</a></li><li><a href="module-Schemas_Lights_Light.html">Schemas/Lights/Light</a></li><li><a href="module-Schemas_Lights_LightShadow.html">Schemas/Lights/LightShadow</a></li><li><a href="module-Schemas_Lights_PointLight.html">Schemas/Lights/PointLight</a></li><li><a href="module-Schemas_Lights_RectAreaLight.html">Schemas/Lights/RectAreaLight</a></li><li><a href="module-Schemas_Lights_SpotLight.html">Schemas/Lights/SpotLight</a></li><li><a href="module-Schemas_Lights_SpotLightShadow.html">Schemas/Lights/SpotLightShadow</a></li><li><a href="module-Schemas_Materials_LineBasicMaterial.html">Schemas/Materials/LineBasicMaterial</a></li><li><a href="module-Schemas_Materials_LineDashedMaterial.html">Schemas/Materials/LineDashedMaterial</a></li><li><a href="module-Schemas_Materials_Material.html">Schemas/Materials/Material</a></li><li><a href="module-Schemas_Materials_MeshBasicMaterial.html">Schemas/Materials/MeshBasicMaterial</a></li><li><a href="module-Schemas_Materials_MeshDepthMaterial.html">Schemas/Materials/MeshDepthMaterial</a></li><li><a href="module-Schemas_Materials_MeshLambertMaterial.html">Schemas/Materials/MeshLambertMaterial</a></li><li><a href="module-Schemas_Materials_MeshNormalMaterial.html">Schemas/Materials/MeshNormalMaterial</a></li><li><a href="module-Schemas_Materials_MeshPhongMaterial.html">Schemas/Materials/MeshPhongMaterial</a></li><li><a href="module-Schemas_Materials_MeshPhysicalMaterial.html">Schemas/Materials/MeshPhysicalMaterial</a></li><li><a href="module-Schemas_Materials_MeshStandardMaterial.html">Schemas/Materials/MeshStandardMaterial</a></li><li><a href="module-Schemas_Materials_MeshToonMaterial.html">Schemas/Materials/MeshToonMaterial</a></li><li><a href="module-Schemas_Materials_PointsMaterial.html">Schemas/Materials/PointsMaterial</a></li><li><a href="module-Schemas_Materials_RawShaderMaterial.html">Schemas/Materials/RawShaderMaterial</a></li><li><a href="module-Schemas_Materials_ShaderMaterial.html">Schemas/Materials/ShaderMaterial</a></li><li><a href="module-Schemas_Materials_ShadowMaterial.html">Schemas/Materials/ShadowMaterial</a></li><li><a href="module-Schemas_Materials_SpriteMaterial.html">Schemas/Materials/SpriteMaterial</a></li><li><a href="module-Schemas_Math_Box2.html">Schemas/Math/Box2</a></li><li><a href="module-Schemas_Math_Box3.html">Schemas/Math/Box3</a></li><li><a href="module-Schemas_Math_Line3.html">Schemas/Math/Line3</a></li><li><a href="module-Schemas_Math_Plane.html">Schemas/Math/Plane</a></li><li><a href="module-Schemas_Math_Ray.html">Schemas/Math/Ray</a></li><li><a href="module-Schemas_Math_Sphere.html">Schemas/Math/Sphere</a></li><li><a href="module-Schemas_Math_Spherical.html">Schemas/Math/Spherical</a></li><li><a href="module-Schemas_Math_Triangle.html">Schemas/Math/Triangle</a></li><li><a href="module-Schemas_Maths_ColorConverter.html">Schemas/Maths/ColorConverter</a></li><li><a href="module-Schemas_Maths_Cylindrical.html">Schemas/Maths/Cylindrical</a></li><li><a href="module-Schemas_Maths_Frustum.html">Schemas/Maths/Frustum</a></li><li><a href="module-Schemas_Maths_Interpolant.html">Schemas/Maths/Interpolant</a></li><li><a href="module-Schemas_Maths_Lut.html">Schemas/Maths/Lut</a></li><li><a href="module-Schemas_Maths_Math.html">Schemas/Maths/Math</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Objects_Bone.html">Schemas/Objects/Bone</a></li><li><a href="module-Schemas_Objects_Car.html">Schemas/Objects/Car</a></li><li><a href="module-Schemas_Objects_GPUParticleSystem.html">Schemas/Objects/GPUParticleSystem</a></li><li><a href="module-Schemas_Objects_Group.html">Schemas/Objects/Group</a></li><li><a href="module-Schemas_Objects_Gyroscope.html">Schemas/Objects/Gyroscope</a></li><li><a href="module-Schemas_Objects_ImmediateRenderObject.html">Schemas/Objects/ImmediateRenderObject</a></li><li><a href="module-Schemas_Objects_LensFlare.html">Schemas/Objects/LensFlare</a></li><li><a href="module-Schemas_Objects_Line.html">Schemas/Objects/Line</a></li><li><a href="module-Schemas_Objects_LineLoop.html">Schemas/Objects/LineLoop</a></li><li><a href="module-Schemas_Objects_LineSegments.html">Schemas/Objects/LineSegments</a></li><li><a href="module-Schemas_Objects_LOD.html">Schemas/Objects/LOD</a></li><li><a href="module-Schemas_Objects_MarchingCubes.html">Schemas/Objects/MarchingCubes</a></li><li><a href="module-Schemas_Objects_MD2Character.html">Schemas/Objects/MD2Character</a></li><li><a href="module-Schemas_Objects_MD2CharacterComplex.html">Schemas/Objects/MD2CharacterComplex</a></li><li><a href="module-Schemas_Objects_Mesh.html">Schemas/Objects/Mesh</a></li><li><a href="module-Schemas_Objects_MorphAnimMesh.html">Schemas/Objects/MorphAnimMesh</a></li><li><a href="module-Schemas_Objects_MorphBlendMesh.html">Schemas/Objects/MorphBlendMesh</a></li><li><a href="module-Schemas_Objects_Ocean.html">Schemas/Objects/Ocean</a></li><li><a href="module-Schemas_Objects_Points.html">Schemas/Objects/Points</a></li><li><a href="module-Schemas_Objects_Reflector.html">Schemas/Objects/Reflector</a></li><li><a href="module-Schemas_Objects_ReflectorRTT.html">Schemas/Objects/ReflectorRTT</a></li><li><a href="module-Schemas_Objects_Refractor.html">Schemas/Objects/Refractor</a></li><li><a href="module-Schemas_Objects_RollerCoaster.html">Schemas/Objects/RollerCoaster</a></li><li><a href="module-Schemas_Objects_ShadowMesh.html">Schemas/Objects/ShadowMesh</a></li><li><a href="module-Schemas_Objects_Skeleton.html">Schemas/Objects/Skeleton</a></li><li><a href="module-Schemas_Objects_SkinnedMesh.html">Schemas/Objects/SkinnedMesh</a></li><li><a href="module-Schemas_Objects_Sky.html">Schemas/Objects/Sky</a></li><li><a href="module-Schemas_Objects_Sprite.html">Schemas/Objects/Sprite</a></li><li><a href="module-Schemas_Objects_UCSCharacter.html">Schemas/Objects/UCSCharacter</a></li><li><a href="module-Schemas_Objects_Water.html">Schemas/Objects/Water</a></li><li><a href="module-Schemas_Objects_Water2.html">Schemas/Objects/Water2</a></li><li><a href="module-Schemas_Scenes_Fog.html">Schemas/Scenes/Fog</a></li><li><a href="module-Schemas_Scenes_FogExp2.html">Schemas/Scenes/FogExp2</a></li><li><a href="module-Schemas_Textures_CanvasTexture.html">Schemas/Textures/CanvasTexture</a></li><li><a href="module-Schemas_Textures_CompressedTexture.html">Schemas/Textures/CompressedTexture</a></li><li><a href="module-Schemas_Textures_CubeTexture.html">Schemas/Textures/CubeTexture</a></li><li><a href="module-Schemas_Textures_DataTexture.html">Schemas/Textures/DataTexture</a></li><li><a href="module-Schemas_Textures_DepthTexture.html">Schemas/Textures/DepthTexture</a></li><li><a href="module-Schemas_Textures_Texture.html">Schemas/Textures/Texture</a></li><li><a href="module-Schemas_Textures_VideoTexture.html">Schemas/Textures/VideoTexture</a></li><li><a href="module-Types_Color.html">Types/Color</a></li><li><a href="module-Types_Euler.html">Types/Euler</a></li><li><a href="module-Types_Matrix3.html">Types/Matrix3</a></li><li><a href="module-Types_Matrix4.html">Types/Matrix4</a></li><li><a href="module-Types_Quaternion.html">Types/Quaternion</a></li><li><a href="module-Types_Vector2.html">Types/Vector2</a></li><li><a href="module-Types_Vector3.html">Types/Vector3</a></li><li><a href="module-Types_Vector4.html">Types/Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="AbstractMongooseModel.html">AbstractMongooseModel</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html">Controllers/CameraControls~CameraControls</a></li><li><a href="module-Controllers_CameraPathController-CameraPathController.html">Controllers/CameraPathController~CameraPathController</a></li><li><a href="module-Converters_AscToThree-AscToThree.html">Converters/AscToThree~AscToThree</a></li><li><a href="module-Converters_ColladaToThree-ColladaToThree.html">Converters/ColladaToThree~ColladaToThree</a></li><li><a href="module-Converters_DbfToThree-DbfToThree.html">Converters/DbfToThree~DbfToThree</a></li><li><a href="module-Converters_FbxToThree-FbxToThree.html">Converters/FbxToThree~FbxToThree</a></li><li><a href="module-Converters_JsonToThree-JsonToThree.html">Converters/JsonToThree~JsonToThree</a></li><li><a href="module-Converters_MtlToThree-MtlToThree.html">Converters/MtlToThree~MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree-Obj2ToThree.html">Converters/Obj2ToThree~Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree-ObjToThree.html">Converters/ObjToThree~ObjToThree</a></li><li><a href="module-Converters_ShpToThree-ShpToThree.html">Converters/ShpToThree~ShpToThree</a></li><li><a href="module-Converters_StlToThree-StlToThree.html">Converters/StlToThree~StlToThree</a></li><li><a href="module-Converters_TdsToThree-TdsToThree.html">Converters/TdsToThree~TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB-ThreeToMongoDB.html">Inserters/ThreeToMongoDB~ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader-ASCLoader.html">Loader/ASCLoader~ASCLoader</a></li><li><a href="module-Loader_DBFLoader-DBFLoader.html">Loader/DBFLoader~DBFLoader</a></li><li><a href="module-Loader_SHPLoader-SHPLoader.html">Loader/SHPLoader~SHPLoader</a></li><li><a href="module-Loaders_UniversalLoader-UniversalLoader.html">Loaders/UniversalLoader~UniversalLoader</a></li><li><a href="module-Managers_FilairesManager-FilairesManager.html">Managers/FilairesManager~FilairesManager</a></li><li><a href="module-Managers_GeometriesManager-GeometriesManager.html">Managers/GeometriesManager~GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager-MaterialsManager.html">Managers/MaterialsManager~MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager-ObjectsManager.html">Managers/ObjectsManager~ObjectsManager</a></li><li><a href="module-Managers_TexturesManager-TexturesManager.html">Managers/TexturesManager~TexturesManager</a></li><li><a href="module-Objects3D_OrbitControlsHelper-OrbitControlsHelper.html">Objects3D/OrbitControlsHelper~OrbitControlsHelper</a></li><li><a href="module-Types_Color-Color.html">Types/Color~Color</a></li><li><a href="module-Types_Euler-Euler.html">Types/Euler~Euler</a></li><li><a href="module-Types_Matrix3-Matrix3.html">Types/Matrix3~Matrix3</a></li><li><a href="module-Types_Matrix4-Matrix4.html">Types/Matrix4~Matrix4</a></li><li><a href="module-Types_Quaternion-Quaternion.html">Types/Quaternion~Quaternion</a></li><li><a href="module-Types_Vector2-Vector2.html">Types/Vector2~Vector2</a></li><li><a href="module-Types_Vector3-Vector3.html">Types/Vector3~Vector3</a></li><li><a href="module-Types_Vector4-Vector4.html">Types/Vector4~Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Controllers_CameraControls-CameraControls.html#event:change">Controllers/CameraControls~CameraControls#event:change</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:move">Controllers/CameraControls~CameraControls#event:move</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:rotate">Controllers/CameraControls~CameraControls#event:rotate</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:scale">Controllers/CameraControls~CameraControls#event:scale</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="Enum.html">Enum</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#npmrunbench">npm run bench</a></li><li><a href="global.html#npmrunbuild">npm run build</a></li><li><a href="global.html#npmrunbuild-test">npm run build-test</a></li><li><a href="global.html#npmrunclean">npm run clean</a></li><li><a href="global.html#npmrundoc">npm run doc</a></li><li><a href="global.html#npmrunhelpdefault">npm run help ( default )</a></li><li><a href="global.html#npmrunlint">npm run lint</a></li><li><a href="global.html#npmrunpatch">npm run patch</a></li><li><a href="global.html#npmrunrelease">npm run release</a></li><li><a href="global.html#npmruntest">npm run test</a></li><li><a href="global.html#npmrununit">npm run unit</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-_Itee.Client_.html">Itee.Client</a></li><li><a href="external-_Itee.Database_.html">Itee.Database</a></li><li><a href="external-_Itee.MongoDB_.html">Itee.MongoDB</a></li><li><a href="external-_Itee.Utils_.html">Itee.Utils</a></li><li><a href="external-_Itee.Validators_.html">Itee.Validators</a></li><li><a href="external-_mongodb_js-bson_.html">mongodb/js-bson</a></li><li><a href="external-_Three%2520Full_.html">Three Full</a></li><li><a href="external-Mongoose.html">Mongoose</a></li><li><a href="external-THREE.html">THREE</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: sources/frontend/controllers/ClippingControls.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * @module Controllers/ClippingController
+ *
+ * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @example Todo
+ *
+ */
+
+import {
+    Keys,
+    Mouse
+}                                   from 'itee-client'
+import {
+    degreesToRadians,
+    toEnum
+}                                   from 'itee-utils'
+import {
+    isArray,
+    isDefined,
+    isNotArray,
+    isNotDefined,
+    isNull,
+    isUndefined
+}                                   from 'itee-validators'
+import { Camera }                   from 'three-full/sources/cameras/Camera'
+import { DoubleSide }               from 'three-full/sources/constants'
+import { Float32BufferAttribute }   from 'three-full/sources/core/BufferAttribute'
+import { BufferGeometry }           from 'three-full/sources/core/BufferGeometry'
+import { Object3D }                 from 'three-full/sources/core/Object3D'
+import { Raycaster }                from 'three-full/sources/core/Raycaster'
+import { BoxBufferGeometry }        from 'three-full/sources/geometries/BoxGeometry'
+import { ConeBufferGeometry }       from 'three-full/sources/geometries/ConeGeometry'
+import { CylinderBufferGeometry }   from 'three-full/sources/geometries/CylinderGeometry'
+import { EdgesGeometry }            from 'three-full/sources/geometries/EdgesGeometry'
+import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
+import { PlaneBufferGeometry }      from 'three-full/sources/geometries/PlaneGeometry'
+import { SphereBufferGeometry }     from 'three-full/sources/geometries/SphereGeometry'
+import { TorusBufferGeometry }      from 'three-full/sources/geometries/TorusGeometry'
+import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
+import { MeshBasicMaterial }        from 'three-full/sources/materials/MeshBasicMaterial'
+import { Box3 }                     from 'three-full/sources/math/Box3'
+import { Euler }                    from 'three-full/sources/math/Euler'
+import { Plane }                    from 'three-full/sources/math/Plane'
+import { Quaternion }               from 'three-full/sources/math/Quaternion'
+import { Vector2 }                  from 'three-full/sources/math/Vector2'
+import { Vector3 }                  from 'three-full/sources/math/Vector3'
+import { Line }                     from 'three-full/sources/objects/Line'
+import { LineSegments }             from 'three-full/sources/objects/LineSegments'
+import { Mesh }                     from 'three-full/sources/objects/Mesh'
+// Waiting three-shaking fix
+//import {
+//    Box3,
+//    BoxBufferGeometry,
+//    BufferGeometry,
+//    Camera,
+//    ConeBufferGeometry,
+//    CylinderBufferGeometry,
+//    DoubleSide,
+//    EdgesGeometry,
+//    Euler,
+//    Float32BufferAttribute,
+//    Line,
+//    LineBasicMaterial,
+//    LineSegments,
+//    Mesh,
+//    MeshBasicMaterial,
+//    Object3D,
+//    OctahedronBufferGeometry,
+//    Plane,
+//    PlaneBufferGeometry,
+//    Quaternion,
+//    Raycaster,
+//    SphereBufferGeometry,
+//    TorusBufferGeometry,
+//    Vector2,
+//    Vector3
+//} from 'three-full'
+
+// Basic Geometries
+
+class LineGeometry extends BufferGeometry {
+
+    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
+        super()
+
+        this.type = 'LineGeometry'
+        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) )
+
+    }
+
+}
+
+class ClippingBox extends LineSegments {
+
+    constructor () {
+        super()
+
+        this.margin = 0.01
+
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
+        this.material         = new LineBasicMaterial( {
+            color: 0xffffff
+        } )
+        this.matrixAutoUpdate = false
+
+        // Planes
+        this.normalPlanes = {
+            normalRightSide:  new Vector3( -1, 0, 0 ),
+            normalLeftSide:   new Vector3( 1, 0, 0 ),
+            normalFrontSide:  new Vector3( 0, -1, 0 ),
+            normalBackSide:   new Vector3( 0, 1, 0 ),
+            normalTopSide:    new Vector3( 0, 0, -1 ),
+            normalBottomSide: new Vector3( 0, 0, 1 )
+        }
+
+        this.planes = {
+            rightSidePlane:  new Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
+            leftSidePlane:   new Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
+            frontSidePlane:  new Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
+            backSidePlane:   new Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
+            topSidePlane:    new Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
+            bottomSidePlane: new Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
+        }
+
+        this._boundingBox = new Box3()
+
+    }
+
+    getBoundingSphere () {
+
+        this.geometry.computeBoundingSphere()
+        this.geometry.boundingSphere.applyMatrix4( this.matrixWorld )
+
+        return this.geometry.boundingSphere
+
+    }
+
+    setColor ( color ) {
+
+        this.material.color.set( color )
+
+    }
+
+    applyClippingTo ( state, objects ) {
+
+        if ( isNotDefined( objects ) ) { return }
+
+        let planes = []
+        for ( let i in this.planes ) {
+            planes.push( this.planes[ i ] )
+        }
+
+        objects.traverse( ( object ) => {
+
+            if ( isNotDefined( object ) ) { return }
+            if ( isNotDefined( object.geometry ) ) { return }
+            if ( isNotDefined( object.material ) ) { return }
+
+            const materials = isArray( object.material ) ? object.material : [ object.material ]
+
+            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex &lt; numberOfMaterial ; materialIndex++ ) {
+                let material = materials[ materialIndex ]
+                if ( !material.clippingPlanes ) {
+                    material.clippingPlanes = []
+                }
+                material.clippingPlanes = ( state ) ? planes : []
+            }
+
+        } )
+
+    }
+
+    updateSize ( size ) {
+
+        this.scale.set( size.x, size.y, size.z )
+
+    }
+
+    update () {
+
+        this._boundingBox.setFromObject( this )
+
+        const margin = this.margin
+        const min    = this._boundingBox.min
+        const max    = this._boundingBox.max
+
+        this.planes.rightSidePlane.constant  = max.x + margin
+        this.planes.leftSidePlane.constant   = -min.x + margin
+        this.planes.frontSidePlane.constant  = max.y + margin
+        this.planes.backSidePlane.constant   = -min.y + margin
+        this.planes.topSidePlane.constant    = max.z + margin
+        this.planes.bottomSidePlane.constant = -min.z + margin
+
+    }
+
+}
+
+// Materials
+
+class HighlightableMaterial extends MeshBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters )
+        this.isHighlightableMaterial = true
+        //        this.type                    = 'HighlightableMaterial'
+
+        this.depthTest   = false
+        this.depthWrite  = false
+        this.fog         = false
+        this.side        = DoubleSide
+        this.transparent = true
+        this.oldColor    = this.color.clone()
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35
+            const _r  = this.color.r
+            const _g  = this.color.g
+            const _b  = this.color.b
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 )
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 )
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 )
+            this.color.setRGB( r, g, b )
+
+        } else {
+
+            this.color.copy( this.oldColor )
+
+        }
+
+    }
+
+}
+
+class HighlightableLineMaterial extends LineBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters )
+        this.isHighlightableMaterial = true
+        //        this.type                    = 'HighlightableLineMaterial'
+
+        this.depthTest   = false
+        this.depthWrite  = false
+        this.fog         = false
+        this.transparent = true
+        this.linewidth   = 1
+        this.oldColor    = this.color.clone()
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35
+            const _r  = this.color.r
+            const _g  = this.color.g
+            const _b  = this.color.b
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 )
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 )
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 )
+            this.color.setRGB( r, g, b )
+
+        } else {
+
+            this.color.copy( this.oldColor )
+
+        }
+
+    }
+
+}
+
+// Pickers
+
+class AbstractHitbox extends Mesh {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new BufferGeometry(),
+                material: new MeshBasicMaterial( {
+                    visible:    false,
+                    depthTest:  false,
+                    depthWrite: false,
+                    fog:        false,
+                    side:       DoubleSide
+                    //                    opacity:     0.0,
+                    //                    transparent: true
+                } )
+            }, ...parameters
+        }
+
+        super( _parameters.geometry, _parameters.material )
+        this.isHitbox         = true
+        this.type             = 'Hitbox'
+        this.matrixAutoUpdate = false
+
+    }
+}
+
+class CylindricaHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const cylinderGeometry = new CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false )
+        cylinderGeometry.translate( 0, 0.5, 0 )
+        const _parameters = {
+            ...{
+                geometry: cylinderGeometry
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isCylindricaHitbox = true
+        this.type               = 'CylindricaHitbox'
+
+    }
+
+}
+
+class PlanarHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const planePositions      = [
+            0.0, 0.0, 0.0,
+            1.1, 0.0, 0.0,
+            1.1, 1.1, 0.0,
+            0.0, 1.1, 0.0
+        ]
+        const planeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ]
+        const planeBufferGeometry = new BufferGeometry()
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
+        planeBufferGeometry.setIndex( planeIndexes )
+
+        const _parameters = {
+            ...{
+                geometry: planeBufferGeometry
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isPlanarHitbox = true
+        this.type           = 'PlanarHitbox'
+
+    }
+
+}
+
+class LozengeHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        // Lozenge
+        const lozengePositions        = [
+            0.0, 0.0, 0.0,
+            0.85, 0.0, 0.0,
+            1.1, 1.1, 0.0,
+            0.0, 0.85, 0.0
+        ]
+        const lozengeIndexes          = [
+            0, 1, 2,
+            2, 3, 0
+        ]
+        const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 )
+        const lozengeBufferGeometry   = new BufferGeometry()
+        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute )
+        lozengeBufferGeometry.setIndex( lozengeIndexes )
+
+        const _parameters = {
+            ...{
+                geometry: lozengeBufferGeometry
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isPlanarHitbox = true
+        this.type           = 'PlanarHitbox'
+
+    }
+
+}
+
+class OctahedricalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new OctahedronBufferGeometry( 1.2, 0 )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isOctahedricalHitbox = true
+        this.type                 = 'OctahedricalHitbox'
+
+    }
+
+}
+
+class SphericalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isSphericalHitbox = true
+        this.type              = 'SphericalHitbox'
+
+    }
+
+}
+
+class TorusHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isTorusHitbox = true
+        this.type          = 'TorusHitbox'
+
+    }
+
+}
+
+// Handles
+class AbstractHandle extends Object3D {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:  0xffffff,
+                hitbox: null
+            }, ...parameters
+        }
+
+        super()
+        this.isHandle         = true
+        this.type             = 'Handle'
+        this.matrixAutoUpdate = false
+
+        this.color  = _parameters.color
+        this.hitbox = _parameters.hitbox
+
+        this.baseQuaternion = new Quaternion()
+
+    }
+
+    get color () {
+
+        return this.line.material.color.clone()
+
+    }
+
+    set color ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Color cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Color cannot be undefined ! Expect an instance of Color.' ) }
+        //        if ( !( value instanceof Color ) ) { throw new Error( `Color cannot be an instance of ${value.constructor.name}. Expect an instance of Color.` ) }
+
+        this.traverse( ( child ) => {
+
+            let materials = child.material
+            if ( !materials ) { return }
+
+            materials.color.setHex( value )
+
+        } )
+
+    }
+
+    get hitbox () {
+        return this._hitbox
+    }
+
+    set hitbox ( value ) {
+        this._hitbox = value
+        this.add( value )
+    }
+
+    setColor ( value ) {
+
+        this.color = value
+        return this
+
+    }
+
+    setHitbox ( value ) {
+        this.hitbox = value
+        return this
+    }
+
+    setScale ( x, y, z ) {
+
+        this.scale.set( x, y, z )
+        return this
+
+    }
+
+    setPosition ( x, y, z ) {
+        this.position.set( x, y, z )
+        return this
+    }
+
+    highlight ( value ) {
+
+        for ( let childIndex = 0, numberOfChildren = this.children.length ; childIndex &lt; numberOfChildren ; childIndex++ ) {
+            const child = this.children[ childIndex ]
+            if ( child.isHitbox ) { continue }
+
+            const childMaterial = child.material
+            if ( isUndefined( childMaterial ) || !childMaterial.isHighlightableMaterial ) { continue }
+
+            childMaterial.highlight( value )
+        }
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const intersections = raycaster.intersectObject( this._hitbox, false )
+        if ( intersections.length > 0 ) {
+            intersects.push( {
+                distance: intersections[ 0 ].distance,
+                object:   this
+            } )
+        }
+
+    }
+
+    setRotationFromAxisAndAngle ( axis, angle ) {
+
+        this.quaternion.setFromAxisAngle( axis, angle )
+        this.baseQuaternion.copy( this.quaternion )
+        return this
+
+    }
+
+    // eslint-disable-next-line no-unused-vars
+    update ( cameraDirection ) {}
+
+}
+
+class TranslateHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new CylindricaHitbox(),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isTranslateHandle = true
+        this.type              = 'TranslateHandle'
+
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
+        this.add( line )
+
+        const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false )
+        coneGeometry.translate( 0, 0.9, 0 )
+        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const cone            = new Mesh( coneGeometry, coneMaterial )
+        cone.matrixAutoUpdate = false
+        this.add( cone )
+
+        this.direction = _parameters.direction
+
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value
+
+        if ( value.y > 0.99999 ) {
+
+            this.quaternion.set( 0, 0, 0, 1 )
+
+        } else if ( value.y &lt; -0.99999 ) {
+
+            this.quaternion.set( 1, 0, 0, 0 )
+
+        } else {
+
+            const axis    = new Vector3( value.z, 0, -value.x ).normalize()
+            const radians = Math.acos( value.y )
+
+            this.quaternion.setFromAxisAngle( axis, radians )
+
+        }
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection )
+
+        const dotProduct = this._direction.dot( cameraDirection )
+        if ( dotProduct >= 0 ) {
+            this.flipDirection()
+        }
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction
+        return this
+
+    }
+
+    flipDirection () {
+
+        this.direction = this._direction.negate()
+
+    }
+
+}
+
+class ScaleHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new CylindricaHitbox(),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isScaleHandle = true
+        this.type          = 'ScaleHandle'
+
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) )
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } )
+        const line            = new Line( lineGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
+        this.add( line )
+
+        const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 )
+        boxGeometry.translate( 0, 0.94, 0 )
+        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } )
+        const box            = new Mesh( boxGeometry, boxMaterial )
+        box.matrixAutoUpdate = false
+        this.add( box )
+
+        this.direction = _parameters.direction
+
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value
+
+        if ( value.y > 0.99999 ) {
+
+            this.quaternion.set( 0, 0, 0, 1 )
+
+        } else if ( value.y &lt; -0.99999 ) {
+
+            this.quaternion.set( 1, 0, 0, 0 )
+
+        } else {
+
+            const axis    = new Vector3( value.z, 0, -value.x ).normalize()
+            const radians = Math.acos( value.y )
+
+            this.quaternion.setFromAxisAngle( axis, radians )
+
+        }
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection )
+
+        const dotProduct = this._direction.dot( cameraDirection )
+        if ( dotProduct >= 0 ) {
+            this.flipDirection()
+        }
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction
+        return this
+
+    }
+
+    flipDirection () {
+
+        this.direction = this._direction.negate()
+
+    }
+
+}
+
+class RotateHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{}, ...parameters
+        }
+
+        super( _parameters )
+        this.isRotateHandle = true
+        this.type           = 'RotateHandle'
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection )
+
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+    }
+
+}
+
+class PlaneHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new PlanarHitbox(),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isPlaneHandle = true
+        this.type          = 'PlaneHandle'
+
+        // Edge line
+        const lineBufferGeometry = new BufferGeometry()
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) )
+
+        const lineMaterial = new HighlightableLineMaterial( {
+            color: _parameters.color
+        } )
+
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
+        this.add( line )
+
+        // Plane
+        const planePositions      = [
+            0.1, 0.1, 0.0,
+            1.0, 0.1, 0.0,
+            1.0, 1.0, 0.0,
+            0.1, 1.0, 0.0
+        ]
+        const planeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ]
+        const planeBufferGeometry = new BufferGeometry()
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) )
+        planeBufferGeometry.setIndex( planeIndexes )
+
+        const planeMaterial    = new HighlightableMaterial( {
+            color:       _parameters.color,
+            transparent: true,
+            opacity:     0.35
+        } )
+        const plane            = new Mesh( planeBufferGeometry, planeMaterial )
+        plane.matrixAutoUpdate = false
+        this.add( plane )
+
+        this.xAxis = new Vector3( 1, 0, 0 )
+        this.yAxis = new Vector3( 0, 1, 0 )
+        this.zAxis = new Vector3( 0, 0, 1 )
+
+        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 )
+        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 )
+        this.zDirection = new Vector3( 0, 0, _parameters.direction.z )
+        this.direction  = _parameters.direction
+
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection )
+
+        // Decompose direction by main orientation
+        const xDirection = new Vector3( this._direction.x, 0, 0 )
+        const yDirection = new Vector3( 0, this._direction.y, 0 )
+        const zDirection = new Vector3( 0, 0, this._direction.z )
+        const xDot       = xDirection.dot( cameraDirection )
+        const yDot       = yDirection.dot( cameraDirection )
+        const zDot       = zDirection.dot( cameraDirection )
+
+        this.quaternion.copy( this.baseQuaternion )
+
+        // XY Plane
+        if ( xDot > 0 &amp;&amp; yDot > 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+            this.xDirection.setX( -1 )
+            this.yDirection.setY( -1 )
+            this.zDirection.setZ( 0 )
+
+        } else if ( xDot > 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+            this.xDirection.setX( -1 )
+            this.yDirection.setY( 1 )
+            this.zDirection.setZ( 0 )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot > 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+            this.xDirection.setX( 1 )
+            this.yDirection.setY( -1 )
+            this.zDirection.setZ( 0 )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+            this.xDirection.setX( 1 )
+            this.yDirection.setY( 1 )
+            this.zDirection.setZ( 0 )
+
+        }
+
+        // XZ Plane
+        else if ( xDot > 0 &amp;&amp; yDot === 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+            this.xDirection.setX( -1 )
+            this.yDirection.setY( 0 )
+            this.zDirection.setZ( -1 )
+
+        } else if ( xDot > 0 &amp;&amp; yDot === 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+            this.xDirection.setX( -1 )
+            this.yDirection.setY( 0 )
+            this.zDirection.setZ( 1 )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot === 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+            this.xDirection.setX( 1 )
+            this.yDirection.setY( 0 )
+            this.zDirection.setZ( -1 )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot === 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+            this.xDirection.setX( 1 )
+            this.yDirection.setY( 0 )
+            this.zDirection.setZ( 1 )
+
+        }
+
+        // YZ Plane
+        else if ( xDot === 0 &amp;&amp; yDot > 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+            this.xDirection.setX( 0 )
+            this.yDirection.setY( -1 )
+            this.zDirection.setZ( -1 )
+
+        } else if ( xDot === 0 &amp;&amp; yDot > 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+            this.xDirection.setX( 0 )
+            this.yDirection.setY( -1 )
+            this.zDirection.setZ( 1 )
+
+        } else if ( xDot === 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+            this.xDirection.setX( 0 )
+            this.yDirection.setY( 1 )
+            this.zDirection.setZ( -1 )
+
+        } else if ( xDot === 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+            this.xDirection.setX( 0 )
+            this.yDirection.setY( 1 )
+            this.zDirection.setZ( 1 )
+
+        }
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction
+        return this
+
+    }
+
+    flipXDirection () {
+
+        this.xDirection.setX( -this.xDirection.x )
+
+    }
+
+    flipYDirection () {
+
+        this.yDirection.setY( -this.yDirection.y )
+
+    }
+
+    flipZDirection () {
+
+        this.zDirection.setZ( -this.zDirection.z )
+
+    }
+
+}
+
+class LozengeHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new LozengeHitbox(),
+                direction: new Vector3( 1, 1, 0 )
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isPlaneHandle = true
+        this.type          = 'PlaneHandle'
+
+        // Edge line
+        const lineBufferGeometry = new BufferGeometry()
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) )
+
+        const lineMaterial = new HighlightableLineMaterial( {
+            color: _parameters.color
+        } )
+
+        const line            = new Line( lineBufferGeometry, lineMaterial )
+        line.matrixAutoUpdate = false
+        this.add( line )
+
+        // Lozenge
+        const lozengePositions      = [
+            0.1, 0.1, 0.0,
+            0.75, 0.1, 0.0,
+            1.0, 1.0, 0.0,
+            0.1, 0.75, 0.0
+        ]
+        const lozengeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ]
+        const lozengeBufferGeometry = new BufferGeometry()
+        lozengeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) )
+        lozengeBufferGeometry.setIndex( lozengeIndexes )
+
+        const lozengeMaterial    = new HighlightableMaterial( {
+            color:       _parameters.color,
+            transparent: true,
+            opacity:     0.35
+        } )
+        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial )
+        lozenge.matrixAutoUpdate = false
+        this.add( lozenge )
+
+        this.direction  = _parameters.direction
+        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 )
+        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 )
+        this.zDirection = new Vector3( 0, 0, _parameters.direction.z )
+        this.xAxis      = new Vector3( 1, 0, 0 )
+        this.yAxis      = new Vector3( 0, 1, 0 )
+        this.zAxis      = new Vector3( 0, 0, 1 )
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection )
+
+        const xDot = this.xDirection.dot( cameraDirection )
+        const yDot = this.yDirection.dot( cameraDirection )
+        const zDot = this.zDirection.dot( cameraDirection )
+
+        this.quaternion.copy( this.baseQuaternion )
+
+        // XY Plane
+        if ( xDot > 0 &amp;&amp; yDot > 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+
+        } else if ( xDot > 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot > 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+
+        }
+
+        // XZ Plane
+        else if ( xDot > 0 &amp;&amp; yDot === 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+
+        } else if ( xDot > 0 &amp;&amp; yDot === 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot === 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+
+        } else if ( xDot &lt; 0 &amp;&amp; yDot === 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+
+        }
+
+        // YZ Plane
+        else if ( xDot === 0 &amp;&amp; yDot > 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) )
+
+        } else if ( xDot === 0 &amp;&amp; yDot > 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) )
+
+        } else if ( xDot === 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) )
+
+        } else if ( xDot === 0 &amp;&amp; yDot &lt; 0 &amp;&amp; zDot &lt; 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) )
+
+        }
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction
+        return this
+
+    }
+
+    flipXAxis () {
+
+        const tempDirection = this._direction.clone()
+        tempDirection.x     = -tempDirection.x
+
+        this.direction = tempDirection
+
+    }
+
+    flipYAxis () {
+
+        const tempDirection = this._direction.clone()
+        tempDirection.y     = -tempDirection.y
+
+        this.direction = tempDirection
+
+    }
+
+    flipZAxis () {
+
+        const tempDirection = this._direction.clone()
+        tempDirection.z     = -tempDirection.z
+
+        this.direction = tempDirection
+
+    }
+
+}
+
+class OctahedricalHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:  0xffffff,
+                hitbox: new OctahedricalHitbox()
+            }, ...parameters
+        }
+
+        super( _parameters )
+        this.isOmnidirectionalHandle = true
+        this.type                    = 'OmnidirectionalHandle'
+
+        const octahedronGeometry    = new OctahedronBufferGeometry( 0.1, 0 )
+        const octahedronMaterial    = new HighlightableMaterial( {
+            color:       _parameters.color,
+            transparent: true,
+            opacity:     0.55
+        } )
+        const octahedron            = new Mesh( octahedronGeometry, octahedronMaterial )
+        octahedron.matrixAutoUpdate = false
+        this.add( octahedron )
+
+        const edgesGeometry    = new EdgesGeometry( octahedronGeometry )
+        const edgesMaterial    = new HighlightableLineMaterial( {
+            color:     _parameters.color,
+            linewidth: 4
+        } )
+        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
+        edges.matrixAutoUpdate = false
+        this.add( edges )
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection )
+
+        this.updateMatrix()
+        this.hitbox.updateMatrix()
+    }
+
+}
+
+// Gizmos
+
+class AbstractGizmo extends Object3D {
+
+    constructor () {
+
+        super()
+        this.isGizmo          = true
+        this.type             = 'AbstractGizmo'
+        this.matrixAutoUpdate = false
+
+    }
+
+    init () {
+
+        this.handles                  = new Object3D()
+        this.handles.matrixAutoUpdate = false
+
+        this.add( this.handles )
+
+        //// PLANES
+        const planeGeometry                  = new PlaneBufferGeometry( 50, 50, 2, 2 )
+        const planeMaterial                  = new MeshBasicMaterial( {
+            side:    DoubleSide,
+            visible: false
+            //            transparent: true,
+            //            opacity:     0.1
+        } )
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial )
+        this.intersectPlane.matrixAutoUpdate = false
+        this.intersectPlane.visible          = true
+
+        this.add( this.intersectPlane )
+
+        //// HANDLES
+
+        const setupGizmos = ( gizmoMap, parent ) => {
+
+            for ( let name in gizmoMap ) {
+
+                const element = gizmoMap[ name ]
+                if ( isNotArray( element ) ) {
+
+                    element.name        = name
+                    element.renderOrder = Infinity
+
+                    parent.add( element )
+
+                } else {
+
+                    for ( let i = element.length ; i-- ; ) {
+
+                        const object   = gizmoMap[ name ][ i ][ 0 ]
+                        const position = gizmoMap[ name ][ i ][ 1 ]
+                        const rotation = gizmoMap[ name ][ i ][ 2 ]
+                        const scale    = gizmoMap[ name ][ i ][ 3 ]
+                        const tag      = gizmoMap[ name ][ i ][ 4 ]
+
+                        // name and tag properties are essential for picking and updating logic.
+                        object.name = name
+                        object.tag  = tag
+
+                        // avoid being hidden by other transparent objects
+                        object.renderOrder = Infinity
+
+                        if ( position ) {
+                            object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] )
+                        }
+                        if ( rotation ) {
+                            object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] )
+                        }
+                        if ( scale ) {
+                            object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] )
+                        }
+
+                        object.updateMatrix()
+
+                        const tempGeometry = object.geometry.clone()
+                        tempGeometry.applyMatrix4( object.matrix )
+                        object.geometry = tempGeometry
+
+                        object.position.set( 0, 0, 0 )
+                        object.rotation.set( 0, 0, 0 )
+                        object.scale.set( 1, 1, 1 )
+
+                        parent.add( object )
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        setupGizmos( this.handleGizmos, this.handles )
+
+    }
+
+    highlight ( axis ) {
+
+        // Reset highlight for all of them
+        for ( let key in this.handleGizmos ) {
+            this.handleGizmos[ key ].highlight( false )
+        }
+
+        // Highlight the picked (if exist)
+        const currentHandle = this.handleGizmos[ axis ]
+        if ( currentHandle ) {
+            currentHandle.highlight( true )
+        }
+
+    }
+
+    update ( cameraPosition, cameraDirection ) {
+
+        this.traverse( ( child ) => {
+
+            if ( !child.isHandle ) { return }
+
+            child.update( cameraDirection )
+
+        } )
+
+        this.updateIntersectPlane( cameraPosition )
+
+    }
+
+    updateIntersectPlane ( cameraPosition ) {
+
+        this.intersectPlane.lookAt( cameraPosition )
+        this.intersectPlane.updateMatrix()
+
+    }
+
+}
+
+class TranslateGizmo extends AbstractGizmo {
+
+    constructor () {
+
+        super()
+        this.isTranslateGizmo = true
+        this.type             = 'TranslateGizmo'
+
+        this.handleGizmos = {
+
+            X: new TranslateHandle( {
+                color:     0xaa0000,
+                direction: new Vector3( 1, 0, 0 )
+            } ),
+
+            Y: new TranslateHandle( {
+                color:     0x00aa00,
+                direction: new Vector3( 0, 1, 0 )
+            } ),
+
+            Z: new TranslateHandle( {
+                color:     0x0000aa,
+                direction: new Vector3( 0, 0, 1 )
+            } ),
+
+            XY: new LozengeHandle( {
+                color:     0xaaaa00,
+                direction: new Vector3( 1, 1, 0 )
+            } ).setScale( 0.33, 0.33, 1.0 ),
+
+            YZ: new LozengeHandle( {
+                color:     0x00aaaa,
+                direction: new Vector3( 0, 1, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 0, 1, 0 ), degreesToRadians( -90 ) ),
+
+            XZ: new LozengeHandle( {
+                color:     0xaa00aa,
+                direction: new Vector3( 1, 0, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) ),
+
+            XYZ: new OctahedricalHandle( {
+                color: 0xaaaaaa
+            } ).setScale( 0.15, 0.15, 0.15 )
+
+        }
+
+        this.init()
+
+    }
+
+}
+
+class RotateGizmo extends AbstractGizmo {
+
+    constructor () {
+
+        super()
+        this.isRotateGizmo = true
+        this.type          = 'RotateGizmo'
+
+        const CircleGeometry = ( radius, facing, arc ) => {
+
+            const geometry = new BufferGeometry()
+            let vertices   = []
+            arc            = arc ? arc : 1
+
+            for ( let i = 0 ; i &lt;= 64 * arc ; ++i ) {
+
+                if ( facing === 'x' ) {
+                    vertices.push( 0, Math.cos( i / 32 * Math.PI ) * radius, Math.sin( i / 32 * Math.PI ) * radius )
+                }
+                if ( facing === 'y' ) {
+                    vertices.push( Math.cos( i / 32 * Math.PI ) * radius, 0, Math.sin( i / 32 * Math.PI ) * radius )
+                }
+                if ( facing === 'z' ) {
+                    vertices.push( Math.sin( i / 32 * Math.PI ) * radius, Math.cos( i / 32 * Math.PI ) * radius, 0 )
+                }
+
+            }
+
+            geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) )
+            return geometry
+
+        }
+
+        this.handleGizmos = {
+
+            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+
+            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+
+            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+
+            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
+
+            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
+
+        }
+
+        this.pickerGizmos = {
+
+            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
+
+            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
+
+            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
+
+            E: [ [ new TorusHitbox( {
+                radius:          1.25,
+                tube:            0.12,
+                radialSegments:  2,
+                tubularSegments: 24
+            } ) ] ],
+
+            XYZ: [ [ new TorusHitbox() ] ]
+
+        }
+
+        //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
+
+        this.init()
+
+    }
+
+    /*
+     update ( rotation, eye2 ) {
+
+     super.update( rotation, eye2 )
+
+     const tempMatrix     = new Matrix4()
+     const worldRotation  = new Euler( 0, 0, 1 )
+     const tempQuaternion = new Quaternion()
+     const unitX          = new Vector3( 1, 0, 0 )
+     const unitY          = new Vector3( 0, 1, 0 )
+     const unitZ          = new Vector3( 0, 0, 1 )
+     const quaternionX    = new Quaternion()
+     const quaternionY    = new Quaternion()
+     const quaternionZ    = new Quaternion()
+     const eye            = eye2.clone()
+
+     worldRotation.copy( this.planes[ 'XY' ].rotation )
+     tempQuaternion.setFromEuler( worldRotation )
+
+     tempMatrix.makeRotationFromQuaternion( tempQuaternion ).getInverse( tempMatrix )
+     eye.applyMatrix4( tempMatrix )
+
+     this.traverse( child => {
+
+     tempQuaternion.setFromEuler( worldRotation )
+
+     if ( child.name === 'X' ) {
+
+     quaternionX.setFromAxisAngle( unitX, Math.atan2( -eye.y, eye.z ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     if ( child.name === 'Y' ) {
+
+     quaternionY.setFromAxisAngle( unitY, Math.atan2( eye.x, eye.z ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionY )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     if ( child.name === 'Z' ) {
+
+     quaternionZ.setFromAxisAngle( unitZ, Math.atan2( eye.y, eye.x ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionZ )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     } )
+
+     }
+     */
+
+}
+
+class ScaleGizmo extends AbstractGizmo {
+
+    constructor () {
+
+        super()
+        this.isScaleGizmo = true
+        this.type         = 'ScaleGizmo'
+
+        this.handleGizmos = {
+
+            XYZ: new OctahedricalHandle( {
+                color: 0xaaaaaa
+            } ).setScale( 0.15, 0.15, 0.15 ),
+
+            XY: new PlaneHandle( {
+                color:     0xaaaa00,
+                direction: new Vector3( 1, 1, 0 )
+            } ).setScale( 0.33, 0.33, 1.0 ),
+
+            YZ: new PlaneHandle( {
+                color:     0x00aaaa,
+                direction: new Vector3( 0, 1, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 0, 1, 0 ), degreesToRadians( -90 ) ),
+
+            XZ: new PlaneHandle( {
+                color:     0xaa00aa,
+                direction: new Vector3( 1, 0, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) ),
+
+            X: new ScaleHandle( {
+                color:     0xaa0000,
+                direction: new Vector3( 1, 0, 0 )
+            } ),
+
+            Y: new ScaleHandle( {
+                color:     0x00aa00,
+                direction: new Vector3( 0, 1, 0 )
+            } ),
+
+            Z: new ScaleHandle( {
+                color:     0x0000aa,
+                direction: new Vector3( 0, 0, 1 )
+            } )
+
+        }
+
+        this.init()
+
+    }
+
+}
+
+// Controller
+const ClippingModes = toEnum( {
+    None:      'None',
+    Translate: 'Translate',
+    Rotate:    'Rotate',
+    Scale:     'Scale'
+} )
+
+class ClippingControls extends Object3D {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                camera:        null,
+                domElement:    window,
+                mode:          ClippingModes.None,
+                objectsToClip: new Object3D()
+            }, ...parameters
+        }
+
+        super()
+
+        // Need to be defined before domElement to make correct binding events
+        this._handlers = {
+            onMouseEnter:  this._onMouseEnter.bind( this ),
+            onMouseLeave:  this._onMouseLeave.bind( this ),
+            onMouseDown:   this._onMouseDown.bind( this ),
+            onMouseMove:   this._onMouseMove.bind( this ),
+            onMouseWheel:  this._onMouseWheel.bind( this ),
+            onMouseUp:     this._onMouseUp.bind( this ),
+            onDblClick:    this._onDblClick.bind( this ),
+            onTouchStart:  this._onTouchStart.bind( this ),
+            onTouchEnd:    this._onTouchEnd.bind( this ),
+            onTouchCancel: this._onTouchCancel.bind( this ),
+            onTouchLeave:  this._onTouchLeave.bind( this ),
+            onTouchMove:   this._onTouchMove.bind( this ),
+            onKeyDown:     this._onKeyDown.bind( this ),
+            onKeyUp:       this._onKeyUp.bind( this )
+        }
+
+        this._events = {
+            impose:     { type: 'impose' },
+            dispose:    { type: 'dispose' },
+            change:     { type: 'change' },
+            translate:  { type: 'translate' },
+            rotate:     { type: 'rotate' },
+            scale:      { type: 'scale' },
+            mouseEnter: { type: 'mouseEnter' },
+            mouseLeave: { type: 'mouseLeave' },
+            mouseDown:  { type: 'mouseDown' },
+            mouseUp:    { type: 'mouseUp' }
+        }
+
+        // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
+        this._objectsToClipBoundingBox = new Box3()
+        this._objectsToClipSize        = new Vector3()
+        this._objectsToClipCenter      = new Vector3()
+
+        this._clippingBox = new ClippingBox()
+        this.add( this._clippingBox )
+
+        this.camera           = _parameters.camera
+        this.domElement       = _parameters.domElement
+        this.mode             = _parameters.mode
+        this.objectsToClip    = _parameters.objectsToClip
+        this.translationSnap  = 0.1
+        this.scaleSnap        = 0.1
+        this.rotationSnap     = 0.1
+        this.matrixAutoUpdate = false
+
+        this.enabled = false // Should be true by default
+
+        this.size = 1
+
+        this._dragging          = false
+        this._firstPoint        = new Vector3()
+        this._secondPoint       = new Vector3()
+        this._mouseDisplacement = new Vector3()
+        this._offset            = new Vector3()
+        this._raycaster         = new Raycaster()
+        this._pointerVector     = new Vector2()
+        this._directionToMouse  = new Vector3()
+        this._cameraPosition    = new Vector3()
+        this._cameraDirection   = new Vector3()
+        this._worldPosition     = new Vector3()
+        this._worldRotation     = new Euler()
+
+        this._gizmos = {
+            //            'None':      null,
+            'Translate': new TranslateGizmo(),
+            'Scale':     new ScaleGizmo()
+            //            'Rotate':    new RotateGizmo(),
+        }
+        for ( let mode in this._gizmos ) {
+            this.add( this._gizmos[ mode ] )
+        }
+        this._currentGizmo  = null
+        this._currentHandle = null
+
+        // The actions map about input events
+        this.actionsMap = {
+            setMode: {
+                translate: [ Keys.T.value ],
+                rotate:    [ Keys.R.value ],
+                scale:     [ Keys.S.value ]
+            },
+            translate: {
+                front: [ Keys.Z.value, Keys.UP_ARROW.value ],
+                back:  [ Keys.S.value, Keys.DOWN_ARROW.value ],
+                up:    [ Keys.A.value, Keys.PAGE_UP.value ],
+                down:  [ Keys.E.value, Keys.PAGE_DOWN.value ],
+                left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+                right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
+            },
+            scale: {
+                widthPlus:   [ Keys.LEFT_ARROW.value ],
+                widthMinus:  [ Keys.RIGHT_ARROW.value ],
+                heightPlus:  [ Keys.PAGE_UP.value ],
+                heightMinus: [ Keys.PAGE_DOWN.value ],
+                depthPlus:   [ Keys.UP_ARROW.value ],
+                depthMinus:  [ Keys.DOWN_ARROW.value ]
+            },
+            rotate: {
+                xAxis: [ Keys.X.value ],
+                yAxis: [ Keys.Y.value ],
+                zAxis: [ Keys.Z.value ]
+            }
+        }
+
+    }
+
+    get objectsToClip () {
+        return this._objectsToClip
+    }
+
+    set objectsToClip ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+
+        this._objectsToClip = value
+        this.updateClipping()
+
+    }
+
+    get camera () {
+        return this._camera
+    }
+
+    set camera ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
+        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+
+        this._camera = value
+
+    }
+
+    get domElement () {
+        return this._domElement
+    }
+
+    set domElement ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
+
+        // Clear previous element
+        if ( this._domElement ) {
+            this._domElement.removeEventListener( 'mouseenter', this._handlers.onMouseEnter, false )
+            this._domElement.removeEventListener( 'mouseleave', this._handlers.onMouseLeave, false )
+            this.dispose()
+        }
+
+        this._domElement = value
+        this._domElement.addEventListener( 'mouseenter', this._handlers.onMouseEnter, false )
+        this._domElement.addEventListener( 'mouseleave', this._handlers.onMouseLeave, false )
+        this.impose()
+
+    }
+
+    get mode () {
+        return this._mode
+    }
+
+    set mode ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
+        //        if ( !( value instanceof ClippingModes ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TClippingModes enum.` ) }
+
+        this._mode = value
+
+        // Reset gizmos visibility
+        for ( let mode in this._gizmos ) {
+            this._gizmos[ mode ].visible = false
+        }
+
+        if ( this._mode === ClippingModes.None ) {
+
+            this._currentGizmo = null
+
+        } else {
+
+            this._currentGizmo         = this._gizmos[ this._mode ]
+            this._currentGizmo.visible = true
+
+        }
+
+        this.updateGizmo()
+
+    }
+
+    setCamera ( value ) {
+
+        this.camera = value
+        return this
+
+    }
+
+    setDomElement ( value ) {
+
+        this.domElement = value
+        return this
+
+    }
+
+    setMode ( value ) {
+
+        this.mode = value
+        return this
+
+    }
+
+    setObjectsToClip ( objects ) {
+
+        this.objectsToClip = objects
+        return this
+
+    }
+
+    impose () {
+
+        this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false )
+        this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false )
+
+        this._domElement.addEventListener( 'dblclick', this._handlers.onDblClick, false )
+        this._domElement.addEventListener( 'mousedown', this._handlers.onMouseDown, false )
+        this._domElement.addEventListener( 'mousemove', this._handlers.onMouseMove, false )
+        this._domElement.addEventListener( 'mouseup', this._handlers.onMouseUp, false )
+        this._domElement.addEventListener( 'wheel', this._handlers.onMouseWheel, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this._domElement.addEventListener( 'touchcancel', this._handlers.onTouchCancel, false )
+        this._domElement.addEventListener( 'touchend', this._handlers.onTouchEnd, false )
+        this._domElement.addEventListener( 'touchleave', this._handlers.onTouchLeave, false )
+        this._domElement.addEventListener( 'touchmove', this._handlers.onTouchMove, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+        this._domElement.addEventListener( 'touchstart', this._handlers.onTouchStart, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this.dispatchEvent( this._events.impose )
+
+    }
+
+    dispose () {
+
+        this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false )
+        this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false )
+
+        this._domElement.removeEventListener( 'dblclick', this._handlers.onDblClick, false )
+        this._domElement.removeEventListener( 'mousedown', this._handlers.onMouseDown, false )
+        this._domElement.removeEventListener( 'mousemove', this._handlers.onMouseMove, false )
+        this._domElement.removeEventListener( 'mouseup', this._handlers.onMouseUp, false )
+        this._domElement.removeEventListener( 'wheel', this._handlers.onMouseWheel, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this._domElement.removeEventListener( 'touchcancel', this._handlers.onTouchCancel, false )
+        this._domElement.removeEventListener( 'touchend', this._handlers.onTouchEnd, false )
+        this._domElement.removeEventListener( 'touchleave', this._handlers.onTouchLeave, false )
+        this._domElement.removeEventListener( 'touchmove', this._handlers.onTouchMove, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+        this._domElement.removeEventListener( 'touchstart', this._handlers.onTouchStart, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this.dispatchEvent( this._events.dispose )
+
+    }
+
+    setTranslationSnap ( translationSnap ) {
+        this.translationSnap = translationSnap
+    }
+
+    setRotationSnap ( rotationSnap ) {
+        this.rotationSnap = rotationSnap
+    }
+
+    enable () {
+
+        this.visible = true
+        this.enabled = true
+
+        // Init size and position
+        if ( isDefined( this._objectsToClip ) ) {
+
+            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip )
+
+            this._objectsToClipBoundingBox.getSize( this._objectsToClipSize )
+            this._objectsToClipSize.divideScalar( 2 )
+            this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z )
+
+            this._objectsToClipBoundingBox.getCenter( this._objectsToClipCenter )
+            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z )
+
+            // update...
+            this.updateMatrix()
+            this.updateMatrixWorld()
+        }
+
+        this.updateClipping()
+        this.updateGizmo()
+
+    }
+
+    disable () {
+
+        this.visible = false
+        this.enabled = false
+        this.updateClipping()
+
+    }
+
+    updateClipping () {
+
+        if ( isNotDefined( this._objectsToClip ) ) { return }
+
+        this._clippingBox.update()
+        this._clippingBox.applyClippingTo( this.enabled, this._objectsToClip )
+
+    }
+
+    updateGizmo () {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( isNotDefined( this._currentGizmo ) ) { return }
+
+        this._camera.getWorldPosition( this._cameraPosition )
+        this._camera.getWorldDirection( this._cameraDirection )
+        this._currentGizmo.update( this._cameraPosition, this._cameraDirection )
+
+    }
+
+    /// Handlers
+    _consumeEvent ( event ) {
+
+        if ( !event.cancelable ) {
+            return
+        }
+
+        event.stopImmediatePropagation()
+
+    }
+
+    // Keyboard
+    _onKeyDown ( keyEvent ) {
+
+        if ( !this.enabled ) { return }
+        keyEvent.preventDefault()
+
+        const actionMap  = this.actionsMap
+        const key        = keyEvent.keyCode
+        //        const altActive   = keyEvent.altKey
+        const ctrlActive = keyEvent.ctrlKey
+        //        const metaActive  = keyEvent.metaKey
+        //        const shiftActive = keyEvent.shiftKey
+
+        /* if ( altActive ) {
+
+         } else */
+        if ( ctrlActive ) {
+
+            switch ( this._mode ) {
+
+                case ClippingModes.Translate:
+
+                    if ( actionMap.translate.front.includes( key ) ) {
+
+                        this._translateZ( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.back.includes( key ) ) {
+
+                        this._translateZ( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.right.includes( key ) ) {
+
+                        this._translateX( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.left.includes( key ) ) {
+
+                        this._translateX( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.up.includes( key ) ) {
+
+                        this._translateY( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.down.includes( key ) ) {
+
+                        this._translateY( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    }
+
+                    break
+
+                case ClippingModes.Rotate:
+
+                    break
+
+                case ClippingModes.Scale:
+
+                    if ( actionMap.scale.depthPlus.includes( key ) ) {
+
+                        this._scaleZ( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.depthMinus.includes( key ) ) {
+
+                        this._scaleZ( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.widthPlus.includes( key ) ) {
+
+                        this._scaleX( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.widthMinus.includes( key ) ) {
+
+                        this._scaleX( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.heightPlus.includes( key ) ) {
+
+                        this._scaleY( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.heightMinus.includes( key ) ) {
+
+                        this._scaleY( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    }
+
+                    break
+
+                default:
+                    break
+
+            }
+
+            //        } else if ( metaActive ) {
+            //        } else if ( shiftActive ) {
+        } else if ( actionMap.setMode.translate.includes( key ) ) {
+
+            this.setMode( ClippingModes.Translate )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        } else if ( actionMap.setMode.rotate.includes( key ) ) {
+
+            this.setMode( ClippingModes.Rotate )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        } else if ( actionMap.setMode.scale.includes( key ) ) {
+
+            this.setMode( ClippingModes.Scale )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        }
+
+    }
+
+    _onKeyUp ( keyEvent ) {
+
+        if ( !this.enabled || keyEvent.defaultPrevented ) { return }
+        keyEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    // Mouse
+    _onDblClick ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onMouseDown ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        if ( isNotDefined( this._currentHandle ) ) { return }
+
+        mouseEvent.preventDefault()
+
+        this._dragging = true
+
+        // Set the current plane to intersect with mouse
+        // Add first reference to mouse position for next usage under mouse move
+        const planeIntersect = this.intersectObjects( mouseEvent, [ this._currentGizmo.intersectPlane ] )
+        if ( planeIntersect ) {
+            this._firstPoint = planeIntersect.point
+        }
+
+        this._consumeEvent( mouseEvent )
+        this.dispatchEvent( this._events.mouseDown )
+
+    }
+
+    _onMouseEnter ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        this.impose()
+        if ( mouseEvent.target.constructor !== HTMLDocument ) {
+            this._domElement.focus()
+        }
+
+    }
+
+    _onMouseLeave ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        this._dragging = false
+
+        if ( mouseEvent.target.constructor !== HTMLDocument ) {
+            this._domElement.blur()
+        }
+        this.dispose()
+
+    }
+
+    _onMouseMove ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+
+        mouseEvent.preventDefault()
+
+        // Check for hovering or not
+        if ( this._dragging === false ) {
+
+            // Check mouseIn
+            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+            if ( intersect ) {
+
+                const handle = intersect.object
+
+                // Check if a previous handle is already selected
+                if ( this._currentHandle &amp;&amp; handle !== this._currentHandle ) {
+                    this._currentHandle.highlight( false )
+                    this.dispatchEvent( this._events.mouseLeave )
+                }
+
+                this._currentHandle = handle
+                this._currentHandle.highlight( true )
+                this.dispatchEvent( this._events.mouseEnter )
+
+                this._consumeEvent( mouseEvent )
+
+            } else if ( isDefined( this._currentHandle ) ) {
+
+                this._currentHandle.highlight( false )
+                this._currentHandle = null
+                this.dispatchEvent( this._events.mouseLeave )
+
+            }
+
+        } else {
+
+            const currentHandle     = this._currentHandle
+            const currentHandleName = currentHandle.name
+
+            const planeIntersect = this.intersectObjects( mouseEvent, [ this._currentGizmo.intersectPlane ] )
+            if ( planeIntersect ) {
+
+                this._secondPoint = planeIntersect.point
+
+            }
+
+            // Update the mouse displacement in world coordinates
+            this._mouseDisplacement.subVectors( this._secondPoint, this._firstPoint )
+            this._firstPoint.copy( this._secondPoint )
+
+            // Apply change
+            switch ( this._mode ) {
+
+                case ClippingModes.Translate:
+
+                    if ( currentHandleName === 'X' ) {
+
+                        this._offset.set( 1, 0, 0 )
+
+                    } else if ( currentHandleName === 'Y' ) {
+
+                        this._offset.set( 0, 1, 0 )
+
+                    } else if ( currentHandleName === 'Z' ) {
+
+                        this._offset.set( 0, 0, 1 )
+
+                    } else if ( currentHandleName === 'XY' ) {
+
+                        this._offset.set( 1, 1, 0 )
+
+                    } else if ( currentHandleName === 'YZ' ) {
+
+                        this._offset.set( 0, 1, 1 )
+
+                    } else if ( currentHandleName === 'XZ' ) {
+
+                        this._offset.set( 1, 0, 1 )
+
+                    } else if ( currentHandleName === 'XYZ' ) {
+
+                        this._offset.set( 1, 1, 1 )
+
+                    }
+
+                    this._offset.multiply( this._mouseDisplacement )
+                    this._translate( this._offset )
+                    break
+
+                case ClippingModes.Rotate:
+                    /*
+                     if ( currentHandle.isRotateHandle ) {
+
+                     } else if ( currentHandle.isPlaneHandle ) {
+
+                     } else if ( currentHandle.isOmnidirectionalHandle ) {
+
+                     }
+                     */
+                    break
+
+                case ClippingModes.Scale:
+
+                    if ( currentHandle.isScaleHandle ) {
+
+                        this._offset
+                            .copy( this._currentHandle.direction )
+                            .multiply( this._mouseDisplacement )
+
+                    } else if ( currentHandle.isPlaneHandle ) {
+
+                        const xDot = this._currentHandle.xDirection.dot( this._mouseDisplacement )
+                        if ( xDot > 0 ) {
+                            this._offset.setX( Math.abs( this._mouseDisplacement.x ) )
+                        } else if ( xDot &lt; 0 ) {
+                            this._offset.setX( -Math.abs( this._mouseDisplacement.x ) )
+                        } else {
+                            this._offset.setX( 0 )
+                        }
+
+                        const yDot = this._currentHandle.yDirection.dot( this._mouseDisplacement )
+                        if ( yDot > 0 ) {
+                            this._offset.setY( Math.abs( this._mouseDisplacement.y ) )
+                        } else if ( yDot &lt; 0 ) {
+                            this._offset.setY( -Math.abs( this._mouseDisplacement.y ) )
+                        } else {
+                            this._offset.setY( 0 )
+                        }
+
+                        const zDot = this._currentHandle.zDirection.dot( this._mouseDisplacement )
+                        if ( zDot > 0 ) {
+                            this._offset.setZ( Math.abs( this._mouseDisplacement.z ) )
+                        } else if ( zDot &lt; 0 ) {
+                            this._offset.setZ( -Math.abs( this._mouseDisplacement.z ) )
+                        } else {
+                            this._offset.setZ( 0 )
+                        }
+
+                    } else if ( currentHandle.isOmnidirectionalHandle ) {
+
+                        this.getWorldPosition( this._worldPosition )
+                        this._directionToMouse.subVectors( this._firstPoint, this._worldPosition )
+                        const worldDot = this._directionToMouse.dot( this._mouseDisplacement )
+                        const length   = ( worldDot > 0 ) ? this._mouseDisplacement.length() : -this._mouseDisplacement.length()
+                        this._offset.set( length, length, length )
+
+                    }
+
+                    this._scale( this._offset )
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${ this._mode }` )
+
+            }
+
+            this.updateClipping()
+            this._consumeEvent( mouseEvent )
+            this.dispatchEvent( this._events.change )
+
+        }
+
+    }
+
+    _onMouseUp ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        // todo isActive when mouse enter
+
+        mouseEvent.preventDefault()
+
+        this._dragging = false
+        this.dispatchEvent( this._events.mouseUp )
+
+        // Check mouseIn
+        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+        if ( intersect ) {
+
+            this._currentHandle = intersect.object
+            this._currentHandle.highlight( true )
+
+            this._consumeEvent( mouseEvent )
+            this.dispatchEvent( this._events.mouseEnter )
+
+        } else if ( isDefined( this._currentHandle ) ) {
+
+            this._currentHandle.highlight( false )
+            this._currentHandle = null
+
+            this.dispatchEvent( this._events.mouseLeave )
+
+        }
+
+        this.updateGizmo()
+
+    }
+
+    _onMouseWheel ( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        mouseEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    // Touche
+    _onTouchCancel ( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchEnd ( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchLeave ( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchMove ( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchStart ( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    /// Utils
+    // eslint-disable-next-line no-unused-vars
+    getActiveHandle ( pointer ) {
+
+    }
+
+    intersectObjects ( pointer, objects ) {
+
+        // calculate mouse position in normalized device coordinates
+        // (-1 to +1) for both components
+        /*
+         const mousePositionX  = mouseEvent.layerX || mouseEvent.offsetX || 1
+         const mousePositionY  = mouseEvent.layerY || mouseEvent.offsetY || 1
+         const containerWidth  = this._domElement.offsetWidth
+         const containerHeight = this._domElement.offsetHeight
+         const x               = ( mousePositionX / containerWidth ) * 2 - 1
+         const y               = -( mousePositionY / containerHeight ) * 2 + 1
+         */
+
+        const clientRect = this._domElement.getBoundingClientRect()
+        const x          = ( ( ( pointer.clientX - clientRect.left ) / clientRect.width ) * 2 ) - 1
+        const y          = ( -( ( pointer.clientY - clientRect.top ) / clientRect.height ) * 2 ) + 1
+
+        this._pointerVector.set( x, y )
+        this._raycaster.setFromCamera( this._pointerVector, this._camera )
+
+        const intersections = this._raycaster.intersectObjects( objects, false )
+        return intersections[ 0 ] ? intersections[ 0 ] : null
+
+    }
+
+    // Methods
+
+    // Moving
+    _translate ( displacement ) {
+
+        this.position.add( displacement )
+        this.updateMatrix()
+
+    }
+
+    _translateX ( deltaX ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.updateMatrix()
+
+    }
+
+    _translateY ( deltaY ) {
+
+        this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _translateZ ( deltaZ ) {
+
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateXY ( deltaX, deltaY ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _translateXZ ( deltaX, deltaZ ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateYZ ( deltaY, deltaZ ) {
+
+        this.position.setY( this.position.y + deltaY )
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateXYZ ( deltaX, deltaY, deltaZ ) {
+
+        this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    // Rotating
+    // eslint-disable-next-line no-unused-vars
+    _rotateX ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateY ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateZ ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXY ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXZ ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateYZ ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXYZ ( delta ) {}
+
+    // Scaling
+    _scale ( changeAmout ) {
+
+        this.scale.add( changeAmout )
+        this.updateMatrix()
+
+    }
+
+    _scaleX ( deltaX ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.updateMatrix()
+
+    }
+
+    _scaleY ( deltaY ) {
+
+        this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _scaleZ ( deltaZ ) {
+
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleXY ( deltaX, deltaY ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _scaleXZ ( deltaX, deltaZ ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleYZ ( deltaY, deltaZ ) {
+
+        this.scale.setY( this.scale.y + deltaY )
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleXYZ ( deltaX, deltaY, deltaZ ) {
+
+        this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+}
+
+export {
+    AbstractGizmo,
+    AbstractHandle,
+    AbstractHitbox,
+    ClippingBox,
+    ClippingControls,
+    ClippingModes,
+    CylindricaHitbox,
+    HighlightableLineMaterial,
+    HighlightableMaterial,
+    LozengeHandle,
+    LozengeHitbox,
+    OctahedricalHandle,
+    OctahedricalHitbox,
+    PlanarHitbox,
+    PlaneHandle,
+    RotateGizmo,
+    RotateHandle,
+    ScaleGizmo,
+    ScaleHandle,
+    SphericalHitbox,
+    TorusHitbox,
+    TranslateGizmo,
+    TranslateHandle
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+<script>
+	$( function () {
+		$( '#main' ).localScroll( {
+			offset : { top : 60 } //offset by the height of your header (give or take a few px, see what works for you)
+		} );
+		$( "dt.name" ).each( function () {
+			var $this = $( this ).find("h4");
+			var icon = $( "<i/>" ).addClass( "icon-plus-sign" ).addClass( "pull-right" ).addClass( "icon-white" );
+			var dt = $(this);
+			var children = dt.next( "dd" );
+
+			dt.prepend( icon ).css( {cursor : "pointer"} );
+			dt.addClass( "member-collapsed" ).addClass( "member" );
+
+
+			children.hide();
+
+			dt.children().on( "click", function () {
+				children = dt.next( "dd" );
+				children.slideToggle( "fast", function () {
+
+					if ( children.is( ":visible" ) ) {
+						icon.addClass( "icon-minus-sign" ).removeClass( "icon-plus-sign" ).removeClass( "icon-white" );
+						dt.addClass( "member-open" ).animate( "member-collapsed" );
+					} else {
+						icon.addClass( "icon-plus-sign" ).removeClass( "icon-minus-sign" ).addClass( "icon-white" );
+						dt.addClass( "member-collapsed" ).removeClass( "member-open" );
+					}
+				} );
+			} );
+
+		} );
+	} );
+</script>
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
