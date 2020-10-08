@@ -8,10 +8,9 @@
 
 class AbstractMongooseModel {
 
-    static getSchemaFrom ( Mongoose, force = false ) {
+    static getSchemaFrom ( Mongoose ) {
 
         if ( !this._schema ) {
-            //        if ( !this._schema || force ) {
             this._schema = this.schema( Mongoose )
         }
 
@@ -20,14 +19,13 @@ class AbstractMongooseModel {
     }
 
     static schema ( Mongoose ) {
-        console.error( `${ this.name }.schema(): Need to be override !` )
-        return new Mongoose.Schema( {} )
+        throw new Error( `${ this.name }.schema(): Need to be override !` )
+        return null
     }
 
-    static getModelFrom ( Mongoose, force = false ) {
+    static getModelFrom ( Mongoose ) {
 
         if ( !this._model ) {
-            //        if ( !this._model || force ) {
             this._model = this.model( Mongoose, this.getSchemaFrom( Mongoose ) )
         }
 
@@ -36,7 +34,7 @@ class AbstractMongooseModel {
     }
 
     static model ( Mongoose, Schema ) {
-        console.error( `${ this.name }.model(): Need to be override !` )
+        throw new Error( `${ this.name }.model(): Need to be override !` )
         return null
     }
 
