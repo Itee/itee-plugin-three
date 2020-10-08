@@ -80,45 +80,6 @@ class DBFLoader {
     //    static DeletedRecord = 0x1A
     //    static YearOffset    = 1900
 
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value
-    }
-
-    setManager ( value ) {
-        this.manager = value
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value
-    }
-
-    setLogger ( value ) {
-        this.logger = value
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value
-    }
-
-    setReader ( value ) {
-        this.reader = value
-        return this
-    }
-
     /**
      *
      * @param manager
@@ -139,6 +100,45 @@ class DBFLoader {
         this.logger  = _parameters.logger
         this.reader  = _parameters.reader
 
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
     }
 
     /**

@@ -74,7 +74,6 @@
  * @see {@link https://github.com/Itee/itee-client/|Itee.Client}
  */
 
-
 /**
  * The itee-database package.
  *
