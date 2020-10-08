@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.PolyhedronBufferGeometry = {
+    name:            'PolyhedronBufferGeometry',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

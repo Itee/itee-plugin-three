@@ -65,6 +65,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Camera = {
+    name:            'Camera',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

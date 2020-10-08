@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.CompressedTexture = {
+    name:            'CompressedTexture',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

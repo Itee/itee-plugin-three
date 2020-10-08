@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Bone = {
+    name:            'Bone',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.TorusKnotBufferGeometry = {
+    name:            'TorusKnotBufferGeometry',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.FaceNormalsHelper = {
+    name:            'FaceNormalsHelper',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

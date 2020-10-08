@@ -68,6 +68,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshPhysicalMaterial = {
+    name:            'MeshPhysicalMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

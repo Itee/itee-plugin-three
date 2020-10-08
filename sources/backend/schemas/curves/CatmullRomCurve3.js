@@ -71,6 +71,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.CatmullRomCurve3 = {
+    name:            'CatmullRomCurve3',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

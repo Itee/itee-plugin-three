@@ -90,6 +90,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshLambertMaterial = {
+    name:            'MeshLambertMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

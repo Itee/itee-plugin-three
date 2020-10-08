@@ -63,7 +63,9 @@ function registerModelTo ( Mongoose ) {
 
 }
 
+
 module.exports.Audio = {
+    name:            'Audio',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

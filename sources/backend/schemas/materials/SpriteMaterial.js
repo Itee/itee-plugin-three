@@ -73,6 +73,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.SpriteMaterial = {
+    name:            'SpriteMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

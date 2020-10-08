@@ -73,6 +73,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.PointsMaterial = {
+    name:            'PointsMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

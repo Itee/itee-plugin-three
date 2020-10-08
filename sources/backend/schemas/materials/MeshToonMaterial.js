@@ -104,6 +104,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshToonMaterial = {
+    name:            'MeshToonMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 export const Group = {
+    name:            'Group',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

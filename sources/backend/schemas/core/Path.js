@@ -32,7 +32,7 @@ function _createSchema ( Mongoose ) {
     const Vector2 = Types.Vector2
 
     const NestedCurveSchema = new Schema( {
-        type: {
+        type:               {
             type:    String,
             default: 'Curve'
         },
@@ -91,6 +91,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Path = {
+    name:            'Path',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

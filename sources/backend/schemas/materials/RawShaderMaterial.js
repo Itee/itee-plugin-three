@@ -87,6 +87,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.RawShaderMaterial = {
+    name:            'RawShaderMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

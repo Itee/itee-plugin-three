@@ -34,7 +34,7 @@ function _createSchema ( Mongoose ) {
     const Vector3  = Types.Vector3
 
     _schema = new Schema( {
-        lensFlares: [ {
+        lensFlares:     [ {
             texture:  ObjectId,
             size:     Number,
             distance: Number,
@@ -83,6 +83,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LensFlare = {
+    name:            'LensFlare',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

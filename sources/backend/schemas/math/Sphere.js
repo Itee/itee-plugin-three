@@ -37,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Sphere = {
+    name:            'Sphere',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

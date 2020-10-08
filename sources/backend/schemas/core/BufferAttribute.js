@@ -50,7 +50,7 @@ function _createSchema ( Mongoose ) {
     }
 
     _schema = new Schema( {
-        array: {
+        array:       {
             type: Buffer,
             set:  ( array ) => {
 
@@ -186,6 +186,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.BufferAttribute = {
+    name:            'BufferAttribute',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

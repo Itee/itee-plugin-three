@@ -37,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Plane = {
+    name:            'Plane',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

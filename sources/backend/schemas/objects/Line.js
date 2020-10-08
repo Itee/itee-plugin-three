@@ -76,6 +76,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Line = {
+    name:            'Line',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

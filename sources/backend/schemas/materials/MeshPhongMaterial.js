@@ -100,6 +100,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshPhongMaterial = {
+    name:            'MeshPhongMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

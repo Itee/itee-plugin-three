@@ -78,6 +78,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineDashedMaterial = {
+    name:            'LineDashedMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

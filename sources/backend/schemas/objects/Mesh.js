@@ -76,6 +76,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Mesh = {
+    name:            'Mesh',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

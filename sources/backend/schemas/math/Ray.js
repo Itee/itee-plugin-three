@@ -37,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Ray = {
+    name:            'Ray',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

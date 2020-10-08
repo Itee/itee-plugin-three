@@ -71,6 +71,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.CubicBezierCurve3 = {
+    name:            'CubicBezierCurve3',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

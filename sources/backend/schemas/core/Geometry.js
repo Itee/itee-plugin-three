@@ -33,23 +33,23 @@ function _createSchema ( Mongoose ) {
     const Vector3     = Types.Vector3
 
     _schema = new Schema( {
-        uuid:          String,
-        name:          String,
-        type:          String,
-        vertices:      [ Vector3 ],
-        colors:        [ Number ],
-        faces:         [ Face3Schema ],
-        faceVertexUvs: [ [ Number ] ],
-        morphTargets:  [ Number ],
-        morphNormals:  [ Number ],
-        skinWeights:   [ Number ],
-        skinIndices:   [ Number ],
-        lineDistances: [ Number ],
-        boundingBox:   {
+        uuid:                    String,
+        name:                    String,
+        type:                    String,
+        vertices:                [ Vector3 ],
+        colors:                  [ Number ],
+        faces:                   [ Face3Schema ],
+        faceVertexUvs:           [ [ Number ] ],
+        morphTargets:            [ Number ],
+        morphNormals:            [ Number ],
+        skinWeights:             [ Number ],
+        skinIndices:             [ Number ],
+        lineDistances:           [ Number ],
+        boundingBox:             {
             min: Vector3,
             max: Vector3
         },
-        boundingSphere: {
+        boundingSphere:          {
             center: Vector3,
             radius: Number
         },
@@ -101,6 +101,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 export const Geometry = {
+    name: 'Geometry',
     getSchemaFrom,
     getModelFrom,
     registerModelTo

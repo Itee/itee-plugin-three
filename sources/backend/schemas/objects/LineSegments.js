@@ -76,6 +76,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineSegments = {
+    name:            'LineSegments',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

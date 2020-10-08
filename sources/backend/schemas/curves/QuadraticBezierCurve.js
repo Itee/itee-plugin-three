@@ -70,6 +70,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.QuadraticBezierCurve = {
+    name:            'QuadraticBezierCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -43,6 +43,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Face3 = {
+    name:            'Face3',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

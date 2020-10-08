@@ -83,6 +83,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.SkinnedMesh = {
+    name:            'SkinnedMesh',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

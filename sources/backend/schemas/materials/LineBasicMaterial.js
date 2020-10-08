@@ -72,6 +72,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineBasicMaterial = {
+    name:            'LineBasicMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

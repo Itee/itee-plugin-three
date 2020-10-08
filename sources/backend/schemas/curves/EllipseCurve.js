@@ -73,6 +73,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.EllipseCurve = {
+    name:            'EllipseCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

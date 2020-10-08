@@ -79,6 +79,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshDepthMaterial = {
+    name:            'MeshDepthMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

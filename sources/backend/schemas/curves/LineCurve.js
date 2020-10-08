@@ -69,6 +69,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineCurve = {
+    name:            'LineCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -71,6 +71,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.ShadowMaterial = {
+    name:            'ShadowMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

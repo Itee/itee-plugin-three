@@ -76,6 +76,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Points = {
+    name:            'Points',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -103,6 +103,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Material = {
+    name:            'Material',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

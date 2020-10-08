@@ -69,6 +69,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Skeleton = {
+    name:            'Skeleton',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

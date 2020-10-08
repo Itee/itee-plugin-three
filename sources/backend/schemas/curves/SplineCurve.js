@@ -68,6 +68,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.SplineCurve = {
+    name:            'SplineCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -76,6 +76,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineLoop = {
+    name:            'LineLoop',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -74,6 +74,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.ArcCurve = {
+    name:            'ArcCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

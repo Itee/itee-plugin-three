@@ -67,6 +67,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.CanvasTexture = {
+    name:            'CanvasTexture',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

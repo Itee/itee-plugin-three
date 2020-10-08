@@ -11,8 +11,8 @@
 import { BSON_DATA_OBJECT } from 'bson'
 import {
     isNotDefined,
-    isNotObject,
-    isNotNumber
+    isNotNumber,
+    isNotObject
 }                           from 'itee-validators'
 
 /**

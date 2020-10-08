@@ -71,6 +71,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Sprite = {
+    name:            'Sprite',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

@@ -68,6 +68,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LOD = {
+    name:            'LOD',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

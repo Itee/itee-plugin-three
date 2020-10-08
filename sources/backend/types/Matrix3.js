@@ -14,7 +14,7 @@ import {
     isNotArray,
     isNotDefined,
     isNotNumber
-}                           from 'itee-validators'
+}                          from 'itee-validators'
 
 /**
  * The type registering function.

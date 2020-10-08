@@ -37,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Line3 = {
+    name:            'Line3',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

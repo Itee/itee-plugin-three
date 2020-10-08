@@ -82,6 +82,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshNormalMaterial = {
+    name:            'MeshNormalMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

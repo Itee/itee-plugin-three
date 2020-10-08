@@ -38,6 +38,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Triangle = {
+    name:            'Triangle',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
