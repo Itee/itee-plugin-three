@@ -8,7 +8,9 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferAttribute } = require( './BufferAttribute' )
+//const { BufferAttribute } = require( './BufferAttribute' )
+import { BufferAttribute } from './BufferAttribute'
+//const { BufferAttribute } = require( './BufferAttribute' )
 
 let _schema = undefined
 let _model  = undefined
@@ -95,8 +97,12 @@ function registerModelTo ( Mongoose ) {
 
 }
 
-module.exports.BufferGeometry = {
+const BufferGeometry = {
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo
 }
+export { BufferGeometry }
+
+
+//module.exports.BufferGeometry =
