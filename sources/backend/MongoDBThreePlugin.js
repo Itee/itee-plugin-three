@@ -14,6 +14,7 @@ import {
     TMongoDBPlugin,
     TMongooseController
 }                                    from 'itee-mongodb'
+import { TObjects3DController }      from './controllers/TObjects3DController'
 import { ColladaToThree }            from './converters/ColladaToThree'
 import { DbfToThree }                from './converters/DbfToThree'
 import { FbxToThree }                from './converters/FbxToThree'
@@ -24,7 +25,7 @@ import { ShpToThree }                from './converters/ShpToThree'
 import { StlToThree }                from './converters/StlToThree'
 import { TdsToThree }                from './converters/TdsToThree'
 import { ThreeToMongoDB }            from './inserters/ThreeToMongoDB'
-
+//import { BooleanKeyframeTrack } from './schemas/animation/tracks/BooleanKeyframeTrack'
 import { Audio }                     from './schemas/audio/Audio'
 import { AudioListener }             from './schemas/audio/AudioListener'
 import { PositionalAudio }           from './schemas/audio/PositionalAudio'
@@ -216,6 +217,9 @@ export default new TMongoDBPlugin()
     .addType( Vector2Type )
     .addType( Vector3Type )
     .addType( Vector4Type )
+    //    .addSchema( KeyframeTrack )
+    //    .addSchema( BooleanKeyframeTrack )
+    //    .addSchema( ColorKeyframeTrack )
     .addSchema( Audio )
     .addSchema( AudioListener )
     .addSchema( PositionalAudio )
@@ -388,20 +392,20 @@ export default new TMongoDBPlugin()
     .addSchema( DepthTexture )
     .addSchema( Texture )
     .addSchema( VideoTexture )
-    .addController( TMongooseController )
+    .addController( TObjects3DController )
     .addDescriptor( {
         route:      '/objects',
         controller: {
-            name:    'TMongooseController',
+            name:    'TObjects3DController',
             options: {
                 schemaName: 'Objects3D'
             },
-            can: {
+            can:     {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read: {
+                read:   {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -416,6 +420,7 @@ export default new TMongoDBPlugin()
             }
         }
     } )
+    .addController( TMongooseController )
     .addDescriptor( {
         route:      '/curves',
         controller: {
@@ -423,12 +428,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Curves'
             },
-            can: {
+            can:     {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read: {
+                read:   {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -450,12 +455,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Geometries'
             },
-            can: {
+            can:     {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read: {
+                read:   {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -477,12 +482,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Materials'
             },
-            can: {
+            can:     {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read: {
+                read:   {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -504,12 +509,12 @@ export default new TMongoDBPlugin()
             options: {
                 schemaName: 'Textures'
             },
-            can: {
+            can:     {
                 create: {
                     on:   'put',
                     over: '/(:id)?'
                 },
-                read: {
+                read:   {
                     on:   'post',
                     over: '/(:id)?'
                 },
@@ -542,7 +547,7 @@ export default new TMongoDBPlugin()
                     MtlToThree:     new MtlToThree(),
                     ObjToThree:     new Obj2ToThree()
                 },
-                rules: [ {
+                rules:      [ {
                     on:  '.json',
                     use: 'JsonToThree'
                 }, {
@@ -576,9 +581,9 @@ export default new TMongoDBPlugin()
                     on:  [ '.mtl', '.obj' ],
                     use: [ 'MtlToThree', 'ObjToThree' ]
                 } ],
-                inserter: ThreeToMongoDB
+                inserter:   ThreeToMongoDB
             },
-            can: {
+            can:     {
                 processFiles: {
                     on:   'post',
                     over: '/'
