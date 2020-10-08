@@ -56,7 +56,7 @@ Object3D._createSchema   = Mongoose => {
         matrixWorldNeedsUpdate: Boolean,
         layers:                 {
             type: Number,
-            set:  value => ( value.mask )
+            set:  value => value.mask
         },
         visible:                Boolean,
         castShadow:             Boolean,
