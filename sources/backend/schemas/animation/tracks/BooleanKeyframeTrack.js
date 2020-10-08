@@ -22,8 +22,8 @@ class BooleanKeyframeTrack extends AbstractMongooseModel {
                 type:    Number,
                 default: 2300
             },
-            ValueBufferType:      Array,
-            ValueTypeName:        {
+            ValueBufferType: Array,
+            ValueTypeName:   {
                 type:    String,
                 default: 'bool'
             }

@@ -18,9 +18,8 @@ class AbstractMongooseModel {
 
     }
 
-    static schema ( Mongoose ) {
+    static schema ( /*Mongoose*/ ) {
         throw new Error( `${ this.name }.schema(): Need to be override !` )
-        return null
     }
 
     static getModelFrom ( Mongoose ) {
@@ -33,15 +32,14 @@ class AbstractMongooseModel {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model ( /*Mongoose, Schema*/ ) {
         throw new Error( `${ this.name }.model(): Need to be override !` )
-        return null
     }
 
     static registerModelTo ( Mongoose ) {
 
-        const schema = this.getSchemaFrom( Mongoose, true )
-        const model  = this.getModelFrom( Mongoose, true )
+        this.getSchemaFrom( Mongoose, true )
+        this.getModelFrom( Mongoose, true )
 
         return Mongoose
 

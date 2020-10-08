@@ -18,8 +18,8 @@ class KeyframeTrack extends AbstractMongooseModel {
                 type:    Number,
                 default: 2301
             },
-            TimeBufferType:       Number,
-            ValuesBufferType:     Number
+            TimeBufferType:   Number,
+            ValuesBufferType: Number
         }, {
             collection:       'keyframes',
             discriminatorKey: 'type'
