@@ -1,10 +1,8 @@
 /**
+ * @module Schemas/Textures/Texture
+ * @desc Export the ThreeJs Texture Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema = undefined
@@ -96,6 +94,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Texture = {
+    name: 'Texture',
     getSchemaFrom,
     getModelFrom,
     registerModelTo

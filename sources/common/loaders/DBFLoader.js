@@ -1,4 +1,5 @@
 /**
+ * @module Loader/DBFLoader
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
@@ -7,9 +8,6 @@
  * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
  * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
  *
- * @class Todo...
- * @classdesc Todo...
- * @example Todo...
  *
  */
 
@@ -71,50 +69,16 @@ const DataType = toEnum( {
     OLE:           'G'
 } )
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class DBFLoader {
 
     //    static Terminator    = 0x0D
     //    static DeletedRecord = 0x1A
     //    static YearOffset    = 1900
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value
-    }
-
-    setManager ( value ) {
-        this.manager = value
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value
-    }
-
-    setLogger ( value ) {
-        this.logger = value
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value
-    }
-
-    setReader ( value ) {
-        this.reader = value
-        return this
-    }
 
     /**
      *
@@ -136,6 +100,45 @@ class DBFLoader {
         this.logger  = _parameters.logger
         this.reader  = _parameters.reader
 
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
     }
 
     /**

@@ -1,16 +1,13 @@
 /**
+ * @module Loader/SHPLoader
+ * @desc Export SHPLoader to load .shp files
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- *
- * Constructor parameter:
- *
- * size - the size of the square view
- *
- * @class Todo...
- * @classdesc Todo...
  * @example Todo...
  *
  */
@@ -60,78 +57,21 @@ const ShapeType = toEnum( {
     MultiPatch:  31
 } )
 
+/**
+ * @class
+ * @classdesc This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ * @export
+ */
 class SHPLoader {
 
-//    static FileCode      = 9994
-//    static MinFileLength = 100
-//    static MinVersion    = 1000
-
-    get globalOffset () {
-        return this._globalOffset
-    }
-
-    set globalOffset ( value ) {
-        this._globalOffset = value
-    }
-
-    setGlobalOffset ( value ) {
-        this.globalOffset = value
-        return this
-    }
-
-    get worldAxis () {
-        return this._worldAxis
-    }
-
-    set worldAxis ( value ) {
-        this._worldAxis = value
-    }
-
-    setWorldAxis ( value ) {
-        this.worldAxis = value
-        return this
-    }
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value
-    }
-
-    setManager ( value ) {
-        this.manager = value
-        return this
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value
-    }
-
-    setLogger ( value ) {
-        this.logger = value
-        return this
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value
-    }
-
-    setReader ( value ) {
-        this.reader = value
-        return this
-    }
+    //    static FileCode      = 9994
+    //    static MinFileLength = 100
+    //    static MinVersion    = 1000
 
     /**
+     *
+     * Because ctor is blablabla
      *
      * @param manager
      * @param logger
@@ -158,6 +98,71 @@ class SHPLoader {
         this.globalOffset = _parameters.globalOffset
         this.worldAxis    = _parameters.worldAxis
 
+    }
+
+    get globalOffset () {
+        return this._globalOffset
+    }
+
+    set globalOffset ( value ) {
+        this._globalOffset = value
+    }
+
+    get worldAxis () {
+        return this._worldAxis
+    }
+
+    set worldAxis ( value ) {
+        this._worldAxis = value
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value
+    }
+
+    setGlobalOffset ( value ) {
+        this.globalOffset = value
+        return this
+    }
+
+    setWorldAxis ( value ) {
+        this.worldAxis = value
+        return this
+    }
+
+    setManager ( value ) {
+        this.manager = value
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value
+        return this
     }
 
     /**

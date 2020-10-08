@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Objects/Group
+ * @desc Export the ThreeJs Group Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 import { Object3D } from '../core/Object3D'
@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 export const Group = {
+    name:            'Group',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

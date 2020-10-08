@@ -1,3 +1,14 @@
+/**
+ * @module Schemas/Scenes/FogExp2
+ * @desc Export the ThreeJs FogExp2 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ * @requires {@link module:Schemas/Scenes/Fog Schemas/Scenes/Fog}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
 const { Object3D } = require( '../core/Object3D' )
 const { Fog }      = require( './Fog' )
 
@@ -63,6 +74,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Scene = {
+    name: 'Scene',
     getSchemaFrom,
     getModelFrom,
     registerModelTo

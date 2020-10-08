@@ -1,10 +1,8 @@
 /**
+ * @module Objects3D/OrbitControlsHelper
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class OrbitControlsHelper
- * @classdesc Todo...
- * @example Todo...
  *
  */
 
@@ -26,6 +24,11 @@ import { LineSegments }           from 'three-full/sources/objects/LineSegments'
 //    VertexColors
 //} from 'three-full'
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class OrbitControlsHelper extends LineSegments {
 
     constructor ( parameters = {} ) {

@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Curves/SplineCurve
+ * @desc Export the ThreeJs SplineCurve Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve } = require( './Curve' )
@@ -68,6 +68,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.SplineCurve = {
+    name:            'SplineCurve',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

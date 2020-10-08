@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Textures/DepthTexture
+ * @desc Export the ThreeJs DepthTexture Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Textures/Texture Schemas/Textures/Texture}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Texture } = require( './Texture' )
@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.DepthTexture = {
+    name:            'DepthTexture',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

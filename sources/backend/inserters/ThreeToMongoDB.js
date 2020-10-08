@@ -1,11 +1,13 @@
 /**
+ * @module Inserters/ThreeToMongoDB
+ * @desc Export ThreeToMongoDB mongodb inserter class.
+
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 import { DefaultLogger }         from 'itee-client'
@@ -18,18 +20,29 @@ import {
     isNull
 }                                from 'itee-validators'
 
+/**
+ * This class allow to insert ThreeJs stuff in MongoDB database.
+ *
+ * @class
+ * @augments TAbstractDataInserter
+ */
 class ThreeToMongoDB extends TAbstractDataInserter {
 
+    /**
+     * @constructor
+     * @param {Object} [parameters={}] - An object containing all parameters to pas throw the inheritance chain and for initialize this instance
+     * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
+     */
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
-                logger: DefaultLogger,
+                logger: DefaultLogger
             }, ...parameters
         }
         super( _parameters )
 
-        this.logger = _parameters.logger
+        this.logger        = _parameters.logger
         this.mergeStrategy = 'add'
 
         // Addition
@@ -43,6 +56,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     }
 
     // Utils
+    // Todo: Use itee-utils
     static _arrayify ( data ) {
 
         let array = []
@@ -61,6 +75,18 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Main entry point to insert data into database; It apply merge strategy over data to insert.
+     *
+     * @param {Object} data - The ThreeJs data to insert
+     * @param {Object} parameters - A parameters map that contain parsing options
+     * @param {String} [parameters.mergeStrategy=add] - The merging strategy to apply during insert process
+     * @param {callback} onSuccess - A callback that will handle the parsed result
+     * @param {callback} onProgress - A callback that will handle the parsing progress
+     * @param {callback} onError - A callback that will handle the parsing errors
+     * @returns {Promise<void>}
+     * @private
+     */
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = ThreeToMongoDB._arrayify( data )
@@ -145,6 +171,16 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to parse multiple objects on parallel.
+     * In case objects is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [objects=[]] - The objects to parse
+     * @param {String} [parentId=null] - The mongodb parent id to apply to current objects
+     * @returns {Promise<Array<Mongoose.Query|null>>|null}
+     * @private
+     */
     async _parseObjects ( objects = [], parentId = null ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects )
@@ -161,6 +197,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to parse one object. In function of the mergingStrategy it will perform any database CRUD operation.
+     *
+     * @param {Object} objects - The object to parse
+     * @param {String} [parentId=null] - The mongodb parent id to apply to current object
+     * @returns {Promise<Mongoose.Query|null>|null}
+     * @private
+     */
     async _parseObject ( object, parentId = null ) {
 
         if ( isNotDefined( object ) ) {
@@ -328,6 +372,15 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Allow to update or create multiple objects on parallel. It create object only if it does not exist in database, else it perform an update based on given data.
+     * In case objects parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [objects=[]] - The objects to updates or creates if not exist
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _getOrCreateDocuments ( objects = [] ) {
 
         const _objects = ThreeToMongoDB._arrayify( objects )
@@ -344,6 +397,15 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    // Todo: Rename to _updateOrCreateDocument
+    /**
+     * Update or create an object. It create object only if it does not exist in database, else it perform an update based on given data.
+     * If the given data is null or undefined it return null.
+     *
+     * @param {Object} data - The data to update or create if not exist
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _getOrCreateDocument ( data ) {
 
         if ( isNotDefined( data ) ) {
@@ -361,8 +423,15 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    // Create
-    // Todo non async createDocument to allow multi promises at once
+    /**
+     * Create new database entries based on given datas.
+     * In case datas parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Object|Array<Object>} [datas=[]] - The objects to creates
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _createDocuments ( datas = [] ) {
 
         const _datas = ThreeToMongoDB._arrayify( datas )
@@ -379,6 +448,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Create new database entry based on given data.
+     * If the given data is null or undefined it return null.
+     *
+     * @param {Object} data - The object to create
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _createDocument ( data ) {
 
         if ( isNotDefined( data ) ) {
@@ -391,7 +468,16 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    // Read
+    // Todo: Rename to _readDocument
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _readOneDocument ( type, query ) {
 
         if ( isNotDefined( type ) || isNotDefined( query ) ) {
@@ -407,6 +493,16 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    // Todo: Rename to _readDocuments
+    /**
+     * Read all document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _readManyDocument ( type, query ) {
 
         if ( isNotDefined( type ) || isNotDefined( query ) ) {
@@ -414,15 +510,25 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         }
 
         let models = await this._driver
-                                  .model( type )
-                                  .find( query )
-                                  .exec()
+                               .model( type )
+                               .find( query )
+                               .exec()
 
         return models.map( model => model._doc )
 
     }
 
-    // Update
+    /**
+     * Update database entries based on given datas.
+     * In case documents parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Array<Mongoose.Document>|Mongoose.Document} documents - The documents to updates
+     * @param {Object} updateQuery - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @param {Object} queryOptions - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents )
@@ -439,6 +545,16 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to update
+     * @param {Object} updateQuery - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @param {Object} queryOptions - @see {@link https://mongoosejs.com/docs/api/model.html#model_Model.findByIdAndUpdate}
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _updateDocument ( document, updateQuery, queryOptions ) {
 
         if ( isNotDefined( document ) ) {
@@ -452,7 +568,15 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    // Delete
+    /**
+     * Delete database entries based on given documents.
+     * In case documents parameter is not an array it will be converted to it before any processing.
+     * If the given array is empty it return null.
+     *
+     * @param {Array<Mongoose.Document>|Mongoose.Document} documents - The documents to deletes
+     * @returns {Promise<Array<Mongoose.Document|null>>|null}
+     * @private
+     */
     async _deleteDocuments ( documents = [] ) {
 
         const _documents = ThreeToMongoDB._arrayify( documents )
@@ -469,6 +593,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Update a database document based on given updateQuery and queryOptions.
+     * If the given document is null or undefined it return null.
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
     async _deleteDocument ( document ) {
 
         if ( isNotDefined( document ) ) {
@@ -483,6 +615,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     }
 
     ///
+    /**
+     * Remove documents in safe and recursive way over children, and others referenced objects.
+     *
+     * @param {Array<Mongoose.Document>} documents - The documents to deletes
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
     async _removeChildrenDocuments ( documents ) {
 
         let removed = []
@@ -493,6 +632,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
+    /**
+     * Remove a document from database after remove his children and other related stuff like geometry, materials etc...
+     *
+     * @param {Mongoose.Document} document - The document to delete
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeChildDocument ( document ) {
 
         // Remove children recursively
@@ -510,7 +656,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    // Remove orphan geometry
+    /**
+     * Remove geometry only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} geometryId - The geometry id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeOrphanGeometryWithId ( geometryId ) {
 
         if ( isNotDefined( geometryId ) ) { return }
@@ -524,6 +676,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     }
 
     // Remove only orphan materials
+    /**
+     * Remove materials only in case they are orphan and no objects still reference them.
+     *
+     * @param {Array<Mongoose.ObjectId|String>} materialsIds - The materials ids to match for deletion
+     * @returns {Promise<Array<void>>}
+     * @private
+     */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
 
         const removed = []
@@ -535,7 +694,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     }
 
-    // Remove only orphan material
+    /**
+     * Remove material only in case it is orphan and no object still reference it.
+     *
+     * @param {Mongoose.ObjectId|String} materialsIds - The material id to match for deletion
+     * @returns {Promise<void>}
+     * @private
+     */
     async _removeOrphanMaterialWithId ( materialId ) {
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )
@@ -548,6 +713,11 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
 }
 
+/**
+ * Allow to check if Materials correspond to expected Mesh type
+ * @type {string[]}
+ */
+// Todo: Find a way to validate this on schema
 ThreeToMongoDB.AvailableCurveTypes = [
     'Curve',
     'ArcCurve',
@@ -564,13 +734,10 @@ ThreeToMongoDB.AvailableCurveTypes = [
     'Path',
     'Shape'
 ]
-
-ThreeToMongoDB.AvailableLineTypes         = [ 'Line', 'LineLoop', 'LineSegments' ]
-ThreeToMongoDB.AvailableLineMaterialTypes = [ 'LineBasicMaterial', 'LineDashedMaterial' ]
-
-ThreeToMongoDB.AvailablePointTypes         = [ 'Points' ]
-ThreeToMongoDB.AvailablePointMaterialTypes = [ 'PointsMaterial' ]
-
+ThreeToMongoDB.AvailableLineTypes           = [ 'Line', 'LineLoop', 'LineSegments' ]
+ThreeToMongoDB.AvailableLineMaterialTypes   = [ 'LineBasicMaterial', 'LineDashedMaterial' ]
+ThreeToMongoDB.AvailablePointTypes          = [ 'Points' ]
+ThreeToMongoDB.AvailablePointMaterialTypes  = [ 'PointsMaterial' ]
 ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ]
 ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ]
 

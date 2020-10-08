@@ -1,10 +1,9 @@
 /**
+ * @module Schemas/Materials/Material
+ * @desc Export the ThreeJs Material Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Material
- *
- * @description Todo...
  */
 
 let _schema = undefined
@@ -104,6 +103,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Material = {
+    name:            'Material',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

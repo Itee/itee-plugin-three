@@ -1,10 +1,11 @@
 /**
+ * @module Schemas/Core/Geometry
+ * @desc Export the ThreeJs Geometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Face3 Schemas/Core/Face3}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 import { Face3 } from './Face3'
@@ -32,23 +33,23 @@ function _createSchema ( Mongoose ) {
     const Vector3     = Types.Vector3
 
     _schema = new Schema( {
-        uuid:          String,
-        name:          String,
-        type:          String,
-        vertices:      [ Vector3 ],
-        colors:        [ Number ],
-        faces:         [ Face3Schema ],
-        faceVertexUvs: [ [ Number ] ],
-        morphTargets:  [ Number ],
-        morphNormals:  [ Number ],
-        skinWeights:   [ Number ],
-        skinIndices:   [ Number ],
-        lineDistances: [ Number ],
-        boundingBox:   {
+        uuid:                    String,
+        name:                    String,
+        type:                    String,
+        vertices:                [ Vector3 ],
+        colors:                  [ Number ],
+        faces:                   [ Face3Schema ],
+        faceVertexUvs:           [ [ Number ] ],
+        morphTargets:            [ Number ],
+        morphNormals:            [ Number ],
+        skinWeights:             [ Number ],
+        skinIndices:             [ Number ],
+        lineDistances:           [ Number ],
+        boundingBox:             {
             min: Vector3,
             max: Vector3
         },
-        boundingSphere: {
+        boundingSphere:          {
             center: Vector3,
             radius: Number
         },
@@ -100,6 +101,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 export const Geometry = {
+    name: 'Geometry',
     getSchemaFrom,
     getModelFrom,
     registerModelTo

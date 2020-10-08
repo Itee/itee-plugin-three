@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Scenes/Fog
+ * @desc Export the ThreeJs Fog Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Scenes/Scene Schemas/Scenes/Scene}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 let _schema = undefined
@@ -37,8 +37,8 @@ function _createSchema ( Mongoose ) {
             y: Number,
             z: Number
         },
-        thumbnail: Buffer,
-        path:      String
+        thumbnail:   Buffer,
+        path:        String
     }, {
         _id: false,
         id:  false
@@ -47,6 +47,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Fog = {
+    name:            'Fog',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

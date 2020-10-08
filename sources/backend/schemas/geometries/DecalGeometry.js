@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Geometries/DecalGeometry
+ * @desc Export the ThreeJs DecalGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Geometry } = require( '../core/Geometry' )
@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.DecalGeometry = {
+    name:            'DecalGeometry',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

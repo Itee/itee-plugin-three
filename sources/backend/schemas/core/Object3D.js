@@ -31,16 +31,16 @@ Object3D._createSchema   = Mongoose => {
     const Euler      = Types.Euler
 
     Object3D._schema = new Schema( {
-        uuid:       String,
-        name:       String,
-        type:       String,
-        parent:     ObjectId,
-        children:   [ ObjectId ],
-        up:         Vector3,
-        position:   Vector3,
-        rotation:   Euler,
-        quaternion: Quaternion,
-        scale:      {
+        uuid:                   String,
+        name:                   String,
+        type:                   String,
+        parent:                 ObjectId,
+        children:               [ ObjectId ],
+        up:                     Vector3,
+        position:               Vector3,
+        rotation:               Euler,
+        quaternion:             Quaternion,
+        scale:                  {
             type:    Vector3,
             default: {
                 x: 1,
@@ -56,14 +56,14 @@ Object3D._createSchema   = Mongoose => {
         matrixWorldNeedsUpdate: Boolean,
         layers:                 {
             type: Number,
-            set:  value => ( value.mask )
+            set:  value => value.mask
         },
-        visible:       Boolean,
-        castShadow:    Boolean,
-        receiveShadow: Boolean,
-        frustumCulled: Boolean,
-        renderOrder:   Boolean,
-        userData:      {
+        visible:                Boolean,
+        castShadow:             Boolean,
+        receiveShadow:          Boolean,
+        frustumCulled:          Boolean,
+        renderOrder:            Boolean,
+        userData:               {
             type: Mixed,
             set:  value => {
 
@@ -111,6 +111,7 @@ Object3D._createModel    = Mongoose => {
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
+    // Care here, the model contains an S char, not the discriminator !
     Object3D._model = Mongoose.model( 'Objects3D', Object3D.getSchemaFrom( Mongoose ) )
     Object3D._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) )
 

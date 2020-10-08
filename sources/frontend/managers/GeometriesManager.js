@@ -1,10 +1,8 @@
 /**
+ * @module Managers/GeometriesManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class GeometriesManager
- * @classdesc Todo...
- * @example Todo...
  *
  * @requires {@link TDataBaseManager}
  * @requires '../../../node_modules/three/src/core/Geometry'
@@ -174,6 +172,11 @@ const ArrayType = toEnum( {
     Float64Array:      8
 } )
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class GeometriesManager extends TDataBaseManager {
 
     /**

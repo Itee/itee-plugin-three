@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Curves/LineCurve3
+ * @desc Export the ThreeJs LineCurve3 Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Curves/Curve Schemas/Curves/Curve}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Curve } = require( './Curve' )
@@ -69,6 +69,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.LineCurve3 = {
+    name:            'LineCurve3',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

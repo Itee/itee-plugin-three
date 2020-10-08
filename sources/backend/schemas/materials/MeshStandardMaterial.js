@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Materials/MeshStandardMaterial
+ * @desc Export the ThreeJs MeshStandardMaterial Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Materials/Material Schemas/Materials/Material}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { Material } = require( './Material' )
@@ -100,6 +100,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.MeshStandardMaterial = {
+    name:            'MeshStandardMaterial',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

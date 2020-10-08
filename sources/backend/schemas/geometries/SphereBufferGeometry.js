@@ -1,11 +1,11 @@
 /**
+ * @module Schemas/Geometries/SphereBufferGeometry
+ * @desc Export the ThreeJs SphereBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @file Todo
- *
- * @example Todo
- *
  */
 
 const { BufferGeometry } = require( '../core/BufferGeometry' )
@@ -64,6 +64,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.SphereBufferGeometry = {
+    name:            'SphereBufferGeometry',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo

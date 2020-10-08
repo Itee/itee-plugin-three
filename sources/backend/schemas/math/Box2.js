@@ -1,10 +1,9 @@
 /**
+ * @module Schemas/Math/Box2
+ * @desc Export the ThreeJs Box2 Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Box2
- *
- * @description The database counterpart of Three.Box2
  */
 
 let _schema = undefined
@@ -38,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Box2 = {
+    name:            'Box2',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose

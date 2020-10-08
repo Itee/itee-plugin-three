@@ -1,10 +1,8 @@
 /**
+ * @module Schemas/Curves/Curve
+ * @desc Export the ThreeJs Curve Model and Schema for Mongoose.
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Geometry
- *
- * @description Todo...
  */
 
 let _schema = undefined
@@ -27,7 +25,7 @@ function _createSchema ( Mongoose ) {
     const Schema = Mongoose.Schema
 
     _schema = new Schema( {
-        type: {
+        type:               {
             type:    String,
             default: 'Curve'
         },
@@ -73,6 +71,7 @@ function registerModelTo ( Mongoose ) {
 }
 
 module.exports.Curve = {
+    name: 'Curve',
     getSchemaFrom,
     getModelFrom,
     registerModelTo

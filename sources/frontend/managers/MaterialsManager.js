@@ -1,10 +1,9 @@
 /**
+ * @module Managers/MaterialsManager
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @class TScenesManager
- * @classdesc Todo...
- * @example Todo...
  * @requires TDataBaseManager
  *
  */
@@ -50,6 +49,11 @@ import { TexturesManager }     from './TexturesManager'
 
 const DEFAULT_IMAGE = new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )
 
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
 class MaterialsManager extends TDataBaseManager {
 
     /**

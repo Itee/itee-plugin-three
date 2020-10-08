@@ -1,11 +1,7 @@
 /**
+ * @module Loaders/UniversalLoader
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @class UniversalLoader
- * @classdesc The TUniversalLoader allow to automatically select correct THREE loader for given files. (based on https://github.com/jeromeetienne/threex.universalloader)
- * @example Todo...
- *
  */
 
 // TODO: DEPRECATED keep logic about dbf/shp then remove
@@ -44,7 +40,6 @@ import { SHPLoader } from './SHPLoader'
 
 // Helpers
 /**
- *
  * @param fileUrl
  * @return {string|*}
  */
@@ -90,6 +85,9 @@ function computeUrl ( fileUrl ) {
 }
 
 /**
+ * @class
+ * @classdesc The TUniversalLoader allow to automatically select correct THREE loader for given files. (based on https://github.com/jeromeetienne/threex.universalloader)
+ * @deprecated because...
  *
  * @param manager
  * @param logger
@@ -105,7 +103,7 @@ function UniversalLoader ( manager = DefaultLoadingManager, logger = DefaultLogg
 Object.assign( UniversalLoader.prototype, {
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param files
      * @param onLoad
      * @param onProgress
@@ -178,7 +176,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -233,7 +231,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param files
      * @param onLoad
      * @param onProgress
@@ -279,7 +277,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -299,7 +297,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -323,7 +321,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -343,7 +341,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -372,7 +370,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -392,7 +390,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -412,7 +410,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -455,7 +453,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param file
      * @param onLoad
      * @param onProgress
@@ -487,7 +485,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param objFile
      * @param mtlFile
      * @param onLoad
@@ -533,7 +531,7 @@ Object.assign( UniversalLoader.prototype, {
     },
 
     /**
-     *
+     * @memberOf module:Loaders/UniversalLoader~UniversalLoader
      * @param shpFile
      * @param dbfFile
      * @param onLoad

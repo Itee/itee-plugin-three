@@ -1,10 +1,9 @@
 /**
+ * @module Schemas/Math/Ray
+ * @desc Export the ThreeJs Ray Model and Schema for Mongoose.
+ *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @module Schemas/Core/Vector3
- *
- * @description The database counterpart of Three.Vector3
  */
 
 let _schema = undefined
@@ -38,6 +37,7 @@ function _createSchema ( Mongoose ) {
 }
 
 module.exports.Ray = {
+    name:            'Ray',
     getSchemaFrom:   getSchemaFrom,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
