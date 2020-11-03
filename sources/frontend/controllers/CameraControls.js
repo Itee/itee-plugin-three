@@ -143,9 +143,9 @@ class CameraControls extends EventDispatcher {
     /**
      * @constructor
      * @param {Object} parameters - A parameters object containing properties initialization
-     * @param {THREE.Camera} parameters.camera - The camera to use
+     * @param {THREE~Camera} parameters.camera - The camera to use
      * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
-     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+     * @param {THREE~Object3D} [parameters.target=THREE~Object3D] - A target to look, or used as pivot point
      * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
      * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
      */
@@ -180,29 +180,11 @@ class CameraControls extends EventDispatcher {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         }
-        this.logger    = _parameters.logger
 
-        /**
-         *
-         * Get/Set the value of the name property.
-         * @function module:Controllers/CameraControls~CameraControls~camera
-         * @property camera
-         * @throws Will throw an error if the argument is null.
-         * @param {string} newName
-         * @returns {string}
-         *
-         */
-        this.camera = _parameters.camera
-
-        /**
-         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
-         */
-        this.target = _parameters.target
-
-        /**
-         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
-         */
-        this.mode = _parameters.mode
+        this.logger     = _parameters.logger
+        this.camera     = _parameters.camera
+        this.target     = _parameters.target
+        this.mode       = _parameters.mode
         this.domElement = _parameters.domElement
 
         // Set to false to disable controls
@@ -354,6 +336,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * The camera getter
+     * @function module:Controllers/CameraControls~CameraControls#get camera
+     * @returns {THREE~Camera}
+     */
     get camera () {
 
         return this._camera
@@ -361,8 +348,9 @@ class CameraControls extends EventDispatcher {
     }
 
     /**
-     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
-     * @param value
+     * The camera setter
+     * @function module:Controllers/CameraControls~CameraControls#set camera
+     * @param {THREE~Camera} value
      * @throws Will throw an error if the argument is null.
      */
     set camera ( value ) {
@@ -375,6 +363,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * The target getter
+     * @type {THREE~Object3D}
+     * @throws {Error} if the argument is null.
+     */
     get target () {
 
         return this._target
@@ -391,6 +384,10 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+     * @throws {Error} if the argument is null.
+     */
     get mode () {
         return this._mode
     }
