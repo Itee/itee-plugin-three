@@ -159,7 +159,7 @@ class TObjects3DController extends TMongooseController {
 
         try {
 
-            const alternative = [ 'oneByOne', 'allInOne' ][ 1 ]
+            const alternative = [ 'oneByOne', 'allInOneByParentId', 'allInOneByChildrenIds' ][ 1 ]
             if ( alternative === 'oneByOne' ) {
 
                 const document        = await this._readOneDocument( 'Objects3D', { _id: id } )
@@ -173,7 +173,7 @@ class TObjects3DController extends TMongooseController {
                 TMongooseController.returnData( deleteResult, response )
 
 
-            } else {
+            } else if ( alternative === 'allInOneByParentId' ) {
 
                 const results = await this.getAllChildrenIds( id, true )
                 results.children.push( id )
@@ -184,15 +184,33 @@ class TObjects3DController extends TMongooseController {
                     materials:  [ ...new Set( results.materials ) ]
                 }
 
-                const deletedObjectsCount     = await this._deleteDocuments( 'Objects3D', cleanResults.children )
-                const deletedGeometriesResult = await this._deleteDocuments( 'Geometries', cleanResults.geometries )
-                const deletedMaterialsResult  = await this._deleteDocuments( 'Materials', cleanResults.materials )
+                //                const deletedObjectsCount     = await this._deleteDocuments( 'Objects3D', cleanResults.children )
+                //                const deletedGeometriesResult = await this._deleteDocuments( 'Geometries', cleanResults.geometries )
+                //                const deletedMaterialsResult  = await this._deleteDocuments( 'Materials', cleanResults.materials )
 
+                const [ deletedObjectsCount, deletedGeometriesResult, deletedMaterialsResult ] = await Promise.all( [
+                    this._deleteDocuments( 'Objects3D', cleanResults.children ),
+                    this._deleteDocuments( 'Geometries', cleanResults.geometries ),
+                    this._deleteDocuments( 'Materials', cleanResults.materials )
+                ] )
+
+                precisionsMap.stop( '_deleteOne' )
+                //                precisionsMap.log()
                 TMongooseController.returnData( {
                     deletedObjectsCount,
                     deletedGeometriesResult,
                     deletedMaterialsResult
                 }, response )
+
+            } else {
+
+                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
+                    _id:      true,
+                    geometry: true,
+                    material: true,
+                    children: true
+                } )
+
 
             }
 
