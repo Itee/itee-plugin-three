@@ -442,7 +442,11 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( ![ 'Window',
+                'HTMLDocument',
+                'HTMLDivElement',
+                'HTMLCanvasElement',
+                'OffscreenCanvas' ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -459,6 +463,10 @@ class CameraControls extends EventDispatcher {
         this._domElement.addEventListener( 'mouseleave', this._handlers.onMouseLeave, false )
         this.impose()
 
+    }
+
+    get handlers () {
+        return this._handlers
     }
 
     /**
