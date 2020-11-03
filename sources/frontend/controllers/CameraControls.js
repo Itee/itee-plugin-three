@@ -630,21 +630,24 @@ class CameraControls extends EventDispatcher {
     }
 
     // Handlers
-    _consumeEvent ( event ) {
+    _preventEvent ( event ) {
+        if ( !event.preventDefault ) { return }
 
-        if ( !event.cancelable ) {
-            return
-        }
+        event.preventDefault()
+    }
+
+    _consumeEvent ( event ) {
+        if ( !event.cancelable ) { return }
+        if ( !event.stopImmediatePropagation ) { return }
 
         event.stopImmediatePropagation()
-
     }
 
     // Keys
     _onKeyDown ( keyEvent ) {
 
         if ( !this.enabled ) { return }
-        keyEvent.preventDefault()
+        this._preventEvent( keyEvent )
 
         const actionMap = this.actionsMap
         const key       = keyEvent.keyCode
@@ -767,7 +770,7 @@ class CameraControls extends EventDispatcher {
     _onKeyUp ( keyEvent ) {
 
         if ( !this.enabled ) { return }
-        keyEvent.preventDefault()
+        this._preventEvent( keyEvent )
 
     }
 
@@ -775,7 +778,7 @@ class CameraControls extends EventDispatcher {
     _onTouchStart ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault()
+        this._preventEvent( touchEvent )
 
         this.previousTouches = touchEvent.touches
 
@@ -784,7 +787,7 @@ class CameraControls extends EventDispatcher {
     _onTouchEnd ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault()
+        this._preventEvent( touchEvent )
 
         this.previousTouches = []
         this._state          = State.None
@@ -794,7 +797,7 @@ class CameraControls extends EventDispatcher {
     _onTouchCancel ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault()
+        this._preventEvent( touchEvent )
 
         this.previousTouches = []
         this._state          = State.None
@@ -804,7 +807,7 @@ class CameraControls extends EventDispatcher {
     _onTouchLeave ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault()
+        this._preventEvent( touchEvent )
 
         this.previousTouches = []
         this._state          = State.None
@@ -814,7 +817,7 @@ class CameraControls extends EventDispatcher {
     _onTouchMove ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault()
+        this._preventEvent( touchEvent )
 
         const previousTouches         = this.previousTouches
         const currentTouches          = touchEvent.changedTouches
@@ -868,7 +871,7 @@ class CameraControls extends EventDispatcher {
     _onMouseEnter ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         this.impose()
         if ( mouseEvent.target.constructor !== HTMLDocument ) {
@@ -880,7 +883,7 @@ class CameraControls extends EventDispatcher {
     _onMouseLeave ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         if ( mouseEvent.target.constructor !== HTMLDocument ) {
             this._domElement.blur()
@@ -893,7 +896,7 @@ class CameraControls extends EventDispatcher {
     _onMouseDown ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         const actionMap = this.actionsMap
         const button    = mouseEvent.button
@@ -970,7 +973,7 @@ class CameraControls extends EventDispatcher {
     _onMouseMove ( mouseEvent ) {
 
         if ( !this.enabled || this._state === State.None ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         const state = this._state
         const delta = {
@@ -1014,7 +1017,7 @@ class CameraControls extends EventDispatcher {
     _onMouseWheel ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         const delta = mouseEvent.wheelDelta || mouseEvent.deltaY
         this._zoom( delta )
@@ -1025,7 +1028,7 @@ class CameraControls extends EventDispatcher {
     _onMouseUp ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         this._state = State.None
         this._consumeEvent( mouseEvent )
@@ -1035,7 +1038,7 @@ class CameraControls extends EventDispatcher {
     _onDblClick ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault()
+        this._preventEvent( mouseEvent )
 
         this.logger.warn( 'CameraControls: Double click events is not implemented yet, sorry for the disagreement.' )
 
