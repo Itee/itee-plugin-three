@@ -60,19 +60,16 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query ) {
-
-        if ( isNotDefined( type ) || isNotDefined( query ) ) {
-            return null
-        }
+    async _readManyDocument ( type, query, projection ) {
+        if ( isNotDefined( type ) || isNotDefined( query ) ) { return null }
 
         let models = await this._driver
                                .model( type )
-                               .find( query )
+                               .find( query, projection )
+                               .lean()
                                .exec()
 
         return models.map( model => model._doc )
-
     }
 
     /**
@@ -106,7 +103,12 @@ class TObjects3DController extends TMongooseController {
             materials:  []
         }
         const subChildrenPromises = []
-        const children            = await this._readManyDocument( 'Objects3D', { parent: parentId } )
+        const children            = await this._readManyDocument( 'Objects3D', { parent: parentId }, {
+            _id:      true,
+            geometry: true,
+            material: true,
+            children: true
+        } )
         for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
 
             const child   = children[ childIndex ]
