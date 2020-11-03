@@ -88,11 +88,12 @@ class TObjects3DController extends TMongooseController {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
-                         .exec()
+        const result = await this._driver
+                                 .model( document.type )
+                                 .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                                 .exec()
 
+        return result
     }
 
     async getAllChildrenIds ( parentId, recursive = false ) {
@@ -249,7 +250,7 @@ class TObjects3DController extends TMongooseController {
     async _deleteDocument ( document ) {
         if ( isNotDefined( document ) ) { return null }
 
-//        console.log( `Delete: ${ document.name } [${ document._id }]` )
+        //        console.log( `Delete: ${ document.name } [${ document._id }]` )
 
         const deleteResult = await this._driver
                                        .model( document.type )
