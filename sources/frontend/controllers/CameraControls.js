@@ -95,6 +95,10 @@ const CameraControlMode = toEnum( {
     Path:        4
 } )
 
+function isInWorker () {
+    return typeof importScripts === 'function'
+}
+
 /**
  * @class
  * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
@@ -153,7 +157,7 @@ class CameraControls extends EventDispatcher {
                 camera:     null,
                 target:     new Object3D(),
                 mode:       CameraControlMode.Orbit,
-                domElement: window
+                domElement: ( isInWorker() ) ? null : window
             }, ...parameters
         }
 
