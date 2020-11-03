@@ -10,6 +10,7 @@ import { TMongooseController } from 'itee-mongodb'
 import {
     isArray,
     isDefined,
+    isEmptyArray,
     isNotDefined
 }                              from 'itee-validators'
 
@@ -38,10 +39,7 @@ class TObjects3DController extends TMongooseController {
      * @private
      */
     async _readOneDocument ( type, query ) {
-
-        if ( isNotDefined( type ) || isNotDefined( query ) ) {
-            return null
-        }
+        if ( isNotDefined( type ) || isNotDefined( query ) ) { return null }
 
         const model = await this._driver
                                 .model( type )
@@ -205,6 +203,7 @@ class TObjects3DController extends TMongooseController {
     }
 
     async _deleteDocuments ( type, documentIds ) {
+        if ( isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
                                        .model( type )
@@ -317,7 +316,6 @@ class TObjects3DController extends TMongooseController {
      * @private
      */
     async _removeOrphanGeometryWithId ( geometryId ) {
-
         if ( isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } )
@@ -338,6 +336,8 @@ class TObjects3DController extends TMongooseController {
      * @private
      */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
+        if ( isNotDefined( materialsIds ) ) { return }
+        if ( isEmptyArray( materialsIds ) ) { return }
 
         const removed = []
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
@@ -356,6 +356,7 @@ class TObjects3DController extends TMongooseController {
      * @private
      */
     async _removeOrphanMaterialWithId ( materialId ) {
+        if ( isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )
         if ( referencingObjects.length > 1 ) { return }
