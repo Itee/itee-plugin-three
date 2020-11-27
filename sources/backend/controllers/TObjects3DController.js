@@ -195,8 +195,6 @@ class TObjects3DController extends TMongooseController {
                     this._deleteDocuments( 'Materials', cleanResults.materials )
                 ] )
 
-                precisionsMap.stop( '_deleteOne' )
-                //                precisionsMap.log()
                 TMongooseController.returnData( {
                     deletedObjectsCount,
                     deletedGeometriesResult,
@@ -205,13 +203,12 @@ class TObjects3DController extends TMongooseController {
 
             } else {
 
-                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
-                    _id:      true,
-                    geometry: true,
-                    material: true,
-                    children: true
-                } )
-
+//                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
+//                    _id:      true,
+//                    geometry: true,
+//                    material: true,
+//                    children: true
+//                } )
 
             }
 
