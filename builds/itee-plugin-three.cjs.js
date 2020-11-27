@@ -1,16 +1,17 @@
-console.log('Itee.Plugin.Three v1.3.0 - CommonJs')
+console.log('Itee.Plugin.Three v1.4.0 - CommonJs')
 'use strict';
-
-function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
 var iteeDatabase = require('itee-database');
 var iteeMongodb = require('itee-mongodb');
 var iteeValidators = require('itee-validators');
-var iteeValidators__default = _interopDefault(iteeValidators);
 var threeFull = require('three-full');
 var iteeClient = require('itee-client');
 var iteeUtils = require('itee-utils');
 var bson = require('bson');
+
+function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+
+var iteeValidators__default = /*#__PURE__*/_interopDefaultLegacy(iteeValidators);
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -45,10 +46,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _readOneDocument ( type, query ) {
-
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
-            return null
-        }
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) { return null }
 
         const model = await this._driver
                                 .model( type )
@@ -69,19 +67,16 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query ) {
-
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
-            return null
-        }
+    async _readManyDocument ( type, query, projection ) {
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) { return null }
 
         let models = await this._driver
                                .model( type )
-                               .find( query )
+                               .find( query, projection )
+                               .lean()
                                .exec();
 
         return models.map( model => model._doc )
-
     }
 
     /**
@@ -100,11 +95,12 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
-                         .exec()
+        const result = await this._driver
+                                 .model( document.type )
+                                 .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                                 .exec();
 
+        return result
     }
 
     async getAllChildrenIds ( parentId, recursive = false ) {
@@ -115,7 +111,12 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
             materials:  []
         };
         const subChildrenPromises = [];
-        const children            = await this._readManyDocument( 'Objects3D', { parent: parentId } );
+        const children            = await this._readManyDocument( 'Objects3D', { parent: parentId }, {
+            _id:      true,
+            geometry: true,
+            material: true,
+            children: true
+        } );
         for ( let childIndex = 0, numberOfChildren = children.length ; childIndex < numberOfChildren ; childIndex++ ) {
 
             const child   = children[ childIndex ];
@@ -166,7 +167,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
         try {
 
-            const alternative = [ 'oneByOne', 'allInOne' ][ 1 ];
+            const alternative = [ 'oneByOne', 'allInOneByParentId', 'allInOneByChildrenIds' ][ 1 ];
             if ( alternative === 'oneByOne' ) {
 
                 const document        = await this._readOneDocument( 'Objects3D', { _id: id } );
@@ -180,7 +181,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
                 iteeMongodb.TMongooseController.returnData( deleteResult, response );
 
 
-            } else {
+            } else if ( alternative === 'allInOneByParentId' ) {
 
                 const results = await this.getAllChildrenIds( id, true );
                 results.children.push( id );
@@ -191,15 +192,30 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
                     materials:  [ ...new Set( results.materials ) ]
                 };
 
-                const deletedObjectsCount     = await this._deleteDocuments( 'Objects3D', cleanResults.children );
-                const deletedGeometriesResult = await this._deleteDocuments( 'Geometries', cleanResults.geometries );
-                const deletedMaterialsResult  = await this._deleteDocuments( 'Materials', cleanResults.materials );
+                //                const deletedObjectsCount     = await this._deleteDocuments( 'Objects3D', cleanResults.children )
+                //                const deletedGeometriesResult = await this._deleteDocuments( 'Geometries', cleanResults.geometries )
+                //                const deletedMaterialsResult  = await this._deleteDocuments( 'Materials', cleanResults.materials )
+
+                const [ deletedObjectsCount, deletedGeometriesResult, deletedMaterialsResult ] = await Promise.all( [
+                    this._deleteDocuments( 'Objects3D', cleanResults.children ),
+                    this._deleteDocuments( 'Geometries', cleanResults.geometries ),
+                    this._deleteDocuments( 'Materials', cleanResults.materials )
+                ] );
 
                 iteeMongodb.TMongooseController.returnData( {
                     deletedObjectsCount,
                     deletedGeometriesResult,
                     deletedMaterialsResult
                 }, response );
+
+            } else {
+
+//                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
+//                    _id:      true,
+//                    geometry: true,
+//                    material: true,
+//                    children: true
+//                } )
 
             }
 
@@ -212,6 +228,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
     }
 
     async _deleteDocuments ( type, documentIds ) {
+        if ( iteeValidators.isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
                                        .model( type )
@@ -237,7 +254,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
     async _deleteDocument ( document ) {
         if ( iteeValidators.isNotDefined( document ) ) { return null }
 
-//        console.log( `Delete: ${ document.name } [${ document._id }]` )
+        //        console.log( `Delete: ${ document.name } [${ document._id }]` )
 
         const deleteResult = await this._driver
                                        .model( document.type )
@@ -324,7 +341,6 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanGeometryWithId ( geometryId ) {
-
         if ( iteeValidators.isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
@@ -345,6 +361,8 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
+        if ( iteeValidators.isNotDefined( materialsIds ) ) { return }
+        if ( iteeValidators.isEmptyArray( materialsIds ) ) { return }
 
         const removed = [];
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
@@ -363,6 +381,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanMaterialWithId ( materialId ) {
+        if ( iteeValidators.isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
         if ( referencingObjects.length > 1 ) { return }
@@ -2338,7 +2357,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
 /**
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
-
+ *
  * @requires {@link https://github.com/Itee/itee-client itee-client}
  * @requires {@link https://github.com/Itee/itee-database itee-database}
  * @requires {@link https://github.com/Itee/itee-validators itee-validators}
@@ -2357,7 +2376,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
     /**
      * @constructor
-     * @param {Object} [parameters={}] - An object containing all parameters to pas throw the inheritance chain and for initialize this instance
+     * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
      * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
      */
     constructor ( parameters = {} ) {
@@ -3750,7 +3769,7 @@ var PerspectiveCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = iteeValidators__default;
+const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = iteeValidators__default['default'];
 
 let _schema$8 = undefined;
 
