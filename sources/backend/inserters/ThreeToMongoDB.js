@@ -1,7 +1,7 @@
 /**
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
-
+ *
  * @requires {@link https://github.com/Itee/itee-client itee-client}
  * @requires {@link https://github.com/Itee/itee-database itee-database}
  * @requires {@link https://github.com/Itee/itee-validators itee-validators}
@@ -30,7 +30,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
     /**
      * @constructor
-     * @param {Object} [parameters={}] - An object containing all parameters to pas throw the inheritance chain and for initialize this instance
+     * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
      * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
      */
     constructor ( parameters = {} ) {

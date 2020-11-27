@@ -91,6 +91,7 @@ function CreateRollupConfigs ( options ) {
                     'itee-validators',
                     'itee-mongodb',
                     'bson',
+                    'perf_hooks',
                     'three-full'
                 ] : [
                     'itee-client',

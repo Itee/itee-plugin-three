@@ -622,12 +622,13 @@ class ObjectsManager extends TDataBaseManager {
 
         // Else fill geometries and materials for filtered objects
         let geometriesMap = undefined
+        let materialsMap = undefined
+
         this._retrieveGeometriesOf( objectsArray, ( geometries ) => {
             geometriesMap = geometries
             onEndDataFetching()
         }, onProgress, onError )
 
-        let materialsMap = undefined
         this._retrieveMaterialsOf( objectsArray, ( materials ) => {
             materialsMap = materials
             onEndDataFetching()
