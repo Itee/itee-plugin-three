@@ -31,7 +31,7 @@ function CreateJsdocConfiguration () {
             'encoding':    'utf8',
             'destination': './docs/',
             'recurse':     true,
-            'verbose':     true,
+            'verbose':     false,
             'private':     true
         },
         'templates': {
