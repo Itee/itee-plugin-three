@@ -25,16 +25,16 @@ class AbstractGizmo extends Object3D {
         super( _parameters )
         this.isGizmo          = true
         this.type             = 'AbstractGizmo'
-        this.matrixAutoUpdate = false
+        this.matrixAutoUpdate = true
 
         this.debug = _parameters.debug
 
 
-        this.handles                  = new Object3D()
-        this.handles.name             = 'Handles'
-        this.handles.matrixAutoUpdate = false
-
-        this.add( this.handles )
+//        this.handles                  = new Object3D()
+//        this.handles.name             = 'Handles'
+//        this.handles.matrixAutoUpdate = false
+//
+//        this.add( this.handles )
 
         ///
 
@@ -48,7 +48,7 @@ class AbstractGizmo extends Object3D {
         } )
         this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial )
         this.intersectPlane.name             = 'IntersectPlane'
-        this.intersectPlane.matrixAutoUpdate = false
+        this.intersectPlane.matrixAutoUpdate = true
         this.intersectPlane.visible          = true
 
         this.add( this.intersectPlane )
@@ -57,7 +57,8 @@ class AbstractGizmo extends Object3D {
 
     _setupHandles ( handlesMap ) {
 
-        const parent = this.handles
+        const parent = this
+//        const parent = this.handles
 
         for ( let name in handlesMap ) {
 
