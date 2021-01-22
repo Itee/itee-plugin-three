@@ -37,36 +37,36 @@ class LookAtGizmo extends AbstractGizmo {
 
             // Cone faces
             FACE_RIGHT: new ConeHandle( {
-                coneColor: 0x880000
+                coneColor: 0xdd0000
             } ).setPosition( +( 4 + this.explodeFactor ), +0, +0 )
                .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( 90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_LEFT: new ConeHandle( {
-                coneColor: 0x880000
+                coneColor: 0x550000
             } ).setPosition( -( 4 + this.explodeFactor ), +0, +0 )
                .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( -90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_TOP: new ConeHandle( {
-                coneColor: 0x000088
+                coneColor: 0x0000dd
             } ).setPosition( +0, +( 4 + this.explodeFactor ), +0 )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 180 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_BOTTOM: new ConeHandle( {
-                coneColor: 0x000088
+                coneColor: 0x000055
             } ).setPosition( +0, -( 4 + this.explodeFactor ), +0 )
                .setScale( 1, 4, 1 ),
 
             FACE_FRONT: new ConeHandle( {
-                coneColor: 0x008800
+                coneColor: 0x005500
             } ).setPosition( +0, +0, +( 4 + this.explodeFactor ) )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( -90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_BACK: new ConeHandle( {
-                coneColor: 0x008800
+                coneColor: 0x00dd00
             } ).setPosition( +0, +0, -( 4 + this.explodeFactor ) )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) )
                .setScale( 1, 4, 1 ),
@@ -112,7 +112,7 @@ class LookAtGizmo extends AbstractGizmo {
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }
 
-        for ( let handle of this.handles.children ) {
+        for ( let handle of this.children ) {
             handle.raycast( raycaster, intersects )
         }
 
