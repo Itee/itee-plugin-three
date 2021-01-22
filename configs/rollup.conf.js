@@ -53,6 +53,16 @@ function _computeBanner ( name, format ) {
 
 }
 
+function _computeIntro () {
+
+    return '' +
+        'if( iteeValidators === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( iteeUtils === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( iteeClient === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( Three === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
+
+}
+
 /**
  * Will create an appropriate configuration object for rollup, related to the given arguments.
  *
@@ -192,7 +202,7 @@ function CreateRollupConfigs ( options ) {
                     paths:     {},
                     banner:    ( isProd ) ? '' : _computeBanner( name, format ),
                     footer:    '',
-                    intro:     '',
+                    intro:     ( !isProd && format === 'iife' ) ? _computeIntro() : '',
                     outro:     '',
                     sourcemap: !isProd,
                     interop:   true,
