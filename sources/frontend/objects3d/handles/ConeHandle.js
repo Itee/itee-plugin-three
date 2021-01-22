@@ -44,7 +44,7 @@ class ConeHandle extends AbstractHandle {
 
         const cone            = new Mesh( coneGeometry, coneMaterial )
         cone.name             = 'ConeHandle_Cone'
-        cone.matrixAutoUpdate = false
+        cone.matrixAutoUpdate = true
 
         this.add( cone )
 

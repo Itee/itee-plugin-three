@@ -25,7 +25,7 @@ class AbstractHandle extends Object3D {
         super( _parameters )
         this.isHandle         = true
         this.type             = 'Handle'
-        this.matrixAutoUpdate = false
+        this.matrixAutoUpdate = true
 
         this.debug  = _parameters.debug
         this.color  = _parameters.color
