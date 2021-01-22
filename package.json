@@ -58,7 +58,7 @@
     "bson": "^4.2.0"
   },
   "peerDependencies": {
-    "itee-client": "^7.1.4",
+    "itee-client": "^7.3.0",
     "itee-database": "^8.0.2",
     "itee-mongodb": "^1.1.0",
     "itee-utils": "^5.2.0",
