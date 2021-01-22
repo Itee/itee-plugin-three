@@ -1,8 +1,14 @@
-console.log('Itee.Plugin.Three v1.4.0 - Standalone')
+console.log('Itee.Plugin.Three v1.4.1 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, iteeValidators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene) {
 	'use strict';
+
+	if( iteeValidators === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.') }
+	if( iteeUtils === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.') }
+	if( iteeClient === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.') }
+	if( Three === undefined ) { throw new Error('Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.') }
+
 
 	/**
 	 * @module Loader/SHPLoader

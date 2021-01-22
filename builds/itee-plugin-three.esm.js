@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.4.0 - EsModule')
+console.log('Itee.Plugin.Three v1.4.1 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { Shape } from 'three-full/sources/core/Shape';
