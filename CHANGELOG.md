@@ -1,3 +1,33 @@
+## [1.4.2](https://github.com/Itee/itee-plugin-three/compare/v1.4.1...v1.4.2) (2021-01-23)
+
+
+### Bug Fixes
+
+* **cameracontrols:** fix invalid Mouse enum values ([ffbd293](https://github.com/Itee/itee-plugin-three/commit/ffbd2932169eb3892946b3bdda16b611a5cac53b))
+
+## [1.4.1](https://github.com/Itee/itee-plugin-three/compare/v1.4.0...v1.4.1) (2021-01-22)
+
+
+### Bug Fixes
+
+* **package:** upgrade client to latest version ([cfcb2e5](https://github.com/Itee/itee-plugin-three/commit/cfcb2e5605b4d74857f79ecdf18716d23f0555b4))
+
+# [1.4.0](https://github.com/Itee/itee-plugin-three/compare/v1.3.0...v1.4.0) (2020-11-27)
+
+
+### Bug Fixes
+
+* **cameracontrols:** add function isInWorker to check script usage and apply some special treatment ([26e8e80](https://github.com/Itee/itee-plugin-three/commit/26e8e804baa63346399f4ffb1ea888d884a695cf))
+* **objectsmanager:** fix variable declaration that can cause undefined behavior ([bef39c5](https://github.com/Itee/itee-plugin-three/commit/bef39c58de46a1bfd819e854e81b65f2d4342578))
+* **rollupconfig:** add missing external dependency for performance hooks ([6a58fec](https://github.com/Itee/itee-plugin-three/commit/6a58fecf6e122ae543429ca6df428fa30fb57b5e))
+* **tobject3dcontroller:** comment unused var and remove performance stuff ([98827ab](https://github.com/Itee/itee-plugin-three/commit/98827ab7a27fd90b44d0ecb1cfdbadcf20510f1b))
+
+
+### Features
+
+* **cameracontrols:** support usage in webworker, expose handlers and allow OffscreenCanvas ([c72bd7a](https://github.com/Itee/itee-plugin-three/commit/c72bd7a21aecdc8762decad359bb996f4269061d))
+* **tobjects3dcontroller:** allow projection on readmany method ([48065ea](https://github.com/Itee/itee-plugin-three/commit/48065ea3ef79fe46ae93ce93634d4a57e3685cf1))
+
 # [1.3.0](https://github.com/Itee/itee-plugin-three/compare/v1.2.10...v1.3.0) (2020-10-08)
 
 

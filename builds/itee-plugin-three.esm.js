@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.3.0 - EsModule')
+console.log('Itee.Plugin.Three v1.4.2 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { Shape } from 'three-full/sources/core/Shape';
@@ -2439,6 +2439,10 @@ const CameraControlMode = toEnum( {
     Path:        4
 } );
 
+function isInWorker () {
+    return typeof importScripts === 'function'
+}
+
 /**
  * @class
  * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
@@ -2483,9 +2487,9 @@ class CameraControls extends EventDispatcher {
     /**
      * @constructor
      * @param {Object} parameters - A parameters object containing properties initialization
-     * @param {THREE.Camera} parameters.camera - The camera to use
+     * @param {THREE~Camera} parameters.camera - The camera to use
      * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
-     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+     * @param {THREE~Object3D} [parameters.target=THREE~Object3D] - A target to look, or used as pivot point
      * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
      * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
      */
@@ -2497,7 +2501,7 @@ class CameraControls extends EventDispatcher {
                 camera:     null,
                 target:     new Object3D(),
                 mode:       CameraControlMode.Orbit,
-                domElement: window
+                domElement: ( isInWorker() ) ? null : window
             }, ...parameters
         };
 
@@ -2520,29 +2524,11 @@ class CameraControls extends EventDispatcher {
             onKeyDown:     this._onKeyDown.bind( this ),
             onKeyUp:       this._onKeyUp.bind( this )
         };
-        this.logger    = _parameters.logger;
 
-        /**
-         *
-         * Get/Set the value of the name property.
-         * @function module:Controllers/CameraControls~CameraControls~camera
-         * @property camera
-         * @throws Will throw an error if the argument is null.
-         * @param {string} newName
-         * @returns {string}
-         *
-         */
-        this.camera = _parameters.camera;
-
-        /**
-         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
-         */
-        this.target = _parameters.target;
-
-        /**
-         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
-         */
-        this.mode = _parameters.mode;
+        this.logger     = _parameters.logger;
+        this.camera     = _parameters.camera;
+        this.target     = _parameters.target;
+        this.mode       = _parameters.mode;
         this.domElement = _parameters.domElement;
 
         // Set to false to disable controls
@@ -2670,13 +2656,13 @@ class CameraControls extends EventDispatcher {
             down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
             left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
             right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate: [ Mouse.LEFT.value ],
-            pan:    [ Mouse.MIDDLE.value ],
+            rotate: [ Mouse.Left.value ],
+            pan:    [ Mouse.Middle.value ],
             roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
-            zoom:             [ Mouse.WHEEL.value ],
+            zoom:             [ Mouse.Wheel.value ],
             lookAtFront:      [ Keys.NUMPAD_2.value ],
             lookAtFrontLeft:  [ Keys.NUMPAD_3.value ],
             lookAtFrontRight: [ Keys.NUMPAD_1.value ],
@@ -2694,6 +2680,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * The camera getter
+     * @function module:Controllers/CameraControls~CameraControls#get camera
+     * @returns {THREE~Camera}
+     */
     get camera () {
 
         return this._camera
@@ -2701,8 +2692,9 @@ class CameraControls extends EventDispatcher {
     }
 
     /**
-     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
-     * @param value
+     * The camera setter
+     * @function module:Controllers/CameraControls~CameraControls#set camera
+     * @param {THREE~Camera} value
      * @throws Will throw an error if the argument is null.
      */
     set camera ( value ) {
@@ -2715,6 +2707,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * The target getter
+     * @type {THREE~Object3D}
+     * @throws {Error} if the argument is null.
+     */
     get target () {
 
         return this._target
@@ -2731,6 +2728,10 @@ class CameraControls extends EventDispatcher {
 
     }
 
+    /**
+     * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+     * @throws {Error} if the argument is null.
+     */
     get mode () {
         return this._mode
     }
@@ -2785,7 +2786,11 @@ class CameraControls extends EventDispatcher {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( ![ 'Window',
+                'HTMLDocument',
+                'HTMLDivElement',
+                'HTMLCanvasElement',
+                'OffscreenCanvas' ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -2802,6 +2807,10 @@ class CameraControls extends EventDispatcher {
         this._domElement.addEventListener( 'mouseleave', this._handlers.onMouseLeave, false );
         this.impose();
 
+    }
+
+    get handlers () {
+        return this._handlers
     }
 
     /**
@@ -2974,21 +2983,24 @@ class CameraControls extends EventDispatcher {
     }
 
     // Handlers
-    _consumeEvent ( event ) {
+    _preventEvent ( event ) {
+        if ( !event.preventDefault ) { return }
 
-        if ( !event.cancelable ) {
-            return
-        }
+        event.preventDefault();
+    }
+
+    _consumeEvent ( event ) {
+        if ( !event.cancelable ) { return }
+        if ( !event.stopImmediatePropagation ) { return }
 
         event.stopImmediatePropagation();
-
     }
 
     // Keys
     _onKeyDown ( keyEvent ) {
 
         if ( !this.enabled ) { return }
-        keyEvent.preventDefault();
+        this._preventEvent( keyEvent );
 
         const actionMap = this.actionsMap;
         const key       = keyEvent.keyCode;
@@ -3102,14 +3114,14 @@ class CameraControls extends EventDispatcher {
             this._lookAt( RIGHT );
             this._consumeEvent( keyEvent );
 
-        }
+        } else ;
 
     }
 
     _onKeyUp ( keyEvent ) {
 
         if ( !this.enabled ) { return }
-        keyEvent.preventDefault();
+        this._preventEvent( keyEvent );
 
     }
 
@@ -3117,7 +3129,7 @@ class CameraControls extends EventDispatcher {
     _onTouchStart ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault();
+        this._preventEvent( touchEvent );
 
         this.previousTouches = touchEvent.touches;
 
@@ -3126,7 +3138,7 @@ class CameraControls extends EventDispatcher {
     _onTouchEnd ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault();
+        this._preventEvent( touchEvent );
 
         this.previousTouches = [];
         this._state          = State.None;
@@ -3136,7 +3148,7 @@ class CameraControls extends EventDispatcher {
     _onTouchCancel ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault();
+        this._preventEvent( touchEvent );
 
         this.previousTouches = [];
         this._state          = State.None;
@@ -3146,7 +3158,7 @@ class CameraControls extends EventDispatcher {
     _onTouchLeave ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault();
+        this._preventEvent( touchEvent );
 
         this.previousTouches = [];
         this._state          = State.None;
@@ -3156,7 +3168,7 @@ class CameraControls extends EventDispatcher {
     _onTouchMove ( touchEvent ) {
 
         if ( !this.enabled ) { return }
-        touchEvent.preventDefault();
+        this._preventEvent( touchEvent );
 
         const previousTouches         = this.previousTouches;
         const currentTouches          = touchEvent.changedTouches;
@@ -3210,7 +3222,7 @@ class CameraControls extends EventDispatcher {
     _onMouseEnter ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         this.impose();
         if ( mouseEvent.target.constructor !== HTMLDocument ) {
@@ -3222,7 +3234,7 @@ class CameraControls extends EventDispatcher {
     _onMouseLeave ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         if ( mouseEvent.target.constructor !== HTMLDocument ) {
             this._domElement.blur();
@@ -3235,7 +3247,7 @@ class CameraControls extends EventDispatcher {
     _onMouseDown ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         const actionMap = this.actionsMap;
         const button    = mouseEvent.button;
@@ -3312,7 +3324,7 @@ class CameraControls extends EventDispatcher {
     _onMouseMove ( mouseEvent ) {
 
         if ( !this.enabled || this._state === State.None ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         const state = this._state;
         const delta = {
@@ -3356,7 +3368,7 @@ class CameraControls extends EventDispatcher {
     _onMouseWheel ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         const delta = mouseEvent.wheelDelta || mouseEvent.deltaY;
         this._zoom( delta );
@@ -3367,7 +3379,7 @@ class CameraControls extends EventDispatcher {
     _onMouseUp ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         this._state = State.None;
         this._consumeEvent( mouseEvent );
@@ -3377,7 +3389,7 @@ class CameraControls extends EventDispatcher {
     _onDblClick ( mouseEvent ) {
 
         if ( !this.enabled ) { return }
-        mouseEvent.preventDefault();
+        this._preventEvent( mouseEvent );
 
         this.logger.warn( 'CameraControls: Double click events is not implemented yet, sorry for the disagreement.' );
 
@@ -9384,12 +9396,13 @@ class ObjectsManager extends TDataBaseManager {
 
         // Else fill geometries and materials for filtered objects
         let geometriesMap = undefined;
+        let materialsMap = undefined;
+
         this._retrieveGeometriesOf( objectsArray, ( geometries ) => {
             geometriesMap = geometries;
             onEndDataFetching();
         }, onProgress, onError );
 
-        let materialsMap = undefined;
         this._retrieveMaterialsOf( objectsArray, ( materials ) => {
             materialsMap = materials;
             onEndDataFetching();

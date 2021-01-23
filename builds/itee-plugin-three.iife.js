@@ -1,8 +1,14 @@
-console.log('Itee.Plugin.Three v1.3.0 - Standalone')
+console.log('Itee.Plugin.Three v1.4.2 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, iteeValidators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene) {
 	'use strict';
+
+	if( iteeValidators === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.') }
+	if( iteeUtils === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.') }
+	if( iteeClient === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.') }
+	if( Three === undefined ) { throw new Error('Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.') }
+
 
 	/**
 	 * @module Loader/SHPLoader
@@ -2357,6 +2363,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    Path:        4
 	} );
 
+	function isInWorker () {
+	    return typeof importScripts === 'function'
+	}
+
 	/**
 	 * @class
 	 * @classdesc The CameraControls allow to manage all camera type, in all displacement mode.
@@ -2401,9 +2411,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    /**
 	     * @constructor
 	     * @param {Object} parameters - A parameters object containing properties initialization
-	     * @param {THREE.Camera} parameters.camera - The camera to use
+	     * @param {THREE~Camera} parameters.camera - The camera to use
 	     * @param {Object} [parameters.logger=DefaultLogger] - A logger for output
-	     * @param {THREE.Object3D} [parameters.target=THREE.Object3D] - A target to look, or used as pivot point
+	     * @param {THREE~Object3D} [parameters.target=THREE~Object3D] - A target to look, or used as pivot point
 	     * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
 	     * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
 	     */
@@ -2415,7 +2425,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	                camera:     null,
 	                target:     new Object3D.Object3D(),
 	                mode:       CameraControlMode.Orbit,
-	                domElement: window
+	                domElement: ( isInWorker() ) ? null : window
 	            }, ...parameters
 	        };
 
@@ -2438,29 +2448,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	            onKeyDown:     this._onKeyDown.bind( this ),
 	            onKeyUp:       this._onKeyUp.bind( this )
 	        };
-	        this.logger    = _parameters.logger;
 
-	        /**
-	         *
-	         * Get/Set the value of the name property.
-	         * @function module:Controllers/CameraControls~CameraControls~camera
-	         * @property camera
-	         * @throws Will throw an error if the argument is null.
-	         * @param {string} newName
-	         * @returns {string}
-	         *
-	         */
-	        this.camera = _parameters.camera;
-
-	        /**
-	         * @property {THREE~Object3D} target - A target object to move arround or track during displacement
-	         */
-	        this.target = _parameters.target;
-
-	        /**
-	         * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
-	         */
-	        this.mode = _parameters.mode;
+	        this.logger     = _parameters.logger;
+	        this.camera     = _parameters.camera;
+	        this.target     = _parameters.target;
+	        this.mode       = _parameters.mode;
 	        this.domElement = _parameters.domElement;
 
 	        // Set to false to disable controls
@@ -2588,13 +2580,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	            down:   [ iteeClient.Keys.E.value, iteeClient.Keys.PAGE_DOWN.value ],
 	            left:   [ iteeClient.Keys.Q.value, iteeClient.Keys.LEFT_ARROW.value ],
 	            right:  [ iteeClient.Keys.D.value, iteeClient.Keys.RIGHT_ARROW.value ],
-	            rotate: [ iteeClient.Mouse.LEFT.value ],
-	            pan:    [ iteeClient.Mouse.MIDDLE.value ],
+	            rotate: [ iteeClient.Mouse.Left.value ],
+	            pan:    [ iteeClient.Mouse.Middle.value ],
 	            roll:   {
 	                left:  [ iteeClient.Keys.R.value ],
 	                right: [ iteeClient.Keys.T.value ]
 	            },
-	            zoom:             [ iteeClient.Mouse.WHEEL.value ],
+	            zoom:             [ iteeClient.Mouse.Wheel.value ],
 	            lookAtFront:      [ iteeClient.Keys.NUMPAD_2.value ],
 	            lookAtFrontLeft:  [ iteeClient.Keys.NUMPAD_3.value ],
 	            lookAtFrontRight: [ iteeClient.Keys.NUMPAD_1.value ],
@@ -2612,6 +2604,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * The camera getter
+	     * @function module:Controllers/CameraControls~CameraControls#get camera
+	     * @returns {THREE~Camera}
+	     */
 	    get camera () {
 
 	        return this._camera
@@ -2619,8 +2616,9 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    }
 
 	    /**
-	     * @function module:Controllers/CameraControls~CameraControls~camera_accessors
-	     * @param value
+	     * The camera setter
+	     * @function module:Controllers/CameraControls~CameraControls#set camera
+	     * @param {THREE~Camera} value
 	     * @throws Will throw an error if the argument is null.
 	     */
 	    set camera ( value ) {
@@ -2633,6 +2631,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * The target getter
+	     * @type {THREE~Object3D}
+	     * @throws {Error} if the argument is null.
+	     */
 	    get target () {
 
 	        return this._target
@@ -2649,6 +2652,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	    }
 
+	    /**
+	     * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
+	     * @throws {Error} if the argument is null.
+	     */
 	    get mode () {
 	        return this._mode
 	    }
@@ -2703,7 +2710,11 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-	        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+	        if ( ![ 'Window',
+	                'HTMLDocument',
+	                'HTMLDivElement',
+	                'HTMLCanvasElement',
+	                'OffscreenCanvas' ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
 	        // Check focusability of given dom element because in case the element is not focusable
 	        // the keydown event won't work !
@@ -2720,6 +2731,10 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	        this._domElement.addEventListener( 'mouseleave', this._handlers.onMouseLeave, false );
 	        this.impose();
 
+	    }
+
+	    get handlers () {
+	        return this._handlers
 	    }
 
 	    /**
@@ -2892,21 +2907,24 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    }
 
 	    // Handlers
-	    _consumeEvent ( event ) {
+	    _preventEvent ( event ) {
+	        if ( !event.preventDefault ) { return }
 
-	        if ( !event.cancelable ) {
-	            return
-	        }
+	        event.preventDefault();
+	    }
+
+	    _consumeEvent ( event ) {
+	        if ( !event.cancelable ) { return }
+	        if ( !event.stopImmediatePropagation ) { return }
 
 	        event.stopImmediatePropagation();
-
 	    }
 
 	    // Keys
 	    _onKeyDown ( keyEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        keyEvent.preventDefault();
+	        this._preventEvent( keyEvent );
 
 	        const actionMap = this.actionsMap;
 	        const key       = keyEvent.keyCode;
@@ -3020,14 +3038,14 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	            this._lookAt( RIGHT );
 	            this._consumeEvent( keyEvent );
 
-	        }
+	        } else ;
 
 	    }
 
 	    _onKeyUp ( keyEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        keyEvent.preventDefault();
+	        this._preventEvent( keyEvent );
 
 	    }
 
@@ -3035,7 +3053,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onTouchStart ( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        touchEvent.preventDefault();
+	        this._preventEvent( touchEvent );
 
 	        this.previousTouches = touchEvent.touches;
 
@@ -3044,7 +3062,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onTouchEnd ( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        touchEvent.preventDefault();
+	        this._preventEvent( touchEvent );
 
 	        this.previousTouches = [];
 	        this._state          = State.None;
@@ -3054,7 +3072,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onTouchCancel ( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        touchEvent.preventDefault();
+	        this._preventEvent( touchEvent );
 
 	        this.previousTouches = [];
 	        this._state          = State.None;
@@ -3064,7 +3082,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onTouchLeave ( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        touchEvent.preventDefault();
+	        this._preventEvent( touchEvent );
 
 	        this.previousTouches = [];
 	        this._state          = State.None;
@@ -3074,7 +3092,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onTouchMove ( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        touchEvent.preventDefault();
+	        this._preventEvent( touchEvent );
 
 	        const previousTouches         = this.previousTouches;
 	        const currentTouches          = touchEvent.changedTouches;
@@ -3128,7 +3146,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseEnter ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        this.impose();
 	        if ( mouseEvent.target.constructor !== HTMLDocument ) {
@@ -3140,7 +3158,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseLeave ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        if ( mouseEvent.target.constructor !== HTMLDocument ) {
 	            this._domElement.blur();
@@ -3153,7 +3171,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseDown ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        const actionMap = this.actionsMap;
 	        const button    = mouseEvent.button;
@@ -3230,7 +3248,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseMove ( mouseEvent ) {
 
 	        if ( !this.enabled || this._state === State.None ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        const state = this._state;
 	        const delta = {
@@ -3274,7 +3292,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseWheel ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        const delta = mouseEvent.wheelDelta || mouseEvent.deltaY;
 	        this._zoom( delta );
@@ -3285,7 +3303,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onMouseUp ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        this._state = State.None;
 	        this._consumeEvent( mouseEvent );
@@ -3295,7 +3313,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	    _onDblClick ( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
-	        mouseEvent.preventDefault();
+	        this._preventEvent( mouseEvent );
 
 	        this.logger.warn( 'CameraControls: Double click events is not implemented yet, sorry for the disagreement.' );
 
@@ -9302,12 +9320,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 
 	        // Else fill geometries and materials for filtered objects
 	        let geometriesMap = undefined;
+	        let materialsMap = undefined;
+
 	        this._retrieveGeometriesOf( objectsArray, ( geometries ) => {
 	            geometriesMap = geometries;
 	            onEndDataFetching();
 	        }, onProgress, onError );
 
-	        let materialsMap = undefined;
 	        this._retrieveMaterialsOf( objectsArray, ( materials ) => {
 	            materialsMap = materials;
 	            onEndDataFetching();
@@ -9855,6 +9874,8 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	exports.TorusHitbox = TorusHitbox;
 	exports.TranslateGizmo = TranslateGizmo;
 	exports.TranslateHandle = TranslateHandle;
+
+	Object.defineProperty(exports, '__esModule', { value: true });
 
 	return exports;
 
