@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.4.1 - EsModule')
+console.log('Itee.Plugin.Three v1.4.2 - EsModule')
 import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { Shape } from 'three-full/sources/core/Shape';
@@ -2656,13 +2656,13 @@ class CameraControls extends EventDispatcher {
             down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
             left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
             right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate: [ Mouse.LEFT.value ],
-            pan:    [ Mouse.MIDDLE.value ],
+            rotate: [ Mouse.Left.value ],
+            pan:    [ Mouse.Middle.value ],
             roll:   {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },
-            zoom:             [ Mouse.WHEEL.value ],
+            zoom:             [ Mouse.Wheel.value ],
             lookAtFront:      [ Keys.NUMPAD_2.value ],
             lookAtFrontLeft:  [ Keys.NUMPAD_3.value ],
             lookAtFrontRight: [ Keys.NUMPAD_1.value ],

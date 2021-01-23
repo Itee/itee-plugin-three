@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/Itee/itee-plugin-three/compare/v1.4.1...v1.4.2) (2021-01-23)
+
+
+### Bug Fixes
+
+* **cameracontrols:** fix invalid Mouse enum values ([ffbd293](https://github.com/Itee/itee-plugin-three/commit/ffbd2932169eb3892946b3bdda16b611a5cac53b))
+
 ## [1.4.1](https://github.com/Itee/itee-plugin-three/compare/v1.4.0...v1.4.1) (2021-01-22)
 
 

@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.4.1 - Standalone')
+console.log('Itee.Plugin.Three v1.4.2 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileLoader, LoadingManager, Vector3, BufferAttribute, BufferGeometry, PointsMaterial, Box3, Group, Points, iteeValidators, EventDispatcher, Object3D, Spherical, Vector2, Camera, constants, Raycaster, BoxGeometry, ConeGeometry, CylinderGeometry, EdgesGeometry, OctahedronGeometry, PlaneGeometry, SphereGeometry, TorusGeometry, LineBasicMaterial, MeshBasicMaterial, Euler, Plane, Quaternion, Line, LineSegments, Mesh, CurvePath, Path, ArcCurve, CatmullRomCurve3, CubicBezierCurve, CubicBezierCurve3, Curve, EllipseCurve, LineCurve, LineCurve3, QuadraticBezierCurve, QuadraticBezierCurve3, SplineCurve, Face3, Geometry, InstancedBufferGeometry, CircleGeometry, DodecahedronGeometry, ExtrudeGeometry, IcosahedronGeometry, LatheGeometry, ParametricGeometry, PolyhedronGeometry, RingGeometry, ShapeGeometry, TetrahedronGeometry, TextGeometry, TorusKnotGeometry, TubeGeometry, WireframeGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, OrthographicCamera, PerspectiveCamera, AmbientLight, DirectionalLight, HemisphereLight, PointLight, RectAreaLight, SpotLight, LineLoop, LOD, SkinnedMesh, Sprite, Fog, FogExp2, Scene) {
@@ -2580,13 +2580,13 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, iteeUtils, Shape, FileL
 	            down:   [ iteeClient.Keys.E.value, iteeClient.Keys.PAGE_DOWN.value ],
 	            left:   [ iteeClient.Keys.Q.value, iteeClient.Keys.LEFT_ARROW.value ],
 	            right:  [ iteeClient.Keys.D.value, iteeClient.Keys.RIGHT_ARROW.value ],
-	            rotate: [ iteeClient.Mouse.LEFT.value ],
-	            pan:    [ iteeClient.Mouse.MIDDLE.value ],
+	            rotate: [ iteeClient.Mouse.Left.value ],
+	            pan:    [ iteeClient.Mouse.Middle.value ],
 	            roll:   {
 	                left:  [ iteeClient.Keys.R.value ],
 	                right: [ iteeClient.Keys.T.value ]
 	            },
-	            zoom:             [ iteeClient.Mouse.WHEEL.value ],
+	            zoom:             [ iteeClient.Mouse.Wheel.value ],
 	            lookAtFront:      [ iteeClient.Keys.NUMPAD_2.value ],
 	            lookAtFrontLeft:  [ iteeClient.Keys.NUMPAD_3.value ],
 	            lookAtFrontRight: [ iteeClient.Keys.NUMPAD_1.value ],
