@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Title</title>
+		<style>
+            html, body, #root {
+                width:  100%;
+                height: 100%;
+                margin: 0;
+            }
+
+            #root {
+                background-color: grey;
+                display:          flex;
+            }
+
+            #library {
+                background-color: #0a4b3e;
+                width:            20%;
+            }
+
+            #viewport {
+                background-color: #6a3484;
+                width:            80%;
+                position:         relative;
+            }
+
+            canvas {
+                position: absolute;
+                left:     0;
+                top:      0;
+                z-index:  0;
+            }
+
+            #widget {
+                /*background-color: #0bcb9a;*/
+                /*width:            320px; height: 240px;*/
+                /*float:            right;*/
+                /*z-index:  100;*/
+            }
+
+            .widget {
+                /*position: absolute;*/
+                left:  auto;
+                right: 0;
+                /*top:      0;*/
+                /*z-index:  1;*/
+            }
+
+		</style>
+	</head>
+	<body>
+		<div id="root">
+			<div id="library">
+				<ul>
+					<li>foo</li>
+					<li>bar</li>
+					<li>baz</li>
+				</ul>
+				<p>djfqmlksdjfklqjs dlkqfj lqskdjf qjs df mjqsdjf lkizejf qsdjf qklsf mqlskjd mflq kùqsjkf qmlsejf !</p>
+			</div>
+			<div id="viewport">
+				<!--				<div id="widget" style=""></div>-->
+			</div>
+
+			<!--			<div style="position: relative;">-->
+			<!--				<canvas id="layer1" width="100" height="100"-->
+			<!--				        style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>-->
+			<!--				<canvas id="layer2" width="100" height="100"-->
+			<!--				        style="position: absolute; left: 0; top: 0; z-index: 1;"></canvas>-->
+			<!--			</div>-->
+
+		</div>
+
+		<script src="../../node_modules/itee-validators/builds/itee-validators.iife.js"></script>
+		<script src="../../node_modules/itee-utils/builds/itee-utils.iife.js"></script>
+		<script src="../../node_modules/itee-client/builds/itee-client.iife.js"></script>
+		<script src="../../node_modules/three-full/builds/Three.iife.js"></script>
+		<script src="../../builds/itee-plugin-three.iife.js"></script>
+		<script>
+
+            class AbstractThreeApplication {
+
+                constructor ( params = {} ) {}
+
+            }
+
+		</script>
+		<script>
+            const EMPTY_VECTOR3 = new Three.Vector3( 0, 0, 0 )
+            const FRONT         = new Three.Vector3( 0, 0, 1 )
+            const BACK          = new Three.Vector3( 0, 0, -1 )
+            const UP            = new Three.Vector3( 0, 1, 0 )
+            const DOWN          = new Three.Vector3( 0, -1, 0 )
+            const RIGHT         = new Three.Vector3( 1, 0, 0 )
+            const LEFT          = new Three.Vector3( -1, 0, 0 )
+
+            // Try with 2 different canvas
+            class ThreeApplicationA {
+
+                constructor ( props = {} ) {
+
+                    this.debug       = props.debug || false
+                    this.domElement  = props.domElement
+                    this.raycaster   = new Three.Raycaster()
+                    this.mouse       = new Three.Vector2()
+                    this.INTERSECTED = null
+
+                    /////// SCENE A
+
+                    this.scene = new Three.Scene()
+
+                    this.envGroup = new Three.Group()
+                    this.scene.add( this.envGroup )
+
+                    this._initWorldAxes( this.envGroup, {} )
+
+                    this.light = new Three.AmbientLight( 0x777777 ) // soft white light
+                    this.envGroup.add( this.light )
+
+                    const gridHelperXZ_01 = new Three.GridHelper( 20, 20 )
+                    gridHelperXZ_01.name  = 'Grille XZ - Mètrique'
+                    this.envGroup.add( gridHelperXZ_01 )
+
+                    this.dataGroup = new Three.Group()
+                    this.scene.add( this.dataGroup )
+
+                    this.camera               = new Three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 )
+                    this.camera.position.z    = 10
+                    //                    this.scene.add( this.camera )
+                    this.cameraWorldPosition  = new Three.Vector3()
+                    this.cameraWorldDirection = new Three.Vector3()
+
+                    this.control = new Itee.Plugin.Three.CameraControls( {
+                        camera:     this.camera,
+                        domElement: this.domElement
+                    } )
+
+                    for ( let i = 0, length = 1000 ; i < length ; i++ ) {
+
+                        const box = new Three.Mesh(
+                            new Three.BoxBufferGeometry( 1.0, 1.0, 1.0, 1, 1, 1 ),
+                            new Three.MeshPhongMaterial()
+                        )
+                        box.name  = i
+                        box.position.set( Itee.Utils.getRandomFloatInclusive( -50, 50 ), Itee.Utils.getRandomFloatInclusive( -50, 50 ), Itee.Utils.getRandomFloatInclusive( -50, 50 ) )
+
+                        this.dataGroup.add( box )
+
+                    }
+
+                    this.renderer = new Three.WebGLRenderer( { alpha: false } )
+                    this.renderer.setClearColor( 0x000000, 0 )
+                    this.renderer.setSize( this.domElement.innerWidth, this.domElement.innerHeight )
+                    this.renderer.domElement.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false )
+
+                    this.domElement.appendChild( this.renderer.domElement )
+                    //                    this.domElement.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false )
+                    window.addEventListener( 'resize', this._resize.bind( this ) )
+
+                    this._resize()
+                }
+
+                _initWorldAxes ( parentGroup, options = {} ) {
+
+                    let worldArrowHelper = parentGroup.getObjectByName( 'Axes Globaux' )
+                    if ( !worldArrowHelper ) {
+                        worldArrowHelper                  = new Three.Group()
+                        worldArrowHelper.name             = 'Axes Globaux'
+                        worldArrowHelper.matrixAutoUpdate = false
+                        parentGroup.add( worldArrowHelper )
+                    }
+
+                    const xArrowHelper = new Three.ArrowHelper( RIGHT, new Three.Vector3( 0, 0, 0 ), 1.0, 0xff0000, 0.1, 0.1 )
+                    xArrowHelper.name  = 'Axe X'
+                    //                    xArrowHelper.matrixAutoUpdate      = false
+                    //                    xArrowHelper.line.matrixAutoUpdate = false
+                    //                    xArrowHelper.cone.matrixAutoUpdate = false
+                    //                    xArrowHelper.updateMatrix()
+                    //                    xArrowHelper.line.updateMatrix()
+                    //                    xArrowHelper.cone.updateMatrix()
+                    worldArrowHelper.add( xArrowHelper )
+
+                    const yArrowHelper = new Three.ArrowHelper( BACK, new Three.Vector3( 0, 0, 0 ), 1.0, 0x00ff00, 0.1, 0.1 )
+                    yArrowHelper.name  = 'Axe Y'
+                    //                    yArrowHelper.matrixAutoUpdate      = false
+                    //                    yArrowHelper.line.matrixAutoUpdate = false
+                    //                    yArrowHelper.cone.matrixAutoUpdate = false
+                    //                    yArrowHelper.updateMatrix()
+                    //                    yArrowHelper.line.updateMatrix()
+                    //                    yArrowHelper.cone.updateMatrix()
+                    worldArrowHelper.add( yArrowHelper )
+
+                    const zArrowHelper = new Three.ArrowHelper( UP, new Three.Vector3( 0, 0, 0 ), 1.0, 0x0000ff, 0.1, 0.1 )
+                    zArrowHelper.name  = 'Axe Z'
+                    //                    zArrowHelper.matrixAutoUpdate      = false
+                    //                    zArrowHelper.line.matrixAutoUpdate = false
+                    //                    zArrowHelper.cone.matrixAutoUpdate = false
+                    //                    zArrowHelper.updateMatrix()
+                    //                    zArrowHelper.line.updateMatrix()
+                    //                    zArrowHelper.cone.updateMatrix()
+                    worldArrowHelper.add( zArrowHelper )
+
+                }
+
+                //////
+
+                animate () {
+
+                    requestAnimationFrame( this.animate.bind( this ) )
+
+                    this._updateObjects()
+                    this._updateIntersected()
+
+                    this.renderer.render( this.scene, this.camera )
+
+                }
+
+                _updateObjects () {
+
+
+                    this.control.camera.getWorldPosition( this.cameraWorldPosition )
+                    this.control.camera.getWorldDirection( this.cameraWorldDirection )
+
+                    this.dataGroup.traverse( ( object3D ) => {
+
+                        if ( object3D.update ) {
+                            object3D.update( this.cameraWorldPosition, this.cameraWorldDirection )
+                        }
+
+                    } )
+
+                }
+
+                _updateIntersected () {
+
+                    this.raycaster.setFromCamera( this.mouse, this.camera )
+                    if ( this.debug ) {
+                        const origin      = this.raycaster.ray.origin
+                        const direction   = this.raycaster.ray.direction
+                        const arrowHelper = new Three.ArrowHelper( direction, origin, 10, 0x123456 )
+                        this.scene.add( arrowHelper )
+                    }
+
+                    const intersects = this.raycaster.intersectObjects( this.dataGroup.children, false )
+                    if ( intersects.length > 0 ) {
+
+                        const intersect = intersects[ 0 ]
+                        const result    = intersect.object
+                        if ( result === this.INTERSECTED ) { return }
+
+                        if ( this.INTERSECTED && this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( false )
+                        }
+                        this.INTERSECTED = result
+                        if ( this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( true )
+                        }
+
+                    } else if ( this.INTERSECTED !== null ) {
+
+                        if ( this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( false )
+                        }
+                        this.INTERSECTED = null
+
+                    }
+
+                }
+
+                onMouseMove ( mouseEvent ) {
+                    //                    if ( mouseEvent.defaultPrevented ) { return }
+                    //                    mouseEvent.preventDefault()
+
+                    //                    if ( mouseEvent.cancelable && mouseEvent.stopImmediatePropagation ) {
+                    //                        mouseEvent.stopImmediatePropagation()
+                    //                    }
+
+                    // calculate mouse position in normalized device coordinates
+                    // (-1 to +1) for both components
+                    const mousePositionX  = mouseEvent.layerX || mouseEvent.offsetX || 1
+                    const mousePositionY  = mouseEvent.layerY || mouseEvent.offsetY || 1
+                    const containerWidth  = this.domElement.offsetWidth
+                    const containerHeight = this.domElement.offsetHeight
+
+                    this.mouse.x = ( mousePositionX / containerWidth ) * 2 - 1
+                    this.mouse.y = -( mousePositionY / containerHeight ) * 2 + 1
+                }
+
+                _resize () {
+
+                    this._resizeCamera( 1, 1 )
+                    this._resizeControl( 1, 1 )
+                    this._resizeEffect( 1, 1 )
+                    this._resizeRenderer( 1, 1 )
+                    this._resizeComposer( 1, 1 )
+
+                    if ( this.resizeTimeoutId ) {
+                        clearTimeout( this.resizeTimeoutId )
+                    }
+
+                    this.resizeTimeoutId = setTimeout( () => {
+
+                        const containerWidth  = this.domElement.offsetWidth
+                        const containerHeight = this.domElement.offsetHeight
+
+                        this._resizeCamera( containerWidth, containerHeight )
+                        this._resizeControl( containerWidth, containerHeight )
+                        this._resizeEffect( containerWidth, containerHeight )
+                        this._resizeRenderer( containerWidth, containerHeight )
+                        this._resizeComposer( containerWidth, containerHeight )
+
+                    }, 0 )
+
+                }
+
+                _resizeCamera ( width, height ) {
+
+                    if ( !this.camera ) { return }
+
+                    const aspectRatio = ( width / height )
+
+                    if ( this.camera.isPerspectiveCamera ) {
+
+                        this.camera.aspect = aspectRatio
+
+                        this.camera.updateProjectionMatrix()
+
+                    } else if ( this.camera.isOrthographicCamera ) {
+
+                        this.camera.left   = -( width / 2 )
+                        this.camera.right  = ( width / 2 )
+                        this.camera.top    = ( height / 2 )
+                        this.camera.bottom = -( height / 2 )
+
+                        this.camera.updateProjectionMatrix()
+
+                    } else {
+
+                        console.error( `TViewport3D: Unable to resize unknown camera of type ${ typeof this.camera }` )
+
+                    }
+
+                }
+
+                _resizeControl ( width, height ) {
+                    if ( !this.control ) { return }
+                    if ( !this.control.resize ) { return }
+
+                    this.control.resize( width, height )
+                }
+
+                _resizeEffect ( width, height ) {
+                    if ( !this.effect ) { return }
+                    if ( !this.effect.setSize ) { return }
+
+                    this.effect.setSize( width, height )
+                }
+
+                _resizeRenderer ( width, height ) {
+                    if ( !this.renderer ) { return }
+                    if ( !this.renderer.setSize ) { return }
+
+                    this.renderer.setSize( width, height )
+                    //                    this.rendererB.setSize( 250, 250 )
+                }
+
+                _resizeComposer ( width, height ) {
+                    if ( !this.composer ) { return }
+                    if ( !this.composer.setSize ) { return }
+
+                    this.composer.setSize( width, height )
+                }
+
+            }
+
+            class ThreeApplicationB extends Three.EventDispatcher {
+
+                constructor ( props = {} ) {
+
+                    super( props )
+
+                    this.debug      = props.debug || false
+                    this.domElement = props.domElement
+
+                    /////// SCENE A
+
+                    this.scene = new Three.Scene()
+
+                    this.envGroup = new Three.Group()
+                    this.scene.add( this.envGroup )
+
+                    this.light = new Three.AmbientLight( 0x777777 ) // soft white light
+                    this.envGroup.add( this.light )
+
+                    //                    const gridHelperXZ_01 = new Three.GridHelper( 20, 20 )
+                    //                    gridHelperXZ_01.name  = 'Grille XZ - Mètrique'
+                    //                    this.envGroup.add( gridHelperXZ_01 )
+
+                    this.dataGroup = new Three.Group()
+                    this.scene.add( this.dataGroup )
+
+                    this.camera            = new Three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 )
+                    this.camera.position.z = 15
+                    //                    this.scene.add( this.camera )
+
+                    this.object = props.object
+                    this.scene.add( this.object )
+                    this.object.updateMatrix()
+
+                    this.cameraWorldPosition  = new Three.Vector3()
+                    this.cameraWorldDirection = new Three.Vector3()
+
+                    this.control = new Itee.Plugin.Three.CameraControls( {
+                        camera:     this.camera,
+                        domElement: this.domElement
+                    } )
+
+                    this.raycaster   = new Three.Raycaster()
+                    this.mouse       = new Three.Vector2()
+                    this.INTERSECTED = null
+
+                    this.renderer = new Three.WebGLRenderer( { alpha: true } )
+                    this.renderer.setClearColor( 0x000000, 0 )
+                    //                    this.renderer.autoClear = false
+                    //                    this.renderer.setSize( this.domElement.innerWidth / 10, this.domElement.innerHeight / 10 )
+                    this.renderer.domElement.classList.add( 'widget' )
+                    this.renderer.domElement.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false )
+                    this.renderer.domElement.addEventListener( 'click', this._updateSelected.bind( this ), false )
+                    //                    this.renderer.domElement.addEventListener( 'mousemove', this._updateIntersected.bind( this ), false )
+
+                    this.domElement.appendChild( this.renderer.domElement )
+                    //                    this.domElement.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false )
+                    window.addEventListener( 'resize', this._resize.bind( this ) )
+
+                    this._resize()
+                }
+
+                /////
+
+                animate () {
+
+                    requestAnimationFrame( this.animate.bind( this ) )
+
+                    this._updateObjects()
+                    //                    this._updateIntersected()
+
+                    this.renderer.render( this.scene, this.camera )
+
+                }
+
+                _updateObjects () {
+
+                    this.control.camera.getWorldPosition( this.cameraWorldPosition )
+                    this.control.camera.getWorldDirection( this.cameraWorldDirection )
+
+                    if ( this.object && this.object.update ) {
+                        this.object.update( this.cameraWorldPosition, this.cameraWorldDirection )
+                    }
+
+                }
+
+                _updateIntersected () {
+
+                    this.raycaster.setFromCamera( this.mouse, this.camera )
+                    if ( this.debug ) {
+                        const origin      = this.raycaster.ray.origin
+                        const direction   = this.raycaster.ray.direction
+                        const arrowHelper = new Three.ArrowHelper( direction, origin, 10, 0x123456 )
+                        this.scene.add( arrowHelper )
+                    }
+
+                    const intersects = this.raycaster.intersectObjects( this.scene.children, false )
+                    if ( intersects.length > 0 ) {
+
+                        const intersect = intersects[ 0 ]
+                        const result    = intersect.object
+                        if ( result === this.INTERSECTED ) { return }
+
+                        if ( this.INTERSECTED && this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( false )
+                        }
+                        this.INTERSECTED = result
+                        if ( this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( true )
+                        }
+
+                    } else if ( this.INTERSECTED !== null ) {
+
+                        if ( this.INTERSECTED.highlight ) {
+                            this.INTERSECTED.highlight( false )
+                        }
+                        this.INTERSECTED = null
+
+                    }
+
+                }
+
+                _updateSelected () {
+
+                    let direction = null
+                    switch ( this.INTERSECTED.name ) {
+
+                        case 'FACE_RIGHT':
+                            direction = new Three.Vector3( 1, 0, 0 )
+                            break
+                        case 'FACE_LEFT':
+                            direction = new Three.Vector3( -1, 0, 0 )
+                            break
+                        case 'FACE_TOP':
+                            direction = new Three.Vector3( 0, 1, 0 )
+                            break
+                        case 'FACE_BOTTOM':
+                            direction = new Three.Vector3( 0, -1, 0 )
+                            break
+                        case 'FACE_FRONT':
+                            direction = new Three.Vector3( 0, 0, 1 )
+                            break
+                        case 'FACE_BACK':
+                            direction = new Three.Vector3( 0, 0, -1 )
+                            break
+
+                        case 'CORNER_TOP_LEFT_FRONT':
+                            direction = new Three.Vector3( -1, 1, 1 )
+                            break
+                        case 'CORNER_TOP_LEFT_BACK':
+                            direction = new Three.Vector3( -1, 1, -1 )
+                            break
+                        case 'CORNER_TOP_RIGHT_FRONT':
+                            direction = new Three.Vector3( 1, 1, 1 )
+                            break
+                        case 'CORNER_TOP_RIGHT_BACK':
+                            direction = new Three.Vector3( 1, 1, -1 )
+                            break
+                        case 'CORNER_BOTTOM_LEFT_FRONT':
+                            direction = new Three.Vector3( -1, -1, 1 )
+                            break
+                        case 'CORNER_BOTTOM_LEFT_BACK':
+                            direction = new Three.Vector3( -1, -1, -1 )
+                            break
+                        case 'CORNER_BOTTOM_RIGHT_FRONT':
+                            direction = new Three.Vector3( 1, -1, 1 )
+                            break
+                        case 'CORNER_BOTTOM_RIGHT_BACK':
+                            direction = new Three.Vector3( 1, -1, -1 )
+                            break
+
+                        case 'EDGE_TOP_FRONT':
+                            direction = new Three.Vector3( 0, 1, 1 )
+                            break
+                        case 'EDGE_TOP_LEFT':
+                            direction = new Three.Vector3( -1, 1, 0 )
+                            break
+                        case 'EDGE_TOP_BACK':
+                            direction = new Three.Vector3( 0, 1, -1 )
+                            break
+                        case 'EDGE_TOP_RIGHT':
+                            direction = new Three.Vector3( 1, 1, 0 )
+                            break
+
+                        case 'EDGE_LEFT_FRONT':
+                            direction = new Three.Vector3( -1, 0, 1 )
+                            break
+                        case 'EDGE_LEFT_BACK':
+                            direction = new Three.Vector3( -1, 0, -1 )
+                            break
+                        case 'EDGE_RIGHT_FRONT':
+                            direction = new Three.Vector3( 1, 0, 1 )
+                            break
+                        case 'EDGE_RIGHT_BACK':
+                            direction = new Three.Vector3( 1, 0, -1 )
+                            break
+
+                        case 'EDGE_BOTTOM_FRONT':
+                            direction = new Three.Vector3( 0, -1, 1 )
+                            break
+                        case 'EDGE_BOTTOM_LEFT':
+                            direction = new Three.Vector3( -1, -1, 0 )
+                            break
+                        case 'EDGE_BOTTOM_BACK':
+                            direction = new Three.Vector3( 0, -1, -1 )
+                            break
+                        case 'EDGE_BOTTOM_RIGHT':
+                            direction = new Three.Vector3( 1, -1, 0 )
+                            break
+
+                        default:
+                            throw new RangeError( `Invalid switch parameter: ${ value }` )
+
+                    }
+
+                    this.dispatchEvent( {
+                        type:  'click_handle',
+                        value: direction.normalize()
+                    } )
+
+                }
+
+                onMouseMove ( mouseEvent ) {
+                    if ( mouseEvent.defaultPrevented ) { return }
+                    mouseEvent.preventDefault()
+
+                    if ( mouseEvent.cancelable && mouseEvent.stopImmediatePropagation ) {
+                        mouseEvent.stopImmediatePropagation()
+                    }
+
+                    // calculate mouse position in normalized device coordinates
+                    // (-1 to +1) for both components
+                    const mousePositionX  = mouseEvent.layerX || mouseEvent.offsetX || 1
+                    const mousePositionY  = mouseEvent.layerY || mouseEvent.offsetY || 1
+                    const containerWidth  = this.renderer.domElement.offsetWidth
+                    const containerHeight = this.renderer.domElement.offsetHeight
+
+                    this.mouse.x = ( mousePositionX / containerWidth ) * 2 - 1
+                    this.mouse.y = -( mousePositionY / containerHeight ) * 2 + 1
+
+                    this._updateIntersected()
+                }
+
+                _resize () {
+
+                    this._resizeCamera( 1, 1 )
+                    this._resizeControl( 1, 1 )
+                    this._resizeEffect( 1, 1 )
+                    this._resizeRenderer( 1, 1 )
+                    this._resizeComposer( 1, 1 )
+
+                    if ( this.resizeTimeoutId ) {
+                        clearTimeout( this.resizeTimeoutId )
+                    }
+
+                    this.resizeTimeoutId = setTimeout( () => {
+
+                        const containerWidth  = 200 // this.domElement.offsetWidth / 5
+                        const containerHeight = 200 // this.domElement.offsetHeight / 5
+
+                        this._resizeCamera( containerWidth, containerHeight )
+                        this._resizeControl( containerWidth, containerHeight )
+                        this._resizeEffect( containerWidth, containerHeight )
+                        this._resizeRenderer( containerWidth, containerHeight )
+                        this._resizeComposer( containerWidth, containerHeight )
+
+                    }, 0 )
+
+                }
+
+                _resizeCamera ( width, height ) {
+
+                    if ( !this.camera ) { return }
+
+                    const aspectRatio = ( width / height )
+
+                    if ( this.camera.isPerspectiveCamera ) {
+
+                        this.camera.aspect = aspectRatio
+
+                        this.camera.updateProjectionMatrix()
+
+                    } else if ( this.camera.isOrthographicCamera ) {
+
+                        this.camera.left   = -( width / 2 )
+                        this.camera.right  = ( width / 2 )
+                        this.camera.top    = ( height / 2 )
+                        this.camera.bottom = -( height / 2 )
+
+                        this.camera.updateProjectionMatrix()
+
+                    } else {
+
+                        console.error( `TViewport3D: Unable to resize unknown camera of type ${ typeof this.camera }` )
+
+                    }
+
+                }
+
+                _resizeControl ( width, height ) {
+                    if ( !this.control ) { return }
+                    if ( !this.control.resize ) { return }
+
+                    this.control.resize( width, height )
+                }
+
+                _resizeEffect ( width, height ) {
+                    if ( !this.effect ) { return }
+                    if ( !this.effect.setSize ) { return }
+
+                    this.effect.setSize( width, height )
+                }
+
+                _resizeRenderer ( width, height ) {
+                    if ( !this.renderer ) { return }
+                    if ( !this.renderer.setSize ) { return }
+
+                    this.renderer.setSize( width, height )
+                    //                    this.rendererB.setSize( 250, 250 )
+                }
+
+                _resizeComposer ( width, height ) {
+                    if ( !this.composer ) { return }
+                    if ( !this.composer.setSize ) { return }
+
+                    this.composer.setSize( width, height )
+                }
+
+                //////
+
+                updateWidget ( direction ) {
+                    this.control._lookAt( direction )
+                }
+
+            }
+
+            console.log( 'Start tests' )
+
+            try {
+
+                const viewportElement = document.getElementById( 'viewport' )
+
+                const App = new ThreeApplicationA( {
+                    domElement: viewportElement
+                } )
+                App.animate()
+
+                const AppB = new ThreeApplicationB( {
+                    debug:      false,
+                    domElement: viewportElement,
+                    object:     new Itee.Plugin.Three.LookAtGizmo( {
+                        debug:     false,
+                        planeSize: 20
+                    } )
+                } )
+                AppB.animate()
+
+                App.control.addEventListener( 'change', ( event ) => {
+                    const cameraWorldDirection = new Three.Vector3()
+                    event.target.camera.getWorldDirection( cameraWorldDirection )
+                    cameraWorldDirection.negate()
+                    AppB.updateWidget( cameraWorldDirection )
+                } )
+
+                AppB.addEventListener( 'click_handle', ( event ) => {
+                    const value = event.value
+                    App.control._lookAt( value )
+                } )
+
+            } catch ( error ) {
+
+                console.error( error )
+
+            }
+
+            console.log( 'End tests' )
+		</script>
+		<!--
+				<script>
+					console.log( 'Start tests' )
+
+
+					// Try with scissors
+					class ThreeApplicationC {
+
+						constructor ( props = {} ) {
+
+							this.debug       = props.debug || false
+							this.domElement  = props.domElement
+							this.raycaster   = new Three.Raycaster()
+							this.mouse       = new Three.Vector2()
+							this.INTERSECTED = null
+
+							/////// SCENE A
+
+							this.scene = new Three.Scene()
+
+							this.envGroup = new Three.Group()
+							this.envGroup.layers.enableAll()
+							this.scene.add( this.envGroup )
+
+							this.light = new Three.AmbientLight( 0x777777 ) // soft white light
+							this.light.layers.enableAll()
+							this.envGroup.add( this.light )
+
+							const gridHelperXZ_01 = new Three.GridHelper( 20, 20 )
+							gridHelperXZ_01.name  = 'Grille XZ - Mètrique'
+							//                    gridHelperXZ_01.layers.enableAll()
+							this.envGroup.add( gridHelperXZ_01 )
+
+							this.widgetGroup = new Three.Group()
+							this.widgetGroup.layers.set( 3 )
+							this.scene.add( this.widgetGroup )
+
+							this.dataGroup = new Three.Group()
+							this.scene.add( this.dataGroup )
+
+							this.camera               = new Three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 )
+							this.camera.position.z    = 10
+							//                    this.scene.add( this.camera )
+							this.cameraWorldPosition  = new Three.Vector3()
+							this.cameraWorldDirection = new Three.Vector3()
+
+							this.camera2 = new Three.PerspectiveCamera( 40, 1, 1, 1000 )
+							this.camera2.layers.set( 3 )
+							this.camera2.position.z = 30
+
+							this.control = new Itee.Plugin.Three.CameraControls( {
+								camera:     this.camera,
+								domElement: this.domElement
+							} )
+
+							////
+
+							for ( let i = 0, length = 1000 ; i < length ; i++ ) {
+
+								const box = new Three.Mesh(
+									new Three.BoxBufferGeometry( 1.0, 1.0, 1.0, 1, 1, 1 ),
+									new Three.MeshPhongMaterial()
+								)
+								box.name  = i
+								box.position.set( Itee.Utils.getRandomFloatInclusive( -50, 50 ), Itee.Utils.getRandomFloatInclusive( -50, 50 ), Itee.Utils.getRandomFloatInclusive( -50, 50 ) )
+
+								this.dataGroup.add( box )
+
+							}
+
+
+							const sphere = new Three.Mesh(
+								new Three.SphereBufferGeometry(),
+								new Three.MeshPhongMaterial()
+							)
+							sphere.layers.set( 3 )
+							this.widgetGroup.add( sphere )
+
+							this.object = new Itee.Plugin.Three.LookAtGizmo( {
+								debug:     true,
+								planeSize: 20
+							} )
+							//                    this.object = props.object
+							this.object.traverse( ( obj ) => {
+								obj.layers.set( 3 )
+							} )
+							this.widgetGroup.add( this.object )
+
+							////
+
+							this.renderer = new Three.WebGLRenderer( { alpha: true } )
+							this.renderer.setClearColor( 0x000000, 0 )
+							this.renderer.setSize( this.domElement.innerWidth, this.domElement.innerHeight )
+							this.renderer.autoClear = true
+
+							this.domElement.appendChild( this.renderer.domElement )
+							this.domElement.addEventListener( 'mousemove', this.onMouseMove.bind( this ), false )
+							window.addEventListener( 'resize', this._resize.bind( this ) )
+
+							this._resize()
+						}
+
+						animate () {
+
+							requestAnimationFrame( this.animate.bind( this ) )
+
+							this._updateObjects()
+							this._updateIntersected()
+
+							const containerWidth  = this.domElement.offsetWidth
+							const containerHeight = this.domElement.offsetHeight
+
+							this.renderer.setViewport( 0, 0, containerWidth, containerHeight )
+							this.renderer.render( this.scene, this.camera )
+
+							this.renderer.setScissorTest( true )
+
+							//                    const w = containerWidth
+							//                    const h = containerHeight
+							//                    const x = containerWidth - w
+							//                    const y = containerHeight - h
+							//                    this.renderer.setScissor( x, y, w, h )
+							//                    this.renderer.setScissor( 300, 300, containerWidth - w, containerHeight - h )
+
+							const side = 200
+							this.renderer.setScissor(
+								containerWidth - side,
+								//                        containerWidth - ( containerWidth / 2 ) - ( side / 2 ),
+								containerHeight - side,
+								//                        containerHeight - ( containerHeight / 2 ) - ( side / 2 ),
+								side,
+								side
+							)
+
+							//                    const w2 = containerWidth / 4
+							//                    const h2 = containerHeight / 4
+							//                    const x2 = containerWidth - w2
+							//                    const y2 = containerHeight - h2
+							//                    this.renderer.setViewport( x2, y2, w2, h2 )
+
+							const vide = 200
+							this.renderer.setViewport(
+								containerWidth - side,
+								//                        containerWidth - ( containerWidth / 2 ) - ( vide / 2 ),
+								containerHeight - side,
+								//                        containerHeight - ( containerHeight / 2 ) - ( vide / 2 ),
+								vide,
+								vide
+							)
+							//                    this.renderer.setViewport( 200, 200, containerWidth - 200, containerWidth - 200 )
+							this.renderer.render( this.scene, this.camera2 )
+							this.renderer.setScissorTest( false )
+
+						}
+
+						_updateObjects () {
+
+							this.control.camera.getWorldPosition( this.cameraWorldPosition )
+							this.control.camera.getWorldDirection( this.cameraWorldDirection )
+
+							this.camera2.position.copy( this.cameraWorldPosition )
+							this.camera2.lookAt( this.control.target.position.clone() )
+
+							this.scene.traverse( ( object3D ) => {
+
+								if ( object3D.update ) {
+									object3D.update( this.cameraWorldPosition, this.cameraWorldDirection )
+								}
+
+							} )
+
+						}
+
+						_updateIntersected () {
+
+							this.raycaster.setFromCamera( this.mouse, this.camera2 )
+							if ( this.debug ) {
+								const origin      = this.raycaster.ray.origin
+								const direction   = this.raycaster.ray.direction
+								const arrowHelper = new Three.ArrowHelper( direction, origin, 10, 0x123456 )
+								this.scene.add( arrowHelper )
+							}
+
+							const intersects = this.raycaster.intersectObjects( this.widgetGroup.children, false )
+							if ( intersects.length > 0 ) {
+
+								const intersect = intersects[ 0 ]
+								const result    = intersect.object
+								if ( result === this.INTERSECTED ) { return }
+
+								if ( this.INTERSECTED && this.INTERSECTED.highlight ) {
+									this.INTERSECTED.highlight( false )
+								}
+								this.INTERSECTED = result
+								if ( this.INTERSECTED.highlight ) {
+									this.INTERSECTED.highlight( true )
+								}
+
+							} else if ( this.INTERSECTED !== null ) {
+
+								if ( this.INTERSECTED.highlight ) {
+									this.INTERSECTED.highlight( false )
+								}
+								this.INTERSECTED = null
+
+							}
+
+						}
+
+						onMouseMove ( mouseEvent ) {
+							mouseEvent.preventDefault()
+
+							// calculate mouse position in normalized device coordinates
+							// (-1 to +1) for both components
+							const mousePositionX  = mouseEvent.layerX || mouseEvent.offsetX || 1
+							const mousePositionY  = mouseEvent.layerY || mouseEvent.offsetY || 1
+							const containerWidth  = this.domElement.offsetWidth
+							const containerHeight = this.domElement.offsetHeight
+
+							this.mouse.x = ( mousePositionX / containerWidth ) * 2 - 1
+							this.mouse.y = -( mousePositionY / containerHeight ) * 2 + 1
+						}
+
+						_resize () {
+
+							this._resizeCamera( 1, 1 )
+							this._resizeControl( 1, 1 )
+							this._resizeEffect( 1, 1 )
+							this._resizeRenderer( 1, 1 )
+							this._resizeComposer( 1, 1 )
+
+							if ( this.resizeTimeoutId ) {
+								clearTimeout( this.resizeTimeoutId )
+							}
+
+							this.resizeTimeoutId = setTimeout( () => {
+
+								const containerWidth  = this.domElement.offsetWidth
+								const containerHeight = this.domElement.offsetHeight
+
+								this._resizeCamera( containerWidth, containerHeight )
+								this._resizeControl( containerWidth, containerHeight )
+								this._resizeEffect( containerWidth, containerHeight )
+								this._resizeRenderer( containerWidth, containerHeight )
+								this._resizeComposer( containerWidth, containerHeight )
+
+							}, 0 )
+
+						}
+
+						_resizeCamera ( width, height ) {
+
+							this.camera2.aspect = 1
+							//                    this.camera2.aspect = width / height
+							this.camera2.updateProjectionMatrix()
+
+							if ( !this.camera ) { return }
+
+							const aspectRatio = ( width / height )
+
+							if ( this.camera.isPerspectiveCamera ) {
+
+								this.camera.aspect = aspectRatio
+
+								this.camera.updateProjectionMatrix()
+
+							} else if ( this.camera.isOrthographicCamera ) {
+
+								this.camera.left   = -( width / 2 )
+								this.camera.right  = ( width / 2 )
+								this.camera.top    = ( height / 2 )
+								this.camera.bottom = -( height / 2 )
+
+								this.camera.updateProjectionMatrix()
+
+							} else {
+
+								console.error( `TViewport3D: Unable to resize unknown camera of type ${ typeof this.camera }` )
+
+							}
+
+						}
+
+						_resizeControl ( width, height ) {
+							if ( !this.control ) { return }
+							if ( !this.control.resize ) { return }
+
+							this.control.resize( width, height )
+						}
+
+						_resizeEffect ( width, height ) {
+							if ( !this.effect ) { return }
+							if ( !this.effect.setSize ) { return }
+
+							this.effect.setSize( width, height )
+						}
+
+						_resizeRenderer ( width, height ) {
+							if ( !this.renderer ) { return }
+							if ( !this.renderer.setSize ) { return }
+
+							this.renderer.setSize( width, height )
+							//                    this.rendererB.setSize( 250, 250 )
+						}
+
+						_resizeComposer ( width, height ) {
+							if ( !this.composer ) { return }
+							if ( !this.composer.setSize ) { return }
+
+							this.composer.setSize( width, height )
+						}
+
+					}
+
+					try {
+
+						const viewportElement = document.getElementById( 'viewport' )
+
+						// Try with scissors
+						const AppB = new ThreeApplicationC( {
+							domElement: viewportElement,
+							object:     new Itee.Plugin.Three.LookAtGizmo( {
+								debug:     true,
+								planeSize: 20
+							} )
+						} )
+						AppB.animate()
+
+					} catch ( error ) {
+
+						console.error( error )
+
+					}
+
+					console.log( 'End tests' )
+				</script>
+		-->
+	</body>
+</html>
