@@ -45,6 +45,8 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         this.logger        = _parameters.logger
         this.mergeStrategy = 'add'
 
+        this._cache = {}
+
         // Addition
         // Update
         // Deletion
@@ -72,6 +74,17 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         }
 
         return array
+
+    }
+
+    static _toLog ( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
 
     }
 
@@ -111,7 +124,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
             let childrenIds = null
             if ( isDefined( parentId ) ) {
 
-                const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } )
+                const parentDocument = await this._readDocument( 'Objects3D', { _id: parentId } )
                 if ( isNull( parentDocument ) ) {
                     onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` )
                     return
@@ -136,7 +149,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                     // Merge children into parent
                     //// Clean up current dbObject dependencies
                     // Children create and update will be perform on children iteration but remove need to be checked here !
-                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: parentId } )
+                    const dbChildren         = await this._readDocuments( 'Objects3D', { parent: parentId } )
                     const childrenUuids      = dataToParse.map( child => child.uuid )
                     const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
 
@@ -167,6 +180,8 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
         } catch ( error ) {
             onError( error )
+        } finally {
+            this._cache = {}
         }
 
     }
@@ -182,6 +197,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _parseObjects ( objects = [], parentId = null ) {
+        this.logger.debug(`_parseObjects(...)`)
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {
@@ -206,6 +222,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _parseObject ( object, parentId = null ) {
+        this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` )
 
         if ( isNotDefined( object ) ) {
             return null
@@ -299,7 +316,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
         // Check if object already exist
         // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-        let document = await this._readOneDocument( objectType, {
+        let document = await this._readDocument( objectType, {
             uuid:   object.uuid,
             parent: parentId
         } )
@@ -326,7 +343,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
 
                 //// Clean up current dbObject dependencies
                 // Children create and update will be perform on children iteration but remove need to be checked here !
-                const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+                const dbChildren         = await this._readDocuments( 'Objects3D', { parent: document._id } )
                 const childrenUuids      = objectChildren.map( child => child.uuid )
                 const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) )
 
@@ -382,6 +399,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _getOrCreateDocuments ( objects = [] ) {
+        this.logger.debug( `_getOrCreateDocuments(...)` )
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {
@@ -407,12 +425,13 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _getOrCreateDocument ( data ) {
+        this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` )
 
         if ( isNotDefined( data ) ) {
             return null
         }
 
-        let document = await this._readOneDocument( data.type, { uuid: data.uuid } )
+        let document = await this._readDocument( data.type, { uuid: data.uuid } )
         if ( isDefined( document ) ) {
             document = await this._updateDocument( document, data )
         } else {
@@ -433,6 +452,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _createDocuments ( datas = [] ) {
+        this.logger.debug( `_createDocuments(...)` )
 
         const _datas = ThreeToMongoDB._arrayify( datas )
         if ( isEmptyArray( _datas ) ) {
@@ -457,43 +477,28 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _createDocument ( data ) {
+        this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` )
 
         if ( isNotDefined( data ) ) {
             return null
         }
 
-        const model         = this._driver.model( data.type )
-        const savedDocument = await model( data ).save()
-        return savedDocument._doc
+        const model = await this._driver
+                                .model( data.type )( data )
+                                .save()
 
-    }
+        //        const model         = this._driver.model( data.type )
+        //        const savedModel = await model( data ).save()
 
-    // Todo: Rename to _readDocument
-    /**
-     * Read one document based on a model type, and a object query that match.
-     * If the given type or query are null or undefined it return null.
-     *
-     * @param {String} type - The Mongoose Model type on which read query must be perform
-     * @param {Object} query - The find conditions to match document
-     * @returns {Promise<Mongoose.Document|null>|null}
-     * @private
-     */
-    async _readOneDocument ( type, query ) {
-
-        if ( isNotDefined( type ) || isNotDefined( query ) ) {
-            return null
+        const savedDocument = ( isDefined( model ) ) ? model._doc : null
+        if ( savedDocument ) {
+            this._cache[ savedDocument.uuid ] = savedDocument
         }
 
-        const model = await this._driver
-                                .model( type )
-                                .findOne( query )
-                                .exec()
-
-        return ( isDefined( model ) ) ? model._doc : null
+        return savedDocument
 
     }
 
-    // Todo: Rename to _readDocuments
     /**
      * Read all document based on a model type, and a object query that match.
      * If the given type or query are null or undefined it return null.
@@ -503,7 +508,8 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query ) {
+    async _readDocuments ( type, query ) {
+        this.logger.debug( `_readDocuments(...)` )
 
         if ( isNotDefined( type ) || isNotDefined( query ) ) {
             return null
@@ -515,7 +521,40 @@ class ThreeToMongoDB extends TAbstractDataInserter {
                                .exec()
 
         return models.map( model => model._doc )
+    }
 
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    async _readDocument ( type, query ) {
+        this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` )
+
+        if ( isNotDefined( type ) || isNotDefined( query ) ) {
+            return null
+        }
+
+        const cachedDocument = this._cache[ query.uuid ]
+        if ( cachedDocument ) {
+            return cachedDocument
+        }
+
+        const model = await this._driver
+                                .model( type )
+                                .findOne( query )
+                                .exec()
+
+        const readDocument = ( isDefined( model ) ) ? model._doc : null
+        if ( readDocument ) {
+            this._cache[ readDocument.uuid ] = readDocument
+        }
+
+        return readDocument
     }
 
     /**
@@ -530,6 +569,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+        this.logger.debug( `_updateDocuments(...)` )
 
         const _documents = ThreeToMongoDB._arrayify( documents )
         if ( isEmptyArray( _documents ) ) {
@@ -555,17 +595,24 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions ) {
+    async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
+        this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` )
 
         if ( isNotDefined( document ) ) {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
-                         .exec()
+        const model = await this._driver
+                                .model( document.type )
+                                .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                                .exec()
 
+        const updatedDocument = ( isDefined( model ) ) ? model._doc : null
+        if ( updatedDocument ) {
+            this._cache[ updatedDocument.uuid ] = updatedDocument
+        }
+
+        return updatedDocument
     }
 
     /**
@@ -578,6 +625,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _deleteDocuments ( documents = [] ) {
+        this.logger.debug( `_deleteDocuments(...)` )
 
         const _documents = ThreeToMongoDB._arrayify( documents )
         if ( isEmptyArray( _documents ) ) {
@@ -602,16 +650,23 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _deleteDocument ( document ) {
+        this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` )
 
         if ( isNotDefined( document ) ) {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndDelete( document._id )
-                         .exec()
+        const model = await this._driver
+                                .model( document.type )
+                                .findByIdAndDelete( document._id )
+                                .exec()
 
+        const deletedDocument = ( isDefined( model ) ) ? model._doc : null
+        if ( deletedDocument ) {
+            delete this._cache[ deletedDocument.uuid ]
+        }
+
+        return deletedDocument
     }
 
     ///
@@ -623,6 +678,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _removeChildrenDocuments ( documents ) {
+        this.logger.debug( `_removeChildrenDocuments(...)` )
 
         let removed = []
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
@@ -640,9 +696,10 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _removeChildDocument ( document ) {
+        this.logger.debug( `_removeChildDocument(${ ThreeToMongoDB._toLog( document ) })` )
 
         // Remove children recursively
-        const children = await this._readManyDocument( 'Objects3D', { parent: document._id } )
+        const children = await this._readDocuments( 'Objects3D', { parent: document._id } )
         await this._removeChildrenDocuments( children )
 
         // Remove geometry only if current object is the last that reference it
@@ -664,13 +721,14 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _removeOrphanGeometryWithId ( geometryId ) {
+        this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` )
 
         if ( isNotDefined( geometryId ) ) { return }
 
-        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } )
+        const referencingObjects = await this._readDocuments( 'Objects3D', { geometry: geometryId } )
         if ( referencingObjects.length > 1 ) { return }
 
-        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } )
+        const geometryDocument = await this._readDocument( 'Geometries', { _id: geometryId } )
         await this._deleteDocument( geometryDocument )
 
     }
@@ -684,6 +742,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
+        this.logger.debug( `_removeOrphanMaterialsWithIds(...)` )
 
         const removed = []
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
@@ -702,11 +761,12 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _removeOrphanMaterialWithId ( materialId ) {
+        this.logger.debug( `_removeOrphanMaterialWithId(${ materialId })` )
 
-        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )
+        const referencingObjects = await this._readDocuments( 'Objects3D', { material: materialId } )
         if ( referencingObjects.length > 1 ) { return }
 
-        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } )
+        const materialDocument = await this._readDocument( 'Materials', { _id: materialId } )
         await this._deleteDocument( materialDocument )
 
     }
