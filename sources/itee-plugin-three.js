@@ -302,6 +302,6 @@ export { default } from './backend/MongoDBThreePlugin'
 // #endif
 
 // #if IS_REMOVE_ON_BACKEND_BUILD
-export * from './common/loaders/_loaders'
+export * from './common/_common'
 export * from './frontend/_frontend'
 // #endif

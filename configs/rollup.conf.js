@@ -59,7 +59,7 @@ function _computeIntro () {
         'if( iteeValidators === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeUtils === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeClient === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.\') }' + '\n' +
-        'if( Three === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
+        'if( threeFull === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
 
 }
 

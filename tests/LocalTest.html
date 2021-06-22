@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Title</title>
+		<style>
+            * {
+                margin:     0;
+                padding:    0;
+                box-sizing: border-box;
+            }
+
+            body {
+                overflow:         hidden;
+                background-color: red;
+            }
+
+            #ui {
+                position:         absolute;
+                top:              10px;
+                left:             10px;
+                background-color: gray;
+                min-width:        150px;
+                min-height:       150px;
+            }
+
+            #result {
+                position:         absolute;
+                top:              10px;
+                right:            10px;
+                background-color: gray;
+            }
+
+            #log {
+                width:            100%;
+                min-height:       100px;
+                max-height:       1500px;
+                background-color: lightgrey;
+                overflow-y:       scroll;
+            }
+
+            /*Form*/
+            input {
+                width: 150px;
+            }
+
+            button {
+                width: 100%;
+            }
+
+            fieldset {
+	            margin: 5px;
+            }
+		</style>
+	</head>
+	<body>
+
+		<div id="ui">
+			<form id="params_form" onsubmit="return false;">
+				<fieldset>
+					<legend>Render</legend>
+
+					<button id="startAnimateBtn" onclick="app.startAnimate()">Start</button>
+					<button id="stopAnimateBtn" onclick="app.stopAnimate()">Stop</button>
+				</fieldset>
+
+				<fieldset>
+					<legend>Blocks</legend>
+
+					<label for="block_min_input">Min:</label>
+					<input id="block_min_input" type="number" name="block_min_input" value="1">
+					<br />
+					<label for="block_max_input">Max:</label>
+					<input id="block_max_input" type="number" name="block_max_input" value="10">
+					<br />
+					<label for="block_step_input">Step:</label>
+					<input id="block_step_input" type="number" name="block_step_input" value="1">
+					<br />
+				</fieldset>
+
+				<fieldset>
+					<legend>Points</legend>
+
+					<label for="points_min_input">Min:</label>
+					<input id="points_min_input" type="number" name="points_min_input" value="100000">
+					<br />
+					<label for="points_max_input">Max:</label>
+					<input id="points_max_input" type="number" name="points_max_input" value="25000000">
+					<br />
+					<label for="points_step_input">Step:</label>
+					<input id="points_step_input" type="number" name="points_step_input" value="100000">
+					<br />
+				</fieldset>
+
+				<button id="startBtn" type="submit" onclick="StartTest()">Start Tests</button>
+			</form>
+		</div>
+
+		<div id="result">
+			<div>
+				<label for="nb_blocks">Blocks:</label>
+				<span id="nb_blocks">0</span>
+			</div>
+			<div>
+				<label for="nb_points">Points:</label>
+				<span id="nb_points">0</span>
+			</div>
+			<div>
+				<label for="nb_fps">FPS:</label>
+				<span id="nb_fps">0</span>
+			</div>
+		</div>
+
+		<canvas id="mycanvas"></canvas>
+		<!--		<div id="ui">-->
+		<!--			<pre id="result"></pre>-->
+		<!--			<button id="startBtn" onclick="start()">Start</button>-->
+		<!--			<button id="startBtn" onclick="stop()">Stop</button>-->
+		<!--		</div>-->
+		<!--		<div id="ui">-->
+		<!--			<input type="file" id="lasFileInput">-->
+		<!--			<button id="startBtn" onclick="LasApp.loadLasFile()">Load</button>-->
+		<!--			<pre id="result"></pre>-->
+		<!--			<div id="log"></div>-->
+		<!--		</div>-->
+
+		<script src="../node_modules/itee-validators/builds/itee-validators.iife.js"></script>
+		<script src="../node_modules/itee-utils/builds/itee-utils.iife.js"></script>
+		<script src="../node_modules/itee-client/builds/itee-client.iife.js"></script>
+		<script src="../node_modules/three-full/builds/Three.iife.js"></script>
+		<script src="../builds/LASLoader.iife.js"></script>
+		<script>
+            class TestEntry {
+                constructor ( parameters = {} ) {
+
+                    const _parameters = {
+                        ...{
+                            fps:    0,
+                            blocks: {
+                                number: 1,
+                                step:   1,
+                                bounds: {
+                                    min: 0,
+                                    max: 1
+                                }
+                            },
+                            points: {
+                                number: 1,
+                                step:   1,
+                                bounds: {
+                                    min: 0,
+                                    max: 1
+                                }
+                            }
+                        },
+                        ...parameters
+                    }
+
+                    this.fps    = _parameters.fps
+                    this.blocks = _parameters.blocks
+                    this.points = _parameters.points
+                }
+
+                clone () {
+                    return new TestEntry( {
+                        fps:    this.fps,
+                        blocks: this.blocks,
+                        points: this.points
+                    } )
+                }
+
+            }
+
+            class Application {
+
+                constructor ( canvas ) {
+                    this.scene             = new Three.Scene()
+                    this.camera            = new Three.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 100000 )
+                    this.camera.position.z = 200
+
+                    this.renderer = new Three.WebGLRenderer( { canvas: canvas } )
+                    this.controls = new Three.OrbitControls( this.camera, this.renderer.domElement )
+
+                    // internal
+                    this.requestAnimationFrameId = null
+
+                    this.resize()
+                }
+
+                resize () {
+                    this.renderer.setSize( window.innerWidth, window.innerHeight )
+                }
+
+                startAnimate () {
+                    this.animate()
+                }
+
+                animate ( timeStamp ) {
+                    this.requestAnimationFrameId = requestAnimationFrame( this.animate.bind( this ) )
+
+                    this.scene.traverse( ( object3d ) => {
+                        if ( Itee.Validators.isFunction( object3d.animate ) ) {
+                            object3d.animate( timeStamp )
+                        }
+                    } )
+
+                    this.renderer.render( this.scene, this.camera )
+                }
+
+                stopAnimate () {
+                    cancelAnimationFrame( this.requestAnimationFrameId )
+                }
+
+                ///
+
+                onData ( data ) {
+                    throw new Error( 'Need to be overrided !' )
+                }
+
+                onLog ( message ) {
+                    document.getElementById( 'log' ).innerText += message
+                }
+
+                onProgress ( progress ) {
+                    document.getElementById( 'log' ).innerText += `${ ( progress.loaded / progress.total ) * 100 }%` + '\n'
+                }
+
+                onError ( error ) {
+                    document.getElementById( 'log' ).innerText = error.toString()
+                }
+
+            }
+
+            class CloudTestApplication extends Application {
+
+                constructor ( canvas, testEntry ) {
+                    super( canvas )
+
+                    this._initScene()
+
+                    this.testEntry = testEntry || new TestEntry()
+                    this.results   = []
+                }
+
+                _initScene () {
+                    this.pointsGroup         = new Three.Group()
+                    this.pointsGroup.name    = 'Groupe de points'
+                    this.pointsGroup.animate = () => {
+                        this.pointsGroup.rotateX( 0.001 )
+                        this.pointsGroup.rotateY( 0.002 )
+                        this.pointsGroup.rotateZ( 0.003 )
+                    }
+                    this.scene.add( this.pointsGroup )
+
+//                    const boxBufferGeometry = new Three.BoxBufferGeometry( 10, 10, 10 )
+//                    const boxMaterial       = new Three.MeshBasicMaterial()
+//                    const boxMesh           = new Three.Mesh( boxBufferGeometry, boxMaterial )
+//                    boxMesh.animate         = () => {
+//                        boxMesh.rotateX( 0.001 )
+//                        boxMesh.rotateY( 0.002 )
+//                        boxMesh.rotateZ( 0.003 )
+//                    }
+//                    this.scene.add( boxMesh )
+                }
+
+                next () {
+
+                    this._clearPointsGroup()
+
+                    setTimeout( () => {
+
+                        this.testEntry.fps = 0
+
+                        let currentNbBlocks = this.testEntry.blocks.number
+                        let currentNbPoints = this.nextPointTest()
+                        if ( currentNbPoints === 0 ) {
+                            currentNbBlocks = this.nextBlockTest()
+                            if ( currentNbBlocks === 0 ) {
+                                this._clearPointsGroup()
+                                this.stopTest()
+                                return
+                            }
+
+                            currentNbPoints = this.nextPointTest()
+                        }
+
+                        const currentNumberOfPointsPerBlock = Math.round( currentNbPoints / currentNbBlocks )
+
+                        try {
+
+                            this._createPointBlocks( currentNbBlocks, currentNumberOfPointsPerBlock )
+	                        this.startAnimate()
+
+                            // Run fps test
+                            setTimeout( () => {
+
+                                this.stopAnimate()
+                                this.endTest()
+                                this.next()
+
+                            }, 1000 )
+
+                        } catch ( error ) {
+
+                            console.error( error )
+                            this.endTest()
+                            this.stopTest()
+
+                        }
+
+                    }, 0 )
+
+
+                }
+
+                nextBlockTest () {
+                    const blocks = this.testEntry.blocks
+
+                    if ( blocks.number < blocks.bounds.min ) {
+                        blocks.number = blocks.bounds.min
+                    } else {
+                        blocks.number += blocks.step
+                    }
+
+                    if ( blocks.number > blocks.bounds.max ) {
+                        blocks.number = 0
+                    }
+
+                    return blocks.number
+                }
+
+                nextPointTest () {
+                    const points = this.testEntry.points
+
+                    if ( points.number < points.bounds.min ) {
+                        points.number = points.bounds.min
+                    } else {
+                        points.number += points.step
+                    }
+
+                    if ( points.number > points.bounds.max ) {
+                        points.number = 0
+                    }
+
+                    return points.number
+                }
+
+                startTest () {
+                    this.nextBlockTest()
+                    this.next()
+                }
+
+                endTest () {
+
+                    const fps    = this.testEntry.fps
+                    const blocks = this.testEntry.blocks.number
+                    const points = this.testEntry.points.number
+                    const memory = performance.memory
+                    this.results.push( {
+                        fps:    fps,
+                        blocks: blocks,
+                        points: points,
+                        memory: {
+                            heapSizeLimit:   memory.jsHeapSizeLimit,
+                            allowedHeapSize: memory.totalJSHeapSize,
+                            usedHeapSize:    memory.usedJSHeapSize
+                        }
+                    } )
+
+                    document.getElementById( 'nb_blocks' ).innerText = blocks
+                    document.getElementById( 'nb_points' ).innerText = points
+                    document.getElementById( 'nb_fps' ).innerText    = fps
+
+                }
+
+                stopTest () {
+
+
+                    //                    let csv = ''
+                    //
+                    //                    for ( let result of this.results ) {
+                    //                        csv += `${ result.blocks };${ result.points };${ result.fps }\n`
+                    //                    }
+                    //
+                    //                    const blob = new Blob( [ csv ], { type: 'text/csv' } ) // the blob
+                    //                    window.open( URL.createObjectURL( blob ) )
+
+                    //                    document.getElementById( 'result' ).textContent = csv
+                    //                    document.getElementById( 'result' ).textContent = JSON.stringify( this.results, undefined, 2 )
+
+                    const datas = [ JSON.stringify( this.results, undefined, 2 ) ]
+                    const blob  = new Blob( datas, { type: 'application/json' } ) // the blob
+                    window.open( URL.createObjectURL( blob ) )
+                }
+
+                _clearPointsGroup () {
+                    this.pointsGroup.children = []
+                }
+
+                _createPointBlocks ( numberOfBlock, numberOfPointsPerBlock ) {
+
+                    for ( let blockIndex = 0 ; blockIndex < numberOfBlock ; blockIndex++ ) {
+
+                        const points = this._createPoints( numberOfPointsPerBlock )
+                        points.position.set(
+                            Itee.Utils.getRandomFloatInclusive( -50.0, 50.0 ),
+                            Itee.Utils.getRandomFloatInclusive( -50.0, 50.0 ),
+                            Itee.Utils.getRandomFloatInclusive( -50.0, 50.0 )
+                        )
+                        this.pointsGroup.add( points )
+
+                    }
+
+                }
+
+                _createPoints ( numberOfPointsPerBlock ) {
+                    const geometry  = new Three.BufferGeometry()
+                    const positions = new Float32Array( numberOfPointsPerBlock * 3 )
+                    const colors    = new Float32Array( numberOfPointsPerBlock * 3 )
+
+                    for ( let i = 0, j = 0 ; i < numberOfPointsPerBlock ; ++i, j += 3 ) {
+                        positions[ j + 0 ] = Itee.Utils.getRandomFloatInclusive( -1.0, 1.0 )
+                        positions[ j + 1 ] = Itee.Utils.getRandomFloatInclusive( -1.0, 1.0 )
+                        positions[ j + 2 ] = Itee.Utils.getRandomFloatInclusive( -1.0, 1.0 )
+                        colors[ j + 0 ]    = Itee.Utils.getRandomFloatInclusive( 0.0, 1.0 )
+                        colors[ j + 1 ]    = Itee.Utils.getRandomFloatInclusive( 0.0, 1.0 )
+                        colors[ j + 2 ]    = Itee.Utils.getRandomFloatInclusive( 0.0, 1.0 )
+                    }
+
+                    geometry.setAttribute( 'position', new Three.BufferAttribute( positions, 3 ) )
+                    geometry.setAttribute( 'color', new Three.BufferAttribute( colors, 3 ) )
+
+                    const material = new Three.PointsMaterial( {
+                        size:         0.01,
+                        vertexColors: true
+                    } )
+
+                    const points = new Three.Points( geometry, material )
+                    return points
+                }
+
+                animate () {
+                    super.animate()
+
+                    this.testEntry.fps++
+                }
+            }
+		</script>
+		<script>
+            const canvas = document.getElementById( 'mycanvas' )
+
+            const app = new CloudTestApplication( canvas )
+            app.animate()
+
+            function StartTest () {
+
+                app.testEntry = new TestEntry( {
+                    blocks: {
+                        number: 0,
+                        step:   Number.parseInt( document.getElementById( 'block_step_input' ).value ),
+                        bounds: {
+                            min: Number.parseInt( document.getElementById( 'block_min_input' ).value ),
+                            max: Number.parseInt( document.getElementById( 'block_max_input' ).value )
+                        }
+                    },
+                    points: {
+                        number: 0,
+                        step:   Number.parseInt( document.getElementById( 'points_step_input' ).value ),
+                        bounds: {
+                            min: Number.parseInt( document.getElementById( 'points_min_input' ).value ),
+                            max: Number.parseInt( document.getElementById( 'points_max_input' ).value )
+                        }
+                    }
+                } )
+
+                app.startTest()
+            }
+
+		</script>
+	</body>
+</html>

@@ -32,25 +32,25 @@
 /* eslint-env browser */
 
 import { DefaultLogger }         from 'itee-client'
-import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
-import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
-import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
-import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
-import { Box3 }                  from 'three-full/sources/math/Box3'
-import { Group }                 from 'three-full/sources/objects/Group'
-import { Points }                from 'three-full/sources/objects/Points'
+//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
+//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+//import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+//import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
+//import { Box3 }                  from 'three-full/sources/math/Box3'
+//import { Group }                 from 'three-full/sources/objects/Group'
+//import { Points }                from 'three-full/sources/objects/Points'
 // Waiting three-shaking fix
-//import {
-//    Box3,
-//    BufferAttribute,
-//    BufferGeometry,
-//    DefaultLoadingManager,
-//    FileLoader,
-//    Group,
-//    Points,
-//    PointsMaterial
-//}                        from 'three-full'
+import {
+    Box3,
+    BufferAttribute,
+    BufferGeometry,
+    DefaultLoadingManager,
+    FileLoader,
+    Group,
+    Points,
+    PointsMaterial
+}                        from 'three-full'
 
 /**
  * The ASCLoader class definition.

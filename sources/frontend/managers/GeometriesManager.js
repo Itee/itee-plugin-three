@@ -22,143 +22,143 @@ import {
     isObject,
     isUndefined
 }                                  from 'itee-validators'
-import { BufferAttribute }         from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }          from 'three-full/sources/core/BufferGeometry'
-import { Face3 }                   from 'three-full/sources/core/Face3'
-import { Geometry }                from 'three-full/sources/core/Geometry'
-import { InstancedBufferGeometry } from 'three-full/sources/core/InstancedBufferGeometry'
-import { Shape }                   from 'three-full/sources/core/Shape'
-import {
-    BoxBufferGeometry,
-    BoxGeometry
-}                                  from 'three-full/sources/geometries/BoxGeometry'
-import {
-    CircleBufferGeometry,
-    CircleGeometry
-}                                  from 'three-full/sources/geometries/CircleGeometry'
-import {
-    ConeBufferGeometry,
-    ConeGeometry
-}                                  from 'three-full/sources/geometries/ConeGeometry'
-import {
-    CylinderBufferGeometry,
-    CylinderGeometry
-}                                  from 'three-full/sources/geometries/CylinderGeometry'
-import {
-    DodecahedronBufferGeometry,
-    DodecahedronGeometry
-}                                  from 'three-full/sources/geometries/DodecahedronGeometry'
-import { EdgesGeometry }           from 'three-full/sources/geometries/EdgesGeometry'
-import {
-    ExtrudeBufferGeometry,
-    ExtrudeGeometry
-}                                  from 'three-full/sources/geometries/ExtrudeGeometry'
-import {
-    IcosahedronBufferGeometry,
-    IcosahedronGeometry
-}                                  from 'three-full/sources/geometries/IcosahedronGeometry'
-import {
-    LatheBufferGeometry,
-    LatheGeometry
-}                                  from 'three-full/sources/geometries/LatheGeometry'
-import {
-    OctahedronBufferGeometry,
-    OctahedronGeometry
-}                                  from 'three-full/sources/geometries/OctahedronGeometry'
-import {
-    ParametricBufferGeometry,
-    ParametricGeometry
-}                                  from 'three-full/sources/geometries/ParametricGeometry'
-import {
-    PlaneBufferGeometry,
-    PlaneGeometry
-}                                  from 'three-full/sources/geometries/PlaneGeometry'
-import {
-    PolyhedronBufferGeometry,
-    PolyhedronGeometry
-}                                  from 'three-full/sources/geometries/PolyhedronGeometry'
-import {
-    RingBufferGeometry,
-    RingGeometry
-}                                  from 'three-full/sources/geometries/RingGeometry'
-import { ShapeGeometry }           from 'three-full/sources/geometries/ShapeGeometry'
-import {
-    SphereBufferGeometry,
-    SphereGeometry
-}                                  from 'three-full/sources/geometries/SphereGeometry'
-import {
-    TetrahedronBufferGeometry,
-    TetrahedronGeometry
-}                                  from 'three-full/sources/geometries/TetrahedronGeometry'
-import {
-    TextBufferGeometry,
-    TextGeometry
-}                                  from 'three-full/sources/geometries/TextGeometry'
-import {
-    TorusBufferGeometry,
-    TorusGeometry
-}                                  from 'three-full/sources/geometries/TorusGeometry'
-import {
-    TorusKnotBufferGeometry,
-    TorusKnotGeometry
-}                                  from 'three-full/sources/geometries/TorusKnotGeometry'
-import {
-    TubeBufferGeometry,
-    TubeGeometry
-}                                  from 'three-full/sources/geometries/TubeGeometry'
-import { WireframeGeometry }       from 'three-full/sources/geometries/WireframeGeometry'
-import { Vector3 }                 from 'three-full/sources/math/Vector3'
-// Waiting three-shaking fix
+//import { BufferAttribute }         from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }          from 'three-full/sources/core/BufferGeometry'
+//import { Face3 }                   from 'three-full/sources/core/Face3'
+//import { Geometry }                from 'three-full/sources/core/Geometry'
+//import { InstancedBufferGeometry } from 'three-full/sources/core/InstancedBufferGeometry'
+//import { Shape }                   from 'three-full/sources/core/Shape'
 //import {
 //    BoxBufferGeometry,
-//    BoxGeometry,
-//    BufferAttribute,
-//    BufferGeometry,
+//    BoxGeometry
+//}                                  from 'three-full/sources/geometries/BoxGeometry'
+//import {
 //    CircleBufferGeometry,
-//    CircleGeometry,
+//    CircleGeometry
+//}                                  from 'three-full/sources/geometries/CircleGeometry'
+//import {
 //    ConeBufferGeometry,
-//    ConeGeometry,
+//    ConeGeometry
+//}                                  from 'three-full/sources/geometries/ConeGeometry'
+//import {
 //    CylinderBufferGeometry,
-//    CylinderGeometry,
+//    CylinderGeometry
+//}                                  from 'three-full/sources/geometries/CylinderGeometry'
+//import {
 //    DodecahedronBufferGeometry,
-//    DodecahedronGeometry,
-//    EdgesGeometry,
+//    DodecahedronGeometry
+//}                                  from 'three-full/sources/geometries/DodecahedronGeometry'
+//import { EdgesGeometry }           from 'three-full/sources/geometries/EdgesGeometry'
+//import {
 //    ExtrudeBufferGeometry,
-//    ExtrudeGeometry,
-//    Face3,
-//    Geometry,
+//    ExtrudeGeometry
+//}                                  from 'three-full/sources/geometries/ExtrudeGeometry'
+//import {
 //    IcosahedronBufferGeometry,
-//    IcosahedronGeometry,
-//    InstancedBufferGeometry,
+//    IcosahedronGeometry
+//}                                  from 'three-full/sources/geometries/IcosahedronGeometry'
+//import {
 //    LatheBufferGeometry,
-//    LatheGeometry,
+//    LatheGeometry
+//}                                  from 'three-full/sources/geometries/LatheGeometry'
+//import {
 //    OctahedronBufferGeometry,
-//    OctahedronGeometry,
+//    OctahedronGeometry
+//}                                  from 'three-full/sources/geometries/OctahedronGeometry'
+//import {
 //    ParametricBufferGeometry,
-//    ParametricGeometry,
+//    ParametricGeometry
+//}                                  from 'three-full/sources/geometries/ParametricGeometry'
+//import {
 //    PlaneBufferGeometry,
-//    PlaneGeometry,
+//    PlaneGeometry
+//}                                  from 'three-full/sources/geometries/PlaneGeometry'
+//import {
 //    PolyhedronBufferGeometry,
-//    PolyhedronGeometry,
+//    PolyhedronGeometry
+//}                                  from 'three-full/sources/geometries/PolyhedronGeometry'
+//import {
 //    RingBufferGeometry,
-//    RingGeometry,
-//    Shape,
-//    ShapeGeometry,
+//    RingGeometry
+//}                                  from 'three-full/sources/geometries/RingGeometry'
+//import { ShapeGeometry }           from 'three-full/sources/geometries/ShapeGeometry'
+//import {
 //    SphereBufferGeometry,
-//    SphereGeometry,
+//    SphereGeometry
+//}                                  from 'three-full/sources/geometries/SphereGeometry'
+//import {
 //    TetrahedronBufferGeometry,
-//    TetrahedronGeometry,
+//    TetrahedronGeometry
+//}                                  from 'three-full/sources/geometries/TetrahedronGeometry'
+//import {
 //    TextBufferGeometry,
-//    TextGeometry,
+//    TextGeometry
+//}                                  from 'three-full/sources/geometries/TextGeometry'
+//import {
 //    TorusBufferGeometry,
-//    TorusGeometry,
+//    TorusGeometry
+//}                                  from 'three-full/sources/geometries/TorusGeometry'
+//import {
 //    TorusKnotBufferGeometry,
-//    TorusKnotGeometry,
+//    TorusKnotGeometry
+//}                                  from 'three-full/sources/geometries/TorusKnotGeometry'
+//import {
 //    TubeBufferGeometry,
-//    TubeGeometry,
-//    Vector3,
-//    WireframeGeometry
-//}                           from 'three-full'
+//    TubeGeometry
+//}                                  from 'three-full/sources/geometries/TubeGeometry'
+//import { WireframeGeometry }       from 'three-full/sources/geometries/WireframeGeometry'
+//import { Vector3 }                 from 'three-full/sources/math/Vector3'
+// Waiting three-shaking fix
+import {
+    BoxBufferGeometry,
+    BoxGeometry,
+    BufferAttribute,
+    BufferGeometry,
+    CircleBufferGeometry,
+    CircleGeometry,
+    ConeBufferGeometry,
+    ConeGeometry,
+    CylinderBufferGeometry,
+    CylinderGeometry,
+    DodecahedronBufferGeometry,
+    DodecahedronGeometry,
+    EdgesGeometry,
+    ExtrudeBufferGeometry,
+    ExtrudeGeometry,
+    Face3,
+    Geometry,
+    IcosahedronBufferGeometry,
+    IcosahedronGeometry,
+    InstancedBufferGeometry,
+    LatheBufferGeometry,
+    LatheGeometry,
+    OctahedronBufferGeometry,
+    OctahedronGeometry,
+    ParametricBufferGeometry,
+    ParametricGeometry,
+    PlaneBufferGeometry,
+    PlaneGeometry,
+    PolyhedronBufferGeometry,
+    PolyhedronGeometry,
+    RingBufferGeometry,
+    RingGeometry,
+    Shape,
+    ShapeGeometry,
+    SphereBufferGeometry,
+    SphereGeometry,
+    TetrahedronBufferGeometry,
+    TetrahedronGeometry,
+    TextBufferGeometry,
+    TextGeometry,
+    TorusBufferGeometry,
+    TorusGeometry,
+    TorusKnotBufferGeometry,
+    TorusKnotGeometry,
+    TubeBufferGeometry,
+    TubeGeometry,
+    Vector3,
+    WireframeGeometry
+}                           from 'three-full'
 
 const ArrayType = toEnum( {
     Int8Array:         0,
