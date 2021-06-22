@@ -10,37 +10,37 @@
 
 import { TDataBaseManager }      from 'itee-client'
 import { isObject }              from 'itee-validators'
-import { CurvePath }             from 'three-full/sources/core/CurvePath'
-import { Path }                  from 'three-full/sources/core/Path'
-import { Shape }                 from 'three-full/sources/core/Shape'
-import { ArcCurve }              from 'three-full/sources/curves/ArcCurve'
-import { CatmullRomCurve3 }      from 'three-full/sources/curves/CatmullRomCurve3'
-import { CubicBezierCurve }      from 'three-full/sources/curves/CubicBezierCurve'
-import { CubicBezierCurve3 }     from 'three-full/sources/curves/CubicBezierCurve3'
-import { Curve }                 from 'three-full/sources/curves/Curve'
-import { EllipseCurve }          from 'three-full/sources/curves/EllipseCurve'
-import { LineCurve }             from 'three-full/sources/curves/LineCurve'
-import { LineCurve3 }            from 'three-full/sources/curves/LineCurve3'
-import { QuadraticBezierCurve }  from 'three-full/sources/curves/QuadraticBezierCurve'
-import { QuadraticBezierCurve3 } from 'three-full/sources/curves/QuadraticBezierCurve3'
-import { SplineCurve }           from 'three-full/sources/curves/SplineCurve'
+//import { CurvePath }             from 'three-full/sources/core/CurvePath'
+//import { Path }                  from 'three-full/sources/core/Path'
+//import { Shape }                 from 'three-full/sources/core/Shape'
+//import { ArcCurve }              from 'three-full/sources/curves/ArcCurve'
+//import { CatmullRomCurve3 }      from 'three-full/sources/curves/CatmullRomCurve3'
+//import { CubicBezierCurve }      from 'three-full/sources/curves/CubicBezierCurve'
+//import { CubicBezierCurve3 }     from 'three-full/sources/curves/CubicBezierCurve3'
+//import { Curve }                 from 'three-full/sources/curves/Curve'
+//import { EllipseCurve }          from 'three-full/sources/curves/EllipseCurve'
+//import { LineCurve }             from 'three-full/sources/curves/LineCurve'
+//import { LineCurve3 }            from 'three-full/sources/curves/LineCurve3'
+//import { QuadraticBezierCurve }  from 'three-full/sources/curves/QuadraticBezierCurve'
+//import { QuadraticBezierCurve3 } from 'three-full/sources/curves/QuadraticBezierCurve3'
+//import { SplineCurve }           from 'three-full/sources/curves/SplineCurve'
 // Waiting three-shaking fix
-//import {
-//    ArcCurve,
-//    CatmullRomCurve3,
-//    CubicBezierCurve,
-//    CubicBezierCurve3,
-//    Curve,
-//    CurvePath,
-//    EllipseCurve,
-//    LineCurve,
-//    LineCurve3,
-//    Path,
-//    QuadraticBezierCurve,
-//    QuadraticBezierCurve3,
-//    Shape,
-//    SplineCurve
-//}                           from 'three-full'
+import {
+    ArcCurve,
+    CatmullRomCurve3,
+    CubicBezierCurve,
+    CubicBezierCurve3,
+    Curve,
+    CurvePath,
+    EllipseCurve,
+    LineCurve,
+    LineCurve3,
+    Path,
+    QuadraticBezierCurve,
+    QuadraticBezierCurve3,
+    Shape,
+    SplineCurve
+}                           from 'three-full'
 
 class CurvesManager extends TDataBaseManager {
 

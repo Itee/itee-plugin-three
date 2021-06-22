@@ -35,14 +35,24 @@ import {
     DefaultLogger,
     TBinaryReader
 }                                from 'itee-client'
-import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
-import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
-import { Box3 }                  from 'three-full/sources/math/Box3'
-import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
-import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
-import { Group }                 from 'three-full/sources/objects/Group'
-import { Points }                from 'three-full/sources/objects/Points'
+import {
+    BufferAttribute,
+    BufferGeometry,
+    FileLoader,
+    Box3,
+    DefaultLoadingManager,
+    PointsMaterial,
+    Group,
+    Points
+}                                from 'three-full'
+//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
+//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+//import { Box3 }                  from 'three-full/sources/math/Box3'
+//import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+//import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
+//import { Group }                 from 'three-full/sources/objects/Group'
+//import { Points }                from 'three-full/sources/objects/Points'
 
 class BitManager {
 

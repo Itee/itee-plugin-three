@@ -8,21 +8,21 @@
 
 /* eslint-env browser */
 
-import { VertexColors }           from 'three-full/sources/constants'
-import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
-import { LineBasicMaterial }      from 'three-full/sources/materials/LineBasicMaterial'
-import { Color }                  from 'three-full/sources/math/Color'
-import { LineSegments }           from 'three-full/sources/objects/LineSegments'
+//import { VertexColors }           from 'three-full/sources/constants'
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { LineBasicMaterial }      from 'three-full/sources/materials/LineBasicMaterial'
+//import { Color }                  from 'three-full/sources/math/Color'
+//import { LineSegments }           from 'three-full/sources/objects/LineSegments'
 // Waiting three-shaking fix
-//import {
-//    BufferGeometry,
-//    Color,
-//    Float32BufferAttribute,
-//    LineBasicMaterial,
-//    LineSegments,
-//    VertexColors
-//} from 'three-full'
+import {
+    BufferGeometry,
+    Color,
+    Float32BufferAttribute,
+    LineBasicMaterial,
+    LineSegments,
+    VertexColors
+} from 'three-full'
 
 /**
  * @class

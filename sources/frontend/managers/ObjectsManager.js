@@ -16,53 +16,53 @@ import {
     isNull,
     isUndefined
 }                             from 'itee-validators'
-import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera'
-import { PerspectiveCamera }  from 'three-full/sources/cameras/PerspectiveCamera'
-import { Object3D }           from 'three-full/sources/core/Object3D'
-import { AmbientLight }       from 'three-full/sources/lights/AmbientLight'
-import { DirectionalLight }   from 'three-full/sources/lights/DirectionalLight'
-import { HemisphereLight }    from 'three-full/sources/lights/HemisphereLight'
-import { PointLight }         from 'three-full/sources/lights/PointLight'
-import { RectAreaLight }      from 'three-full/sources/lights/RectAreaLight'
-import { SpotLight }          from 'three-full/sources/lights/SpotLight'
-import { Color }              from 'three-full/sources/math/Color'
-import { Group }              from 'three-full/sources/objects/Group'
-import { Line }               from 'three-full/sources/objects/Line'
-import { LineLoop }           from 'three-full/sources/objects/LineLoop'
-import { LineSegments }       from 'three-full/sources/objects/LineSegments'
-import { LOD }                from 'three-full/sources/objects/LOD'
-import { Mesh }               from 'three-full/sources/objects/Mesh'
-import { Points }             from 'three-full/sources/objects/Points'
-import { SkinnedMesh }        from 'three-full/sources/objects/SkinnedMesh'
-import { Sprite }             from 'three-full/sources/objects/Sprite'
-import { Fog }                from 'three-full/sources/scenes/Fog'
-import { FogExp2 }            from 'three-full/sources/scenes/FogExp2'
-import { Scene }              from 'three-full/sources/scenes/Scene'
+//import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera'
+//import { PerspectiveCamera }  from 'three-full/sources/cameras/PerspectiveCamera'
+//import { Object3D }           from 'three-full/sources/core/Object3D'
+//import { AmbientLight }       from 'three-full/sources/lights/AmbientLight'
+//import { DirectionalLight }   from 'three-full/sources/lights/DirectionalLight'
+//import { HemisphereLight }    from 'three-full/sources/lights/HemisphereLight'
+//import { PointLight }         from 'three-full/sources/lights/PointLight'
+//import { RectAreaLight }      from 'three-full/sources/lights/RectAreaLight'
+//import { SpotLight }          from 'three-full/sources/lights/SpotLight'
+//import { Color }              from 'three-full/sources/math/Color'
+//import { Group }              from 'three-full/sources/objects/Group'
+//import { Line }               from 'three-full/sources/objects/Line'
+//import { LineLoop }           from 'three-full/sources/objects/LineLoop'
+//import { LineSegments }       from 'three-full/sources/objects/LineSegments'
+//import { LOD }                from 'three-full/sources/objects/LOD'
+//import { Mesh }               from 'three-full/sources/objects/Mesh'
+//import { Points }             from 'three-full/sources/objects/Points'
+//import { SkinnedMesh }        from 'three-full/sources/objects/SkinnedMesh'
+//import { Sprite }             from 'three-full/sources/objects/Sprite'
+//import { Fog }                from 'three-full/sources/scenes/Fog'
+//import { FogExp2 }            from 'three-full/sources/scenes/FogExp2'
+//import { Scene }              from 'three-full/sources/scenes/Scene'
 // Waiting three-shaking fix
-//import {
-//    AmbientLight,
-//    Color,
-//    DirectionalLight,
-//    Fog,
-//    FogExp2,
-//    Group,
-//    HemisphereLight,
-//    Line,
-//    LineLoop,
-//    LineSegments,
-//    LOD,
-//    Mesh,
-//    Object3D,
-//    OrthographicCamera,
-//    PerspectiveCamera,
-//    PointLight,
-//    Points,
-//    RectAreaLight,
-//    Scene,
-//    SkinnedMesh,
-//    SpotLight,
-//    Sprite
-//}                            from 'three-full'
+import {
+    AmbientLight,
+    Color,
+    DirectionalLight,
+    Fog,
+    FogExp2,
+    Group,
+    HemisphereLight,
+    Line,
+    LineLoop,
+    LineSegments,
+    LOD,
+    Mesh,
+    Object3D,
+    OrthographicCamera,
+    PerspectiveCamera,
+    PointLight,
+    Points,
+    RectAreaLight,
+    Scene,
+    SkinnedMesh,
+    SpotLight,
+    Sprite
+}                            from 'three-full'
 import { GeometriesManager }  from './GeometriesManager'
 import { MaterialsManager }   from './MaterialsManager'
 

@@ -32,20 +32,19 @@ import {
     isNull,
     isUndefined
 }                          from 'itee-validators'
-import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
-import { Object3D }        from 'three-full/sources/core/Object3D'
-import { Spherical }       from 'three-full/sources/math/Spherical'
-import { Vector2 }         from 'three-full/sources/math/Vector2'
-import { Vector3 }         from 'three-full/sources/math/Vector3'
+//import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
+//import { Object3D }        from 'three-full/sources/core/Object3D'
+//import { Spherical }       from 'three-full/sources/math/Spherical'
+//import { Vector2 }         from 'three-full/sources/math/Vector2'
+//import { Vector3 }         from 'three-full/sources/math/Vector3'
 // Waiting three-shaking fix
-//import {
-//    Camera,
-//    EventDispatcher,
-//    Object3D,
-//    Spherical,
-//    Vector2,
-//    Vector3
-//} from 'three-full'
+import {
+    EventDispatcher,
+    Object3D,
+    Spherical,
+    Vector2,
+    Vector3
+} from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 )
 const BACK  = new Vector3( 0, 0, 1 )
