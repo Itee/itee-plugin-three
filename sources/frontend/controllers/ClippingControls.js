@@ -2163,7 +2163,7 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
         if ( isNotDefined( this._currentHandle ) ) { return }
 
         mouseEvent.preventDefault()
@@ -2380,7 +2380,7 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
         // todo isActive when mouse enter
 
         mouseEvent.preventDefault()
