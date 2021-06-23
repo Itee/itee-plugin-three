@@ -760,7 +760,9 @@ class ClippingControls extends Object3D {
         if ( this._dragging === false ) {
 
             // Check mouseIn
-            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+            const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] )
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
             if ( intersect ) {
 
                 const handle = intersect.object
@@ -928,7 +930,9 @@ class ClippingControls extends Object3D {
         this.dispatchEvent( this._events.mouseUp )
 
         // Check mouseIn
-        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+        const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] )
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
             this._currentHandle = intersect.object

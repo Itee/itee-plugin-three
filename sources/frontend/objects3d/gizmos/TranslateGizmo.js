@@ -59,10 +59,22 @@ class TranslateGizmo extends AbstractGizmo {
 
         }
 
-        this.init()
+        this._setupHandles( this.handleGizmos )
+//        this.init()
 
     }
 
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if(handle.name === this.intersectPlane.name) {continue}
+            handle.raycast( raycaster, intersects )
+        }
+
+    }
 }
 
 export { TranslateGizmo }
