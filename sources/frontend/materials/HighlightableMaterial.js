@@ -3,8 +3,12 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { DoubleSide }        from 'three-full/sources/constants'
-import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+import {
+    DoubleSide,
+    MeshBasicMaterial
+} from 'three-full'
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
 
 class HighlightableMaterial extends MeshBasicMaterial {
 

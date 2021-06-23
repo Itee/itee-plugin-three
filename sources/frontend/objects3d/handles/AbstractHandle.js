@@ -6,9 +6,13 @@
 import {
     isNull,
     isUndefined
-}                     from 'itee-validators'
-import { Object3D }   from 'three-full/sources/core/Object3D'
-import { Quaternion } from 'three-full/sources/math/Quaternion'
+} from 'itee-validators'
+import {
+    Object3D,
+    Quaternion
+} from 'three-full'
+//import { Object3D }   from 'three-full/sources/core/Object3D'
+//import { Quaternion } from 'three-full/sources/math/Quaternion'
 
 class AbstractHandle extends Object3D {
 

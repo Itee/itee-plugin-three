@@ -2,15 +2,20 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-import { degreesToRadians }   from 'itee-utils'
-import { BoxBufferGeometry }  from 'three-full/sources/geometries/BoxGeometry'
-import { ConeBufferGeometry } from 'three-full/sources/geometries/ConeGeometry'
-import { Vector3 }            from 'three-full/sources/math/Vector3'
-import { BoxHandle }          from '../handles/BoxHandle'
-import { ConeHandle }         from '../handles/ConeHandle'
-import { PlaneHandle }        from '../handles/PlaneHandle'
-import { BoxHitbox }          from '../hitboxes/BoxHitbox'
-import { AbstractGizmo }      from './AbstractGizmo'
+import { degreesToRadians } from 'itee-utils'
+import {
+    BoxBufferGeometry,
+    ConeBufferGeometry,
+    Vector3
+}                           from 'three-full'
+//import { BoxBufferGeometry }  from 'three-full/sources/geometries/BoxGeometry'
+//import { ConeBufferGeometry } from 'three-full/sources/geometries/ConeGeometry'
+//import { Vector3 }            from 'three-full/sources/math/Vector3'
+import { BoxHandle }        from '../handles/BoxHandle'
+import { ConeHandle }       from '../handles/ConeHandle'
+import { PlaneHandle }      from '../handles/PlaneHandle'
+import { BoxHitbox }        from '../hitboxes/BoxHitbox'
+import { AbstractGizmo }    from './AbstractGizmo'
 
 class LookAtGizmo extends AbstractGizmo {
 

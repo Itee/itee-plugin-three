@@ -3,10 +3,16 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { DoubleSide }        from 'three-full/sources/constants'
-import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
-import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
-import { Mesh }              from 'three-full/sources/objects/Mesh'
+import {
+    DoubleSide,
+    BufferGeometry,
+    MeshBasicMaterial,
+    Mesh
+} from 'three-full'
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }              from 'three-full/sources/objects/Mesh'
 
 class AbstractHitbox extends Mesh {
 
@@ -21,7 +27,7 @@ class AbstractHitbox extends Mesh {
                     depthWrite: false,
                     fog:        false,
                     side:       DoubleSide,
-                    color:       0x654321
+                    color:      0x654321
                     //                    opacity:     0.0,
                     //                    transparent: true
                 } )

@@ -4,7 +4,8 @@
  */
 
 import { degreesToRadians }   from 'itee-utils'
-import { Vector3 }            from 'three-full/sources/math/Vector3'
+import { Vector3 }            from 'three-full'
+//import { Vector3 }            from 'three-full/sources/math/Vector3'
 import { AbstractGizmo }      from './AbstractGizmo'
 import { OctahedricalHandle } from '../handles/OctahedricalHandle'
 import { PlaneHandle }        from '../handles/PlaneHandle'

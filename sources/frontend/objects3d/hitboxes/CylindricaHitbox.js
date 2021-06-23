@@ -3,8 +3,10 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+import { CylinderBufferGeometry } from 'three-full'
 import { AbstractHitbox }         from './AbstractHitbox'
-import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
+
+//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
 
 class CylindricaHitbox extends AbstractHitbox {
 

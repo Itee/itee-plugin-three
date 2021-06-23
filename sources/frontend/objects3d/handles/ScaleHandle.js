@@ -7,10 +7,16 @@ import {
     isNull,
     isUndefined
 }                                    from 'itee-validators'
-import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
-import { Vector3 }                   from 'three-full/sources/math/Vector3'
-import { Line }                      from 'three-full/sources/objects/Line'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    BoxBufferGeometry,
+    Vector3,
+    Line,
+    Mesh
+}                                    from 'three-full'
+//import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
+//import { Vector3 }                   from 'three-full/sources/math/Vector3'
+//import { Line }                      from 'three-full/sources/objects/Line'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
 import { LineGeometry }              from '../../geometries/LineGeometry'

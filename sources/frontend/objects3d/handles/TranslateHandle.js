@@ -7,10 +7,16 @@ import {
     isNull,
     isUndefined
 }                                    from 'itee-validators'
-import { ConeBufferGeometry }        from 'three-full/sources/geometries/ConeGeometry'
-import { Vector3 }                   from 'three-full/sources/math/Vector3'
-import { Line }                      from 'three-full/sources/objects/Line'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    ConeBufferGeometry,
+    Vector3,
+    Line,
+    Mesh
+}                                    from 'three-full'
+//import { ConeBufferGeometry }        from 'three-full/sources/geometries/ConeGeometry'
+//import { Vector3 }                   from 'three-full/sources/math/Vector3'
+//import { Line }                      from 'three-full/sources/objects/Line'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'

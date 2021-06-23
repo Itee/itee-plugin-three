@@ -3,7 +3,8 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
+import { LineBasicMaterial } from 'three-full'
+//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
 
 class HighlightableLineMaterial extends LineBasicMaterial {
 

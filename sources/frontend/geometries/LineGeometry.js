@@ -3,9 +3,14 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
-import { Vector3 }                from 'three-full/sources/math/Vector3'
+import {
+    Float32BufferAttribute,
+    BufferGeometry,
+    Vector3
+} from 'three-full'
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { Vector3 }                from 'three-full/sources/math/Vector3'
 
 class LineGeometry extends BufferGeometry {
 

@@ -3,12 +3,19 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { isNotArray }          from 'itee-validators'
-import { DoubleSide }          from 'three-full/sources/constants'
-import { Object3D }            from 'three-full/sources/core/Object3D'
-import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
-import { MeshBasicMaterial }   from 'three-full/sources/materials/MeshBasicMaterial'
-import { Mesh }                from 'three-full/sources/objects/Mesh'
+import { isNotArray } from 'itee-validators'
+import {
+    DoubleSide,
+    Object3D,
+    PlaneBufferGeometry,
+    MeshBasicMaterial,
+    Mesh
+}                     from 'three-full'
+//import { DoubleSide }          from 'three-full/sources/constants'
+//import { Object3D }            from 'three-full/sources/core/Object3D'
+//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
+//import { MeshBasicMaterial }   from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }                from 'three-full/sources/objects/Mesh'
 
 class AbstractGizmo extends Object3D {
 
@@ -16,7 +23,7 @@ class AbstractGizmo extends Object3D {
 
         const _parameters = {
             ...{
-                debug: false,
+                debug:     false,
                 planeSize: 50
             },
             ...parameters
@@ -30,11 +37,11 @@ class AbstractGizmo extends Object3D {
         this.debug = _parameters.debug
 
 
-//        this.handles                  = new Object3D()
-//        this.handles.name             = 'Handles'
-//        this.handles.matrixAutoUpdate = false
-//
-//        this.add( this.handles )
+        //        this.handles                  = new Object3D()
+        //        this.handles.name             = 'Handles'
+        //        this.handles.matrixAutoUpdate = false
+        //
+        //        this.add( this.handles )
 
         ///
 
@@ -58,7 +65,7 @@ class AbstractGizmo extends Object3D {
     _setupHandles ( handlesMap ) {
 
         const parent = this
-//        const parent = this.handles
+        //        const parent = this.handles
 
         for ( let name in handlesMap ) {
 
