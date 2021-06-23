@@ -3,8 +3,10 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+import { OctahedronBufferGeometry } from 'three-full'
 import { AbstractHitbox }           from './AbstractHitbox'
-import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
+
+//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 
 class OctahedricalHitbox extends AbstractHitbox {
 

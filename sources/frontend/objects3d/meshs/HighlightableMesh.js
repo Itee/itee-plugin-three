@@ -3,8 +3,8 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { isUndefined }           from 'itee-validators'
-import { Mesh }                  from 'three-full/sources/objects/Mesh'
+import { Mesh } from 'three-full'
+//import { Mesh }                  from 'three-full/sources/objects/Mesh'
 import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
 
 class HighlightableMesh extends Mesh {

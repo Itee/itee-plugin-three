@@ -3,8 +3,10 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+import { SphereBufferGeometry } from 'three-full'
 import { AbstractHitbox }       from './AbstractHitbox'
-import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
+
+//import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
 
 class SphericalHitbox extends AbstractHitbox {
 

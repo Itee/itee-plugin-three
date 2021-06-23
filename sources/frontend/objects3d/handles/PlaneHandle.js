@@ -7,11 +7,18 @@ import {
     isNull,
     isUndefined
 }                                    from 'itee-validators'
-import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
-import { Vector3 }                   from 'three-full/sources/math/Vector3'
-import { Line }                      from 'three-full/sources/objects/Line'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    Float32BufferAttribute,
+    BufferGeometry,
+    Vector3,
+    Line,
+    Mesh
+}                                    from 'three-full'
+//import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
+//import { Vector3 }                   from 'three-full/sources/math/Vector3'
+//import { Line }                      from 'three-full/sources/objects/Line'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { PlanarHitbox }              from '../hitboxes/PlanarHitbox'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'

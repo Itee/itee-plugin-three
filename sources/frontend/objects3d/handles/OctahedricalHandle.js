@@ -3,10 +3,16 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
-import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
-import { LineSegments }              from 'three-full/sources/objects/LineSegments'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    EdgesGeometry,
+    OctahedronBufferGeometry,
+    LineSegments,
+    Mesh
+}                                    from 'three-full'
+//import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
+//import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
+//import { LineSegments }              from 'three-full/sources/objects/LineSegments'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
 import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'

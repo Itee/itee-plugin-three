@@ -3,9 +3,13 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { AbstractHitbox }         from './AbstractHitbox'
-import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+import {
+    Float32BufferAttribute,
+    BufferGeometry
+}                         from 'three-full'
+import { AbstractHitbox } from './AbstractHitbox'
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 
 class PlanarHitbox extends AbstractHitbox {
 

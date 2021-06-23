@@ -3,10 +3,14 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
-import { ConeBufferGeometry }         from 'three-full/sources/geometries/ConeGeometry'
-import { LineSegments }              from 'three-full/sources/objects/LineSegments'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    ConeBufferGeometry,
+    Mesh
+}                                    from 'three-full'
+//import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
+//import { ConeBufferGeometry }         from 'three-full/sources/geometries/ConeGeometry'
+//import { LineSegments }              from 'three-full/sources/objects/LineSegments'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
 import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
@@ -18,7 +22,7 @@ class ConeHandle extends AbstractHandle {
 
         const _parameters = {
             ...{
-                coneColor:   0x104b83,
+                coneColor:  0x104b83,
                 edgesColor: 0x123456,
                 hitbox:     new BoxHitbox( {
                     geometry: new ConeBufferGeometry( 1.1, 1.1 )
@@ -50,22 +54,22 @@ class ConeHandle extends AbstractHandle {
 
         ////
 
-//        const edgesGeometry = new EdgesGeometry( coneGeometry )
-//        edgesGeometry.name  = 'ConeHandle_Edges_Geometry'
-//
-//        const edgesMaterial = new HighlightableLineMaterial( {
-//            color:       _parameters.edgesColor,
-//            linewidth:   4,
-//            transparent: false,
-//            opacity:     1.0
-//        } )
-//        edgesMaterial.name  = 'ConeHandle_Edges_Material'
-//
-//        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
-//        edges.name             = 'ConeHandle_Edges'
-//        edges.matrixAutoUpdate = false
-//
-//        this.add( edges )
+        //        const edgesGeometry = new EdgesGeometry( coneGeometry )
+        //        edgesGeometry.name  = 'ConeHandle_Edges_Geometry'
+        //
+        //        const edgesMaterial = new HighlightableLineMaterial( {
+        //            color:       _parameters.edgesColor,
+        //            linewidth:   4,
+        //            transparent: false,
+        //            opacity:     1.0
+        //        } )
+        //        edgesMaterial.name  = 'ConeHandle_Edges_Material'
+        //
+        //        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
+        //        edges.name             = 'ConeHandle_Edges'
+        //        edges.matrixAutoUpdate = false
+        //
+        //        this.add( edges )
 
     }
 

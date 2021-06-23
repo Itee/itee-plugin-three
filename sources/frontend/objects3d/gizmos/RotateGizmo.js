@@ -3,11 +3,18 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
-import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
-import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
-import { Line }                      from 'three-full/sources/objects/Line'
-import { Mesh }                      from 'three-full/sources/objects/Mesh'
+import {
+    Float32BufferAttribute,
+    BufferGeometry,
+    OctahedronBufferGeometry,
+    Line,
+    Mesh
+}                                    from 'three-full'
+//import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
+//import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
+//import { Line }                      from 'three-full/sources/objects/Line'
+//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractGizmo }             from './AbstractGizmo'
 import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
