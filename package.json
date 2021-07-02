@@ -59,7 +59,7 @@
   },
   "peerDependencies": {
     "itee-client": "^7.3.0",
-    "itee-database": "^8.0.2",
+    "itee-database": "^8.1.0",
     "itee-mongodb": "^1.1.0",
     "itee-utils": "^5.2.0",
     "itee-validators": "^5.2.0",
@@ -95,7 +95,7 @@
     "minimist": "^1.2.5",
     "mocha": "^9.0.1",
     "mochawesome": "^6.2.2",
-    "rollup": "^2.52.3",
+    "rollup": "^2.52.7",
     "rollup-plugin-alias": "^2.2.0",
     "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-node-resolve": "^5.2.0",
