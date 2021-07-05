@@ -11,14 +11,10 @@ import {
     Float32BufferAttribute,
     BufferGeometry,
     Vector3,
+    ArrowHelper,
     Line,
     Mesh
 }                                    from 'three-full'
-//import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
-//import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
-//import { Vector3 }                   from 'three-full/sources/math/Vector3'
-//import { Line }                      from 'three-full/sources/objects/Line'
-//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
 import { PlanarHitbox }              from '../hitboxes/PlanarHitbox'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
@@ -102,7 +98,7 @@ class PlaneHandle extends AbstractHandle {
         if ( this.debug ) {
             const origin      = new Vector3( 0, 0, 0 )
             const direction   = _parameters.direction
-            const arrowHelper = new Three.ArrowHelper( direction, origin, 1, 0x123456 )
+            const arrowHelper = new ArrowHelper( direction, origin, 1, 0x123456 )
             this.add( arrowHelper )
         }
     }
