@@ -91,10 +91,22 @@ class RotateGizmo extends AbstractGizmo {
 
         //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
 
-        this.init()
+        this._setupHandles( this.handleGizmos )
+//        this.init()
 
     }
 
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if(handle.name === this.intersectPlane.name) {continue}
+            handle.raycast( raycaster, intersects )
+        }
+
+    }
     /*
      update ( rotation, eye2 ) {
 

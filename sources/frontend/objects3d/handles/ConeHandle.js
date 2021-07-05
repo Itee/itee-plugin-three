@@ -7,12 +7,7 @@ import {
     ConeBufferGeometry,
     Mesh
 }                                    from 'three-full'
-//import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
-//import { ConeBufferGeometry }         from 'three-full/sources/geometries/ConeGeometry'
-//import { LineSegments }              from 'three-full/sources/objects/LineSegments'
-//import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
 import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
 import { BoxHitbox }                 from '../hitboxes/BoxHitbox'
 

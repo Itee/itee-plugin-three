@@ -2,6 +2,32 @@
 
 class BitArray {
 
+    /* PRIVATE STATIC METHODS */
+
+    // Calculate the intersection of two bits
+    static _intersect ( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+
+    // Calculate the union of two bits
+    static _union ( bit1, bit2 ) {
+        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+
+    // Calculate the difference of two bits
+    static _difference ( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+
+    // Get the longest or shortest (smallest) length of the two bit arrays
+    static _getLen ( bitArray1, bitArray2, smallest ) {
+        var l1 = bitArray1.getLength()
+        var l2 = bitArray2.getLength()
+
+        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
+    }
+
+    /* PUBLIC STATIC METHODS */
     static getUnion( bitArray1, bitArray2 ) {
         var len    = BitArray._getLen( bitArray1, bitArray2, true )
         var result = new BitArray( len )
@@ -119,31 +145,6 @@ class BitArray {
             pow++
         }
         return n
-    }
-
-    /* BitArray PRIVATE STATIC METHODS */
-
-    // Calculate the intersection of two bits
-    static _intersect = function ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the union of two bits
-    static _union = function ( bit1, bit2 ) {
-        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the difference of two bits
-    static _difference = function ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Get the longest or shortest (smallest) length of the two bit arrays
-    static _getLen = function ( bitArray1, bitArray2, smallest ) {
-        var l1 = bitArray1.getLength()
-        var l2 = bitArray2.getLength()
-
-        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
     }
 }
 /* BitArray PRIVATE STATIC CONSTANTS */

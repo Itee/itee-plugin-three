@@ -245,7 +245,7 @@ class ClippingControls extends Object3D {
 
         // The actions map about input events
         this.actionsMap = {
-            setMode:   {
+            setMode: {
                 translate: [ Keys.T.value ],
                 rotate:    [ Keys.R.value ],
                 scale:     [ Keys.S.value ]
@@ -258,7 +258,7 @@ class ClippingControls extends Object3D {
                 left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
                 right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
             },
-            scale:     {
+            scale: {
                 widthPlus:   [ Keys.LEFT_ARROW.value ],
                 widthMinus:  [ Keys.RIGHT_ARROW.value ],
                 heightPlus:  [ Keys.PAGE_UP.value ],
@@ -266,7 +266,7 @@ class ClippingControls extends Object3D {
                 depthPlus:   [ Keys.UP_ARROW.value ],
                 depthMinus:  [ Keys.DOWN_ARROW.value ]
             },
-            rotate:    {
+            rotate: {
                 xAxis: [ Keys.X.value ],
                 yAxis: [ Keys.Y.value ],
                 zAxis: [ Keys.Z.value ]
@@ -760,7 +760,9 @@ class ClippingControls extends Object3D {
         if ( this._dragging === false ) {
 
             // Check mouseIn
-            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+            const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] )
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
             if ( intersect ) {
 
                 const handle = intersect.object
@@ -928,7 +930,9 @@ class ClippingControls extends Object3D {
         this.dispatchEvent( this._events.mouseUp )
 
         // Check mouseIn
-        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+        const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] )
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
             this._currentHandle = intersect.object
