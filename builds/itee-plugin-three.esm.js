@@ -1,1532 +1,8 @@
-console.log('Itee.Plugin.Three v1.4.2 - EsModule')
-import { DefaultLogger, TBinaryReader, Endianness, Keys, Mouse, TDataBaseManager } from 'itee-client';
+console.log('Itee.Plugin.Three v1.5.0 - EsModule')
+import { DefaultLogger, TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
+import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, PlaneBufferGeometry, MeshBasicMaterial, DoubleSide, Mesh, Quaternion, CylinderBufferGeometry, LineBasicMaterial, Float32BufferAttribute, Line, ConeBufferGeometry, OctahedronBufferGeometry, EdgesGeometry, LineSegments, ArrowHelper, BoxBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
-import { Shape } from 'three-full/sources/core/Shape';
-import { FileLoader } from 'three-full/sources/loaders/FileLoader';
-import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager';
-import { Vector3 } from 'three-full/sources/math/Vector3';
-import { BufferAttribute, Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute';
-import { BufferGeometry } from 'three-full/sources/core/BufferGeometry';
-import { PointsMaterial } from 'three-full/sources/materials/PointsMaterial';
-import { Box3 } from 'three-full/sources/math/Box3';
-import { Group } from 'three-full/sources/objects/Group';
-import { Points } from 'three-full/sources/objects/Points';
-import { isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isArray, isDefined, isNotArray, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
-import { EventDispatcher } from 'three-full/sources/core/EventDispatcher';
-import { Object3D } from 'three-full/sources/core/Object3D';
-import { Spherical } from 'three-full/sources/math/Spherical';
-import { Vector2 } from 'three-full/sources/math/Vector2';
-import { Camera } from 'three-full/sources/cameras/Camera';
-import { DoubleSide, LinearFilter, VertexColors } from 'three-full/sources/constants';
-import { Raycaster } from 'three-full/sources/core/Raycaster';
-import { BoxBufferGeometry, BoxGeometry } from 'three-full/sources/geometries/BoxGeometry';
-import { ConeBufferGeometry, ConeGeometry } from 'three-full/sources/geometries/ConeGeometry';
-import { CylinderBufferGeometry, CylinderGeometry } from 'three-full/sources/geometries/CylinderGeometry';
-import { EdgesGeometry } from 'three-full/sources/geometries/EdgesGeometry';
-import { OctahedronBufferGeometry, OctahedronGeometry } from 'three-full/sources/geometries/OctahedronGeometry';
-import { PlaneBufferGeometry, PlaneGeometry } from 'three-full/sources/geometries/PlaneGeometry';
-import { SphereBufferGeometry, SphereGeometry } from 'three-full/sources/geometries/SphereGeometry';
-import { TorusBufferGeometry, TorusGeometry } from 'three-full/sources/geometries/TorusGeometry';
-import { LineBasicMaterial } from 'three-full/sources/materials/LineBasicMaterial';
-import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial';
-import { Euler } from 'three-full/sources/math/Euler';
-import { Plane } from 'three-full/sources/math/Plane';
-import { Quaternion } from 'three-full/sources/math/Quaternion';
-import { Line } from 'three-full/sources/objects/Line';
-import { LineSegments } from 'three-full/sources/objects/LineSegments';
-import { Mesh } from 'three-full/sources/objects/Mesh';
-import { CurvePath } from 'three-full/sources/core/CurvePath';
-import { Path } from 'three-full/sources/core/Path';
-import { ArcCurve } from 'three-full/sources/curves/ArcCurve';
-import { CatmullRomCurve3 } from 'three-full/sources/curves/CatmullRomCurve3';
-import { CubicBezierCurve } from 'three-full/sources/curves/CubicBezierCurve';
-import { CubicBezierCurve3 } from 'three-full/sources/curves/CubicBezierCurve3';
-import { Curve } from 'three-full/sources/curves/Curve';
-import { EllipseCurve } from 'three-full/sources/curves/EllipseCurve';
-import { LineCurve } from 'three-full/sources/curves/LineCurve';
-import { LineCurve3 } from 'three-full/sources/curves/LineCurve3';
-import { QuadraticBezierCurve } from 'three-full/sources/curves/QuadraticBezierCurve';
-import { QuadraticBezierCurve3 } from 'three-full/sources/curves/QuadraticBezierCurve3';
-import { SplineCurve } from 'three-full/sources/curves/SplineCurve';
-import { Face3 } from 'three-full/sources/core/Face3';
-import { Geometry } from 'three-full/sources/core/Geometry';
-import { InstancedBufferGeometry } from 'three-full/sources/core/InstancedBufferGeometry';
-import { CircleGeometry, CircleBufferGeometry } from 'three-full/sources/geometries/CircleGeometry';
-import { DodecahedronGeometry, DodecahedronBufferGeometry } from 'three-full/sources/geometries/DodecahedronGeometry';
-import { ExtrudeGeometry, ExtrudeBufferGeometry } from 'three-full/sources/geometries/ExtrudeGeometry';
-import { IcosahedronGeometry, IcosahedronBufferGeometry } from 'three-full/sources/geometries/IcosahedronGeometry';
-import { LatheGeometry, LatheBufferGeometry } from 'three-full/sources/geometries/LatheGeometry';
-import { ParametricGeometry, ParametricBufferGeometry } from 'three-full/sources/geometries/ParametricGeometry';
-import { PolyhedronGeometry, PolyhedronBufferGeometry } from 'three-full/sources/geometries/PolyhedronGeometry';
-import { RingGeometry, RingBufferGeometry } from 'three-full/sources/geometries/RingGeometry';
-import { ShapeGeometry } from 'three-full/sources/geometries/ShapeGeometry';
-import { TetrahedronGeometry, TetrahedronBufferGeometry } from 'three-full/sources/geometries/TetrahedronGeometry';
-import { TextGeometry, TextBufferGeometry } from 'three-full/sources/geometries/TextGeometry';
-import { TorusKnotGeometry, TorusKnotBufferGeometry } from 'three-full/sources/geometries/TorusKnotGeometry';
-import { TubeGeometry, TubeBufferGeometry } from 'three-full/sources/geometries/TubeGeometry';
-import { WireframeGeometry } from 'three-full/sources/geometries/WireframeGeometry';
-import { ImageLoader } from 'three-full/sources/loaders/ImageLoader';
-import { TextureLoader } from 'three-full/sources/loaders/TextureLoader';
-import { MeshLambertMaterial } from 'three-full/sources/materials/MeshLambertMaterial';
-import { MeshPhongMaterial } from 'three-full/sources/materials/MeshPhongMaterial';
-import { Color } from 'three-full/sources/math/Color';
-import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera';
-import { PerspectiveCamera } from 'three-full/sources/cameras/PerspectiveCamera';
-import { AmbientLight } from 'three-full/sources/lights/AmbientLight';
-import { DirectionalLight } from 'three-full/sources/lights/DirectionalLight';
-import { HemisphereLight } from 'three-full/sources/lights/HemisphereLight';
-import { PointLight } from 'three-full/sources/lights/PointLight';
-import { RectAreaLight } from 'three-full/sources/lights/RectAreaLight';
-import { SpotLight } from 'three-full/sources/lights/SpotLight';
-import { LineLoop } from 'three-full/sources/objects/LineLoop';
-import { LOD } from 'three-full/sources/objects/LOD';
-import { SkinnedMesh } from 'three-full/sources/objects/SkinnedMesh';
-import { Sprite } from 'three-full/sources/objects/Sprite';
-import { Fog } from 'three-full/sources/scenes/Fog';
-import { FogExp2 } from 'three-full/sources/scenes/FogExp2';
-import { Scene } from 'three-full/sources/scenes/Scene';
-
-/**
- * @module Loader/SHPLoader
- * @desc Export SHPLoader to load .shp files
- *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-utils itee-utils}
- * @requires {@link https://github.com/Itee/three-full three-full}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- * @example Todo...
- *
- */
-// Waiting three-shaking fix
-//import {
-//    DefaultLoadingManager,
-//    FileLoader,
-//    Shape,
-//    Vector3
-//} from 'three-full'
-
-/**
- *
- * @type {Object}
- */
-const ShapeType = toEnum( {
-    NullShape:   0,
-    Point:       1,
-    Polyline:    3,
-    Polygon:     5,
-    MultiPoint:  8,
-    PointZ:      11,
-    PolyLineZ:   13,
-    PolygonZ:    15,
-    MultiPointZ: 18,
-    PointM:      21,
-    PolylineM:   23,
-    PolygonM:    25,
-    MultiPointM: 28,
-    MultiPatch:  31
-} );
-
-/**
- * @class
- * @classdesc This class allow to split any geometries type during runtime.
- * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
- * @export
- */
-class SHPLoader {
-
-    //    static FileCode      = 9994
-    //    static MinFileLength = 100
-    //    static MinVersion    = 1000
-
-    /**
-     *
-     * Because ctor is blablabla
-     *
-     * @param manager
-     * @param logger
-     * @constructor
-     */
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                manager:      DefaultLoadingManager,
-                logger:       DefaultLogger,
-                reader:       new TBinaryReader(),
-                globalOffset: new Vector3( 0, 0, 0 ),
-                worldAxis:    {
-                    from: 'zUp',
-                    to:   'zForward'
-                }
-            }, ...parameters
-        };
-
-        this.manager      = _parameters.manager;
-        this.logger       = _parameters.logger;
-        this.reader       = _parameters.reader;
-        this.globalOffset = _parameters.globalOffset;
-        this.worldAxis    = _parameters.worldAxis;
-
-    }
-
-    get globalOffset () {
-        return this._globalOffset
-    }
-
-    set globalOffset ( value ) {
-        this._globalOffset = value;
-    }
-
-    get worldAxis () {
-        return this._worldAxis
-    }
-
-    set worldAxis ( value ) {
-        this._worldAxis = value;
-    }
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setGlobalOffset ( value ) {
-        this.globalOffset = value;
-        return this
-    }
-
-    setWorldAxis ( value ) {
-        this.worldAxis = value;
-        return this
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
-
-    /**
-     *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load ( url, onLoad, onProgress, onError ) {
-
-        const scope = this;
-
-        const loader = new FileLoader( scope.manager );
-        loader.setResponseType( 'arraybuffer' );
-        loader.load( url, arrayBuffer => {
-
-            onLoad( scope.parse( arrayBuffer ) );
-
-        }, onProgress, onError );
-
-    }
-
-    /**
-     *
-     * @param arrayBuffer
-     * @return {*}
-     */
-    parse ( arrayBuffer ) {
-
-        this._reader
-            .setEndianess( Endianness.Big )
-            .setBuffer( arrayBuffer );
-
-        const header = this._parseHeader();
-
-        if ( header.fileCode !== SHPLoader.FileCode ) {
-            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
-            return null
-        }
-
-        if ( header.fileLength < SHPLoader.MinFileLength ) {
-            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
-            return null
-        }
-
-        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
-            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
-            return null
-        }
-
-        if ( header.version < SHPLoader.MinVersion ) {
-            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
-        }
-
-        const datas  = this._parseDatas( header );
-        const shapes = this._convertToObjects( datas );
-
-        return shapes
-
-    }
-
-    /**
-     *
-     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
-     * @private
-     */
-    _parseHeader () {
-
-        const fileCode = this._reader.getInt32();
-        this._reader.skipOffsetOf( 20 );
-        const fileLength = this._reader.getInt32();
-
-        this._reader.setEndianess( Endianness.Little );
-
-        const version         = this._reader.getInt32();
-        const shapeType       = this._reader.getInt32();
-        const xMinBoundingBox = this._reader.getInt32();
-        const yMinBoundingBox = this._reader.getInt32();
-        const xMaxBoundingBox = this._reader.getInt32();
-        const yMaxBoundingBox = this._reader.getInt32();
-        const zMinBoundingBox = this._reader.getInt32();
-        const zMaxBoundingBox = this._reader.getInt32();
-        const mMinBoundingBox = this._reader.getInt32();
-        const mMaxBoundingBox = this._reader.getInt32();
-
-        return {
-            fileCode:    fileCode,
-            fileLength:  fileLength,
-            version:     version,
-            shapeType:   shapeType,
-            boundingBox: {
-                xMin: xMinBoundingBox,
-                xMax: xMaxBoundingBox,
-                yMin: yMinBoundingBox,
-                yMax: yMaxBoundingBox,
-                zMin: zMinBoundingBox,
-                zMax: zMaxBoundingBox,
-                mMin: mMinBoundingBox,
-                mMax: mMaxBoundingBox
-            }
-        }
-
-    }
-
-    /**
-     *
-     * @param header
-     * @return {Array}
-     * @private
-     */
-    _parseDatas ( header ) {
-
-        this._reader.skipOffsetTo( 100 );
-
-        let datas         = [];
-        let recordHeader  = undefined;
-        let endOfRecord   = undefined;
-        let recordContent = undefined;
-
-        while ( !this._reader.isEndOfFile() ) {
-
-            recordHeader = this._parseRecordHeader();
-            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
-
-            // All parsing methods use little below
-            this._reader.setEndianess( Endianness.Little );
-
-            switch ( header.shapeType ) {
-
-                case ShapeType.NullShape:
-
-                    this._reader.skipOffsetTo( endOfRecord );
-
-                    //                    // Todo: just skip 1 byte - or - to endRecord
-                    //                    while ( this._reader.getOffset() < endOfRecord ) {
-                    //
-                    //                        recordContent = this._parseNull();
-                    //                        if ( recordContent ) {
-                    //                            datas.push( recordContent );
-                    //                        }
-                    //
-                    //                    }
-                    break
-
-                case ShapeType.Point:
-                case ShapeType.PointZ:
-                case ShapeType.PointM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePoint();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.Polyline:
-                case ShapeType.PolyLineZ:
-                case ShapeType.PolylineM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePolyLine();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.Polygon:
-                case ShapeType.PolygonZ:
-                case ShapeType.PolygonM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parsePolyLine();
-                        //                        recordContent = this._parsePolygon();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.MultiPoint:
-                case ShapeType.MultiPointZ:
-                case ShapeType.MultiPointM:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parseMultiPoint();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                case ShapeType.MultiPatch:
-                    while ( this._reader.getOffset() < endOfRecord ) {
-
-                        recordContent = this._parseMultiPatch();
-                        if ( recordContent ) {
-                            datas.push( recordContent );
-                        }
-
-                    }
-                    break
-
-                default:
-                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
-                    break
-
-            }
-
-        }
-
-        return datas
-
-    }
-
-    /**
-     *
-     * @return {{recordNumber, contentLength}}
-     * @private
-     */
-    _parseRecordHeader () {
-
-        this._reader.setEndianess( Endianness.Big );
-
-        const recordNumber  = this._reader.getInt32();
-        const contentLength = this._reader.getInt32();
-
-        return {
-            recordNumber,
-            contentLength
-        }
-
-    }
-
-    _parseNull () {
-
-        this._reader.getInt32();
-        return null
-
-    }
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePoint () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const x = this._reader.getFloat64();
-        const y = this._reader.getFloat64();
-
-        return {
-            shapeType,
-            x,
-            y
-        }
-
-    }
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePolyLine () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfParts  = this._reader.getInt32();
-        const numberOfPoints = this._reader.getInt32();
-
-        const parts = new Array( numberOfParts );
-        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-            parts[ indexParts ] = this._reader.getInt32();
-        }
-
-        const points = new Array( numberOfPoints );
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points[ indexPoint ] = {
-                x: this._reader.getFloat64(),
-                y: this._reader.getFloat64()
-            };
-        }
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfParts,
-            numberOfPoints,
-            parts,
-            points
-        }
-
-    }
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parsePolygon () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfParts  = this._reader.getInt32();
-        const numberOfPoints = this._reader.getInt32();
-
-        let parts = new Array( numberOfParts );
-        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
-            parts[ indexParts ] = this._reader.getInt32();
-        }
-
-        let points = new Array( numberOfPoints );
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points[ indexPoint ] = {
-                x: this._reader.getFloat64(),
-                y: this._reader.getFloat64()
-            };
-        }
-
-        const polygons = [];
-        const holes    = [];
-
-        parts.forEach( ( value, index ) => {
-
-            const ring = points.slice( value, parts[ index + 1 ] );
-
-            if ( ringClockwise( ring ) ) {
-
-                polygons.push( ring );
-                //					polygons.push( [ ring ] );
-
-            } else {
-
-                holes.push( ring );
-
-            }
-
-        } );
-
-        holes.forEach( hole => {
-
-            polygons.some( polygon => {
-
-                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
-                    polygon.push( hole );
-                    return true
-                }
-
-            } ) || polygons.push( [ hole ] );
-
-        } );
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfParts,
-            numberOfPoints,
-            parts,
-            polygons
-        }
-
-    }
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parseMultiPoint () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        const boundingBox = {
-            xMin: this._reader.getFloat64(),
-            xMax: this._reader.getFloat64(),
-            yMin: this._reader.getFloat64(),
-            yMax: this._reader.getFloat64()
-        };
-
-        const numberOfPoints = this._reader.getInt32();
-
-        const points = new Array( numberOfPoints );
-
-        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
-            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
-        }
-
-        return {
-            shapeType,
-            boundingBox,
-            numberOfPoints,
-            points
-        }
-
-    }
-
-    /**
-     *
-     * @return {*}
-     * @private
-     */
-    _parseMultiPatch () {
-
-        const shapeType = this._reader.getInt32();
-        if ( shapeType === ShapeType.NullShape ) {
-            return null
-        }
-
-        return {
-            shapeType
-        }
-
-    }
-
-    /**
-     *
-     * @param datas
-     * @return {Array}
-     * @private
-     */
-    _convertToObjects ( datas ) {
-
-        let shapes = [];
-
-        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
-            let data = datas[ index ];
-
-            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
-
-                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
-
-                    __createObjectsFromArrays( data.points );
-
-                } else {
-
-                    __createObjectFromPoints( data.points );
-
-                }
-
-            }
-
-        }
-
-        function __createObjectsFromArrays ( arrays ) {
-
-            //Todo: need to fix parsePolygon to avoid too much array imbrication
-
-            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
-
-                let array = arrays[ arrayIndex ];
-
-                if ( !array ) {
-                    this.logger.log( 'no array, oups !' );
-                    continue
-                }
-
-                if ( Array.isArray( array[ 0 ] ) ) {
-
-                    __createObjectsFromArrays( array );
-
-                } else {
-
-                    __createObjectFromPoints( array );
-
-                }
-
-            }
-
-        }
-
-        function __createObjectFromPoints ( points ) {
-
-            shapes.push( new Shape( points ) );
-
-        }
-
-        return shapes
-
-    }
-
-}
-
-SHPLoader.FileCode      = 9994;
-SHPLoader.MinFileLength = 100;
-SHPLoader.MinVersion    = 1000;
-
-/**
- * @module Loader/DBFLoader
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * From:
- * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
- * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
- * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
- *
- *
- */
-// Waiting three-shaking fix
-//import {
-//    DefaultLoadingManager,
-//    FileLoader
-//}                 from 'three-full'
-
-/**
- *
- * @type {Object}
- */
-const DBFVersion = toEnum( {
-    FoxPro:               0x30,
-    FoxPro_Autoincrement: 0x31,
-
-    dBASE_II:   0x02,
-    FoxPro_Var: 0x32,
-
-    dBASE_III_plus:          0x03,
-    dBASE_III_plus_memo:     0x83,
-    dBASE_IV_SQL_table:      0x43,
-    dBASE_IV_SQL_system:     0x63,
-    dBASE_IV_memo:           0x8B,
-    dBASE_IV_memo_SQL_table: 0xCB,
-    FoxBase:                 0xFB,
-
-    dBase_v_7: 4,
-
-    FoxPro_2_x:    0xF5,
-    HiPerSix_memo: 0xE5
-} );
-
-/**
- *
- * @type {Object}
- */
-const DataType = toEnum( {
-    Binary:        'B',
-    Character:     'C',
-    Date:          'D',
-    Numeric:       'N',
-    Logical:       'L',
-    Memo:          'M',
-    Timestamp:     '@',
-    Long:          'I',
-    Autoincrement: '+',
-    Float:         'F',
-    Double:        'O',
-    OLE:           'G'
-} );
-
-/**
- * @class
- * @classdesc Todo...
- * @example Todo...
- */
-class DBFLoader {
-
-    //    static Terminator    = 0x0D
-    //    static DeletedRecord = 0x1A
-    //    static YearOffset    = 1900
-
-    /**
-     *
-     * @param manager
-     * @param logger
-     * @constructor
-     */
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                manager: DefaultLoadingManager,
-                logger:  DefaultLogger,
-                reader:  new TBinaryReader()
-            }, ...parameters
-        };
-
-        this.manager = _parameters.manager;
-        this.logger  = _parameters.logger;
-        this.reader  = _parameters.reader;
-
-    }
-
-    get manager () {
-        return this._manager
-    }
-
-    set manager ( value ) {
-        this._manager = value;
-    }
-
-    get logger () {
-        return this._logger
-    }
-
-    set logger ( value ) {
-        this._logger = value;
-    }
-
-    get reader () {
-        return this._reader
-    }
-
-    set reader ( value ) {
-        this._reader = value;
-    }
-
-    setManager ( value ) {
-        this.manager = value;
-        return this
-    }
-
-    setLogger ( value ) {
-        this.logger = value;
-        return this
-    }
-
-    setReader ( value ) {
-        this.reader = value;
-        return this
-    }
-
-    /**
-     *
-     * @param url
-     * @param onLoad
-     * @param onProgress
-     * @param onError
-     */
-    load ( url, onLoad, onProgress, onError ) {
-
-        const scope = this;
-
-        const loader = new FileLoader( scope.manager );
-        loader.setResponseType( 'arraybuffer' );
-        loader.load( url, arrayBuffer => {
-
-            onLoad( scope.parse( arrayBuffer ) );
-
-        }, onProgress, onError );
-
-    }
-
-    /**
-     *
-     * @param arrayBuffer
-     * @return {*}
-     */
-    parse ( arrayBuffer ) {
-
-        this.reader
-            .setEndianess( Endianness.Big )
-            .setBuffer( arrayBuffer );
-
-        const version = this.reader.getInt8();
-        if ( !this._isValidVersion( version ) ) {
-            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
-            return null
-        }
-
-        const header = this._parseHeader( version );
-        const datas  = this._parseDatas( version, header );
-
-        return {
-            header,
-            datas
-        }
-
-    }
-
-    /**
-     *
-     * @param version
-     * @return {boolean}
-     * @private
-     */
-    _isValidVersion ( version ) {
-
-        return DBFVersion.includes( version )
-
-    }
-
-    /**
-     *
-     * @param version
-     * @return {{}}
-     * @private
-     */
-    _parseHeader ( version ) {
-
-        let header = {};
-
-        switch ( version ) {
-
-            case DBFVersion.FoxPro:
-            case DBFVersion.FoxPro_Autoincrement:
-            case DBFVersion.FoxPro_Var:
-            case DBFVersion.dBASE_II:
-                header = this._parseHeaderV2();
-                break
-
-            case DBFVersion.dBASE_III_plus:
-            case DBFVersion.dBASE_III_plus_memo:
-                header = this._parseHeaderV2_5();
-                break
-
-            case DBFVersion.dBASE_IV_memo:
-            case DBFVersion.dBASE_IV_memo_SQL_table:
-            case DBFVersion.dBASE_IV_SQL_system:
-            case DBFVersion.dBASE_IV_SQL_table:
-                header = this._parseHeaderV3();
-                break
-
-            case DBFVersion.dBase_v_7:
-            case DBFVersion.FoxPro_2_x:
-            case DBFVersion.HiPerSix_memo:
-                header = this._parseHeaderV4();
-                break
-
-            default:
-                throw new RangeError( `Invalid version parameter: ${ version }` )
-
-        }
-
-        // Check terminator
-        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
-            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
-        }
-
-        return header
-
-    }
-
-    /**
-     *
-     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
-     * @private
-     */
-    _parseHeaderV2 () {
-
-        const numberOfRecords     = this.reader.getInt16();
-        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month               = this.reader.getInt8();
-        const day                 = this.reader.getInt8();
-        const lengthOfEachRecords = this.reader.getInt16();
-
-        // Field descriptor array
-        let fields        = [];
-        let name          = undefined;
-        let type          = undefined;
-        let length        = undefined;
-        let memoryAddress = undefined;
-        let decimalCount  = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name          = this.reader.getString( 11 );
-            type          = this.reader.getChar();
-            length        = this.reader.getUint8();
-            memoryAddress = this.reader.getInt16();
-            decimalCount  = this.reader.getInt8();
-
-            fields.push( {
-                name,
-                type,
-                length,
-                memoryAddress,
-                decimalCount
-            } );
-
-        }
-
-        return {
-            numberOfRecords,
-            year,
-            month,
-            day,
-            lengthOfEachRecords,
-            fields
-        }
-
-    }
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
-     * @private
-     */
-    _parseHeaderV2_5 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
-
-        // Field descriptor array
-        let fields        = [];
-        let name          = undefined;
-        let type          = undefined;
-        let length        = undefined;
-        let memoryAddress = undefined;
-        let decimalCount  = undefined;
-        let workAreaId    = undefined;
-        let MDXFlag       = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name          = this.reader.getString( 11 );
-            type          = this.reader.getChar();
-            memoryAddress = this.reader.getInt32();
-            length        = this.reader.getUint8();
-            decimalCount  = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            workAreaId = this.reader.getInt8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            MDXFlag = this.reader.getInt8();
-            this.reader.skipOffsetOf( 1 ); // Reserved
-
-            fields.push( {
-                name,
-                type,
-                length,
-                memoryAddress,
-                decimalCount,
-                workAreaId,
-                MDXFlag
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            fields
-        }
-
-    }
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-     *     (*|number), languageDriverId: (*|number), fields: Array}}
-     * @private
-     */
-    _parseHeaderV3 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const incompleteTransactionFlag = this.reader.getInt8();
-        const encryptionFlag            = this.reader.getInt8();
-        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-        const MDXFlag          = this.reader.getInt8();
-        const languageDriverId = this.reader.getInt8();
-        this.reader.skipOffsetOf( 2 ); // Reserved
-
-        // Field descriptor array
-        let fields       = [];
-        let name         = undefined;
-        let type         = undefined;
-        let length       = undefined;
-        let decimalCount = undefined;
-        let workAreaId   = undefined;
-        let MDXFieldFlag = undefined;
-        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
-            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name = this.reader.getString( 11 );
-            type = this.reader.getChar();
-            this.reader.skipOffsetOf( 4 ); // Reserved
-            length       = this.reader.getUint8();
-            decimalCount = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            workAreaId = this.reader.getInt8();
-            this.reader.skipOffsetOf( 10 ); // Reserved
-            MDXFieldFlag = this.reader.getInt8();
-
-            fields.push( {
-                name,
-                type,
-                length,
-                decimalCount,
-                workAreaId,
-                MDXFieldFlag
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            incompleteTransactionFlag,
-            encryptionFlag,
-            MDXFlag,
-            languageDriverId,
-            fields
-        }
-
-    }
-
-    /**
-     *
-     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
-     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
-     * @private
-     */
-    _parseHeaderV4 () {
-
-        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
-        const month = this.reader.getInt8();
-        const day   = this.reader.getInt8();
-        this.reader.setEndianess( Endianness.Little );
-        const numberOfRecords      = this.reader.getInt32();
-        const numberOfByteInHeader = this.reader.getInt16();
-        const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( Endianness.Big );
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const incompleteTransactionFlag = this.reader.getInt8();
-        const encryptionFlag            = this.reader.getInt8();
-        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
-        const MDXFlag          = this.reader.getInt8();
-        const languageDriverId = this.reader.getInt8();
-        this.reader.skipOffsetOf( 2 ); // Reserved
-        const languageDriverName = this.reader.getString( 32 );
-        this.reader.skipOffsetOf( 4 ); // Reserved
-
-        // Field descriptor array
-        let fields                 = [];
-        let name                   = undefined;
-        let type                   = undefined;
-        let length                 = undefined;
-        let decimalCount           = undefined;
-        let MDXFieldFlag           = undefined;
-        let nextAutoincrementValue = undefined;
-        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
-
-            name         = this.reader.getString( 32 );
-            type         = this.reader.getChar();
-            length       = this.reader.getUint8();
-            decimalCount = this.reader.getUint8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            MDXFieldFlag = this.reader.getInt8();
-            this.reader.skipOffsetOf( 2 ); // Reserved
-            nextAutoincrementValue = this.reader.getInt32();
-            this.reader.skipOffsetOf( 4 ); // Reserved
-
-            fields.push( {
-                name,
-                type,
-                length,
-                decimalCount,
-                MDXFieldFlag,
-                nextAutoincrementValue
-            } );
-
-        }
-
-        return {
-            year,
-            month,
-            day,
-            numberOfRecords,
-            numberOfByteInHeader,
-            numberOfByteInRecord,
-            incompleteTransactionFlag,
-            encryptionFlag,
-            MDXFlag,
-            languageDriverId,
-            languageDriverName,
-            fields
-        }
-
-    }
-
-    /**
-     *
-     * @param version
-     * @param header
-     * @return {Array}
-     * @private
-     */
-    _parseDatas ( version, header ) {
-
-        const numberOfRecords = header.numberOfRecords;
-        const fields          = header.fields;
-
-        // Todo: use it
-        //        let properties = null
-        //        if ( version === DBFVersion.dBase_v_7 ) {
-        //            properties = this._parseFieldProperties()
-        //        }
-
-        let records = [];
-        let record  = null;
-        let field   = null;
-        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
-
-            record              = {};
-            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
-
-            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
-
-                field = fields[ fieldIndex ];
-
-                switch ( field.type ) {
-
-                    case DataType.Binary: {
-                        const binaryString   = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( binaryString );
-                    }
-                        break
-
-                    case DataType.Numeric: {
-                        const numericString  = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( numericString );
-                    }
-                        break
-
-                    case DataType.Character: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    case DataType.Date: {
-                        // YYYYMMDD
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    case DataType.Logical: {
-                        const logical = this.reader.getChar().toLowerCase();
-                        if ( logical === 't' || logical === 'y' ) {
-                            record[ field.name ] = true;
-                        } else if ( logical === 'f' || logical === 'n' ) {
-                            record[ field.name ] = false;
-                        } else {
-                            record[ field.name ] = null;
-                        }
-                    }
-                        break
-
-                    case DataType.Memo: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    // 8 bytes - two longs, first for date, second for time.
-                    // The date is the number of days since  01/01/4713 BC.
-                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
-                    case DataType.Timestamp:
-                        break
-
-                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
-                    case DataType.Long: {
-                        record[ field.name ] = this.reader.getInt32();
-                    }
-                        break
-
-                    // Same as a Long
-                    case DataType.Autoincrement: {
-                        record[ field.name ] = this.reader.getInt32();
-                    }
-                        break
-
-                    case DataType.Float: {
-                        const floatString    = this.reader.getString( field.length );
-                        record[ field.name ] = parseInt( floatString );
-                    }
-                        break
-
-                    case DataType.Double: {
-                        record[ field.name ] = this.reader.getFloat64();
-                    }
-                        break
-
-                    case DataType.OLE: {
-                        record[ field.name ] = this.reader.getString( field.length );
-                    }
-                        break
-
-                    default:
-                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
-
-                }
-
-            }
-
-            records.push( record );
-
-        }
-
-        return records
-
-    }
-
-    /**
-     *
-     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
-     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
-     * @private
-     */
-    _parseFieldProperties () {
-
-        const numberOfStandardProperties             = this.reader.getInt16();
-        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
-        const numberOfCustomProperties               = this.reader.getInt16();
-        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
-        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
-        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
-        const startOfData                            = this.reader.getInt16();
-        const sizeOfPropertiesStructure              = this.reader.getInt16();
-
-        let standardProperties = [];
-        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
-            standardProperties.push( this._getStandardProperties() );
-        }
-
-        let customProperties = [];
-        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
-            customProperties.push( this._getCustomProperties() );
-        }
-
-        let referentialIntegrityProperties = [];
-        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
-            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
-        }
-
-        return {
-            numberOfStandardProperties,
-            startOfStandardPropertiesDescriptor,
-            numberOfCustomProperties,
-            startOfCustomPropertiesDescriptor,
-            numberOfReferentialIntegrityProperties,
-            startOfReferentialIntegrityDescriptor,
-            startOfData,
-            sizeOfPropertiesStructure,
-            standardProperties,
-            customProperties,
-            referentialIntegrityProperties
-        }
-
-    }
-
-    /**
-     *
-     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
-     * @private
-     */
-    _getStandardProperties () {
-
-        const generationalNumber = this.reader.getInt16();
-        const tableFieldOffset   = this.reader.getInt16();
-        const propertyDescribed  = this.reader.getInt8();
-        const type               = this.reader.getInt8();
-        const isConstraint       = this.reader.getInt8();
-        this.reader.skipOffsetOf( 4 ); // Reserved
-        const offsetFromStart      = this.reader.getInt16();
-        const widthOfDatabaseField = this.reader.getInt16();
-
-        return {
-            generationalNumber,
-            tableFieldOffset,
-            propertyDescribed,
-            type,
-            isConstraint,
-            offsetFromStart,
-            widthOfDatabaseField
-        }
-
-    }
-
-    /**
-     *
-     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
-     * @private
-     */
-    _getCustomProperties () {
-
-        const generationalNumber = this.reader.getInt16();
-        const tableFieldOffset   = this.reader.getInt16();
-        const type               = this.reader.getInt8();
-        this.reader.skipOffsetOf( 1 ); // Reserved
-        const offsetFromStartOfName = this.reader.getInt16();
-        const lengthOfName          = this.reader.getInt16();
-        const offsetFromStartOfData = this.reader.getInt16();
-        const lengthOfData          = this.reader.getInt16();
-
-        return {
-            generationalNumber,
-            tableFieldOffset,
-            type,
-            offsetFromStartOfName,
-            lengthOfName,
-            offsetFromStartOfData,
-            lengthOfData
-        }
-
-    }
-
-    /**
-     *
-     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
-     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
-     * @private
-     */
-    _getReferentialIntegrityProperties () {
-
-        const databaseState                = this.reader.getInt8();
-        const sequentialNumberRule         = this.reader.getInt16();
-        const offsetOfTheRIRuleName        = this.reader.getInt16();
-        const sizeOfTheRIRuleName          = this.reader.getInt16();
-        const offsetOfNameOfForeignTable   = this.reader.getInt16();
-        const sizeOfNameOfForeignTable     = this.reader.getInt16();
-        const stateBehaviour               = this.reader.getInt8();
-        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
-        const offsetOfLocalTableTagName    = this.reader.getInt16();
-        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
-        const offsetOfForeignTableTagName  = this.reader.getInt16();
-        const sizeOfTheForeignTableTagName = this.reader.getInt16();
-
-        return {
-            databaseState,
-            sequentialNumberRule,
-            offsetOfTheRIRuleName,
-            sizeOfTheRIRuleName,
-            offsetOfNameOfForeignTable,
-            sizeOfNameOfForeignTable,
-            stateBehaviour,
-            numberOfFieldsInLinkingKey,
-            offsetOfLocalTableTagName,
-            sizeOfTheLocalTableTagName,
-            offsetOfForeignTableTagName,
-            sizeOfTheForeignTableTagName
-        }
-
-    }
-
-}
-
-DBFLoader.Terminator    = 0x0D;
-DBFLoader.DeletedRecord = 0x1A;
-DBFLoader.YearOffset    = 1900;
+import { isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isNotArray, isArray, isDefined, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
 
 /**
  * @module Loader/ASCLoader
@@ -1558,17 +34,6 @@ DBFLoader.YearOffset    = 1900;
  * } );
  *
  */
-// Waiting three-shaking fix
-//import {
-//    Box3,
-//    BufferAttribute,
-//    BufferGeometry,
-//    DefaultLoadingManager,
-//    FileLoader,
-//    Group,
-//    Points,
-//    PointsMaterial
-//}                        from 'three-full'
 
 /**
  * The ASCLoader class definition.
@@ -2365,6 +830,2547 @@ class ASCLoader {
 }
 
 /**
+ * @module Loader/DBFLoader
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * From:
+ * https://www.clicketyclick.dk/databases/xbase/format/db2_dbf.html#DBII_DBF_STRUCT
+ * http://web.archive.org/web/20150323061445/http://ulisse.elettra.trieste.it/services/doc/dbase/DBFstruct.htm
+ * http://www.dbase.com/Knowledgebase/INT/db7_file_fmt.htm
+ *
+ *
+ */
+
+/**
+ *
+ * @type {Object}
+ */
+const DBFVersion = toEnum( {
+    FoxPro:               0x30,
+    FoxPro_Autoincrement: 0x31,
+
+    dBASE_II:   0x02,
+    FoxPro_Var: 0x32,
+
+    dBASE_III_plus:          0x03,
+    dBASE_III_plus_memo:     0x83,
+    dBASE_IV_SQL_table:      0x43,
+    dBASE_IV_SQL_system:     0x63,
+    dBASE_IV_memo:           0x8B,
+    dBASE_IV_memo_SQL_table: 0xCB,
+    FoxBase:                 0xFB,
+
+    dBase_v_7: 4,
+
+    FoxPro_2_x:    0xF5,
+    HiPerSix_memo: 0xE5
+} );
+
+/**
+ *
+ * @type {Object}
+ */
+const DataType = toEnum( {
+    Binary:        'B',
+    Character:     'C',
+    Date:          'D',
+    Numeric:       'N',
+    Logical:       'L',
+    Memo:          'M',
+    Timestamp:     '@',
+    Long:          'I',
+    Autoincrement: '+',
+    Float:         'F',
+    Double:        'O',
+    OLE:           'G'
+} );
+
+/**
+ * @class
+ * @classdesc Todo...
+ * @example Todo...
+ */
+class DBFLoader {
+
+    //    static Terminator    = 0x0D
+    //    static DeletedRecord = 0x1A
+    //    static YearOffset    = 1900
+
+    /**
+     *
+     * @param manager
+     * @param logger
+     * @constructor
+     */
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                manager: DefaultLoadingManager,
+                logger:  DefaultLogger,
+                reader:  new TBinaryReader()
+            }, ...parameters
+        };
+
+        this.manager = _parameters.manager;
+        this.logger  = _parameters.logger;
+        this.reader  = _parameters.reader;
+
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
+
+    /**
+     *
+     * @param url
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     */
+    load ( url, onLoad, onProgress, onError ) {
+
+        const scope = this;
+
+        const loader = new FileLoader( scope.manager );
+        loader.setResponseType( 'arraybuffer' );
+        loader.load( url, arrayBuffer => {
+
+            onLoad( scope.parse( arrayBuffer ) );
+
+        }, onProgress, onError );
+
+    }
+
+    /**
+     *
+     * @param arrayBuffer
+     * @return {*}
+     */
+    parse ( arrayBuffer ) {
+
+        this.reader
+            .setEndianess( Endianness.Big )
+            .setBuffer( arrayBuffer );
+
+        const version = this.reader.getInt8();
+        if ( !this._isValidVersion( version ) ) {
+            this.logger.error( `DBFLoader: Invalid version number: ${ version }` );
+            return null
+        }
+
+        const header = this._parseHeader( version );
+        const datas  = this._parseDatas( version, header );
+
+        return {
+            header,
+            datas
+        }
+
+    }
+
+    /**
+     *
+     * @param version
+     * @return {boolean}
+     * @private
+     */
+    _isValidVersion ( version ) {
+
+        return DBFVersion.includes( version )
+
+    }
+
+    /**
+     *
+     * @param version
+     * @return {{}}
+     * @private
+     */
+    _parseHeader ( version ) {
+
+        let header = {};
+
+        switch ( version ) {
+
+            case DBFVersion.FoxPro:
+            case DBFVersion.FoxPro_Autoincrement:
+            case DBFVersion.FoxPro_Var:
+            case DBFVersion.dBASE_II:
+                header = this._parseHeaderV2();
+                break
+
+            case DBFVersion.dBASE_III_plus:
+            case DBFVersion.dBASE_III_plus_memo:
+                header = this._parseHeaderV2_5();
+                break
+
+            case DBFVersion.dBASE_IV_memo:
+            case DBFVersion.dBASE_IV_memo_SQL_table:
+            case DBFVersion.dBASE_IV_SQL_system:
+            case DBFVersion.dBASE_IV_SQL_table:
+                header = this._parseHeaderV3();
+                break
+
+            case DBFVersion.dBase_v_7:
+            case DBFVersion.FoxPro_2_x:
+            case DBFVersion.HiPerSix_memo:
+                header = this._parseHeaderV4();
+                break
+
+            default:
+                throw new RangeError( `Invalid version parameter: ${ version }` )
+
+        }
+
+        // Check terminator
+        if ( this.reader.getUint8() !== DBFLoader.Terminator ) {
+            this.logger.error( 'DBFLoader: Invalid terminator after field descriptors !!!' );
+        }
+
+        return header
+
+    }
+
+    /**
+     *
+     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
+     * @private
+     */
+    _parseHeaderV2 () {
+
+        const numberOfRecords     = this.reader.getInt16();
+        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month               = this.reader.getInt8();
+        const day                 = this.reader.getInt8();
+        const lengthOfEachRecords = this.reader.getInt16();
+
+        // Field descriptor array
+        let fields        = [];
+        let name          = undefined;
+        let type          = undefined;
+        let length        = undefined;
+        let memoryAddress = undefined;
+        let decimalCount  = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name          = this.reader.getString( 11 );
+            type          = this.reader.getChar();
+            length        = this.reader.getUint8();
+            memoryAddress = this.reader.getInt16();
+            decimalCount  = this.reader.getInt8();
+
+            fields.push( {
+                name,
+                type,
+                length,
+                memoryAddress,
+                decimalCount
+            } );
+
+        }
+
+        return {
+            numberOfRecords,
+            year,
+            month,
+            day,
+            lengthOfEachRecords,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
+     * @private
+     */
+    _parseHeaderV2_5 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
+
+        // Field descriptor array
+        let fields        = [];
+        let name          = undefined;
+        let type          = undefined;
+        let length        = undefined;
+        let memoryAddress = undefined;
+        let decimalCount  = undefined;
+        let workAreaId    = undefined;
+        let MDXFlag       = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name          = this.reader.getString( 11 );
+            type          = this.reader.getChar();
+            memoryAddress = this.reader.getInt32();
+            length        = this.reader.getUint8();
+            decimalCount  = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            workAreaId = this.reader.getInt8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            MDXFlag = this.reader.getInt8();
+            this.reader.skipOffsetOf( 1 ); // Reserved
+
+            fields.push( {
+                name,
+                type,
+                length,
+                memoryAddress,
+                decimalCount,
+                workAreaId,
+                MDXFlag
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+     *     (*|number), languageDriverId: (*|number), fields: Array}}
+     * @private
+     */
+    _parseHeaderV3 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const incompleteTransactionFlag = this.reader.getInt8();
+        const encryptionFlag            = this.reader.getInt8();
+        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+        const MDXFlag          = this.reader.getInt8();
+        const languageDriverId = this.reader.getInt8();
+        this.reader.skipOffsetOf( 2 ); // Reserved
+
+        // Field descriptor array
+        let fields       = [];
+        let name         = undefined;
+        let type         = undefined;
+        let length       = undefined;
+        let decimalCount = undefined;
+        let workAreaId   = undefined;
+        let MDXFieldFlag = undefined;
+        while ( this.reader.getOffset() < numberOfByteInHeader - 1 ) {
+            //                for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name = this.reader.getString( 11 );
+            type = this.reader.getChar();
+            this.reader.skipOffsetOf( 4 ); // Reserved
+            length       = this.reader.getUint8();
+            decimalCount = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            workAreaId = this.reader.getInt8();
+            this.reader.skipOffsetOf( 10 ); // Reserved
+            MDXFieldFlag = this.reader.getInt8();
+
+            fields.push( {
+                name,
+                type,
+                length,
+                decimalCount,
+                workAreaId,
+                MDXFieldFlag
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            incompleteTransactionFlag,
+            encryptionFlag,
+            MDXFlag,
+            languageDriverId,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, incompleteTransactionFlag: (*|number), encryptionFlag: (*|number), MDXFlag:
+     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
+     * @private
+     */
+    _parseHeaderV4 () {
+
+        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
+        const month = this.reader.getInt8();
+        const day   = this.reader.getInt8();
+        this.reader.setEndianess( Endianness.Little );
+        const numberOfRecords      = this.reader.getInt32();
+        const numberOfByteInHeader = this.reader.getInt16();
+        const numberOfByteInRecord = this.reader.getInt16();
+        this.reader.setEndianess( Endianness.Big );
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const incompleteTransactionFlag = this.reader.getInt8();
+        const encryptionFlag            = this.reader.getInt8();
+        this.reader.skipOffsetOf( 12 ); // Reserved multi-users
+        const MDXFlag          = this.reader.getInt8();
+        const languageDriverId = this.reader.getInt8();
+        this.reader.skipOffsetOf( 2 ); // Reserved
+        const languageDriverName = this.reader.getString( 32 );
+        this.reader.skipOffsetOf( 4 ); // Reserved
+
+        // Field descriptor array
+        let fields                 = [];
+        let name                   = undefined;
+        let type                   = undefined;
+        let length                 = undefined;
+        let decimalCount           = undefined;
+        let MDXFieldFlag           = undefined;
+        let nextAutoincrementValue = undefined;
+        for ( let fieldIndex = 0 ; fieldIndex < numberOfRecords ; fieldIndex++ ) {
+
+            name         = this.reader.getString( 32 );
+            type         = this.reader.getChar();
+            length       = this.reader.getUint8();
+            decimalCount = this.reader.getUint8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            MDXFieldFlag = this.reader.getInt8();
+            this.reader.skipOffsetOf( 2 ); // Reserved
+            nextAutoincrementValue = this.reader.getInt32();
+            this.reader.skipOffsetOf( 4 ); // Reserved
+
+            fields.push( {
+                name,
+                type,
+                length,
+                decimalCount,
+                MDXFieldFlag,
+                nextAutoincrementValue
+            } );
+
+        }
+
+        return {
+            year,
+            month,
+            day,
+            numberOfRecords,
+            numberOfByteInHeader,
+            numberOfByteInRecord,
+            incompleteTransactionFlag,
+            encryptionFlag,
+            MDXFlag,
+            languageDriverId,
+            languageDriverName,
+            fields
+        }
+
+    }
+
+    /**
+     *
+     * @param version
+     * @param header
+     * @return {Array}
+     * @private
+     */
+    _parseDatas ( version, header ) {
+
+        const numberOfRecords = header.numberOfRecords;
+        const fields          = header.fields;
+
+        // Todo: use it
+        //        let properties = null
+        //        if ( version === DBFVersion.dBase_v_7 ) {
+        //            properties = this._parseFieldProperties()
+        //        }
+
+        let records = [];
+        let record  = null;
+        let field   = null;
+        for ( let recordIndex = 0 ; recordIndex < numberOfRecords ; recordIndex++ ) {
+
+            record              = {};
+            record[ 'deleted' ] = ( this.reader.getUint8() === DBFLoader.DeletedRecord );
+
+            for ( let fieldIndex = 0, numberOfFields = fields.length ; fieldIndex < numberOfFields ; fieldIndex++ ) {
+
+                field = fields[ fieldIndex ];
+
+                switch ( field.type ) {
+
+                    case DataType.Binary: {
+                        const binaryString   = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( binaryString );
+                    }
+                        break
+
+                    case DataType.Numeric: {
+                        const numericString  = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( numericString );
+                    }
+                        break
+
+                    case DataType.Character: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    case DataType.Date: {
+                        // YYYYMMDD
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    case DataType.Logical: {
+                        const logical = this.reader.getChar().toLowerCase();
+                        if ( logical === 't' || logical === 'y' ) {
+                            record[ field.name ] = true;
+                        } else if ( logical === 'f' || logical === 'n' ) {
+                            record[ field.name ] = false;
+                        } else {
+                            record[ field.name ] = null;
+                        }
+                    }
+                        break
+
+                    case DataType.Memo: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    // 8 bytes - two longs, first for date, second for time.
+                    // The date is the number of days since  01/01/4713 BC.
+                    // Time is hours * 3600000L + minutes * 60000L + Seconds * 1000L
+                    case DataType.Timestamp:
+                        break
+
+                    // 4 bytes. Leftmost bit used to indicate sign, 0 negative.
+                    case DataType.Long: {
+                        record[ field.name ] = this.reader.getInt32();
+                    }
+                        break
+
+                    // Same as a Long
+                    case DataType.Autoincrement: {
+                        record[ field.name ] = this.reader.getInt32();
+                    }
+                        break
+
+                    case DataType.Float: {
+                        const floatString    = this.reader.getString( field.length );
+                        record[ field.name ] = parseInt( floatString );
+                    }
+                        break
+
+                    case DataType.Double: {
+                        record[ field.name ] = this.reader.getFloat64();
+                    }
+                        break
+
+                    case DataType.OLE: {
+                        record[ field.name ] = this.reader.getString( field.length );
+                    }
+                        break
+
+                    default:
+                        throw new RangeError( `Invalid data type parameter: ${ field.type }` )
+
+                }
+
+            }
+
+            records.push( record );
+
+        }
+
+        return records
+
+    }
+
+    /**
+     *
+     * @return {{numberOfStandardProperties, startOfStandardPropertiesDescriptor, numberOfCustomProperties, startOfCustomPropertiesDescriptor, numberOfReferentialIntegrityProperties,
+     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
+     * @private
+     */
+    _parseFieldProperties () {
+
+        const numberOfStandardProperties             = this.reader.getInt16();
+        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
+        const numberOfCustomProperties               = this.reader.getInt16();
+        const startOfCustomPropertiesDescriptor      = this.reader.getInt16();
+        const numberOfReferentialIntegrityProperties = this.reader.getInt16();
+        const startOfReferentialIntegrityDescriptor  = this.reader.getInt16();
+        const startOfData                            = this.reader.getInt16();
+        const sizeOfPropertiesStructure              = this.reader.getInt16();
+
+        let standardProperties = [];
+        for ( let standardIndex = 0 ; standardIndex < numberOfStandardProperties ; standardIndex++ ) {
+            standardProperties.push( this._getStandardProperties() );
+        }
+
+        let customProperties = [];
+        for ( let customIndex = 0 ; customIndex < numberOfCustomProperties ; customIndex++ ) {
+            customProperties.push( this._getCustomProperties() );
+        }
+
+        let referentialIntegrityProperties = [];
+        for ( let referentialIntegrityIndex = 0 ; referentialIntegrityIndex < numberOfReferentialIntegrityProperties ; referentialIntegrityIndex++ ) {
+            referentialIntegrityProperties.push( this._getReferentialIntegrityProperties() );
+        }
+
+        return {
+            numberOfStandardProperties,
+            startOfStandardPropertiesDescriptor,
+            numberOfCustomProperties,
+            startOfCustomPropertiesDescriptor,
+            numberOfReferentialIntegrityProperties,
+            startOfReferentialIntegrityDescriptor,
+            startOfData,
+            sizeOfPropertiesStructure,
+            standardProperties,
+            customProperties,
+            referentialIntegrityProperties
+        }
+
+    }
+
+    /**
+     *
+     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
+     * @private
+     */
+    _getStandardProperties () {
+
+        const generationalNumber = this.reader.getInt16();
+        const tableFieldOffset   = this.reader.getInt16();
+        const propertyDescribed  = this.reader.getInt8();
+        const type               = this.reader.getInt8();
+        const isConstraint       = this.reader.getInt8();
+        this.reader.skipOffsetOf( 4 ); // Reserved
+        const offsetFromStart      = this.reader.getInt16();
+        const widthOfDatabaseField = this.reader.getInt16();
+
+        return {
+            generationalNumber,
+            tableFieldOffset,
+            propertyDescribed,
+            type,
+            isConstraint,
+            offsetFromStart,
+            widthOfDatabaseField
+        }
+
+    }
+
+    /**
+     *
+     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
+     * @private
+     */
+    _getCustomProperties () {
+
+        const generationalNumber = this.reader.getInt16();
+        const tableFieldOffset   = this.reader.getInt16();
+        const type               = this.reader.getInt8();
+        this.reader.skipOffsetOf( 1 ); // Reserved
+        const offsetFromStartOfName = this.reader.getInt16();
+        const lengthOfName          = this.reader.getInt16();
+        const offsetFromStartOfData = this.reader.getInt16();
+        const lengthOfData          = this.reader.getInt16();
+
+        return {
+            generationalNumber,
+            tableFieldOffset,
+            type,
+            offsetFromStartOfName,
+            lengthOfName,
+            offsetFromStartOfData,
+            lengthOfData
+        }
+
+    }
+
+    /**
+     *
+     * @return {{databaseState: (*|number), sequentialNumberRule, offsetOfTheRIRuleName, sizeOfTheRIRuleName, offsetOfNameOfForeignTable, sizeOfNameOfForeignTable, stateBehaviour: (*|number),
+     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
+     * @private
+     */
+    _getReferentialIntegrityProperties () {
+
+        const databaseState                = this.reader.getInt8();
+        const sequentialNumberRule         = this.reader.getInt16();
+        const offsetOfTheRIRuleName        = this.reader.getInt16();
+        const sizeOfTheRIRuleName          = this.reader.getInt16();
+        const offsetOfNameOfForeignTable   = this.reader.getInt16();
+        const sizeOfNameOfForeignTable     = this.reader.getInt16();
+        const stateBehaviour               = this.reader.getInt8();
+        const numberOfFieldsInLinkingKey   = this.reader.getInt16();
+        const offsetOfLocalTableTagName    = this.reader.getInt16();
+        const sizeOfTheLocalTableTagName   = this.reader.getInt16();
+        const offsetOfForeignTableTagName  = this.reader.getInt16();
+        const sizeOfTheForeignTableTagName = this.reader.getInt16();
+
+        return {
+            databaseState,
+            sequentialNumberRule,
+            offsetOfTheRIRuleName,
+            sizeOfTheRIRuleName,
+            offsetOfNameOfForeignTable,
+            sizeOfNameOfForeignTable,
+            stateBehaviour,
+            numberOfFieldsInLinkingKey,
+            offsetOfLocalTableTagName,
+            sizeOfTheLocalTableTagName,
+            offsetOfForeignTableTagName,
+            sizeOfTheForeignTableTagName
+        }
+
+    }
+
+}
+
+DBFLoader.Terminator    = 0x0D;
+DBFLoader.DeletedRecord = 0x1A;
+DBFLoader.YearOffset    = 1900;
+
+/**
+ * @module Loader/LASLoader
+ * @desc A loader for ASC cloud point files.
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * @example
+ *
+ * import { LASLoader } from 'itee-plugin-three'
+ *
+ * const loader = new LASLoader();
+ *
+ * // If the ASC file need to be offseted, it can be set before loading file.
+ * loader.setOffset( {
+ *      x: 1.0,
+ *      y: 52.0,
+ *      z: -5.0
+ * } );
+ *
+ * // Then load the file and get the threejs Point Geometry
+ * loader.load('/path/to/file.asc', function (geometry) {
+ *
+ *      scene.add( new Mesh( geometry ) );
+ *
+ * } );
+ *
+ */
+//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
+//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+//import { Box3 }                  from 'three-full/sources/math/Box3'
+//import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+//import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
+//import { Group }                 from 'three-full/sources/objects/Group'
+//import { Points }                from 'three-full/sources/objects/Points'
+
+class BitManager {
+
+    static getBit ( number, bitPosition ) {
+        return ( number & ( 1 << bitPosition ) ) === 0 ? 0 : 1
+    }
+
+    static setBit ( number, bitPosition ) {
+        return number | ( 1 << bitPosition )
+    }
+
+    static clearBit ( number, bitPosition ) {
+        const mask = ~( 1 << bitPosition );
+        return number & mask
+    }
+
+    static updateBit ( number, bitPosition, bitValue ) {
+        const bitValueNormalized = bitValue ? 1 : 0;
+        const clearMask          = ~( 1 << bitPosition );
+        return ( number & clearMask ) | ( bitValueNormalized << bitPosition )
+    }
+}
+
+class GlobalEncodingBitField {
+    constructor ( bytes ) {
+        this._bytes = bytes;
+    }
+}
+
+class GlobalEncodingBitField_1_2 extends GlobalEncodingBitField {
+    get GPSTimeType () {
+        return ( BitManager.getBit( this._bytes, 0 ) ) ? 'AdjustedStandardGPSTime' : 'GPSWeekTime'
+    }
+}
+
+class GlobalEncodingBitField_1_3 extends GlobalEncodingBitField_1_2 {
+
+    get WaveformDataPacketsInternal () {
+        return !!( BitManager.getBit( this._bytes, 1 ) )
+    }
+
+    get WaveformDataPacketsExternal () {
+        return !!( BitManager.getBit( this._bytes, 2 ) )
+    }
+
+    get ReturnNumbersHaveBeenSyntheticallyGenerated () {
+        return ( BitManager.getBit( this._bytes, 3 ) ) ? 'AdjustedStandardGPSTime' : 'GPSWeekTime'
+    }
+
+}
+
+class GlobalEncodingBitField_1_4 extends GlobalEncodingBitField_1_3 {
+
+    get SyntheticReturnNumber () {
+        return this.ReturnNumbersHaveBeenSyntheticallyGenerated
+    }
+
+    get WKT () {
+        return ( BitManager.getBit( this._bytes, 4 ) ) ? 'WKT' : 'GeoTIFF'
+    }
+
+}
+
+/**
+ * The LASLoader class definition.
+ * It allow to load and parse an .asc file
+ *
+ * @class
+ */
+class LASLoader {
+
+    /**
+     * @constructor
+     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
+     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
+     */
+    constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+
+        this.manager = manager;
+        this.logger  = logger;
+
+        this._reader         = new TBinaryReader();
+        this._boundingBox    = new Box3();
+        this._points         = [];
+        this._numberOfPoints = 0;
+        this._coloredPoints  = false;
+        this._autoOffset     = false; // Only for tiny files !!!!!!!
+        this._offset         = {
+            x: 0,
+            y: 0,
+            z: 0
+        };
+
+        this._positions   = null;
+        this._bufferIndex = 0;
+
+        this._positionsC   = null;
+        this._bufferIndexC = 0;
+
+        this.wrongPoints = 0;
+
+    }
+
+    /**
+     * Will load the file at the given URL then parse it. It will return a Three.Group as onLoad argument.
+     *
+     * @param {DOMString|URL} url - Path to the file to load
+     * @param {callback} onLoad - A success callback
+     * @param {callback} onProgress - A progress callback
+     * @param {callback} onError - A error callback
+     * @param {Number} [sampling=100] - A sampling in percent to apply over file
+     */
+    load ( url, onLoad, onProgress, onError, sampling ) {
+
+        //        //this.logger.time("LASLoader")
+
+        const loader = new FileLoader( this.manager );
+        loader.setResponseType( 'arraybuffer' );
+        loader.load( url, function ( arraybuffer ) {
+
+            const groupToFeed = new Group();
+            this._parse( arraybuffer, groupToFeed, ( lasFile ) => { onLoad( lasFile ); }, onProgress, onError, sampling );
+
+            // Early container return
+            //            onLoad( groupToFeed )
+
+        }.bind( this ), onProgress, onError );
+
+    }
+
+    /**
+     * An alternative setter to offset property
+     *
+     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
+     */
+    setOffset ( offset ) {
+
+        //TODO: check is correct
+
+        this._offset     = offset;
+        this._autoOffset = false;
+
+        //TODO: that allow chaining.
+
+    }
+
+    /**
+     *
+     * @param blob
+     * @param groupToFeed
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     * @param sampling
+     * @private
+     */
+    _parse ( arraybuffer, groupToFeed, onLoad, onProgress, onError ) {
+
+        try {
+            this._reader.buffer = arraybuffer;
+
+            const header                = this._parseHeader();
+            const variableLengthRecords = this._parseVariableLengthRecords( header );
+            const pointDataRecords      = this._parsePointDataRecords( header, onProgress );
+
+            onLoad( {
+                Header:                header,
+                VariableLengthRecords: variableLengthRecords,
+                PointDataRecords:      pointDataRecords
+            } );
+
+        } catch(error) {
+            onError(error);
+        }
+
+    }
+
+    _parseHeader () {
+
+        const fileSignature = this._reader.getString( 4, false );
+        if ( fileSignature !== 'LASF' ) { throw new Error( 'Invalid las file signature. Abort parsing !' ) }
+
+        this._reader.skipOffsetOf( 20 );
+
+        const majorVersion = this._reader.getUint8();
+        if ( majorVersion !== 1 ) { throw new Error( `Insupported major LAS file version: ${ majorVersion }. Abort parsing !` ) }
+
+        const minorVersion = this._reader.getUint8();
+        switch ( minorVersion ) {
+            case 0:
+                this._reader.skipOffsetTo( 0 );
+                return this._parseHeader_1_0()
+
+            case 1:
+                this._reader.skipOffsetTo( 0 );
+                return this._parseHeader_1_1()
+
+            case 2:
+                this._reader.skipOffsetTo( 0 );
+                return this._parseHeader_1_2()
+
+            case 3:
+                this._reader.skipOffsetTo( 0 );
+                return this._parseHeader_1_3()
+
+            case 4:
+                this._reader.skipOffsetTo( 0 );
+                return this._parseHeader_1_4()
+
+            default:
+                throw new Error( `Insupported minor LAS file version: ${ minorVersion }. Abort parsing !` )
+        }
+
+    }
+
+    _parseHeader_1_0 () {
+        return {
+            FileSignature:                 this._reader.getString( 4, false ),
+            Reserved:                      this._reader.skipOffsetOf( Byte.Four ),
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32, false ),
+            GeneratingSoftware:            this._reader.getString( 32, false ),
+            FlightDateJulian:              this._reader.getUint16(),
+            Year:                          this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToData:                  this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+    }
+
+    _parseHeader_1_1 () {
+        return {
+            FileSignature:                 this._reader.getString( 4, false ),
+            FileSourceId:                  this._reader.getUint16(),
+            Reserved:                      this._reader.skipOffsetOf( Byte.Two ),
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32, false ),
+            GeneratingSoftware:            this._reader.getString( 32, false ),
+            FileCreationDayOfYear:         this._reader.getUint16(),
+            FileCreationYear:              this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToPointData:             this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+    }
+
+    _parseHeader_1_2 () {
+        return {
+            FileSignature:                 this._reader.getString( 4, false ),
+            FileSourceId:                  this._reader.getUint16(),
+            GlobalEncoding:                new GlobalEncodingBitField_1_2( this._reader.getUint16() ),
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32, false ),
+            GeneratingSoftware:            this._reader.getString( 32, false ),
+            FileCreationDayOfYear:         this._reader.getUint16(),
+            FileCreationYear:              this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToPointData:             this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+    }
+
+    _parseHeader_1_3 () {
+        return {
+            FileSignature:                   this._reader.getString( 4, false ),
+            FileSourceId:                    this._reader.getUint16(),
+            GlobalEncoding:                  new GlobalEncodingBitField_1_3( this._reader.getUint16() ),
+            GUID_1:                          this._reader.getUint32(),
+            GUID_2:                          this._reader.getUint16(),
+            GUID_3:                          this._reader.getUint16(),
+            GUID_4:                          this._reader.getUint8Array( 8 ),
+            VersionMajor:                    this._reader.getUint8(),
+            VersionMinor:                    this._reader.getUint8(),
+            SystemIdentifier:                this._reader.getString( 32, false ),
+            GeneratingSoftware:              this._reader.getString( 32, false ),
+            FileCreationDayOfYear:           this._reader.getUint16(),
+            FileCreationYear:                this._reader.getUint16(),
+            HeaderSize:                      this._reader.getUint16(),
+            OffsetToPointData:               this._reader.getUint32(),
+            NumberOfVariableLengthRecords:   this._reader.getUint32(),
+            PointDataFormatID:               this._reader.getUint8(),
+            PointDataRecordLength:           this._reader.getUint16(),
+            NumberOfPointRecords:            this._reader.getUint32(),
+            NumberOfPointsByReturn:          this._reader.getUint32Array( 5 ),
+            XScaleFactor:                    this._reader.getFloat64(),
+            YScaleFactor:                    this._reader.getFloat64(),
+            ZScaleFactor:                    this._reader.getFloat64(),
+            XOffset:                         this._reader.getFloat64(),
+            YOffset:                         this._reader.getFloat64(),
+            ZOffset:                         this._reader.getFloat64(),
+            MaxX:                            this._reader.getFloat64(),
+            MinX:                            this._reader.getFloat64(),
+            MaxY:                            this._reader.getFloat64(),
+            MinY:                            this._reader.getFloat64(),
+            MaxZ:                            this._reader.getFloat64(),
+            MinZ:                            this._reader.getFloat64(),
+            StartOfWaveformDataPacketRecord: this._reader.getUint64()
+        }
+    }
+
+    _parseHeader_1_4 () {
+        return {
+            FileSignature:                            this._reader.getString( 4, false ),
+            FileSourceId:                             this._reader.getUint16(),
+            GlobalEncoding:                           new GlobalEncodingBitField_1_4( this._reader.getUint16() ),
+            GUID_1:                                   this._reader.getUint32(),
+            GUID_2:                                   this._reader.getUint16(),
+            GUID_3:                                   this._reader.getUint16(),
+            GUID_4:                                   this._reader.getUint8Array( 8 ),
+            VersionMajor:                             this._reader.getUint8(),
+            VersionMinor:                             this._reader.getUint8(),
+            SystemIdentifier:                         this._reader.getString( 32, false ),
+            GeneratingSoftware:                       this._reader.getString( 32, false ),
+            FileCreationDayOfYear:                    this._reader.getUint16(),
+            FileCreationYear:                         this._reader.getUint16(),
+            HeaderSize:                               this._reader.getUint16(),
+            OffsetToPointData:                        this._reader.getUint32(),
+            NumberOfVariableLengthRecords:            this._reader.getUint32(),
+            PointDataRecordFormat:                    this._reader.getUint8(),
+            PointDataRecordLength:                    this._reader.getUint16(),
+            LegacyNumberOfPointRecords:               this._reader.getUint32(),
+            LegacyNumberOfPointsByReturn:             this._reader.getUint32Array( 5 ),
+            XScaleFactor:                             this._reader.getFloat64(),
+            YScaleFactor:                             this._reader.getFloat64(),
+            ZScaleFactor:                             this._reader.getFloat64(),
+            XOffset:                                  this._reader.getFloat64(),
+            YOffset:                                  this._reader.getFloat64(),
+            ZOffset:                                  this._reader.getFloat64(),
+            MaxX:                                     this._reader.getFloat64(),
+            MinX:                                     this._reader.getFloat64(),
+            MaxY:                                     this._reader.getFloat64(),
+            MinY:                                     this._reader.getFloat64(),
+            MaxZ:                                     this._reader.getFloat64(),
+            MinZ:                                     this._reader.getFloat64(),
+            StartOfWaveformDataPacketRecord:          this._reader.getUint64(),
+            StartOfFirstExtendedVariableLengthRecord: this._reader.getUint64(),
+            NumberOfExtendedVariableLengthRecords:    this._reader.getUint32(),
+            NumberOfPointRecords:                     this._reader.getUint64(),
+            NumberOfPointsByReturn:                   this._reader.getUint64Array( 15 )
+        }
+    }
+
+    _parseVariableLengthRecords ( header ) {
+
+        //        this._reader.skipOffsetTo( header.HeaderSize )
+
+        const minorVersion = header.VersionMinor;
+        const variablesLengthRecords = [];
+        switch ( minorVersion ) {
+            case 0:
+                variablesLengthRecords.push( this._parseVariableLengthRecord_1_0() );
+                break
+
+            //...
+
+            default:
+                throw new Error( `Insupported minor LAS file version: ${ minorVersion }. Abort parsing !` )
+        }
+
+
+        return variablesLengthRecords
+    }
+
+    _parseVariableLengthRecord_1_0 () {
+        const variableLengthRecordHeader = {
+            RecordSignature:         this._reader.getUint16(),
+            UserID:                  this._reader.getString( 16 ),
+            RecordId:                this._reader.getUint16(),
+            RecordLengthAfterHeader: this._reader.getUint16(),
+            Description:             this._reader.getString( 32 )
+        };
+
+        if ( variableLengthRecordHeader.RecordSignature !== 0xAABB ) {
+            throw new Error( 'Invalid variable length record header signature... Abort parsing !' )
+        }
+
+        return variableLengthRecordHeader
+    }
+
+    _parseVariableLengthRecordHeader () {
+        return {
+            Reserved:                this._reader.getUint16(),
+            UserID:                  this._reader.getString( 16 ),
+            RecordId:                this._reader.getUint16(),
+            RecordLengthAfterHeader: this._reader.getUint16(),
+            Description:             this._reader.getString( 32 )
+        }
+    }
+
+    _parsePointDataRecords ( header, onProgress ) {
+
+        const offsetToPointData     = header.OffsetToPointData;
+        const pointDataRecordFormat = header.PointDataRecordFormat;
+        const numberOfPointRecords  = ( header.VersionMinor < 4 ) ? header.LegacyNumberOfPointRecords : header.NumberOfPointRecords;
+
+        this._reader.skipOffsetTo( offsetToPointData );
+        //        this._reader.setOffset( offsetToPointData )
+
+        const points = new Array( numberOfPointRecords );
+
+        switch ( pointDataRecordFormat ) {
+
+            case 0:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat0();
+                    //                    points.push( this._parsePointDataRecordFormat0() )
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 1:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat1();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 2:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat2();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 3:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat3();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 4:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat4();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 5:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat5();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 6:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat6();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 7:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat7();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 8:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat8();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 9:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat9();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            case 10:
+                for ( let i = 0 ; i < numberOfPointRecords ; i++ ) {
+                    points[ i ] = this._parsePointDataRecordFormat10();
+
+                    if ( i % 100000 === 0 ) {
+                        onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                            lengthComputable: true,
+                            loaded:           i,
+                            total:            numberOfPointRecords
+                        } ) );
+                    }
+                }
+                break
+
+            default:
+                throw new RangeError( `Invalid switch parameter: ${ pointDataRecordFormat }` )
+
+        }
+
+        return points
+    }
+
+    _parsePointDataRecordFormat0 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            ScanAngleRank:  this._reader.getInt8(),
+            UserData:       this._reader.getUint8(),
+            PointSourceId:  this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat1 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            ScanAngleRank:  this._reader.getInt8(),
+            UserData:       this._reader.getUint8(),
+            PointSourceId:  this._reader.getUint16(),
+            GPSTime:        this._reader.getFloat64()
+        }
+
+    }
+
+    _parsePointDataRecordFormat2 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            ScanAngleRank:  this._reader.getInt8(),
+            UserData:       this._reader.getUint8(),
+            PointSourceId:  this._reader.getUint16(),
+            R:              this._reader.getUint16(),
+            G:              this._reader.getUint16(),
+            B:              this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat3 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            ScanAngleRank:  this._reader.getInt8(),
+            UserData:       this._reader.getUint8(),
+            PointSourceId:  this._reader.getUint16(),
+            GPSTime:        this._reader.getFloat64(),
+            R:              this._reader.getUint16(),
+            G:              this._reader.getUint16(),
+            B:              this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat4 () {
+
+        return {
+            X:                           this._reader.getUint32(),
+            Y:                           this._reader.getUint32(),
+            Z:                           this._reader.getUint32(),
+            Intensity:                   this._reader.getUint16(),
+            _bitFields:                  this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification:              this._reader.getUint8(),
+            ScanAngleRank:               this._reader.getInt8(),
+            UserData:                    this._reader.getUint8(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat5 () {
+
+        return {
+            X:                           this._reader.getUint32(),
+            Y:                           this._reader.getUint32(),
+            Z:                           this._reader.getUint32(),
+            Intensity:                   this._reader.getUint16(),
+            _bitFields:                  this._reader.getUint8(),
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
+            //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification:              this._reader.getUint8(),
+            ScanAngleRank:               this._reader.getInt8(),
+            UserData:                    this._reader.getUint8(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            R:                           this._reader.getUint16(),
+            G:                           this._reader.getUint16(),
+            B:                           this._reader.getUint16(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat6 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint16(), //!\
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
+            //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
+            //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
+            //            ScannerChannel: this._reader.getBit( 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            UserData:       this._reader.getUint8(),
+            ScanAngle:      this._reader.getInt16(),
+            PointSourceId:  this._reader.getUint16(),
+            GPSTime:        this._reader.getFloat64()
+        }
+
+    }
+
+    _parsePointDataRecordFormat7 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint16(), //!\
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
+            //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
+            //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
+            //            ScannerChannel: this._reader.getBit( 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            UserData:       this._reader.getUint8(),
+            ScanAngle:      this._reader.getInt16(),
+            PointSourceId:  this._reader.getUint16(),
+            GPSTime:        this._reader.getFloat64(),
+            R:              this._reader.getUint16(),
+            G:              this._reader.getUint16(),
+            B:              this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat8 () {
+
+        return {
+            X:              this._reader.getUint32(),
+            Y:              this._reader.getUint32(),
+            Z:              this._reader.getUint32(),
+            Intensity:      this._reader.getUint16(),
+            _bitFields:     this._reader.getUint16(), //!\
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
+            //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
+            //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
+            //            ScannerChannel: this._reader.getBit( 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification: this._reader.getUint8(),
+            UserData:       this._reader.getUint8(),
+            ScanAngle:      this._reader.getInt16(),
+            PointSourceId:  this._reader.getUint16(),
+            GPSTime:        this._reader.getFloat64(),
+            R:              this._reader.getUint16(),
+            G:              this._reader.getUint16(),
+            B:              this._reader.getUint16(),
+            NIR:            this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat9 () {
+
+        return {
+            X:                           this._reader.getUint32(),
+            Y:                           this._reader.getUint32(),
+            Z:                           this._reader.getUint32(),
+            Intensity:                   this._reader.getUint16(),
+            _bitFields:                  this._reader.getUint16(), //!\
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
+            //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
+            //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
+            //            ScannerChannel: this._reader.getBit( 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification:              this._reader.getUint8(),
+            UserData:                    this._reader.getUint8(),
+            ScanAngle:                   this._reader.getInt16(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat10 () {
+
+        return {
+            X:                           this._reader.getUint32(),
+            Y:                           this._reader.getUint32(),
+            Z:                           this._reader.getUint32(),
+            Intensity:                   this._reader.getUint16(),
+            _bitFields:                  this._reader.getUint16(), //!\
+            //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
+            //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
+            //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
+            //            ScannerChannel: this._reader.getBit( 4, 5 ),
+            //            ScanDirectionFlag: this._reader.getBit( 6 ),
+            //            EdgeOfFlightLine:  this._reader.getBit( 7 ),
+            Classification:              this._reader.getUint8(),
+            UserData:                    this._reader.getUint8(),
+            ScanAngle:                   this._reader.getInt16(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            R:                           this._reader.getUint16(),
+            G:                           this._reader.getUint16(),
+            B:                           this._reader.getUint16(),
+            NIR:                         this._reader.getUint16(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    /**
+     *
+     * @private
+     */
+    _offsetPoints () {
+
+        // Compute bounding box in view to get his center for auto offseting the cloud point.
+        if ( this._autoOffset ) {
+            //this.logger.time("Compute Points");
+            this._boundingBox.setFromPoints( this._points );
+            this.setOffset( this._boundingBox.getCenter() );
+            //this.logger.timeEnd("Compute Points");
+        }
+
+        const offsetX = this._offset.x;
+        const offsetY = this._offset.y;
+        const offsetZ = this._offset.z;
+        let point     = null;
+        for ( let i = 0, numberOfPoints = this._points.length ; i < numberOfPoints ; ++i ) {
+
+            point = this._points[ i ];
+            point.x -= offsetX;
+            point.y -= offsetY;
+            point.z -= offsetZ;
+
+        }
+
+    }
+
+    /**
+     *
+     * @param groupToFeed
+     * @private
+     */
+    _createCloudPoint ( groupToFeed ) {
+
+        const SPLIT_LIMIT        = 1000000;
+        // var group = new Group();
+        const numberOfPoints     = this._points.length;
+        const numberOfSplit      = Math.ceil( numberOfPoints / SPLIT_LIMIT );
+        let splice               = null;
+        let numberOfPointInSplit = 0;
+        let cloud                = null;
+
+        for ( let splitIndex = 0 ; splitIndex < numberOfSplit ; ++splitIndex ) {
+
+            splice               = this._points.splice( 0, SPLIT_LIMIT );
+            numberOfPointInSplit = splice.length;
+
+            const geometry  = new BufferGeometry();
+            const positions = new Float32Array( numberOfPointInSplit * 3 );
+            const colors    = new Float32Array( numberOfPointInSplit * 3 );
+            let bufferIndex = 0;
+            let point       = null;
+
+            for ( let i = 0 ; i < numberOfPointInSplit ; ++i ) {
+
+                // current point
+                point = splice[ i ];
+
+                // positions
+                positions[ bufferIndex ]     = point.x;
+                positions[ bufferIndex + 1 ] = point.y;
+                positions[ bufferIndex + 2 ] = point.z;
+
+                // colors
+                if ( this._pointsHaveColor ) {
+                    colors[ bufferIndex ]     = point.r / 255;
+                    colors[ bufferIndex + 1 ] = point.g / 255;
+                    colors[ bufferIndex + 2 ] = point.b / 255;
+                } else {
+                    colors[ bufferIndex ]     = 0.1;
+                    colors[ bufferIndex + 1 ] = 0.2;
+                    colors[ bufferIndex + 2 ] = 0.5;
+                }
+
+                bufferIndex += 3;
+
+            }
+
+            geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) );
+            geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) );
+
+            const material = new PointsMaterial( {
+                size:         0.01,
+                vertexColors: true
+            } );
+
+            cloud = new Points( geometry, material );
+            groupToFeed.children.push( cloud );
+            // group.children.push(cloud);
+        }
+
+        // return group;
+
+    }
+
+    /**
+     *
+     * @param group
+     * @private
+     */
+    _createSubCloudPoint ( group ) {
+
+        const numberOfPoints = this._points.length;
+        const geometry       = new BufferGeometry();
+        const positions      = new Float32Array( numberOfPoints * 3 );
+        const colors         = new Float32Array( numberOfPoints * 3 );
+        let bufferIndex      = 0;
+        let point            = null;
+
+        for ( let i = 0 ; i < numberOfPoints ; ++i ) {
+
+            // current point
+            point = this._points[ i ];
+
+            // positions
+            positions[ bufferIndex ]     = point.x;
+            positions[ bufferIndex + 1 ] = point.y;
+            positions[ bufferIndex + 2 ] = point.z;
+
+            // colors
+            if ( this._pointsHaveColor ) {
+                colors[ bufferIndex ]     = point.r / 255;
+                colors[ bufferIndex + 1 ] = point.g / 255;
+                colors[ bufferIndex + 2 ] = point.b / 255;
+            } else {
+                colors[ bufferIndex ]     = 0.1;
+                colors[ bufferIndex + 1 ] = 0.2;
+                colors[ bufferIndex + 2 ] = 0.5;
+            }
+
+            bufferIndex += 3;
+
+        }
+
+        geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) );
+        geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) );
+
+        const material = new PointsMaterial( {
+            size:         0.005,
+            vertexColors: true
+        } );
+
+        const cloud = new Points( geometry, material );
+
+        //Todo: Apply import coordinates syteme here !
+        cloud.rotation.x -= Math.PI / 2;
+
+        group.children.push( cloud );
+
+        // Clear current processed points
+        this._points = [];
+
+    }
+
+}
+
+/**
+ * @module Loader/SHPLoader
+ * @desc Export SHPLoader to load .shp files
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * @example Todo...
+ *
+ */
+
+/**
+ *
+ * @type {Object}
+ */
+const ShapeType = toEnum( {
+    NullShape:   0,
+    Point:       1,
+    Polyline:    3,
+    Polygon:     5,
+    MultiPoint:  8,
+    PointZ:      11,
+    PolyLineZ:   13,
+    PolygonZ:    15,
+    MultiPointZ: 18,
+    PointM:      21,
+    PolylineM:   23,
+    PolygonM:    25,
+    MultiPointM: 28,
+    MultiPatch:  31
+} );
+
+/**
+ * @class
+ * @classdesc This class allow to split any geometries type during runtime.
+ * Keeping normals and Uvs. It is really usefull to see inside mesh like building.
+ * @export
+ */
+class SHPLoader {
+
+    //    static FileCode      = 9994
+    //    static MinFileLength = 100
+    //    static MinVersion    = 1000
+
+    /**
+     *
+     * Because ctor is blablabla
+     *
+     * @param manager
+     * @param logger
+     * @constructor
+     */
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                manager:      DefaultLoadingManager,
+                logger:       DefaultLogger,
+                reader:       new TBinaryReader(),
+                globalOffset: new Vector3( 0, 0, 0 ),
+                worldAxis:    {
+                    from: 'zUp',
+                    to:   'zForward'
+                }
+            }, ...parameters
+        };
+
+        this.manager      = _parameters.manager;
+        this.logger       = _parameters.logger;
+        this.reader       = _parameters.reader;
+        this.globalOffset = _parameters.globalOffset;
+        this.worldAxis    = _parameters.worldAxis;
+
+    }
+
+    get globalOffset () {
+        return this._globalOffset
+    }
+
+    set globalOffset ( value ) {
+        this._globalOffset = value;
+    }
+
+    get worldAxis () {
+        return this._worldAxis
+    }
+
+    set worldAxis ( value ) {
+        this._worldAxis = value;
+    }
+
+    get manager () {
+        return this._manager
+    }
+
+    set manager ( value ) {
+        this._manager = value;
+    }
+
+    get logger () {
+        return this._logger
+    }
+
+    set logger ( value ) {
+        this._logger = value;
+    }
+
+    get reader () {
+        return this._reader
+    }
+
+    set reader ( value ) {
+        this._reader = value;
+    }
+
+    setGlobalOffset ( value ) {
+        this.globalOffset = value;
+        return this
+    }
+
+    setWorldAxis ( value ) {
+        this.worldAxis = value;
+        return this
+    }
+
+    setManager ( value ) {
+        this.manager = value;
+        return this
+    }
+
+    setLogger ( value ) {
+        this.logger = value;
+        return this
+    }
+
+    setReader ( value ) {
+        this.reader = value;
+        return this
+    }
+
+    /**
+     *
+     * @param url
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     */
+    load ( url, onLoad, onProgress, onError ) {
+
+        const scope = this;
+
+        const loader = new FileLoader( scope.manager );
+        loader.setResponseType( 'arraybuffer' );
+        loader.load( url, arrayBuffer => {
+
+            onLoad( scope.parse( arrayBuffer ) );
+
+        }, onProgress, onError );
+
+    }
+
+    /**
+     *
+     * @param arrayBuffer
+     * @return {*}
+     */
+    parse ( arrayBuffer ) {
+
+        this._reader
+            .setEndianess( Endianness.Big )
+            .setBuffer( arrayBuffer );
+
+        const header = this._parseHeader();
+
+        if ( header.fileCode !== SHPLoader.FileCode ) {
+            this.logger.error( 'SHPLoader: Invalide Shape file code !' );
+            return null
+        }
+
+        if ( header.fileLength < SHPLoader.MinFileLength ) {
+            this.logger.error( 'SHPLoader: Shape file have an incorrect length !' );
+            return null
+        }
+
+        if ( !Object.values( ShapeType ).includes( header.shapeType ) ) {
+            this.logger.error( 'SHPLoader: Shape file have an incorrect shape type !' );
+            return null
+        }
+
+        if ( header.version < SHPLoader.MinVersion ) {
+            this.logger.warn( 'SHPLoader: Version of shape file below than 1000 could be incorrectly parsed !' );
+        }
+
+        const datas  = this._parseDatas( header );
+        const shapes = this._convertToObjects( datas );
+
+        return shapes
+
+    }
+
+    /**
+     *
+     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
+     * @private
+     */
+    _parseHeader () {
+
+        const fileCode = this._reader.getInt32();
+        this._reader.skipOffsetOf( 20 );
+        const fileLength = this._reader.getInt32();
+
+        this._reader.setEndianess( Endianness.Little );
+
+        const version         = this._reader.getInt32();
+        const shapeType       = this._reader.getInt32();
+        const xMinBoundingBox = this._reader.getInt32();
+        const yMinBoundingBox = this._reader.getInt32();
+        const xMaxBoundingBox = this._reader.getInt32();
+        const yMaxBoundingBox = this._reader.getInt32();
+        const zMinBoundingBox = this._reader.getInt32();
+        const zMaxBoundingBox = this._reader.getInt32();
+        const mMinBoundingBox = this._reader.getInt32();
+        const mMaxBoundingBox = this._reader.getInt32();
+
+        return {
+            fileCode:    fileCode,
+            fileLength:  fileLength,
+            version:     version,
+            shapeType:   shapeType,
+            boundingBox: {
+                xMin: xMinBoundingBox,
+                xMax: xMaxBoundingBox,
+                yMin: yMinBoundingBox,
+                yMax: yMaxBoundingBox,
+                zMin: zMinBoundingBox,
+                zMax: zMaxBoundingBox,
+                mMin: mMinBoundingBox,
+                mMax: mMaxBoundingBox
+            }
+        }
+
+    }
+
+    /**
+     *
+     * @param header
+     * @return {Array}
+     * @private
+     */
+    _parseDatas ( header ) {
+
+        this._reader.skipOffsetTo( 100 );
+
+        let datas         = [];
+        let recordHeader  = undefined;
+        let endOfRecord   = undefined;
+        let recordContent = undefined;
+
+        while ( !this._reader.isEndOfFile() ) {
+
+            recordHeader = this._parseRecordHeader();
+            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
+
+            // All parsing methods use little below
+            this._reader.setEndianess( Endianness.Little );
+
+            switch ( header.shapeType ) {
+
+                case ShapeType.NullShape:
+
+                    this._reader.skipOffsetTo( endOfRecord );
+
+                    //                    // Todo: just skip 1 byte - or - to endRecord
+                    //                    while ( this._reader.getOffset() < endOfRecord ) {
+                    //
+                    //                        recordContent = this._parseNull();
+                    //                        if ( recordContent ) {
+                    //                            datas.push( recordContent );
+                    //                        }
+                    //
+                    //                    }
+                    break
+
+                case ShapeType.Point:
+                case ShapeType.PointZ:
+                case ShapeType.PointM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePoint();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.Polyline:
+                case ShapeType.PolyLineZ:
+                case ShapeType.PolylineM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePolyLine();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.Polygon:
+                case ShapeType.PolygonZ:
+                case ShapeType.PolygonM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parsePolyLine();
+                        //                        recordContent = this._parsePolygon();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.MultiPoint:
+                case ShapeType.MultiPointZ:
+                case ShapeType.MultiPointM:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parseMultiPoint();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                case ShapeType.MultiPatch:
+                    while ( this._reader.getOffset() < endOfRecord ) {
+
+                        recordContent = this._parseMultiPatch();
+                        if ( recordContent ) {
+                            datas.push( recordContent );
+                        }
+
+                    }
+                    break
+
+                default:
+                    this.logger.error( `SHPLoader: Invalid switch parameter: ${ header.shapeType }` );
+                    break
+
+            }
+
+        }
+
+        return datas
+
+    }
+
+    /**
+     *
+     * @return {{recordNumber, contentLength}}
+     * @private
+     */
+    _parseRecordHeader () {
+
+        this._reader.setEndianess( Endianness.Big );
+
+        const recordNumber  = this._reader.getInt32();
+        const contentLength = this._reader.getInt32();
+
+        return {
+            recordNumber,
+            contentLength
+        }
+
+    }
+
+    _parseNull () {
+
+        this._reader.getInt32();
+        return null
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePoint () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const x = this._reader.getFloat64();
+        const y = this._reader.getFloat64();
+
+        return {
+            shapeType,
+            x,
+            y
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePolyLine () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfParts  = this._reader.getInt32();
+        const numberOfPoints = this._reader.getInt32();
+
+        const parts = new Array( numberOfParts );
+        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+            parts[ indexParts ] = this._reader.getInt32();
+        }
+
+        const points = new Array( numberOfPoints );
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points[ indexPoint ] = {
+                x: this._reader.getFloat64(),
+                y: this._reader.getFloat64()
+            };
+        }
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfParts,
+            numberOfPoints,
+            parts,
+            points
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parsePolygon () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfParts  = this._reader.getInt32();
+        const numberOfPoints = this._reader.getInt32();
+
+        let parts = new Array( numberOfParts );
+        for ( let indexParts = 0 ; indexParts < numberOfParts ; indexParts++ ) {
+            parts[ indexParts ] = this._reader.getInt32();
+        }
+
+        let points = new Array( numberOfPoints );
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points[ indexPoint ] = {
+                x: this._reader.getFloat64(),
+                y: this._reader.getFloat64()
+            };
+        }
+
+        const polygons = [];
+        const holes    = [];
+
+        parts.forEach( ( value, index ) => {
+
+            const ring = points.slice( value, parts[ index + 1 ] );
+
+            if ( ringClockwise( ring ) ) {
+
+                polygons.push( ring );
+                //					polygons.push( [ ring ] );
+
+            } else {
+
+                holes.push( ring );
+
+            }
+
+        } );
+
+        holes.forEach( hole => {
+
+            polygons.some( polygon => {
+
+                if ( ringContainsSome( polygon[ 0 ], hole ) ) {
+                    polygon.push( hole );
+                    return true
+                }
+
+            } ) || polygons.push( [ hole ] );
+
+        } );
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfParts,
+            numberOfPoints,
+            parts,
+            polygons
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parseMultiPoint () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        const boundingBox = {
+            xMin: this._reader.getFloat64(),
+            xMax: this._reader.getFloat64(),
+            yMin: this._reader.getFloat64(),
+            yMax: this._reader.getFloat64()
+        };
+
+        const numberOfPoints = this._reader.getInt32();
+
+        const points = new Array( numberOfPoints );
+
+        for ( let indexPoint = 0 ; indexPoint < numberOfPoints ; indexPoint++ ) {
+            points.push( [ this._reader.getFloat64(), this._reader.getFloat64() ] );
+        }
+
+        return {
+            shapeType,
+            boundingBox,
+            numberOfPoints,
+            points
+        }
+
+    }
+
+    /**
+     *
+     * @return {*}
+     * @private
+     */
+    _parseMultiPatch () {
+
+        const shapeType = this._reader.getInt32();
+        if ( shapeType === ShapeType.NullShape ) {
+            return null
+        }
+
+        return {
+            shapeType
+        }
+
+    }
+
+    /**
+     *
+     * @param datas
+     * @return {Array}
+     * @private
+     */
+    _convertToObjects ( datas ) {
+
+        let shapes = [];
+
+        for ( let index = 0, numberOfShapes = datas.length ; index < numberOfShapes ; index++ ) {
+            let data = datas[ index ];
+
+            if ( data.shapeType === ShapeType.Polygon || data.shapeType === ShapeType.PolygonZ || data.shapeType === ShapeType.PolygonM ) {
+
+                if ( data.points && Array.isArray( data.points[ 0 ] ) ) {
+
+                    __createObjectsFromArrays( data.points );
+
+                } else {
+
+                    __createObjectFromPoints( data.points );
+
+                }
+
+            }
+
+        }
+
+        function __createObjectsFromArrays ( arrays ) {
+
+            //Todo: need to fix parsePolygon to avoid too much array imbrication
+
+            for ( let arrayIndex = 0, numberOfArray = arrays.length ; arrayIndex < numberOfArray ; arrayIndex++ ) {
+
+                let array = arrays[ arrayIndex ];
+
+                if ( !array ) {
+                    this.logger.log( 'no array, oups !' );
+                    continue
+                }
+
+                if ( Array.isArray( array[ 0 ] ) ) {
+
+                    __createObjectsFromArrays( array );
+
+                } else {
+
+                    __createObjectFromPoints( array );
+
+                }
+
+            }
+
+        }
+
+        function __createObjectFromPoints ( points ) {
+
+            shapes.push( new Shape( points ) );
+
+        }
+
+        return shapes
+
+    }
+
+}
+
+SHPLoader.FileCode      = 9994;
+SHPLoader.MinFileLength = 100;
+SHPLoader.MinVersion    = 1000;
+
+/**
  * @module Controllers/CameraControls
  * @desc This module export CameraControls class and CameraControlMode enum values.
  *
@@ -2381,15 +3387,6 @@ class ASCLoader {
  * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
  *
  */
-// Waiting three-shaking fix
-//import {
-//    Camera,
-//    EventDispatcher,
-//    Object3D,
-//    Spherical,
-//    Vector2,
-//    Vector3
-//} from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 );
 const BACK  = new Vector3( 0, 0, 1 );
@@ -4428,428 +5425,186 @@ class CameraControls extends EventDispatcher {
 //}
 
 /**
- * @module Controllers/ClippingController
- *
- * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- *
- * @example Todo
- *
  */
-// Waiting three-shaking fix
-//import {
-//    Box3,
-//    BoxBufferGeometry,
-//    BufferGeometry,
-//    Camera,
-//    ConeBufferGeometry,
-//    CylinderBufferGeometry,
-//    DoubleSide,
-//    EdgesGeometry,
-//    Euler,
-//    Float32BufferAttribute,
-//    Line,
-//    LineBasicMaterial,
-//    LineSegments,
-//    Mesh,
-//    MeshBasicMaterial,
-//    Object3D,
-//    OctahedronBufferGeometry,
-//    Plane,
-//    PlaneBufferGeometry,
-//    Quaternion,
-//    Raycaster,
-//    SphereBufferGeometry,
-//    TorusBufferGeometry,
-//    Vector2,
-//    Vector3
-//} from 'three-full'
+//import { DoubleSide }          from 'three-full/sources/constants'
+//import { Object3D }            from 'three-full/sources/core/Object3D'
+//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
+//import { MeshBasicMaterial }   from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }                from 'three-full/sources/objects/Mesh'
 
-// Basic Geometries
+class AbstractGizmo extends Object3D {
 
-class LineGeometry extends BufferGeometry {
+    constructor ( parameters = {} ) {
 
-    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
-        super();
+        const _parameters = {
+            ...{
+                debug:     false,
+                planeSize: 50
+            },
+            ...parameters
+        };
 
-        this.type = 'LineGeometry';
-        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+        super( _parameters );
+        this.isGizmo          = true;
+        this.type             = 'AbstractGizmo';
+        this.matrixAutoUpdate = true;
 
-    }
+        this.debug = _parameters.debug;
 
-}
 
-class ClippingBox extends LineSegments {
+        //        this.handles                  = new Object3D()
+        //        this.handles.name             = 'Handles'
+        //        this.handles.matrixAutoUpdate = false
+        //
+        //        this.add( this.handles )
 
-    constructor () {
-        super();
+        ///
 
-        this.margin = 0.01;
-
-        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) );
-        this.material         = new LineBasicMaterial( {
-            color: 0xffffff
+        const planeGeometry                  = new PlaneBufferGeometry( _parameters.planeSize, _parameters.planeSize, 2, 2 );
+        const planeMaterial                  = new MeshBasicMaterial( {
+            side:        DoubleSide,
+            visible:     this.debug,
+            transparent: true,
+            opacity:     0.33,
+            color:       0x123456
         } );
-        this.matrixAutoUpdate = false;
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial );
+        this.intersectPlane.name             = 'IntersectPlane';
+        this.intersectPlane.matrixAutoUpdate = true;
+        this.intersectPlane.visible          = true;
 
-        // Planes
-        this.normalPlanes = {
-            normalRightSide:  new Vector3( -1, 0, 0 ),
-            normalLeftSide:   new Vector3( 1, 0, 0 ),
-            normalFrontSide:  new Vector3( 0, -1, 0 ),
-            normalBackSide:   new Vector3( 0, 1, 0 ),
-            normalTopSide:    new Vector3( 0, 0, -1 ),
-            normalBottomSide: new Vector3( 0, 0, 1 )
-        };
-
-        this.planes = {
-            rightSidePlane:  new Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
-            leftSidePlane:   new Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
-            frontSidePlane:  new Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
-            backSidePlane:   new Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
-            topSidePlane:    new Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
-            bottomSidePlane: new Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
-        };
-
-        this._boundingBox = new Box3();
+        this.add( this.intersectPlane );
 
     }
 
-    getBoundingSphere () {
+    _setupHandles ( handlesMap ) {
 
-        this.geometry.computeBoundingSphere();
-        this.geometry.boundingSphere.applyMatrix4( this.matrixWorld );
+        const parent = this;
+        //        const parent = this.handles
 
-        return this.geometry.boundingSphere
+        for ( let name in handlesMap ) {
 
-    }
+            const element = handlesMap[ name ];
+            if ( isNotArray( element ) ) {
 
-    setColor ( color ) {
+                element.name        = name;
+                element.renderOrder = Infinity;
+                element.updateMatrix();
 
-        this.material.color.set( color );
+                parent.add( element );
 
-    }
+            } else {
 
-    applyClippingTo ( state, objects ) {
+                for ( let i = element.length ; i-- ; ) {
 
-        if ( isNotDefined( objects ) ) { return }
+                    const object   = handlesMap[ name ][ i ][ 0 ];
+                    const position = handlesMap[ name ][ i ][ 1 ];
+                    const rotation = handlesMap[ name ][ i ][ 2 ];
+                    const scale    = handlesMap[ name ][ i ][ 3 ];
+                    const tag      = handlesMap[ name ][ i ][ 4 ];
 
-        let planes = [];
-        for ( let i in this.planes ) {
-            planes.push( this.planes[ i ] );
-        }
+                    // name and tag properties are essential for picking and updating logic.
+                    object.name = name;
+                    object.tag  = tag;
 
-        objects.traverse( ( object ) => {
+                    // avoid being hidden by other transparent objects
+                    object.renderOrder = Infinity;
 
-            if ( isNotDefined( object ) ) { return }
-            if ( isNotDefined( object.geometry ) ) { return }
-            if ( isNotDefined( object.material ) ) { return }
+                    if ( position ) {
+                        object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
+                    }
+                    if ( rotation ) {
+                        object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] );
+                    }
+                    if ( scale ) {
+                        object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] );
+                    }
 
-            const materials = isArray( object.material ) ? object.material : [ object.material ];
+                    object.updateMatrix();
 
-            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
-                let material = materials[ materialIndex ];
-                if ( !material.clippingPlanes ) {
-                    material.clippingPlanes = [];
+                    const tempGeometry = object.geometry.clone();
+                    tempGeometry.applyMatrix4( object.matrix );
+                    object.geometry = tempGeometry;
+
+                    object.position.set( 0, 0, 0 );
+                    object.rotation.set( 0, 0, 0 );
+                    object.scale.set( 1, 1, 1 );
+
+                    parent.add( object );
+
                 }
-                material.clippingPlanes = ( state ) ? planes : [];
+
             }
 
+        }
+
+    }
+
+    highlight ( axis ) {
+
+        // Reset highlight for all of them
+        for ( let key in this.handleGizmos ) {
+            this.handleGizmos[ key ].highlight( false );
+        }
+
+        // Highlight the picked (if exist)
+        const currentHandle = this.handleGizmos[ axis ];
+        if ( currentHandle ) {
+            currentHandle.highlight( true );
+        }
+
+    }
+
+    update ( cameraPosition, cameraDirection ) {
+
+        this.traverse( ( child ) => {
+
+            if ( !child.isHandle ) { return }
+
+            child.update( cameraDirection );
+
         } );
 
-    }
-
-    updateSize ( size ) {
-
-        this.scale.set( size.x, size.y, size.z );
+        this.updateIntersectPlane( cameraPosition );
 
     }
 
-    update () {
+    updateIntersectPlane ( cameraPosition ) {
 
-        this._boundingBox.setFromObject( this );
-
-        const margin = this.margin;
-        const min    = this._boundingBox.min;
-        const max    = this._boundingBox.max;
-
-        this.planes.rightSidePlane.constant  = max.x + margin;
-        this.planes.leftSidePlane.constant   = -min.x + margin;
-        this.planes.frontSidePlane.constant  = max.y + margin;
-        this.planes.backSidePlane.constant   = -min.y + margin;
-        this.planes.topSidePlane.constant    = max.z + margin;
-        this.planes.bottomSidePlane.constant = -min.z + margin;
+        this.intersectPlane.lookAt( cameraPosition );
+        this.intersectPlane.updateMatrix();
 
     }
 
 }
 
-// Materials
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { Object3D }   from 'three-full/sources/core/Object3D'
+//import { Quaternion } from 'three-full/sources/math/Quaternion'
 
-class HighlightableMaterial extends MeshBasicMaterial {
-
-    constructor ( parameters ) {
-        super( parameters );
-        this.isHighlightableMaterial = true;
-        //        this.type                    = 'HighlightableMaterial'
-
-        this.depthTest   = false;
-        this.depthWrite  = false;
-        this.fog         = false;
-        this.side        = DoubleSide;
-        this.transparent = true;
-        this.oldColor    = this.color.clone();
-
-    }
-
-    highlight ( highlighted ) {
-
-        if ( highlighted ) {
-
-            const lum = 0.35;
-            const _r  = this.color.r;
-            const _g  = this.color.g;
-            const _b  = this.color.b;
-            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
-            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
-            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
-            this.color.setRGB( r, g, b );
-
-        } else {
-
-            this.color.copy( this.oldColor );
-
-        }
-
-    }
-
-}
-
-class HighlightableLineMaterial extends LineBasicMaterial {
-
-    constructor ( parameters ) {
-        super( parameters );
-        this.isHighlightableMaterial = true;
-        //        this.type                    = 'HighlightableLineMaterial'
-
-        this.depthTest   = false;
-        this.depthWrite  = false;
-        this.fog         = false;
-        this.transparent = true;
-        this.linewidth   = 1;
-        this.oldColor    = this.color.clone();
-
-    }
-
-    highlight ( highlighted ) {
-
-        if ( highlighted ) {
-
-            const lum = 0.35;
-            const _r  = this.color.r;
-            const _g  = this.color.g;
-            const _b  = this.color.b;
-            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
-            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
-            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
-            this.color.setRGB( r, g, b );
-
-        } else {
-
-            this.color.copy( this.oldColor );
-
-        }
-
-    }
-
-}
-
-// Pickers
-
-class AbstractHitbox extends Mesh {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new BufferGeometry(),
-                material: new MeshBasicMaterial( {
-                    visible:    false,
-                    depthTest:  false,
-                    depthWrite: false,
-                    fog:        false,
-                    side:       DoubleSide
-                    //                    opacity:     0.0,
-                    //                    transparent: true
-                } )
-            }, ...parameters
-        };
-
-        super( _parameters.geometry, _parameters.material );
-        this.isHitbox         = true;
-        this.type             = 'Hitbox';
-        this.matrixAutoUpdate = false;
-
-    }
-}
-
-class CylindricaHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const cylinderGeometry = new CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
-        cylinderGeometry.translate( 0, 0.5, 0 );
-        const _parameters = {
-            ...{
-                geometry: cylinderGeometry
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isCylindricaHitbox = true;
-        this.type               = 'CylindricaHitbox';
-
-    }
-
-}
-
-class PlanarHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const planePositions      = [
-            0.0, 0.0, 0.0,
-            1.1, 0.0, 0.0,
-            1.1, 1.1, 0.0,
-            0.0, 1.1, 0.0
-        ];
-        const planeIndexes        = [
-            0, 1, 2,
-            2, 3, 0
-        ];
-        const planeBufferGeometry = new BufferGeometry();
-        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
-        planeBufferGeometry.setIndex( planeIndexes );
-
-        const _parameters = {
-            ...{
-                geometry: planeBufferGeometry
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isPlanarHitbox = true;
-        this.type           = 'PlanarHitbox';
-
-    }
-
-}
-
-class LozengeHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        // Lozenge
-        const lozengePositions        = [
-            0.0, 0.0, 0.0,
-            0.85, 0.0, 0.0,
-            1.1, 1.1, 0.0,
-            0.0, 0.85, 0.0
-        ];
-        const lozengeIndexes          = [
-            0, 1, 2,
-            2, 3, 0
-        ];
-        const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 );
-        const lozengeBufferGeometry   = new BufferGeometry();
-        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
-        lozengeBufferGeometry.setIndex( lozengeIndexes );
-
-        const _parameters = {
-            ...{
-                geometry: lozengeBufferGeometry
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isPlanarHitbox = true;
-        this.type           = 'PlanarHitbox';
-
-    }
-
-}
-
-class OctahedricalHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new OctahedronBufferGeometry( 1.2, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isOctahedricalHitbox = true;
-        this.type                 = 'OctahedricalHitbox';
-
-    }
-
-}
-
-class SphericalHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isSphericalHitbox = true;
-        this.type              = 'SphericalHitbox';
-
-    }
-
-}
-
-class TorusHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isTorusHitbox = true;
-        this.type          = 'TorusHitbox';
-
-    }
-
-}
-
-// Handles
 class AbstractHandle extends Object3D {
 
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
+                debug:  false,
                 color:  0xffffff,
                 hitbox: null
             }, ...parameters
         };
 
-        super();
+        super( _parameters );
         this.isHandle         = true;
         this.type             = 'Handle';
-        this.matrixAutoUpdate = false;
+        this.matrixAutoUpdate = true;
 
+        this.debug  = _parameters.debug;
         this.color  = _parameters.color;
         this.hitbox = _parameters.hitbox;
 
@@ -4952,6 +5707,186 @@ class AbstractHandle extends Object3D {
 
 }
 
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }              from 'three-full/sources/objects/Mesh'
+
+class AbstractHitbox extends Mesh {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new BufferGeometry(),
+                material: new MeshBasicMaterial( {
+                    visible:    false,
+                    depthTest:  false,
+                    depthWrite: false,
+                    fog:        false,
+                    side:       DoubleSide,
+                    color:      0x654321
+                    //                    opacity:     0.0,
+                    //                    transparent: true
+                } )
+            }, ...parameters
+        };
+
+        super( _parameters.geometry, _parameters.material );
+        this.isHitbox         = true;
+        this.type             = 'Hitbox';
+        this.matrixAutoUpdate = false;
+
+    }
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
+
+class CylindricaHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const cylinderGeometry = new CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
+        cylinderGeometry.translate( 0, 0.5, 0 );
+        const _parameters = {
+            ...{
+                geometry: cylinderGeometry
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isCylindricaHitbox = true;
+        this.type               = 'CylindricaHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
+
+class HighlightableLineMaterial extends LineBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters );
+        this.isHighlightableMaterial = true;
+        //        this.type                    = 'HighlightableLineMaterial'
+
+        this.depthTest   = false;
+        this.depthWrite  = false;
+        this.fog         = false;
+        this.transparent = true;
+        this.linewidth   = 1;
+        this.oldColor    = this.color.clone();
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35;
+            const _r  = this.color.r;
+            const _g  = this.color.g;
+            const _b  = this.color.b;
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
+            this.color.setRGB( r, g, b );
+
+        } else {
+
+            this.color.copy( this.oldColor );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+
+class HighlightableMaterial extends MeshBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters );
+        this.isHighlightableMaterial = true;
+        //        this.type                    = 'HighlightableMaterial'
+
+        this.depthTest   = false;
+        this.depthWrite  = false;
+        this.fog         = false;
+        this.side        = DoubleSide;
+        this.transparent = true;
+        this.oldColor    = this.color.clone();
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35;
+            const _r  = this.color.r;
+            const _g  = this.color.g;
+            const _b  = this.color.b;
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
+            this.color.setRGB( r, g, b );
+
+        } else {
+
+            this.color.copy( this.oldColor );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { Vector3 }                from 'three-full/sources/math/Vector3'
+
+class LineGeometry extends BufferGeometry {
+
+    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
+        super();
+
+        this.type = 'LineGeometry';
+        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
 class TranslateHandle extends AbstractHandle {
 
     constructor ( parameters = {} ) {
@@ -5047,342 +5982,51 @@ class TranslateHandle extends AbstractHandle {
 
 }
 
-class ScaleHandle extends AbstractHandle {
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+
+class LozengeHitbox extends AbstractHitbox {
 
     constructor ( parameters = {} ) {
 
-        const _parameters = {
-            ...{
-                color:     0xffffff,
-                hitbox:    new CylindricaHitbox(),
-                direction: new Vector3( 0, 1, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isScaleHandle = true;
-        this.type          = 'ScaleHandle';
-
-        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) );
-        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
-        const line            = new Line( lineGeometry, lineMaterial );
-        line.matrixAutoUpdate = false;
-        this.add( line );
-
-        const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 );
-        boxGeometry.translate( 0, 0.94, 0 );
-        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } );
-        const box            = new Mesh( boxGeometry, boxMaterial );
-        box.matrixAutoUpdate = false;
-        this.add( box );
-
-        this.direction = _parameters.direction;
-
-    }
-
-    get direction () {
-
-        return this._direction
-
-    }
-
-    set direction ( value ) {
-
-        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
-
-        this._direction = value;
-
-        if ( value.y > 0.99999 ) {
-
-            this.quaternion.set( 0, 0, 0, 1 );
-
-        } else if ( value.y < -0.99999 ) {
-
-            this.quaternion.set( 1, 0, 0, 0 );
-
-        } else {
-
-            const axis    = new Vector3( value.z, 0, -value.x ).normalize();
-            const radians = Math.acos( value.y );
-
-            this.quaternion.setFromAxisAngle( axis, radians );
-
-        }
-
-    }
-
-    update ( cameraDirection ) {
-
-        super.update( cameraDirection );
-
-        const dotProduct = this._direction.dot( cameraDirection );
-        if ( dotProduct >= 0 ) {
-            this.flipDirection();
-        }
-
-        this.updateMatrix();
-        this.hitbox.updateMatrix();
-
-    }
-
-    setDirection ( direction ) {
-
-        this.direction = direction;
-        return this
-
-    }
-
-    flipDirection () {
-
-        this.direction = this._direction.negate();
-
-    }
-
-}
-
-class RotateHandle extends AbstractHandle {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{}, ...parameters
-        };
-
-        super( _parameters );
-        this.isRotateHandle = true;
-        this.type           = 'RotateHandle';
-
-    }
-
-    update ( cameraDirection ) {
-        super.update( cameraDirection );
-
-
-        this.updateMatrix();
-        this.hitbox.updateMatrix();
-    }
-
-}
-
-class PlaneHandle extends AbstractHandle {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                color:     0xffffff,
-                hitbox:    new PlanarHitbox(),
-                direction: new Vector3( 0, 1, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isPlaneHandle = true;
-        this.type          = 'PlaneHandle';
-
-        // Edge line
-        const lineBufferGeometry = new BufferGeometry();
-        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
-
-        const lineMaterial = new HighlightableLineMaterial( {
-            color: _parameters.color
-        } );
-
-        const line            = new Line( lineBufferGeometry, lineMaterial );
-        line.matrixAutoUpdate = false;
-        this.add( line );
-
-        // Plane
-        const planePositions      = [
-            0.1, 0.1, 0.0,
-            1.0, 0.1, 0.0,
-            1.0, 1.0, 0.0,
-            0.1, 1.0, 0.0
+        // Lozenge
+        const lozengePositions        = [
+            0.0, 0.0, 0.0,
+            0.85, 0.0, 0.0,
+            1.1, 1.1, 0.0,
+            0.0, 0.85, 0.0
         ];
-        const planeIndexes        = [
+        const lozengeIndexes          = [
             0, 1, 2,
             2, 3, 0
         ];
-        const planeBufferGeometry = new BufferGeometry();
-        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
-        planeBufferGeometry.setIndex( planeIndexes );
+        const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 );
+        const lozengeBufferGeometry   = new BufferGeometry();
+        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
+        lozengeBufferGeometry.setIndex( lozengeIndexes );
 
-        const planeMaterial    = new HighlightableMaterial( {
-            color:       _parameters.color,
-            transparent: true,
-            opacity:     0.35
-        } );
-        const plane            = new Mesh( planeBufferGeometry, planeMaterial );
-        plane.matrixAutoUpdate = false;
-        this.add( plane );
+        const _parameters = {
+            ...{
+                geometry: lozengeBufferGeometry
+            }, ...parameters
+        };
 
-        this.xAxis = new Vector3( 1, 0, 0 );
-        this.yAxis = new Vector3( 0, 1, 0 );
-        this.zAxis = new Vector3( 0, 0, 1 );
-
-        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 );
-        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 );
-        this.zDirection = new Vector3( 0, 0, _parameters.direction.z );
-        this.direction  = _parameters.direction;
-
-    }
-
-    get direction () {
-
-        return this._direction
-
-    }
-
-    set direction ( value ) {
-
-        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
-
-        this._direction = value;
-
-    }
-
-    update ( cameraDirection ) {
-
-        super.update( cameraDirection );
-
-        // Decompose direction by main orientation
-        const xDirection = new Vector3( this._direction.x, 0, 0 );
-        const yDirection = new Vector3( 0, this._direction.y, 0 );
-        const zDirection = new Vector3( 0, 0, this._direction.z );
-        const xDot       = xDirection.dot( cameraDirection );
-        const yDot       = yDirection.dot( cameraDirection );
-        const zDot       = zDirection.dot( cameraDirection );
-
-        this.quaternion.copy( this.baseQuaternion );
-
-        // XY Plane
-        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-            this.xDirection.setX( -1 );
-            this.yDirection.setY( -1 );
-            this.zDirection.setZ( 0 );
-
-        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-            this.xDirection.setX( -1 );
-            this.yDirection.setY( 1 );
-            this.zDirection.setZ( 0 );
-
-        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-            this.xDirection.setX( 1 );
-            this.yDirection.setY( -1 );
-            this.zDirection.setZ( 0 );
-
-        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-            this.xDirection.setX( 1 );
-            this.yDirection.setY( 1 );
-            this.zDirection.setZ( 0 );
-
-        }
-
-        // XZ Plane
-        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-            this.xDirection.setX( -1 );
-            this.yDirection.setY( 0 );
-            this.zDirection.setZ( -1 );
-
-        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-            this.xDirection.setX( -1 );
-            this.yDirection.setY( 0 );
-            this.zDirection.setZ( 1 );
-
-        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-            this.xDirection.setX( 1 );
-            this.yDirection.setY( 0 );
-            this.zDirection.setZ( -1 );
-
-        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-            this.xDirection.setX( 1 );
-            this.yDirection.setY( 0 );
-            this.zDirection.setZ( 1 );
-
-        }
-
-        // YZ Plane
-        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-            this.xDirection.setX( 0 );
-            this.yDirection.setY( -1 );
-            this.zDirection.setZ( -1 );
-
-        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-            this.xDirection.setX( 0 );
-            this.yDirection.setY( -1 );
-            this.zDirection.setZ( 1 );
-
-        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-            this.xDirection.setX( 0 );
-            this.yDirection.setY( 1 );
-            this.zDirection.setZ( -1 );
-
-        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-            this.xDirection.setX( 0 );
-            this.yDirection.setY( 1 );
-            this.zDirection.setZ( 1 );
-
-        }
-
-        this.updateMatrix();
-        this.hitbox.updateMatrix();
-
-    }
-
-    setDirection ( direction ) {
-
-        this.direction = direction;
-        return this
-
-    }
-
-    flipXDirection () {
-
-        this.xDirection.setX( -this.xDirection.x );
-
-    }
-
-    flipYDirection () {
-
-        this.yDirection.setY( -this.yDirection.y );
-
-    }
-
-    flipZDirection () {
-
-        this.zDirection.setZ( -this.zDirection.z );
+        super( _parameters );
+        this.isPlanarHitbox = true;
+        this.type           = 'PlanarHitbox';
 
     }
 
 }
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 class LozengeHandle extends AbstractHandle {
 
@@ -5569,6 +6213,36 @@ class LozengeHandle extends AbstractHandle {
 
 }
 
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
+
+class OctahedricalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new OctahedronBufferGeometry( 1.2, 0 )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isOctahedricalHitbox = true;
+        this.type                 = 'OctahedricalHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
 class OctahedricalHandle extends AbstractHandle {
 
     constructor ( parameters = {} ) {
@@ -5614,142 +6288,10 @@ class OctahedricalHandle extends AbstractHandle {
 
 }
 
-// Gizmos
-
-class AbstractGizmo extends Object3D {
-
-    constructor () {
-
-        super();
-        this.isGizmo          = true;
-        this.type             = 'AbstractGizmo';
-        this.matrixAutoUpdate = false;
-
-    }
-
-    init () {
-
-        this.handles                  = new Object3D();
-        this.handles.matrixAutoUpdate = false;
-
-        this.add( this.handles );
-
-        //// PLANES
-        const planeGeometry                  = new PlaneBufferGeometry( 50, 50, 2, 2 );
-        const planeMaterial                  = new MeshBasicMaterial( {
-            side:    DoubleSide,
-            visible: false
-            //            transparent: true,
-            //            opacity:     0.1
-        } );
-        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial );
-        this.intersectPlane.matrixAutoUpdate = false;
-        this.intersectPlane.visible          = true;
-
-        this.add( this.intersectPlane );
-
-        //// HANDLES
-
-        const setupGizmos = ( gizmoMap, parent ) => {
-
-            for ( let name in gizmoMap ) {
-
-                const element = gizmoMap[ name ];
-                if ( isNotArray( element ) ) {
-
-                    element.name        = name;
-                    element.renderOrder = Infinity;
-
-                    parent.add( element );
-
-                } else {
-
-                    for ( let i = element.length ; i-- ; ) {
-
-                        const object   = gizmoMap[ name ][ i ][ 0 ];
-                        const position = gizmoMap[ name ][ i ][ 1 ];
-                        const rotation = gizmoMap[ name ][ i ][ 2 ];
-                        const scale    = gizmoMap[ name ][ i ][ 3 ];
-                        const tag      = gizmoMap[ name ][ i ][ 4 ];
-
-                        // name and tag properties are essential for picking and updating logic.
-                        object.name = name;
-                        object.tag  = tag;
-
-                        // avoid being hidden by other transparent objects
-                        object.renderOrder = Infinity;
-
-                        if ( position ) {
-                            object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
-                        }
-                        if ( rotation ) {
-                            object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] );
-                        }
-                        if ( scale ) {
-                            object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] );
-                        }
-
-                        object.updateMatrix();
-
-                        const tempGeometry = object.geometry.clone();
-                        tempGeometry.applyMatrix4( object.matrix );
-                        object.geometry = tempGeometry;
-
-                        object.position.set( 0, 0, 0 );
-                        object.rotation.set( 0, 0, 0 );
-                        object.scale.set( 1, 1, 1 );
-
-                        parent.add( object );
-
-                    }
-
-                }
-
-            }
-
-        };
-
-        setupGizmos( this.handleGizmos, this.handles );
-
-    }
-
-    highlight ( axis ) {
-
-        // Reset highlight for all of them
-        for ( let key in this.handleGizmos ) {
-            this.handleGizmos[ key ].highlight( false );
-        }
-
-        // Highlight the picked (if exist)
-        const currentHandle = this.handleGizmos[ axis ];
-        if ( currentHandle ) {
-            currentHandle.highlight( true );
-        }
-
-    }
-
-    update ( cameraPosition, cameraDirection ) {
-
-        this.traverse( ( child ) => {
-
-            if ( !child.isHandle ) { return }
-
-            child.update( cameraDirection );
-
-        } );
-
-        this.updateIntersectPlane( cameraPosition );
-
-    }
-
-    updateIntersectPlane ( cameraPosition ) {
-
-        this.intersectPlane.lookAt( cameraPosition );
-        this.intersectPlane.updateMatrix();
-
-    }
-
-}
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 class TranslateGizmo extends AbstractGizmo {
 
@@ -5799,143 +6341,417 @@ class TranslateGizmo extends AbstractGizmo {
 
         };
 
-        this.init();
+        this._setupHandles( this.handleGizmos );
+//        this.init()
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if(handle.name === this.intersectPlane.name) {continue}
+            handle.raycast( raycaster, intersects );
+        }
+
+    }
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+
+class PlanarHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const planePositions = ( parameters.centered ) ?
+            [
+                -0.6, -0.6, 0.0,
+                0.6, -0.6, 0.0,
+                0.6, 0.6, 0.0,
+                -0.6, 0.6, 0.0
+            ] : [
+                0.0, 0.0, 0.0,
+                1.1, 0.0, 0.0,
+                1.1, 1.1, 0.0,
+                0.0, 1.1, 0.0
+            ];
+
+        const planeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+        const planeBufferGeometry = new BufferGeometry();
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
+        planeBufferGeometry.setIndex( planeIndexes );
+
+        const _parameters = {
+            ...{
+                geometry: planeBufferGeometry
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isPlanarHitbox = true;
+        this.type           = 'PlanarHitbox';
 
     }
 
 }
 
-class RotateGizmo extends AbstractGizmo {
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
-    constructor () {
+class PlaneHandle extends AbstractHandle {
 
-        super();
-        this.isRotateGizmo = true;
-        this.type          = 'RotateGizmo';
+    constructor ( parameters = {} ) {
 
-        const CircleGeometry = ( radius, facing, arc ) => {
-
-            const geometry = new BufferGeometry();
-            let vertices   = [];
-            arc            = arc ? arc : 1;
-
-            for ( let i = 0 ; i <= 64 * arc ; ++i ) {
-
-                if ( facing === 'x' ) {
-                    vertices.push( 0, Math.cos( i / 32 * Math.PI ) * radius, Math.sin( i / 32 * Math.PI ) * radius );
-                }
-                if ( facing === 'y' ) {
-                    vertices.push( Math.cos( i / 32 * Math.PI ) * radius, 0, Math.sin( i / 32 * Math.PI ) * radius );
-                }
-                if ( facing === 'z' ) {
-                    vertices.push( Math.sin( i / 32 * Math.PI ) * radius, Math.cos( i / 32 * Math.PI ) * radius, 0 );
-                }
-
-            }
-
-            geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-            return geometry
-
+        const _parameters = {
+            ...{
+                showEdges: false,
+                centered:  false,
+                color:     0xffffff,
+                hitbox:    new PlanarHitbox( { centered: parameters.centered || false } ),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
         };
 
-        this.handleGizmos = {
+        super( _parameters );
+        this.isPlaneHandle = true;
+        this.type          = 'PlaneHandle';
 
-            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+        // Edge line
+        if ( _parameters.showEdges ) {
 
-            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+            const lineBufferGeometry = new BufferGeometry();
+            lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.75, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.75, 0.0 ], 3 ) );
 
-            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+            const lineMaterial = new HighlightableLineMaterial( {
+                color: _parameters.color
+            } );
 
-            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
+            const line            = new Line( lineBufferGeometry, lineMaterial );
+            line.matrixAutoUpdate = false;
+            this.add( line );
 
-            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
+        }
 
-        };
 
-        this.pickerGizmos = {
+        // Plane
+        const planePositions = ( _parameters.centered ) ?
+            [
+                -0.5, -0.5, 0.0,
+                0.5, -0.5, 0.0,
+                0.5, 0.5, 0.0,
+                -0.5, 0.5, 0.0
+            ] : [
+                0.1, 0.1, 0.0,
+                1.0, 0.1, 0.0,
+                1.0, 1.0, 0.0,
+                0.1, 1.0, 0.0
+            ];
 
-            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
+        const planeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+        const planeBufferGeometry = new BufferGeometry();
+        planeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( planePositions, 3 ) );
+        planeBufferGeometry.setIndex( planeIndexes );
 
-            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
+        const planeMaterial    = new HighlightableMaterial( {
+            color:       _parameters.color,
+            transparent: true,
+            opacity:     0.35
+        } );
+        const plane            = new Mesh( planeBufferGeometry, planeMaterial );
+        plane.matrixAutoUpdate = false;
+        this.add( plane );
 
-            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
+        this.xAxis = new Vector3( 1, 0, 0 );
+        this.yAxis = new Vector3( 0, 1, 0 );
+        this.zAxis = new Vector3( 0, 0, 1 );
 
-            E: [ [ new TorusHitbox( {
-                radius:          1.25,
-                tube:            0.12,
-                radialSegments:  2,
-                tubularSegments: 24
-            } ) ] ],
+        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 );
+        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 );
+        this.zDirection = new Vector3( 0, 0, _parameters.direction.z );
+        this.direction  = _parameters.direction;
 
-            XYZ: [ [ new TorusHitbox() ] ]
+        if ( this.debug ) {
+            const origin      = new Vector3( 0, 0, 0 );
+            const direction   = _parameters.direction;
+            const arrowHelper = new ArrowHelper( direction, origin, 1, 0x123456 );
+            this.add( arrowHelper );
+        }
+    }
 
-        };
+    get direction () {
 
-        //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
-
-        this.init();
+        return this._direction
 
     }
 
-    /*
-     update ( rotation, eye2 ) {
+    set direction ( value ) {
 
-     super.update( rotation, eye2 )
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
-     const tempMatrix     = new Matrix4()
-     const worldRotation  = new Euler( 0, 0, 1 )
-     const tempQuaternion = new Quaternion()
-     const unitX          = new Vector3( 1, 0, 0 )
-     const unitY          = new Vector3( 0, 1, 0 )
-     const unitZ          = new Vector3( 0, 0, 1 )
-     const quaternionX    = new Quaternion()
-     const quaternionY    = new Quaternion()
-     const quaternionZ    = new Quaternion()
-     const eye            = eye2.clone()
+        this._direction = value;
 
-     worldRotation.copy( this.planes[ 'XY' ].rotation )
-     tempQuaternion.setFromEuler( worldRotation )
+    }
 
-     tempMatrix.makeRotationFromQuaternion( tempQuaternion ).getInverse( tempMatrix )
-     eye.applyMatrix4( tempMatrix )
+    update ( cameraDirection ) {
 
-     this.traverse( child => {
+        super.update( cameraDirection );
 
-     tempQuaternion.setFromEuler( worldRotation )
+        // Decompose direction by main orientation
+        const xDirection = new Vector3( this._direction.x, 0, 0 );
+        const yDirection = new Vector3( 0, this._direction.y, 0 );
+        const zDirection = new Vector3( 0, 0, this._direction.z );
+        const xDot       = xDirection.dot( cameraDirection );
+        const yDot       = yDirection.dot( cameraDirection );
+        const zDot       = zDirection.dot( cameraDirection );
 
-     if ( child.name === 'X' ) {
+        this.quaternion.copy( this.baseQuaternion );
 
-     quaternionX.setFromAxisAngle( unitX, Math.atan2( -eye.y, eye.z ) )
-     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX )
-     child.quaternion.copy( tempQuaternion )
+        // XY Plane
+        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
 
-     }
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+            this.xDirection.setX( -1 );
+            this.yDirection.setY( -1 );
+            this.zDirection.setZ( 0 );
 
-     if ( child.name === 'Y' ) {
+        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
 
-     quaternionY.setFromAxisAngle( unitY, Math.atan2( eye.x, eye.z ) )
-     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionY )
-     child.quaternion.copy( tempQuaternion )
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+            this.xDirection.setX( -1 );
+            this.yDirection.setY( 1 );
+            this.zDirection.setZ( 0 );
 
-     }
+        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
 
-     if ( child.name === 'Z' ) {
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+            this.xDirection.setX( 1 );
+            this.yDirection.setY( -1 );
+            this.zDirection.setZ( 0 );
 
-     quaternionZ.setFromAxisAngle( unitZ, Math.atan2( eye.y, eye.x ) )
-     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionZ )
-     child.quaternion.copy( tempQuaternion )
+        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
 
-     }
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+            this.xDirection.setX( 1 );
+            this.yDirection.setY( 1 );
+            this.zDirection.setZ( 0 );
 
-     } )
+        }
 
-     }
-     */
+        // XZ Plane
+        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+            this.xDirection.setX( -1 );
+            this.yDirection.setY( 0 );
+            this.zDirection.setZ( -1 );
+
+        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+            this.xDirection.setX( -1 );
+            this.yDirection.setY( 0 );
+            this.zDirection.setZ( 1 );
+
+        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+            this.xDirection.setX( 1 );
+            this.yDirection.setY( 0 );
+            this.zDirection.setZ( -1 );
+
+        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+            this.xDirection.setX( 1 );
+            this.yDirection.setY( 0 );
+            this.zDirection.setZ( 1 );
+
+        }
+
+        // YZ Plane
+        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+            this.xDirection.setX( 0 );
+            this.yDirection.setY( -1 );
+            this.zDirection.setZ( -1 );
+
+        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+            this.xDirection.setX( 0 );
+            this.yDirection.setY( -1 );
+            this.zDirection.setZ( 1 );
+
+        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+            this.xDirection.setX( 0 );
+            this.yDirection.setY( 1 );
+            this.zDirection.setZ( -1 );
+
+        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+            this.xDirection.setX( 0 );
+            this.yDirection.setY( 1 );
+            this.zDirection.setZ( 1 );
+
+        }
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction;
+        return this
+
+    }
+
+    flipXDirection () {
+
+        this.xDirection.setX( -this.xDirection.x );
+
+    }
+
+    flipYDirection () {
+
+        this.yDirection.setY( -this.yDirection.y );
+
+    }
+
+    flipZDirection () {
+
+        this.zDirection.setZ( -this.zDirection.z );
+
+    }
 
 }
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class ScaleHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new CylindricaHitbox(),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isScaleHandle = true;
+        this.type          = 'ScaleHandle';
+
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.88, 0 ) );
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
+        const line            = new Line( lineGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
+        this.add( line );
+
+        const boxGeometry = new BoxBufferGeometry( 0.12, 0.12, 0.12 );
+        boxGeometry.translate( 0, 0.94, 0 );
+        const boxMaterial    = new HighlightableMaterial( { color: _parameters.color } );
+        const box            = new Mesh( boxGeometry, boxMaterial );
+        box.matrixAutoUpdate = false;
+        this.add( box );
+
+        this.direction = _parameters.direction;
+
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value;
+
+        if ( value.y > 0.99999 ) {
+
+            this.quaternion.set( 0, 0, 0, 1 );
+
+        } else if ( value.y < -0.99999 ) {
+
+            this.quaternion.set( 1, 0, 0, 0 );
+
+        } else {
+
+            const axis    = new Vector3( value.z, 0, -value.x ).normalize();
+            const radians = Math.acos( value.y );
+
+            this.quaternion.setFromAxisAngle( axis, radians );
+
+        }
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection );
+
+        const dotProduct = this._direction.dot( cameraDirection );
+        if ( dotProduct >= 0 ) {
+            this.flipDirection();
+        }
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction;
+        return this
+
+    }
+
+    flipDirection () {
+
+        this.direction = this._direction.negate();
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 class ScaleGizmo extends AbstractGizmo {
 
@@ -5985,7 +6801,136 @@ class ScaleGizmo extends AbstractGizmo {
 
         };
 
-        this.init();
+        this._setupHandles( this.handleGizmos );
+//        this.init()
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if(handle.name === this.intersectPlane.name) {continue}
+            handle.raycast( raycaster, intersects );
+        }
+
+    }
+
+}
+
+/**
+ * @module Controllers/ClippingController
+ *
+ * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @example Todo
+ *
+ */
+
+// Basic Geometries
+class ClippingBox extends LineSegments {
+
+    constructor () {
+        super();
+
+        this.margin = 0.01;
+
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) );
+        this.material         = new LineBasicMaterial( {
+            color: 0xffffff
+        } );
+        this.matrixAutoUpdate = false;
+
+        // Planes
+        this.normalPlanes = {
+            normalRightSide:  new Vector3( -1, 0, 0 ),
+            normalLeftSide:   new Vector3( 1, 0, 0 ),
+            normalFrontSide:  new Vector3( 0, -1, 0 ),
+            normalBackSide:   new Vector3( 0, 1, 0 ),
+            normalTopSide:    new Vector3( 0, 0, -1 ),
+            normalBottomSide: new Vector3( 0, 0, 1 )
+        };
+
+        this.planes = {
+            rightSidePlane:  new Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
+            leftSidePlane:   new Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
+            frontSidePlane:  new Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
+            backSidePlane:   new Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
+            topSidePlane:    new Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
+            bottomSidePlane: new Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
+        };
+
+        this._boundingBox = new Box3();
+
+    }
+
+    getBoundingSphere () {
+
+        this.geometry.computeBoundingSphere();
+        this.geometry.boundingSphere.applyMatrix4( this.matrixWorld );
+
+        return this.geometry.boundingSphere
+
+    }
+
+    setColor ( color ) {
+
+        this.material.color.set( color );
+
+    }
+
+    applyClippingTo ( state, objects ) {
+
+        if ( isNotDefined( objects ) ) { return }
+
+        let planes = [];
+        for ( let i in this.planes ) {
+            planes.push( this.planes[ i ] );
+        }
+
+        objects.traverse( ( object ) => {
+
+            if ( isNotDefined( object ) ) { return }
+            if ( isNotDefined( object.geometry ) ) { return }
+            if ( isNotDefined( object.material ) ) { return }
+
+            const materials = isArray( object.material ) ? object.material : [ object.material ];
+
+            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
+                let material = materials[ materialIndex ];
+                if ( !material.clippingPlanes ) {
+                    material.clippingPlanes = [];
+                }
+                material.clippingPlanes = ( state ) ? planes : [];
+            }
+
+        } );
+
+    }
+
+    updateSize ( size ) {
+
+        this.scale.set( size.x, size.y, size.z );
+
+    }
+
+    update () {
+
+        this._boundingBox.setFromObject( this );
+
+        const margin = this.margin;
+        const min    = this._boundingBox.min;
+        const max    = this._boundingBox.max;
+
+        this.planes.rightSidePlane.constant  = max.x + margin;
+        this.planes.leftSidePlane.constant   = -min.x + margin;
+        this.planes.frontSidePlane.constant  = max.y + margin;
+        this.planes.backSidePlane.constant   = -min.y + margin;
+        this.planes.topSidePlane.constant    = max.z + margin;
+        this.planes.bottomSidePlane.constant = -min.z + margin;
 
     }
 
@@ -6146,7 +7091,7 @@ class ClippingControls extends Object3D {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
-        if ( !( value instanceof Camera ) ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
+        if ( !value.isCamera && !value.isPerspectiveCamera && !value.isOrthographicCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera, PerspectiveCamera, or OrthographicCamera.` ) }
 
         this._camera = value;
 
@@ -6547,7 +7492,7 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
         if ( isNotDefined( this._currentHandle ) ) { return }
 
         mouseEvent.preventDefault();
@@ -6605,7 +7550,9 @@ class ClippingControls extends Object3D {
         if ( this._dragging === false ) {
 
             // Check mouseIn
-            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children );
+            const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] );
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
             if ( intersect ) {
 
                 const handle = intersect.object;
@@ -6764,7 +7711,7 @@ class ClippingControls extends Object3D {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
-        if ( mouseEvent.button !== Mouse.LEFT.value ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
         // todo isActive when mouse enter
 
         mouseEvent.preventDefault();
@@ -6773,7 +7720,9 @@ class ClippingControls extends Object3D {
         this.dispatchEvent( this._events.mouseUp );
 
         // Check mouseIn
-        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children );
+        const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] );
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
             this._currentHandle = intersect.object;
@@ -7036,23 +7985,6 @@ class ClippingControls extends Object3D {
  * @example Todo
  *
  */
-// Waiting three-shaking fix
-//import {
-//    ArcCurve,
-//    CatmullRomCurve3,
-//    CubicBezierCurve,
-//    CubicBezierCurve3,
-//    Curve,
-//    CurvePath,
-//    EllipseCurve,
-//    LineCurve,
-//    LineCurve3,
-//    Path,
-//    QuadraticBezierCurve,
-//    QuadraticBezierCurve3,
-//    Shape,
-//    SplineCurve
-//}                           from 'three-full'
 
 class CurvesManager extends TDataBaseManager {
 
@@ -7187,57 +8119,6 @@ class CurvesManager extends TDataBaseManager {
  * @requires '../../../node_modules/three/src/core/BufferAttribute'
  *
  */
-// Waiting three-shaking fix
-//import {
-//    BoxBufferGeometry,
-//    BoxGeometry,
-//    BufferAttribute,
-//    BufferGeometry,
-//    CircleBufferGeometry,
-//    CircleGeometry,
-//    ConeBufferGeometry,
-//    ConeGeometry,
-//    CylinderBufferGeometry,
-//    CylinderGeometry,
-//    DodecahedronBufferGeometry,
-//    DodecahedronGeometry,
-//    EdgesGeometry,
-//    ExtrudeBufferGeometry,
-//    ExtrudeGeometry,
-//    Face3,
-//    Geometry,
-//    IcosahedronBufferGeometry,
-//    IcosahedronGeometry,
-//    InstancedBufferGeometry,
-//    LatheBufferGeometry,
-//    LatheGeometry,
-//    OctahedronBufferGeometry,
-//    OctahedronGeometry,
-//    ParametricBufferGeometry,
-//    ParametricGeometry,
-//    PlaneBufferGeometry,
-//    PlaneGeometry,
-//    PolyhedronBufferGeometry,
-//    PolyhedronGeometry,
-//    RingBufferGeometry,
-//    RingGeometry,
-//    Shape,
-//    ShapeGeometry,
-//    SphereBufferGeometry,
-//    SphereGeometry,
-//    TetrahedronBufferGeometry,
-//    TetrahedronGeometry,
-//    TextBufferGeometry,
-//    TextGeometry,
-//    TorusBufferGeometry,
-//    TorusGeometry,
-//    TorusKnotBufferGeometry,
-//    TorusKnotGeometry,
-//    TubeBufferGeometry,
-//    TubeGeometry,
-//    Vector3,
-//    WireframeGeometry
-//}                           from 'three-full'
 
 const ArrayType = toEnum( {
     Int8Array:         0,
@@ -9737,15 +10618,6 @@ class ObjectsManager extends TDataBaseManager {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
  */
-// Waiting three-shaking fix
-//import {
-//    BufferGeometry,
-//    Color,
-//    Float32BufferAttribute,
-//    LineBasicMaterial,
-//    LineSegments,
-//    VertexColors
-//} from 'three-full'
 
 /**
  * @class
@@ -9915,5 +10787,539 @@ class OrbitControlsHelper extends LineSegments {
 
 }
 
-export { ASCLoader, AbstractGizmo, AbstractHandle, AbstractHitbox, CameraControlMode, CameraControls, ClippingBox, ClippingControls, ClippingModes, CurvesManager, CylindricaHitbox, DBFLoader, GeometriesManager, HighlightableLineMaterial, HighlightableMaterial, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, RotateGizmo, RotateHandle, SHPLoader, ScaleGizmo, ScaleHandle, ShapeType, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle };
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
+
+class TorusHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new TorusBufferGeometry( 1, 0.12, 4, 12, Math.PI )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isTorusHitbox = true;
+        this.type          = 'TorusHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class RotateGizmo extends AbstractGizmo {
+
+    constructor () {
+
+        super();
+        this.isRotateGizmo = true;
+        this.type          = 'RotateGizmo';
+
+        const CircleGeometry = ( radius, facing, arc ) => {
+
+            const geometry = new BufferGeometry();
+            let vertices   = [];
+            arc            = arc ? arc : 1;
+
+            for ( let i = 0 ; i <= 64 * arc ; ++i ) {
+
+                if ( facing === 'x' ) {
+                    vertices.push( 0, Math.cos( i / 32 * Math.PI ) * radius, Math.sin( i / 32 * Math.PI ) * radius );
+                }
+                if ( facing === 'y' ) {
+                    vertices.push( Math.cos( i / 32 * Math.PI ) * radius, 0, Math.sin( i / 32 * Math.PI ) * radius );
+                }
+                if ( facing === 'z' ) {
+                    vertices.push( Math.sin( i / 32 * Math.PI ) * radius, Math.cos( i / 32 * Math.PI ) * radius, 0 );
+                }
+
+            }
+
+            geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
+            return geometry
+
+        };
+
+        this.handleGizmos = {
+
+            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+
+            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+
+            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+
+            E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
+
+            XYZ: [ [ new Line( new CircleGeometry( 1, 'z', 1 ), new HighlightableLineMaterial( { color: 0x787878 } ) ) ] ]
+
+        };
+
+        this.pickerGizmos = {
+
+            X: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, -Math.PI / 2, -Math.PI / 2 ] ] ],
+
+            Y: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ Math.PI / 2, 0, 0 ] ] ],
+
+            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
+
+            E: [ [ new TorusHitbox( {
+                radius:          1.25,
+                tube:            0.12,
+                radialSegments:  2,
+                tubularSegments: 24
+            } ) ] ],
+
+            XYZ: [ [ new TorusHitbox() ] ]
+
+        };
+
+        //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
+
+        this._setupHandles( this.handleGizmos );
+//        this.init()
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if(handle.name === this.intersectPlane.name) {continue}
+            handle.raycast( raycaster, intersects );
+        }
+
+    }
+    /*
+     update ( rotation, eye2 ) {
+
+     super.update( rotation, eye2 )
+
+     const tempMatrix     = new Matrix4()
+     const worldRotation  = new Euler( 0, 0, 1 )
+     const tempQuaternion = new Quaternion()
+     const unitX          = new Vector3( 1, 0, 0 )
+     const unitY          = new Vector3( 0, 1, 0 )
+     const unitZ          = new Vector3( 0, 0, 1 )
+     const quaternionX    = new Quaternion()
+     const quaternionY    = new Quaternion()
+     const quaternionZ    = new Quaternion()
+     const eye            = eye2.clone()
+
+     worldRotation.copy( this.planes[ 'XY' ].rotation )
+     tempQuaternion.setFromEuler( worldRotation )
+
+     tempMatrix.makeRotationFromQuaternion( tempQuaternion ).getInverse( tempMatrix )
+     eye.applyMatrix4( tempMatrix )
+
+     this.traverse( child => {
+
+     tempQuaternion.setFromEuler( worldRotation )
+
+     if ( child.name === 'X' ) {
+
+     quaternionX.setFromAxisAngle( unitX, Math.atan2( -eye.y, eye.z ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionX )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     if ( child.name === 'Y' ) {
+
+     quaternionY.setFromAxisAngle( unitY, Math.atan2( eye.x, eye.z ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionY )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     if ( child.name === 'Z' ) {
+
+     quaternionZ.setFromAxisAngle( unitZ, Math.atan2( eye.y, eye.x ) )
+     tempQuaternion.multiplyQuaternions( tempQuaternion, quaternionZ )
+     child.quaternion.copy( tempQuaternion )
+
+     }
+
+     } )
+
+     }
+     */
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
+
+class BoxHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new BoxBufferGeometry( 1, 1, 1, 1, 1, 1 )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isBoxHitbox = true;
+        this.type        = 'BoxHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class BoxHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                boxColor:   0x104b83,
+                edgesColor: 0x123456,
+                hitbox:     new BoxHitbox( {
+                    geometry: new BoxBufferGeometry( 1.1, 1.1, 1.1, 1, 1, 1 )
+                } )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isOmnidirectionalHandle = true;
+        this.type                    = 'OmnidirectionalHandle';
+
+        ////
+
+        const boxGeometry = new BoxBufferGeometry( 1.0, 1.0, 1.0, 1, 1, 1 );
+        boxGeometry.name  = 'BoxHandle_Box_Geometry';
+
+        const boxMaterial = new HighlightableMaterial( {
+            color:       _parameters.boxColor,
+            transparent: false,
+            opacity:     1.0
+        } );
+        boxMaterial.name  = 'BoxHandle_Box_Material';
+
+        const box            = new Mesh( boxGeometry, boxMaterial );
+        box.name             = 'BoxHandle_Box';
+        box.matrixAutoUpdate = false;
+
+        this.add( box );
+
+        ////
+
+        const edgesGeometry = new EdgesGeometry( boxGeometry );
+        edgesGeometry.name  = 'BoxHandle_Edges_Geometry';
+
+        const edgesMaterial = new HighlightableLineMaterial( {
+            color:       _parameters.edgesColor,
+            linewidth:   4,
+            transparent: false,
+            opacity:     1.0
+        } );
+        edgesMaterial.name  = 'BoxHandle_Edges_Material';
+
+        const edges            = new LineSegments( edgesGeometry, edgesMaterial );
+        edges.name             = 'BoxHandle_Edges';
+        edges.matrixAutoUpdate = false;
+
+        this.add( edges );
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection );
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class ConeHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                coneColor:  0x104b83,
+                edgesColor: 0x123456,
+                hitbox:     new BoxHitbox( {
+                    geometry: new ConeBufferGeometry( 1.1, 1.1 )
+                } )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isOmnidirectionalHandle = true;
+        this.type                    = 'OmnidirectionalHandle';
+
+        ////
+
+        const coneGeometry = new ConeBufferGeometry( 1.0, 1.0 );
+        coneGeometry.name  = 'ConeHandle_Cone_Geometry';
+
+        const coneMaterial = new HighlightableMaterial( {
+            color:       _parameters.coneColor,
+            transparent: false,
+            opacity:     1.0
+        } );
+        coneMaterial.name  = 'ConeHandle_Cone_Material';
+
+        const cone            = new Mesh( coneGeometry, coneMaterial );
+        cone.name             = 'ConeHandle_Cone';
+        cone.matrixAutoUpdate = true;
+
+        this.add( cone );
+
+        ////
+
+        //        const edgesGeometry = new EdgesGeometry( coneGeometry )
+        //        edgesGeometry.name  = 'ConeHandle_Edges_Geometry'
+        //
+        //        const edgesMaterial = new HighlightableLineMaterial( {
+        //            color:       _parameters.edgesColor,
+        //            linewidth:   4,
+        //            transparent: false,
+        //            opacity:     1.0
+        //        } )
+        //        edgesMaterial.name  = 'ConeHandle_Edges_Material'
+        //
+        //        const edges            = new LineSegments( edgesGeometry, edgesMaterial )
+        //        edges.name             = 'ConeHandle_Edges'
+        //        edges.matrixAutoUpdate = false
+        //
+        //        this.add( edges )
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection );
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class LookAtGizmo extends AbstractGizmo {
+
+
+    //TYPE ENTITY ENUM COLOMNU
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                boxColor:   0xA9A9A9,
+                edgesColor: 0xD3D3D3
+            },
+            ...parameters
+        };
+
+        super( _parameters );
+        this.isLookAtGizmo = true;
+        this.type          = 'LookAtGizmo';
+
+        this.explodeFactor = 0.25;
+
+        this.handleGizmos = {
+
+            // Cone faces
+            FACE_RIGHT: new ConeHandle( {
+                coneColor: 0xdd0000
+            } ).setPosition( +( 4 + this.explodeFactor ), +0, +0 )
+               .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( 90 ) )
+               .setScale( 1, 4, 1 ),
+
+            FACE_LEFT: new ConeHandle( {
+                coneColor: 0x550000
+            } ).setPosition( -( 4 + this.explodeFactor ), +0, +0 )
+               .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( -90 ) )
+               .setScale( 1, 4, 1 ),
+
+            FACE_TOP: new ConeHandle( {
+                coneColor: 0x0000dd
+            } ).setPosition( +0, +( 4 + this.explodeFactor ), +0 )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 180 ) )
+               .setScale( 1, 4, 1 ),
+
+            FACE_BOTTOM: new ConeHandle( {
+                coneColor: 0x000055
+            } ).setPosition( +0, -( 4 + this.explodeFactor ), +0 )
+               .setScale( 1, 4, 1 ),
+
+            FACE_FRONT: new ConeHandle( {
+                coneColor: 0x005500
+            } ).setPosition( +0, +0, +( 4 + this.explodeFactor ) )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( -90 ) )
+               .setScale( 1, 4, 1 ),
+
+            FACE_BACK: new ConeHandle( {
+                coneColor: 0x00dd00
+            } ).setPosition( +0, +0, -( 4 + this.explodeFactor ) )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) )
+               .setScale( 1, 4, 1 ),
+
+            // Planar faces
+            //            FACE_RIGHT:  new BoxHandle().setPosition( +( 2 + this.explodeFactor ), +0, +0 ).setScale( 1, 3, 3 ),
+            //            FACE_LEFT:   new BoxHandle().setPosition( -( 2 + this.explodeFactor ), +0, +0 ).setScale( 1, 3, 3 ),
+            //            FACE_TOP:    new BoxHandle().setPosition( +0, +( 2 + this.explodeFactor ), +0 ).setScale( 3, 1, 3 ),
+            //            FACE_BOTTOM: new BoxHandle().setPosition( +0, -( 2 + this.explodeFactor ), +0 ).setScale( 3, 1, 3 ),
+            //            FACE_FRONT:  new BoxHandle().setPosition( +0, +0, +( 2 + this.explodeFactor ) ).setScale( 3, 3, 1 ),
+            //            FACE_BACK:   new BoxHandle().setPosition( +0, +0, -( 2 + this.explodeFactor ) ).setScale( 3, 3, 1 ),
+
+            CORNER_TOP_LEFT_FRONT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
+            CORNER_TOP_LEFT_BACK:      new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
+            CORNER_TOP_RIGHT_FRONT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
+            CORNER_TOP_RIGHT_BACK:     new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
+            CORNER_BOTTOM_LEFT_FRONT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
+            CORNER_BOTTOM_LEFT_BACK:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
+            CORNER_BOTTOM_RIGHT_FRONT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
+            CORNER_BOTTOM_RIGHT_BACK:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
+
+            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
+            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
+            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
+            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 )
+
+        };
+
+        this._setupHandles( this.handleGizmos );
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            handle.raycast( raycaster, intersects );
+        }
+
+    }
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class RotateHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{}, ...parameters
+        };
+
+        super( _parameters );
+        this.isRotateHandle = true;
+        this.type           = 'RotateHandle';
+
+    }
+
+    update ( cameraDirection ) {
+        super.update( cameraDirection );
+
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
+
+class SphericalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new SphereBufferGeometry( 1, 8, 6, 0, 2 * Math.PI, 0, Math.PI )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isSphericalHitbox = true;
+        this.type              = 'SphericalHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class HighlightableMesh extends Mesh {
+
+    constructor ( geometry, parameters = {} ) {
+        super( geometry, new HighlightableMaterial( {
+            color:       parameters.color,
+            transparent: true,
+            opacity:     0.55
+        } ) );
+
+        this.isHighlightableMesh = true;
+        this.type                = 'HighlightableMesh';
+
+    }
+
+    highlight ( value ) {
+
+        this.material.highlight( value );
+
+    }
+
+}
+
+export { ASCLoader, AbstractGizmo, AbstractHandle, AbstractHitbox, CameraControlMode, CameraControls, ClippingBox, ClippingControls, ClippingModes, CurvesManager, CylindricaHitbox, DBFLoader, GeometriesManager, HighlightableMesh, LASLoader, LookAtGizmo, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, RotateGizmo, RotateHandle, SHPLoader, ScaleGizmo, ScaleHandle, ShapeType, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle };
 //# sourceMappingURL=itee-plugin-three.esm.js.map
