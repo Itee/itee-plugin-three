@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.4.2 - CommonJs')
+console.log('Itee.Plugin.Three v1.5.0 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');
@@ -168,20 +168,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
         try {
 
             const alternative = [ 'oneByOne', 'allInOneByParentId', 'allInOneByChildrenIds' ][ 1 ];
-            if ( alternative === 'oneByOne' ) {
-
-                const document        = await this._readOneDocument( 'Objects3D', { _id: id } );
-                const parentResult    = await this._removeParentReference( document );
-                const childrenResults = await this._removeChildDocument( document );
-                const deleteResult    = {
-                    ...childrenResults,
-                    parent: parentResult
-                };
-
-                iteeMongodb.TMongooseController.returnData( deleteResult, response );
-
-
-            } else if ( alternative === 'allInOneByParentId' ) {
+            if ( alternative === 'oneByOne' ) ; else if ( alternative === 'allInOneByParentId' ) {
 
                 const results = await this.getAllChildrenIds( id, true );
                 results.children.push( id );
@@ -208,16 +195,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
                     deletedMaterialsResult
                 }, response );
 
-            } else {
-
-//                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
-//                    _id:      true,
-//                    geometry: true,
-//                    material: true,
-//                    children: true
-//                } )
-
-            }
+            } else ;
 
         } catch ( error ) {
 
@@ -463,11 +441,6 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  *
  *
  */
-// Waiting three-shaking fix
-//import {
-//    DefaultLoadingManager,
-//    FileLoader
-//}                 from 'three-full'
 
 /**
  *
@@ -1524,13 +1497,6 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  * @example Todo...
  *
  */
-// Waiting three-shaking fix
-//import {
-//    DefaultLoadingManager,
-//    FileLoader,
-//    Shape,
-//    Vector3
-//} from 'three-full'
 
 /**
  *
@@ -2391,6 +2357,8 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger        = _parameters.logger;
         this.mergeStrategy = 'add';
 
+        this._cache = {};
+
         // Addition
         // Update
         // Deletion
@@ -2418,6 +2386,17 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         return array
+
+    }
+
+    static _toLog ( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
 
     }
 
@@ -2457,7 +2436,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             let childrenIds = null;
             if ( iteeValidators.isDefined( parentId ) ) {
 
-                const parentDocument = await this._readOneDocument( 'Objects3D', { _id: parentId } );
+                const parentDocument = await this._readDocument( 'Objects3D', { _id: parentId } );
                 if ( iteeValidators.isNull( parentDocument ) ) {
                     onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` );
                     return
@@ -2482,7 +2461,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                     // Merge children into parent
                     //// Clean up current dbObject dependencies
                     // Children create and update will be perform on children iteration but remove need to be checked here !
-                    const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: parentId } );
+                    const dbChildren         = await this._readDocuments( 'Objects3D', { parent: parentId } );
                     const childrenUuids      = dataToParse.map( child => child.uuid );
                     const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
 
@@ -2513,6 +2492,8 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         } catch ( error ) {
             onError( error );
+        } finally {
+            this._cache = {};
         }
 
     }
@@ -2528,6 +2509,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _parseObjects ( objects = [], parentId = null ) {
+        this.logger.debug(`_parseObjects(...)`);
 
         const _objects = ThreeToMongoDB._arrayify( objects );
         if ( iteeValidators.isEmptyArray( _objects ) ) {
@@ -2552,6 +2534,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _parseObject ( object, parentId = null ) {
+        this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` );
 
         if ( iteeValidators.isNotDefined( object ) ) {
             return null
@@ -2645,7 +2628,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         // Check if object already exist
         // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
-        let document = await this._readOneDocument( objectType, {
+        let document = await this._readDocument( objectType, {
             uuid:   object.uuid,
             parent: parentId
         } );
@@ -2672,7 +2655,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 //// Clean up current dbObject dependencies
                 // Children create and update will be perform on children iteration but remove need to be checked here !
-                const dbChildren         = await this._readManyDocument( 'Objects3D', { parent: document._id } );
+                const dbChildren         = await this._readDocuments( 'Objects3D', { parent: document._id } );
                 const childrenUuids      = objectChildren.map( child => child.uuid );
                 const dbChildrenToRemove = dbChildren.filter( dbChild => !childrenUuids.includes( dbChild.uuid ) );
 
@@ -2728,6 +2711,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _getOrCreateDocuments ( objects = [] ) {
+        this.logger.debug( `_getOrCreateDocuments(...)` );
 
         const _objects = ThreeToMongoDB._arrayify( objects );
         if ( iteeValidators.isEmptyArray( _objects ) ) {
@@ -2753,12 +2737,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _getOrCreateDocument ( data ) {
+        this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( iteeValidators.isNotDefined( data ) ) {
             return null
         }
 
-        let document = await this._readOneDocument( data.type, { uuid: data.uuid } );
+        let document = await this._readDocument( data.type, { uuid: data.uuid } );
         if ( iteeValidators.isDefined( document ) ) {
             document = await this._updateDocument( document, data );
         } else {
@@ -2779,6 +2764,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _createDocuments ( datas = [] ) {
+        this.logger.debug( `_createDocuments(...)` );
 
         const _datas = ThreeToMongoDB._arrayify( datas );
         if ( iteeValidators.isEmptyArray( _datas ) ) {
@@ -2803,43 +2789,28 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _createDocument ( data ) {
+        this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( iteeValidators.isNotDefined( data ) ) {
             return null
         }
 
-        const model         = this._driver.model( data.type );
-        const savedDocument = await model( data ).save();
-        return savedDocument._doc
+        const model = await this._driver
+                                .model( data.type )( data )
+                                .save();
 
-    }
+        //        const model         = this._driver.model( data.type )
+        //        const savedModel = await model( data ).save()
 
-    // Todo: Rename to _readDocument
-    /**
-     * Read one document based on a model type, and a object query that match.
-     * If the given type or query are null or undefined it return null.
-     *
-     * @param {String} type - The Mongoose Model type on which read query must be perform
-     * @param {Object} query - The find conditions to match document
-     * @returns {Promise<Mongoose.Document|null>|null}
-     * @private
-     */
-    async _readOneDocument ( type, query ) {
-
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
-            return null
+        const savedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        if ( savedDocument ) {
+            this._cache[ savedDocument.uuid ] = savedDocument;
         }
 
-        const model = await this._driver
-                                .model( type )
-                                .findOne( query )
-                                .exec();
-
-        return ( iteeValidators.isDefined( model ) ) ? model._doc : null
+        return savedDocument
 
     }
 
-    // Todo: Rename to _readDocuments
     /**
      * Read all document based on a model type, and a object query that match.
      * If the given type or query are null or undefined it return null.
@@ -2849,7 +2820,8 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query ) {
+    async _readDocuments ( type, query ) {
+        this.logger.debug( `_readDocuments(...)` );
 
         if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
             return null
@@ -2861,7 +2833,40 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                                .exec();
 
         return models.map( model => model._doc )
+    }
 
+    /**
+     * Read one document based on a model type, and a object query that match.
+     * If the given type or query are null or undefined it return null.
+     *
+     * @param {String} type - The Mongoose Model type on which read query must be perform
+     * @param {Object} query - The find conditions to match document
+     * @returns {Promise<Mongoose.Document|null>|null}
+     * @private
+     */
+    async _readDocument ( type, query ) {
+        this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` );
+
+        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+            return null
+        }
+
+        const cachedDocument = this._cache[ query.uuid ];
+        if ( cachedDocument ) {
+            return cachedDocument
+        }
+
+        const model = await this._driver
+                                .model( type )
+                                .findOne( query )
+                                .exec();
+
+        const readDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        if ( readDocument ) {
+            this._cache[ readDocument.uuid ] = readDocument;
+        }
+
+        return readDocument
     }
 
     /**
@@ -2876,6 +2881,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+        this.logger.debug( `_updateDocuments(...)` );
 
         const _documents = ThreeToMongoDB._arrayify( documents );
         if ( iteeValidators.isEmptyArray( _documents ) ) {
@@ -2901,17 +2907,24 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions ) {
+    async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
+        this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` );
 
         if ( iteeValidators.isNotDefined( document ) ) {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndUpdate( document._id, updateQuery, queryOptions )
-                         .exec()
+        const model = await this._driver
+                                .model( document.type )
+                                .findByIdAndUpdate( document._id, updateQuery, queryOptions )
+                                .exec();
 
+        const updatedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        if ( updatedDocument ) {
+            this._cache[ updatedDocument.uuid ] = updatedDocument;
+        }
+
+        return updatedDocument
     }
 
     /**
@@ -2924,6 +2937,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _deleteDocuments ( documents = [] ) {
+        this.logger.debug( `_deleteDocuments(...)` );
 
         const _documents = ThreeToMongoDB._arrayify( documents );
         if ( iteeValidators.isEmptyArray( _documents ) ) {
@@ -2948,16 +2962,23 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _deleteDocument ( document ) {
+        this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         if ( iteeValidators.isNotDefined( document ) ) {
             return null
         }
 
-        return await this._driver
-                         .model( document.type )
-                         .findByIdAndDelete( document._id )
-                         .exec()
+        const model = await this._driver
+                                .model( document.type )
+                                .findByIdAndDelete( document._id )
+                                .exec();
 
+        const deletedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        if ( deletedDocument ) {
+            delete this._cache[ deletedDocument.uuid ];
+        }
+
+        return deletedDocument
     }
 
     ///
@@ -2969,6 +2990,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _removeChildrenDocuments ( documents ) {
+        this.logger.debug( `_removeChildrenDocuments(...)` );
 
         let removed = [];
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
@@ -2986,9 +3008,10 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _removeChildDocument ( document ) {
+        this.logger.debug( `_removeChildDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         // Remove children recursively
-        const children = await this._readManyDocument( 'Objects3D', { parent: document._id } );
+        const children = await this._readDocuments( 'Objects3D', { parent: document._id } );
         await this._removeChildrenDocuments( children );
 
         // Remove geometry only if current object is the last that reference it
@@ -3010,13 +3033,14 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _removeOrphanGeometryWithId ( geometryId ) {
+        this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` );
 
         if ( iteeValidators.isNotDefined( geometryId ) ) { return }
 
-        const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
+        const referencingObjects = await this._readDocuments( 'Objects3D', { geometry: geometryId } );
         if ( referencingObjects.length > 1 ) { return }
 
-        const geometryDocument = await this._readOneDocument( 'Geometries', { _id: geometryId } );
+        const geometryDocument = await this._readDocument( 'Geometries', { _id: geometryId } );
         await this._deleteDocument( geometryDocument );
 
     }
@@ -3030,6 +3054,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
+        this.logger.debug( `_removeOrphanMaterialsWithIds(...)` );
 
         const removed = [];
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
@@ -3048,11 +3073,12 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _removeOrphanMaterialWithId ( materialId ) {
+        this.logger.debug( `_removeOrphanMaterialWithId(${ materialId })` );
 
-        const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
+        const referencingObjects = await this._readDocuments( 'Objects3D', { material: materialId } );
         if ( referencingObjects.length > 1 ) { return }
 
-        const materialDocument = await this._readOneDocument( 'Materials', { _id: materialId } );
+        const materialDocument = await this._readDocument( 'Materials', { _id: materialId } );
         await this._deleteDocument( materialDocument );
 
     }
@@ -3096,18 +3122,18 @@ ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ];
  * @description Todo...
  */
 
-function Object3D () {}
+function Object3D$I () {}
 
-Object3D.getSchemaFrom   = Mongoose => {
+Object3D$I.getSchemaFrom   = Mongoose => {
 
-    if ( !Object3D._schema ) {
-        Object3D._createSchema( Mongoose );
+    if ( !Object3D$I._schema ) {
+        Object3D$I._createSchema( Mongoose );
     }
 
-    return Object3D._schema
+    return Object3D$I._schema
 
 };
-Object3D._createSchema   = Mongoose => {
+Object3D$I._createSchema   = Mongoose => {
 
     const Schema     = Mongoose.Schema;
     const Types      = Schema.Types;
@@ -3118,7 +3144,7 @@ Object3D._createSchema   = Mongoose => {
     const Matrix4    = Types.Matrix4;
     const Euler      = Types.Euler;
 
-    Object3D._schema = new Schema( {
+    Object3D$I._schema = new Schema( {
         uuid:       String,
         name:       String,
         type:       String,
@@ -3184,40 +3210,40 @@ Object3D._createSchema   = Mongoose => {
     } );
 
 };
-Object3D.getModelFrom    = Mongoose => {
+Object3D$I.getModelFrom    = Mongoose => {
 
-    if ( !Object3D._model ) {
-        Object3D._createModel( Mongoose );
+    if ( !Object3D$I._model ) {
+        Object3D$I._createModel( Mongoose );
     }
 
-    return Object3D._model
+    return Object3D$I._model
 
 };
-Object3D._createModel    = Mongoose => {
+Object3D$I._createModel    = Mongoose => {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
     // Care here, the model contains an S char, not the discriminator !
-    Object3D._model = Mongoose.model( 'Objects3D', Object3D.getSchemaFrom( Mongoose ) );
-    Object3D._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) );
+    Object3D$I._model = Mongoose.model( 'Objects3D', Object3D$I.getSchemaFrom( Mongoose ) );
+    Object3D$I._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) );
 
 };
-Object3D.registerModelTo = Mongoose => {
+Object3D$I.registerModelTo = Mongoose => {
 
-    if ( !Object3D._model ) {
-        Object3D._createModel( Mongoose );
+    if ( !Object3D$I._model ) {
+        Object3D$I._createModel( Mongoose );
     }
 
     return Mongoose
 
 };
-Object3D._schema         = null;
-Object3D._model          = null;
+Object3D$I._schema         = null;
+Object3D$I._model          = null;
 
-var Object3D$1 = /*#__PURE__*/Object.freeze({
+var Object3D$J = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	Object3D: Object3D
+	Object3D: Object3D$I
 });
 
 /**
@@ -3230,50 +3256,50 @@ var Object3D$1 = /*#__PURE__*/Object.freeze({
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$2 } = Object3D$1;
+const { Object3D: Object3D$H } = Object3D$J;
 
-let _schema = undefined;
-let _model  = undefined;
+let _schema$2e = undefined;
+let _model$23  = undefined;
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom$2e ( Mongoose ) {
 
-    if ( !_schema ) {
-        _createSchema( Mongoose );
+    if ( !_schema$2e ) {
+        _createSchema$2e( Mongoose );
     }
 
-    return _schema
+    return _schema$2e
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema$2e ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema = new Schema( {} );
+    _schema$2e = new Schema( {} );
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom$23 ( Mongoose ) {
 
-    if ( !_model ) {
-        _createModel( Mongoose );
+    if ( !_model$23 ) {
+        _createModel$23( Mongoose );
     }
 
-    return _model
+    return _model$23
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel$23 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$2.getModelFrom( Mongoose );
-    _model                  = Object3DBaseModel.discriminator( 'Audio', getSchemaFrom( Mongoose ) );
+    const Object3DBaseModel = Object3D$H.getModelFrom( Mongoose );
+    _model$23                  = Object3DBaseModel.discriminator( 'Audio', getSchemaFrom$2e( Mongoose ) );
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo$23 ( Mongoose ) {
 
-    if ( !_model ) {
-        _createModel( Mongoose );
+    if ( !_model$23 ) {
+        _createModel$23( Mongoose );
     }
 
     return Mongoose
@@ -3283,9 +3309,9 @@ function registerModelTo ( Mongoose ) {
 
 var Audio_1 = {
     name:            'Audio',
-    getSchemaFrom:   getSchemaFrom,
-    getModelFrom:    getModelFrom,
-    registerModelTo: registerModelTo
+    getSchemaFrom:   getSchemaFrom$2e,
+    getModelFrom:    getModelFrom$23,
+    registerModelTo: registerModelTo$23
 };
 
 /**
@@ -3298,50 +3324,50 @@ var Audio_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$3 } = Object3D$1;
+const { Object3D: Object3D$G } = Object3D$J;
 
-let _schema$1 = undefined;
-let _model$1  = undefined;
+let _schema$2d = undefined;
+let _model$22  = undefined;
 
-function getSchemaFrom$1 ( Mongoose ) {
+function getSchemaFrom$2d ( Mongoose ) {
 
-    if ( !_schema$1 ) {
-        _createSchema$1( Mongoose );
+    if ( !_schema$2d ) {
+        _createSchema$2d( Mongoose );
     }
 
-    return _schema$1
+    return _schema$2d
 
 }
 
-function _createSchema$1 ( Mongoose ) {
+function _createSchema$2d ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1 = new Schema( {} );
+    _schema$2d = new Schema( {} );
 
 }
 
-function getModelFrom$1 ( Mongoose ) {
+function getModelFrom$22 ( Mongoose ) {
 
-    if ( !_model$1 ) {
-        _createModel$1( Mongoose );
+    if ( !_model$22 ) {
+        _createModel$22( Mongoose );
     }
 
-    return _model$1
+    return _model$22
 
 }
 
-function _createModel$1 ( Mongoose ) {
+function _createModel$22 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$3.getModelFrom( Mongoose );
-    _model$1                  = Object3DBaseModel.discriminator( 'AudioListener', getSchemaFrom$1( Mongoose ) );
+    const Object3DBaseModel = Object3D$G.getModelFrom( Mongoose );
+    _model$22                  = Object3DBaseModel.discriminator( 'AudioListener', getSchemaFrom$2d( Mongoose ) );
 
 }
 
-function registerModelTo$1 ( Mongoose ) {
+function registerModelTo$22 ( Mongoose ) {
 
-    if ( !_model$1 ) {
-        _createModel$1( Mongoose );
+    if ( !_model$22 ) {
+        _createModel$22( Mongoose );
     }
 
     return Mongoose
@@ -3350,9 +3376,9 @@ function registerModelTo$1 ( Mongoose ) {
 
 var AudioListener_1 = {
     name:            'AudioListener',
-    getSchemaFrom:   getSchemaFrom$1,
-    getModelFrom:    getModelFrom$1,
-    registerModelTo: registerModelTo$1
+    getSchemaFrom:   getSchemaFrom$2d,
+    getModelFrom:    getModelFrom$22,
+    registerModelTo: registerModelTo$22
 };
 
 /**
@@ -3365,50 +3391,50 @@ var AudioListener_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$4 } = Object3D$1;
+const { Object3D: Object3D$F } = Object3D$J;
 
-let _schema$2 = undefined;
-let _model$2  = undefined;
+let _schema$2c = undefined;
+let _model$21  = undefined;
 
-function getSchemaFrom$2 ( Mongoose ) {
+function getSchemaFrom$2c ( Mongoose ) {
 
-    if ( !_schema$2 ) {
-        _createSchema$2( Mongoose );
+    if ( !_schema$2c ) {
+        _createSchema$2c( Mongoose );
     }
 
-    return _schema$2
+    return _schema$2c
 
 }
 
-function _createSchema$2 ( Mongoose ) {
+function _createSchema$2c ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2 = new Schema( {} );
+    _schema$2c = new Schema( {} );
 
 }
 
-function getModelFrom$2 ( Mongoose ) {
+function getModelFrom$21 ( Mongoose ) {
 
-    if ( !_model$2 ) {
-        _createModel$2( Mongoose );
+    if ( !_model$21 ) {
+        _createModel$21( Mongoose );
     }
 
-    return _model$2
+    return _model$21
 
 }
 
-function _createModel$2 ( Mongoose ) {
+function _createModel$21 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$4.getModelFrom( Mongoose );
-    _model$2                  = Object3DBaseModel.discriminator( 'PositionalAudio', getSchemaFrom$2( Mongoose ) );
+    const Object3DBaseModel = Object3D$F.getModelFrom( Mongoose );
+    _model$21                  = Object3DBaseModel.discriminator( 'PositionalAudio', getSchemaFrom$2c( Mongoose ) );
 
 }
 
-function registerModelTo$2 ( Mongoose ) {
+function registerModelTo$21 ( Mongoose ) {
 
-    if ( !_model$2 ) {
-        _createModel$2( Mongoose );
+    if ( !_model$21 ) {
+        _createModel$21( Mongoose );
     }
 
     return Mongoose
@@ -3417,9 +3443,9 @@ function registerModelTo$2 ( Mongoose ) {
 
 var PositionalAudio_1 = {
     name:            'PositionalAudio',
-    getSchemaFrom:   getSchemaFrom$2,
-    getModelFrom:    getModelFrom$2,
-    registerModelTo: registerModelTo$2
+    getSchemaFrom:   getSchemaFrom$2c,
+    getModelFrom:    getModelFrom$21,
+    registerModelTo: registerModelTo$21
 };
 
 /**
@@ -3433,50 +3459,50 @@ var PositionalAudio_1 = {
  */
 
 
-const { Object3D: Object3D$5 } = Object3D$1;
+const { Object3D: Object3D$E } = Object3D$J;
 
-let _schema$3 = undefined;
-let _model$3  = undefined;
+let _schema$2b = undefined;
+let _model$20  = undefined;
 
-function getSchemaFrom$3 ( Mongoose ) {
+function getSchemaFrom$2b ( Mongoose ) {
 
-    if ( !_schema$3 ) {
-        _createSchema$3( Mongoose );
+    if ( !_schema$2b ) {
+        _createSchema$2b( Mongoose );
     }
 
-    return _schema$3
+    return _schema$2b
 
 }
 
-function _createSchema$3 ( Mongoose ) {
+function _createSchema$2b ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$3 = new Schema( {} );
+    _schema$2b = new Schema( {} );
 
 }
 
-function getModelFrom$3 ( Mongoose ) {
+function getModelFrom$20 ( Mongoose ) {
 
-    if ( !_model$3 ) {
-        _createModel$3( Mongoose );
+    if ( !_model$20 ) {
+        _createModel$20( Mongoose );
     }
 
-    return _model$3
+    return _model$20
 
 }
 
-function _createModel$3 ( Mongoose ) {
+function _createModel$20 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$5.getModelFrom( Mongoose );
-    _model$3                  = Object3DBaseModel.discriminator( 'ArrayCamera', getSchemaFrom$3( Mongoose ) );
+    const Object3DBaseModel = Object3D$E.getModelFrom( Mongoose );
+    _model$20                  = Object3DBaseModel.discriminator( 'ArrayCamera', getSchemaFrom$2b( Mongoose ) );
 
 }
 
-function registerModelTo$3 ( Mongoose ) {
+function registerModelTo$20 ( Mongoose ) {
 
-    if ( !_model$3 ) {
-        _createModel$3( Mongoose );
+    if ( !_model$20 ) {
+        _createModel$20( Mongoose );
     }
 
     return Mongoose
@@ -3485,9 +3511,9 @@ function registerModelTo$3 ( Mongoose ) {
 
 var ArrayCamera_1 = {
     name:            'ArrayCamera',
-    getSchemaFrom:   getSchemaFrom$3,
-    getModelFrom:    getModelFrom$3,
-    registerModelTo: registerModelTo$3
+    getSchemaFrom:   getSchemaFrom$2b,
+    getModelFrom:    getModelFrom$20,
+    registerModelTo: registerModelTo$20
 };
 
 /**
@@ -3501,50 +3527,50 @@ var ArrayCamera_1 = {
  */
 
 
-const { Object3D: Object3D$6 } = Object3D$1;
+const { Object3D: Object3D$D } = Object3D$J;
 
-let _schema$4 = undefined;
-let _model$4  = undefined;
+let _schema$2a = undefined;
+let _model$1$  = undefined;
 
-function getSchemaFrom$4 ( Mongoose ) {
+function getSchemaFrom$2a ( Mongoose ) {
 
-    if ( !_schema$4 ) {
-        _createSchema$4( Mongoose );
+    if ( !_schema$2a ) {
+        _createSchema$2a( Mongoose );
     }
 
-    return _schema$4
+    return _schema$2a
 
 }
 
-function _createSchema$4 ( Mongoose ) {
+function _createSchema$2a ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$4 = new Schema( {} );
+    _schema$2a = new Schema( {} );
 
 }
 
-function getModelFrom$4 ( Mongoose ) {
+function getModelFrom$1$ ( Mongoose ) {
 
-    if ( !_model$4 ) {
-        _createModel$4( Mongoose );
+    if ( !_model$1$ ) {
+        _createModel$1$( Mongoose );
     }
 
-    return _model$4
+    return _model$1$
 
 }
 
-function _createModel$4 ( Mongoose ) {
+function _createModel$1$ ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$6.getModelFrom( Mongoose );
-    _model$4                  = Object3DBaseModel.discriminator( 'Camera', getSchemaFrom$4( Mongoose ) );
+    const Object3DBaseModel = Object3D$D.getModelFrom( Mongoose );
+    _model$1$                  = Object3DBaseModel.discriminator( 'Camera', getSchemaFrom$2a( Mongoose ) );
 
 }
 
-function registerModelTo$4 ( Mongoose ) {
+function registerModelTo$1$ ( Mongoose ) {
 
-    if ( !_model$4 ) {
-        _createModel$4( Mongoose );
+    if ( !_model$1$ ) {
+        _createModel$1$( Mongoose );
     }
 
     return Mongoose
@@ -3553,9 +3579,9 @@ function registerModelTo$4 ( Mongoose ) {
 
 var Camera_1 = {
     name:            'Camera',
-    getSchemaFrom:   getSchemaFrom$4,
-    getModelFrom:    getModelFrom$4,
-    registerModelTo: registerModelTo$4
+    getSchemaFrom:   getSchemaFrom$2a,
+    getModelFrom:    getModelFrom$1$,
+    registerModelTo: registerModelTo$1$
 };
 
 /**
@@ -3568,50 +3594,50 @@ var Camera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$7 } = Object3D$1;
+const { Object3D: Object3D$C } = Object3D$J;
 
-let _schema$5 = undefined;
-let _model$5  = undefined;
+let _schema$29 = undefined;
+let _model$1_  = undefined;
 
-function getSchemaFrom$5 ( Mongoose ) {
+function getSchemaFrom$29 ( Mongoose ) {
 
-    if ( !_schema$5 ) {
-        _createSchema$5( Mongoose );
+    if ( !_schema$29 ) {
+        _createSchema$29( Mongoose );
     }
 
-    return _schema$5
+    return _schema$29
 
 }
 
-function _createSchema$5 ( Mongoose ) {
+function _createSchema$29 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$5 = new Schema( {} );
+    _schema$29 = new Schema( {} );
 
 }
 
-function getModelFrom$5 ( Mongoose ) {
+function getModelFrom$1_ ( Mongoose ) {
 
-    if ( !_model$5 ) {
-        _createModel$5( Mongoose );
+    if ( !_model$1_ ) {
+        _createModel$1_( Mongoose );
     }
 
-    return _model$5
+    return _model$1_
 
 }
 
-function _createModel$5 ( Mongoose ) {
+function _createModel$1_ ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$7.getModelFrom( Mongoose );
-    _model$5                  = Object3DBaseModel.discriminator( 'CubeCamera', getSchemaFrom$5( Mongoose ) );
+    const Object3DBaseModel = Object3D$C.getModelFrom( Mongoose );
+    _model$1_                  = Object3DBaseModel.discriminator( 'CubeCamera', getSchemaFrom$29( Mongoose ) );
 
 }
 
-function registerModelTo$5 ( Mongoose ) {
+function registerModelTo$1_ ( Mongoose ) {
 
-    if ( !_model$5 ) {
-        _createModel$5( Mongoose );
+    if ( !_model$1_ ) {
+        _createModel$1_( Mongoose );
     }
 
     return Mongoose
@@ -3620,9 +3646,9 @@ function registerModelTo$5 ( Mongoose ) {
 
 var CubeCamera_1 = {
     name:            'CubeCamera',
-    getSchemaFrom:   getSchemaFrom$5,
-    getModelFrom:    getModelFrom$5,
-    registerModelTo: registerModelTo$5
+    getSchemaFrom:   getSchemaFrom$29,
+    getModelFrom:    getModelFrom$1_,
+    registerModelTo: registerModelTo$1_
 };
 
 /**
@@ -3635,50 +3661,50 @@ var CubeCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$8 } = Object3D$1;
+const { Object3D: Object3D$B } = Object3D$J;
 
-let _schema$6 = undefined;
-let _model$6  = undefined;
+let _schema$28 = undefined;
+let _model$1Z  = undefined;
 
-function getSchemaFrom$6 ( Mongoose ) {
+function getSchemaFrom$28 ( Mongoose ) {
 
-    if ( !_schema$6 ) {
-        _createSchema$6( Mongoose );
+    if ( !_schema$28 ) {
+        _createSchema$28( Mongoose );
     }
 
-    return _schema$6
+    return _schema$28
 
 }
 
-function _createSchema$6 ( Mongoose ) {
+function _createSchema$28 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$6 = new Schema( {} );
+    _schema$28 = new Schema( {} );
 
 }
 
-function getModelFrom$6 ( Mongoose ) {
+function getModelFrom$1Z ( Mongoose ) {
 
-    if ( !_model$6 ) {
-        _createModel$6( Mongoose );
+    if ( !_model$1Z ) {
+        _createModel$1Z( Mongoose );
     }
 
-    return _model$6
+    return _model$1Z
 
 }
 
-function _createModel$6 ( Mongoose ) {
+function _createModel$1Z ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$8.getModelFrom( Mongoose );
-    _model$6                  = Object3DBaseModel.discriminator( 'OrthographicCamera', getSchemaFrom$6( Mongoose ) );
+    const Object3DBaseModel = Object3D$B.getModelFrom( Mongoose );
+    _model$1Z                  = Object3DBaseModel.discriminator( 'OrthographicCamera', getSchemaFrom$28( Mongoose ) );
 
 }
 
-function registerModelTo$6 ( Mongoose ) {
+function registerModelTo$1Z ( Mongoose ) {
 
-    if ( !_model$6 ) {
-        _createModel$6( Mongoose );
+    if ( !_model$1Z ) {
+        _createModel$1Z( Mongoose );
     }
 
     return Mongoose
@@ -3687,9 +3713,9 @@ function registerModelTo$6 ( Mongoose ) {
 
 var OrthographicCamera_1 = {
     name:            'OrthographicCamera',
-    getSchemaFrom:   getSchemaFrom$6,
-    getModelFrom:    getModelFrom$6,
-    registerModelTo: registerModelTo$6
+    getSchemaFrom:   getSchemaFrom$28,
+    getModelFrom:    getModelFrom$1Z,
+    registerModelTo: registerModelTo$1Z
 };
 
 /**
@@ -3702,50 +3728,50 @@ var OrthographicCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$9 } = Object3D$1;
+const { Object3D: Object3D$A } = Object3D$J;
 
-let _schema$7 = undefined;
-let _model$7  = undefined;
+let _schema$27 = undefined;
+let _model$1Y  = undefined;
 
-function getSchemaFrom$7 ( Mongoose ) {
+function getSchemaFrom$27 ( Mongoose ) {
 
-    if ( !_schema$7 ) {
-        _createSchema$7( Mongoose );
+    if ( !_schema$27 ) {
+        _createSchema$27( Mongoose );
     }
 
-    return _schema$7
+    return _schema$27
 
 }
 
-function _createSchema$7 ( Mongoose ) {
+function _createSchema$27 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$7 = new Schema( {} );
+    _schema$27 = new Schema( {} );
 
 }
 
-function getModelFrom$7 ( Mongoose ) {
+function getModelFrom$1Y ( Mongoose ) {
 
-    if ( !_model$7 ) {
-        _createModel$7( Mongoose );
+    if ( !_model$1Y ) {
+        _createModel$1Y( Mongoose );
     }
 
-    return _model$7
+    return _model$1Y
 
 }
 
-function _createModel$7 ( Mongoose ) {
+function _createModel$1Y ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$9.getModelFrom( Mongoose );
-    _model$7                  = Object3DBaseModel.discriminator( 'PerspectiveCamera', getSchemaFrom$7( Mongoose ) );
+    const Object3DBaseModel = Object3D$A.getModelFrom( Mongoose );
+    _model$1Y                  = Object3DBaseModel.discriminator( 'PerspectiveCamera', getSchemaFrom$27( Mongoose ) );
 
 }
 
-function registerModelTo$7 ( Mongoose ) {
+function registerModelTo$1Y ( Mongoose ) {
 
-    if ( !_model$7 ) {
-        _createModel$7( Mongoose );
+    if ( !_model$1Y ) {
+        _createModel$1Y( Mongoose );
     }
 
     return Mongoose
@@ -3754,9 +3780,9 @@ function registerModelTo$7 ( Mongoose ) {
 
 var PerspectiveCamera_1 = {
     name:            'PerspectiveCamera',
-    getSchemaFrom:   getSchemaFrom$7,
-    getModelFrom:    getModelFrom$7,
-    registerModelTo: registerModelTo$7
+    getSchemaFrom:   getSchemaFrom$27,
+    getModelFrom:    getModelFrom$1Y,
+    registerModelTo: registerModelTo$1Y
 };
 
 /**
@@ -3771,19 +3797,19 @@ var PerspectiveCamera_1 = {
 
 const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = iteeValidators__default['default'];
 
-let _schema$8 = undefined;
+let _schema$26 = undefined;
 
-function getSchemaFrom$8 ( Mongoose ) {
+function getSchemaFrom$26 ( Mongoose ) {
 
-    if ( !_schema$8 ) {
-        _createSchema$8( Mongoose );
+    if ( !_schema$26 ) {
+        _createSchema$26( Mongoose );
     }
 
-    return _schema$8
+    return _schema$26
 
 }
 
-function _createSchema$8 ( Mongoose ) {
+function _createSchema$26 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -3808,7 +3834,7 @@ function _createSchema$8 ( Mongoose ) {
         BigUint64Array:    10
     };
 
-    _schema$8 = new Schema( {
+    _schema$26 = new Schema( {
         array: {
             type: Buffer,
             set:  ( array ) => {
@@ -3946,7 +3972,7 @@ function _createSchema$8 ( Mongoose ) {
 
 var BufferAttribute_1 = {
     name:            'BufferAttribute',
-    getSchemaFrom:   getSchemaFrom$8,
+    getSchemaFrom:   getSchemaFrom$26,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -3962,20 +3988,20 @@ var BufferAttribute_1 = {
  */
 //const { BufferAttribute } = require( './BufferAttribute' )
 
-let _schema$9 = undefined;
-let _model$8  = undefined;
+let _schema$25 = undefined;
+let _model$1X  = undefined;
 
-function getSchemaFrom$9 ( Mongoose ) {
+function getSchemaFrom$25 ( Mongoose ) {
 
-    if ( !_schema$9 ) {
-        _createSchema$9( Mongoose );
+    if ( !_schema$25 ) {
+        _createSchema$25( Mongoose );
     }
 
-    return _schema$9
+    return _schema$25
 
 }
 
-function _createSchema$9 ( Mongoose ) {
+function _createSchema$25 ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -3984,7 +4010,7 @@ function _createSchema$9 ( Mongoose ) {
 
     const BufferAttributeSchema = BufferAttribute_1.getSchemaFrom( Mongoose );
 
-    _schema$9 = new Schema( {
+    _schema$25 = new Schema( {
         uuid:       String,
         name:       String,
         type:       String,
@@ -4012,48 +4038,48 @@ function _createSchema$9 ( Mongoose ) {
 
 }
 
-function getModelFrom$8 ( Mongoose ) {
+function getModelFrom$1X ( Mongoose ) {
 
-    if ( !_model$8 ) {
-        _createModel$8( Mongoose );
+    if ( !_model$1X ) {
+        _createModel$1X( Mongoose );
     }
 
-    return _model$8
+    return _model$1X
 
 }
 
-function _createModel$8 ( Mongoose ) {
+function _createModel$1X ( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$8 = Mongoose.model( 'BufferGeometries', getSchemaFrom$9( Mongoose ) );
-    _model$8.discriminator( 'BufferGeometry', new Mongoose.Schema( {} ) );
+    _model$1X = Mongoose.model( 'BufferGeometries', getSchemaFrom$25( Mongoose ) );
+    _model$1X.discriminator( 'BufferGeometry', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$8 ( Mongoose ) {
+function registerModelTo$1X ( Mongoose ) {
 
-    if ( !_model$8 ) {
-        _createModel$8( Mongoose );
+    if ( !_model$1X ) {
+        _createModel$1X( Mongoose );
     }
 
     return Mongoose
 
 }
 
-const BufferGeometry = {
-    getSchemaFrom:   getSchemaFrom$9,
-    getModelFrom:    getModelFrom$8,
-    registerModelTo: registerModelTo$8
+const BufferGeometry$l = {
+    getSchemaFrom:   getSchemaFrom$25,
+    getModelFrom:    getModelFrom$1X,
+    registerModelTo: registerModelTo$1X
 };
 
 
 //module.exports.BufferGeometry =
 
-var BufferGeometry$1 = /*#__PURE__*/Object.freeze({
+var BufferGeometry$m = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	BufferGeometry: BufferGeometry
+	BufferGeometry: BufferGeometry$l
 });
 
 /**
@@ -4063,24 +4089,24 @@ var BufferGeometry$1 = /*#__PURE__*/Object.freeze({
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$a = undefined;
-let _model$9  = undefined;
+let _schema$24 = undefined;
+let _model$1W  = undefined;
 
-function getSchemaFrom$a ( Mongoose ) {
+function getSchemaFrom$24 ( Mongoose ) {
 
-    if ( !_schema$a ) {
-        _createSchema$a( Mongoose );
+    if ( !_schema$24 ) {
+        _createSchema$24( Mongoose );
     }
 
-    return _schema$a
+    return _schema$24
 
 }
 
-function _createSchema$a ( Mongoose ) {
+function _createSchema$24 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$a = new Schema( {
+    _schema$24 = new Schema( {
         type: {
             type:    String,
             default: 'Curve'
@@ -4093,30 +4119,30 @@ function _createSchema$a ( Mongoose ) {
 
 }
 
-function getModelFrom$9 ( Mongoose ) {
+function getModelFrom$1W ( Mongoose ) {
 
-    if ( !_model$9 ) {
-        _createModel$9( Mongoose );
+    if ( !_model$1W ) {
+        _createModel$1W( Mongoose );
     }
 
-    return _model$9
+    return _model$1W
 
 }
 
-function _createModel$9 ( Mongoose ) {
+function _createModel$1W ( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$9 = Mongoose.model( 'Curves', getSchemaFrom$a( Mongoose ) );
-    _model$9.discriminator( 'Curve', new Mongoose.Schema( {} ) );
+    _model$1W = Mongoose.model( 'Curves', getSchemaFrom$24( Mongoose ) );
+    _model$1W.discriminator( 'Curve', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$9 ( Mongoose ) {
+function registerModelTo$1W ( Mongoose ) {
 
-    if ( !_model$9 ) {
-        _createModel$9( Mongoose );
+    if ( !_model$1W ) {
+        _createModel$1W( Mongoose );
     }
 
     return Mongoose
@@ -4125,12 +4151,12 @@ function registerModelTo$9 ( Mongoose ) {
 
 var Curve_1 = {
     name: 'Curve',
-    getSchemaFrom: getSchemaFrom$a,
-    getModelFrom: getModelFrom$9,
-    registerModelTo: registerModelTo$9
+    getSchemaFrom: getSchemaFrom$24,
+    getModelFrom: getModelFrom$1W,
+    registerModelTo: registerModelTo$1W
 };
 
-var Curve = {
+var Curve$g = {
 	Curve: Curve_1
 };
 
@@ -4145,22 +4171,22 @@ var Curve = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$1 } = Curve;
+const { Curve: Curve$f } = Curve$g;
 
-let _schema$b = undefined;
-let _model$a  = undefined;
+let _schema$23 = undefined;
+let _model$1V  = undefined;
 
-function getSchemaFrom$b ( Mongoose ) {
+function getSchemaFrom$23 ( Mongoose ) {
 
-    if ( !_schema$b ) {
-        _createSchema$b( Mongoose );
+    if ( !_schema$23 ) {
+        _createSchema$23( Mongoose );
     }
 
-    return _schema$b
+    return _schema$23
 
 }
 
-function _createSchema$b ( Mongoose ) {
+function _createSchema$23 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -4175,7 +4201,7 @@ function _createSchema$b ( Mongoose ) {
         _id: false
     } );
 
-    _schema$b = new Schema( {
+    _schema$23 = new Schema( {
         curves:    [ NestedCurveSchema ], // Curve
         autoClose: {
             type:    Boolean,
@@ -4185,27 +4211,27 @@ function _createSchema$b ( Mongoose ) {
 
 }
 
-function getModelFrom$a ( Mongoose ) {
+function getModelFrom$1V ( Mongoose ) {
 
-    if ( !_model$a ) {
-        _createModel$a( Mongoose );
+    if ( !_model$1V ) {
+        _createModel$1V( Mongoose );
     }
 
-    return _model$a
+    return _model$1V
 
 }
 
-function _createModel$a ( Mongoose ) {
+function _createModel$1V ( Mongoose ) {
 
-    const CurveBaseModel = Curve$1.getModelFrom( Mongoose );
-    _model$a               = CurveBaseModel.discriminator( 'CurvePath', getSchemaFrom$b( Mongoose ) );
+    const CurveBaseModel = Curve$f.getModelFrom( Mongoose );
+    _model$1V               = CurveBaseModel.discriminator( 'CurvePath', getSchemaFrom$23( Mongoose ) );
 
 }
 
-function registerModelTo$a ( Mongoose ) {
+function registerModelTo$1V ( Mongoose ) {
 
-    if ( !_model$a ) {
-        _createModel$a( Mongoose );
+    if ( !_model$1V ) {
+        _createModel$1V( Mongoose );
     }
 
     return Mongoose
@@ -4214,9 +4240,9 @@ function registerModelTo$a ( Mongoose ) {
 
 var CurvePath_1 = {
     name:            'CurvePath',
-    getSchemaFrom:   getSchemaFrom$b,
-    getModelFrom:    getModelFrom$a,
-    registerModelTo: registerModelTo$a
+    getSchemaFrom:   getSchemaFrom$23,
+    getModelFrom:    getModelFrom$1V,
+    registerModelTo: registerModelTo$1V
 };
 
 /**
@@ -4226,26 +4252,26 @@ var CurvePath_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$c = undefined;
+let _schema$22 = undefined;
 
-function getSchemaFrom$c ( Mongoose ) {
+function getSchemaFrom$22 ( Mongoose ) {
 
-    if ( !_schema$c ) {
-        _createSchema$c( Mongoose );
+    if ( !_schema$22 ) {
+        _createSchema$22( Mongoose );
     }
 
-    return _schema$c
+    return _schema$22
 
 }
 
-function _createSchema$c ( Mongoose ) {
+function _createSchema$22 ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Color   = Types.Color;
     const Vector3 = Types.Vector3;
 
-    _schema$c = new Schema( {
+    _schema$22 = new Schema( {
         a:             Number,
         b:             Number,
         c:             Number,
@@ -4263,7 +4289,7 @@ function _createSchema$c ( Mongoose ) {
 
 var Face3_1 = {
     name:            'Face3',
-    getSchemaFrom:   getSchemaFrom$c,
+    getSchemaFrom:   getSchemaFrom$22,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -4278,27 +4304,27 @@ var Face3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$d = undefined;
-let _model$b  = undefined;
+let _schema$21 = undefined;
+let _model$1U  = undefined;
 
-function getSchemaFrom$d ( Mongoose ) {
+function getSchemaFrom$21 ( Mongoose ) {
 
-    if ( !_schema$d ) {
-        _createSchema$d( Mongoose );
+    if ( !_schema$21 ) {
+        _createSchema$21( Mongoose );
     }
 
-    return _schema$d
+    return _schema$21
 
 }
 
-function _createSchema$d ( Mongoose ) {
+function _createSchema$21 ( Mongoose ) {
 
     const Face3Schema = Face3_1.getSchemaFrom( Mongoose );
     const Schema      = Mongoose.Schema;
     const Types       = Schema.Types;
     const Vector3     = Types.Vector3;
 
-    _schema$d = new Schema( {
+    _schema$21 = new Schema( {
         uuid:          String,
         name:          String,
         type:          String,
@@ -4333,46 +4359,46 @@ function _createSchema$d ( Mongoose ) {
 
 }
 
-function getModelFrom$b ( Mongoose ) {
+function getModelFrom$1U ( Mongoose ) {
 
-    if ( !_model$b ) {
-        _createModel$b( Mongoose );
+    if ( !_model$1U ) {
+        _createModel$1U( Mongoose );
     }
 
-    return _model$b
+    return _model$1U
 
 }
 
-function _createModel$b ( Mongoose ) {
+function _createModel$1U ( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$b = Mongoose.model( 'Geometries', getSchemaFrom$d( Mongoose ) );
-    _model$b.discriminator( 'Geometry', new Mongoose.Schema( {} ) );
+    _model$1U = Mongoose.model( 'Geometries', getSchemaFrom$21( Mongoose ) );
+    _model$1U.discriminator( 'Geometry', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$b ( Mongoose ) {
+function registerModelTo$1U ( Mongoose ) {
 
-    if ( !_model$b ) {
-        _createModel$b( Mongoose );
+    if ( !_model$1U ) {
+        _createModel$1U( Mongoose );
     }
 
     return Mongoose
 
 }
 
-const Geometry = {
+const Geometry$o = {
     name: 'Geometry',
-    getSchemaFrom: getSchemaFrom$d,
-    getModelFrom: getModelFrom$b,
-    registerModelTo: registerModelTo$b
+    getSchemaFrom: getSchemaFrom$21,
+    getModelFrom: getModelFrom$1U,
+    registerModelTo: registerModelTo$1U
 };
 
-var Geometry$1 = /*#__PURE__*/Object.freeze({
+var Geometry$p = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	Geometry: Geometry
+	Geometry: Geometry$o
 });
 
 /**
@@ -4385,22 +4411,22 @@ var Geometry$1 = /*#__PURE__*/Object.freeze({
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$2 } = Curve;
+const { Curve: Curve$e } = Curve$g;
 
-let _schema$e = undefined;
-let _model$c  = undefined;
+let _schema$20 = undefined;
+let _model$1T  = undefined;
 
-function getSchemaFrom$e ( Mongoose ) {
+function getSchemaFrom$20 ( Mongoose ) {
 
-    if ( !_schema$e ) {
-        _createSchema$e( Mongoose );
+    if ( !_schema$20 ) {
+        _createSchema$20( Mongoose );
     }
 
-    return _schema$e
+    return _schema$20
 
 }
 
-function _createSchema$e ( Mongoose ) {
+function _createSchema$20 ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4417,7 +4443,7 @@ function _createSchema$e ( Mongoose ) {
         _id: false
     } );
 
-    _schema$e = new Schema( {
+    _schema$20 = new Schema( {
 
         // CurvePath inheritance
         curves: [ NestedCurveSchema ],
@@ -4435,27 +4461,27 @@ function _createSchema$e ( Mongoose ) {
 
 }
 
-function getModelFrom$c ( Mongoose ) {
+function getModelFrom$1T ( Mongoose ) {
 
-    if ( !_model$c ) {
-        _createModel$c( Mongoose );
+    if ( !_model$1T ) {
+        _createModel$1T( Mongoose );
     }
 
-    return _model$c
+    return _model$1T
 
 }
 
-function _createModel$c ( Mongoose ) {
+function _createModel$1T ( Mongoose ) {
 
-    const CurveBaseModel = Curve$2.getModelFrom( Mongoose );
-    _model$c               = CurveBaseModel.discriminator( 'Path', getSchemaFrom$e( Mongoose ) );
+    const CurveBaseModel = Curve$e.getModelFrom( Mongoose );
+    _model$1T               = CurveBaseModel.discriminator( 'Path', getSchemaFrom$20( Mongoose ) );
 
 }
 
-function registerModelTo$c ( Mongoose ) {
+function registerModelTo$1T ( Mongoose ) {
 
-    if ( !_model$c ) {
-        _createModel$c( Mongoose );
+    if ( !_model$1T ) {
+        _createModel$1T( Mongoose );
     }
 
     return Mongoose
@@ -4464,9 +4490,9 @@ function registerModelTo$c ( Mongoose ) {
 
 var Path_1 = {
     name:            'Path',
-    getSchemaFrom:   getSchemaFrom$e,
-    getModelFrom:    getModelFrom$c,
-    registerModelTo: registerModelTo$c
+    getSchemaFrom:   getSchemaFrom$20,
+    getModelFrom:    getModelFrom$1T,
+    registerModelTo: registerModelTo$1T
 };
 
 /**
@@ -4479,22 +4505,22 @@ var Path_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$3 } = Curve;
+const { Curve: Curve$d } = Curve$g;
 
-let _schema$f = undefined;
-let _model$d  = undefined;
+let _schema$1$ = undefined;
+let _model$1S  = undefined;
 
-function getSchemaFrom$f ( Mongoose ) {
+function getSchemaFrom$1$ ( Mongoose ) {
 
-    if ( !_schema$f ) {
-        _createSchema$f( Mongoose );
+    if ( !_schema$1$ ) {
+        _createSchema$1$( Mongoose );
     }
 
-    return _schema$f
+    return _schema$1$
 
 }
 
-function _createSchema$f ( Mongoose ) {
+function _createSchema$1$ ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4528,7 +4554,7 @@ function _createSchema$f ( Mongoose ) {
         _id: false
     } );
 
-    _schema$f = new Schema( {
+    _schema$1$ = new Schema( {
 
         // CurvePath inheritance
         curves:    [ NestedCurveSchema ], // Curve
@@ -4548,27 +4574,27 @@ function _createSchema$f ( Mongoose ) {
 
 }
 
-function getModelFrom$d ( Mongoose ) {
+function getModelFrom$1S ( Mongoose ) {
 
-    if ( !_model$d ) {
-        _createModel$d( Mongoose );
+    if ( !_model$1S ) {
+        _createModel$1S( Mongoose );
     }
 
-    return _model$d
+    return _model$1S
 
 }
 
-function _createModel$d ( Mongoose ) {
+function _createModel$1S ( Mongoose ) {
 
-    const CurveBaseModel = Curve$3.getModelFrom( Mongoose );
-    _model$d               = CurveBaseModel.discriminator( 'Shape', getSchemaFrom$f( Mongoose ) );
+    const CurveBaseModel = Curve$d.getModelFrom( Mongoose );
+    _model$1S               = CurveBaseModel.discriminator( 'Shape', getSchemaFrom$1$( Mongoose ) );
 
 }
 
-function registerModelTo$d ( Mongoose ) {
+function registerModelTo$1S ( Mongoose ) {
 
-    if ( !_model$d ) {
-        _createModel$d( Mongoose );
+    if ( !_model$1S ) {
+        _createModel$1S( Mongoose );
     }
 
     return Mongoose
@@ -4577,9 +4603,9 @@ function registerModelTo$d ( Mongoose ) {
 
 var Shape_1 = {
     name:            'Shape',
-    getSchemaFrom:   getSchemaFrom$f,
-    getModelFrom:    getModelFrom$d,
-    registerModelTo: registerModelTo$d
+    getSchemaFrom:   getSchemaFrom$1$,
+    getModelFrom:    getModelFrom$1S,
+    registerModelTo: registerModelTo$1S
 };
 
 /**
@@ -4592,26 +4618,26 @@ var Shape_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$4 } = Curve;
+const { Curve: Curve$c } = Curve$g;
 
-let _schema$g = undefined;
-let _model$e  = undefined;
+let _schema$1_ = undefined;
+let _model$1R  = undefined;
 
-function getSchemaFrom$g ( Mongoose ) {
+function getSchemaFrom$1_ ( Mongoose ) {
 
-    if ( !_schema$g ) {
-        _createSchema$g( Mongoose );
+    if ( !_schema$1_ ) {
+        _createSchema$1_( Mongoose );
     }
 
-    return _schema$g
+    return _schema$1_
 
 }
 
-function _createSchema$g ( Mongoose ) {
+function _createSchema$1_ ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$g = new Schema( {
+    _schema$1_ = new Schema( {
         // EllipseCurve inheritance
         aX:          Number,
         aY:          Number,
@@ -4625,27 +4651,27 @@ function _createSchema$g ( Mongoose ) {
 
 }
 
-function getModelFrom$e ( Mongoose ) {
+function getModelFrom$1R ( Mongoose ) {
 
-    if ( !_model$e ) {
-        _createModel$e( Mongoose );
+    if ( !_model$1R ) {
+        _createModel$1R( Mongoose );
     }
 
-    return _model$e
+    return _model$1R
 
 }
 
-function _createModel$e ( Mongoose ) {
+function _createModel$1R ( Mongoose ) {
 
-    const CurveBaseModel = Curve$4.getModelFrom( Mongoose );
-    _model$e               = CurveBaseModel.discriminator( 'ArcCurve', getSchemaFrom$g( Mongoose ) );
+    const CurveBaseModel = Curve$c.getModelFrom( Mongoose );
+    _model$1R               = CurveBaseModel.discriminator( 'ArcCurve', getSchemaFrom$1_( Mongoose ) );
 
 }
 
-function registerModelTo$e ( Mongoose ) {
+function registerModelTo$1R ( Mongoose ) {
 
-    if ( !_model$e ) {
-        _createModel$e( Mongoose );
+    if ( !_model$1R ) {
+        _createModel$1R( Mongoose );
     }
 
     return Mongoose
@@ -4654,9 +4680,9 @@ function registerModelTo$e ( Mongoose ) {
 
 var ArcCurve_1 = {
     name:            'ArcCurve',
-    getSchemaFrom:   getSchemaFrom$g,
-    getModelFrom:    getModelFrom$e,
-    registerModelTo: registerModelTo$e
+    getSchemaFrom:   getSchemaFrom$1_,
+    getModelFrom:    getModelFrom$1R,
+    registerModelTo: registerModelTo$1R
 };
 
 /**
@@ -4669,28 +4695,28 @@ var ArcCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$5 } = Curve;
+const { Curve: Curve$b } = Curve$g;
 
-let _schema$h = undefined;
-let _model$f  = undefined;
+let _schema$1Z = undefined;
+let _model$1Q  = undefined;
 
-function getSchemaFrom$h ( Mongoose ) {
+function getSchemaFrom$1Z ( Mongoose ) {
 
-    if ( !_schema$h ) {
-        _createSchema$h( Mongoose );
+    if ( !_schema$1Z ) {
+        _createSchema$1Z( Mongoose );
     }
 
-    return _schema$h
+    return _schema$1Z
 
 }
 
-function _createSchema$h ( Mongoose ) {
+function _createSchema$1Z ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$h = new Schema( {
+    _schema$1Z = new Schema( {
         points:    [ Vector3 ],
         closed:    Boolean,
         curveType: String,
@@ -4699,27 +4725,27 @@ function _createSchema$h ( Mongoose ) {
 
 }
 
-function getModelFrom$f ( Mongoose ) {
+function getModelFrom$1Q ( Mongoose ) {
 
-    if ( !_model$f ) {
-        _createModel$f( Mongoose );
+    if ( !_model$1Q ) {
+        _createModel$1Q( Mongoose );
     }
 
-    return _model$f
+    return _model$1Q
 
 }
 
-function _createModel$f ( Mongoose ) {
+function _createModel$1Q ( Mongoose ) {
 
-    const CurveBaseModel = Curve$5.getModelFrom( Mongoose );
-    _model$f               = CurveBaseModel.discriminator( 'CatmullRomCurve3', getSchemaFrom$h( Mongoose ) );
+    const CurveBaseModel = Curve$b.getModelFrom( Mongoose );
+    _model$1Q               = CurveBaseModel.discriminator( 'CatmullRomCurve3', getSchemaFrom$1Z( Mongoose ) );
 
 }
 
-function registerModelTo$f ( Mongoose ) {
+function registerModelTo$1Q ( Mongoose ) {
 
-    if ( !_model$f ) {
-        _createModel$f( Mongoose );
+    if ( !_model$1Q ) {
+        _createModel$1Q( Mongoose );
     }
 
     return Mongoose
@@ -4728,9 +4754,9 @@ function registerModelTo$f ( Mongoose ) {
 
 var CatmullRomCurve3_1 = {
     name:            'CatmullRomCurve3',
-    getSchemaFrom:   getSchemaFrom$h,
-    getModelFrom:    getModelFrom$f,
-    registerModelTo: registerModelTo$f
+    getSchemaFrom:   getSchemaFrom$1Z,
+    getModelFrom:    getModelFrom$1Q,
+    registerModelTo: registerModelTo$1Q
 };
 
 /**
@@ -4743,28 +4769,28 @@ var CatmullRomCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$6 } = Curve;
+const { Curve: Curve$a } = Curve$g;
 
-let _schema$i = undefined;
-let _model$g  = undefined;
+let _schema$1Y = undefined;
+let _model$1P  = undefined;
 
-function getSchemaFrom$i ( Mongoose ) {
+function getSchemaFrom$1Y ( Mongoose ) {
 
-    if ( !_schema$i ) {
-        _createSchema$i( Mongoose );
+    if ( !_schema$1Y ) {
+        _createSchema$1Y( Mongoose );
     }
 
-    return _schema$i
+    return _schema$1Y
 
 }
 
-function _createSchema$i ( Mongoose ) {
+function _createSchema$1Y ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    _schema$i = new Schema( {
+    _schema$1Y = new Schema( {
         v0: Vector2,
         v1: Vector2,
         v2: Vector2,
@@ -4773,27 +4799,27 @@ function _createSchema$i ( Mongoose ) {
 
 }
 
-function getModelFrom$g ( Mongoose ) {
+function getModelFrom$1P ( Mongoose ) {
 
-    if ( !_model$g ) {
-        _createModel$g( Mongoose );
+    if ( !_model$1P ) {
+        _createModel$1P( Mongoose );
     }
 
-    return _model$g
+    return _model$1P
 
 }
 
-function _createModel$g ( Mongoose ) {
+function _createModel$1P ( Mongoose ) {
 
-    const CurveBaseModel = Curve$6.getModelFrom( Mongoose );
-    _model$g               = CurveBaseModel.discriminator( 'CubicBezierCurve', getSchemaFrom$i( Mongoose ) );
+    const CurveBaseModel = Curve$a.getModelFrom( Mongoose );
+    _model$1P               = CurveBaseModel.discriminator( 'CubicBezierCurve', getSchemaFrom$1Y( Mongoose ) );
 
 }
 
-function registerModelTo$g ( Mongoose ) {
+function registerModelTo$1P ( Mongoose ) {
 
-    if ( !_model$g ) {
-        _createModel$g( Mongoose );
+    if ( !_model$1P ) {
+        _createModel$1P( Mongoose );
     }
 
     return Mongoose
@@ -4802,9 +4828,9 @@ function registerModelTo$g ( Mongoose ) {
 
 var CubicBezierCurve_1 = {
     name:            'CubicBezierCurve',
-    getSchemaFrom:   getSchemaFrom$i,
-    getModelFrom:    getModelFrom$g,
-    registerModelTo: registerModelTo$g
+    getSchemaFrom:   getSchemaFrom$1Y,
+    getModelFrom:    getModelFrom$1P,
+    registerModelTo: registerModelTo$1P
 };
 
 /**
@@ -4817,28 +4843,28 @@ var CubicBezierCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$7 } = Curve;
+const { Curve: Curve$9 } = Curve$g;
 
-let _schema$j = undefined;
-let _model$h  = undefined;
+let _schema$1X = undefined;
+let _model$1O  = undefined;
 
-function getSchemaFrom$j ( Mongoose ) {
+function getSchemaFrom$1X ( Mongoose ) {
 
-    if ( !_schema$j ) {
-        _createSchema$j( Mongoose );
+    if ( !_schema$1X ) {
+        _createSchema$1X( Mongoose );
     }
 
-    return _schema$j
+    return _schema$1X
 
 }
 
-function _createSchema$j ( Mongoose ) {
+function _createSchema$1X ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$j = new Schema( {
+    _schema$1X = new Schema( {
         v0: Vector3,
         v1: Vector3,
         v2: Vector3,
@@ -4847,27 +4873,27 @@ function _createSchema$j ( Mongoose ) {
 
 }
 
-function getModelFrom$h ( Mongoose ) {
+function getModelFrom$1O ( Mongoose ) {
 
-    if ( !_model$h ) {
-        _createModel$h( Mongoose );
+    if ( !_model$1O ) {
+        _createModel$1O( Mongoose );
     }
 
-    return _model$h
+    return _model$1O
 
 }
 
-function _createModel$h ( Mongoose ) {
+function _createModel$1O ( Mongoose ) {
 
-    const CurveBaseModel = Curve$7.getModelFrom( Mongoose );
-    _model$h               = CurveBaseModel.discriminator( 'CubicBezierCurve3', getSchemaFrom$j( Mongoose ) );
+    const CurveBaseModel = Curve$9.getModelFrom( Mongoose );
+    _model$1O               = CurveBaseModel.discriminator( 'CubicBezierCurve3', getSchemaFrom$1X( Mongoose ) );
 
 }
 
-function registerModelTo$h ( Mongoose ) {
+function registerModelTo$1O ( Mongoose ) {
 
-    if ( !_model$h ) {
-        _createModel$h( Mongoose );
+    if ( !_model$1O ) {
+        _createModel$1O( Mongoose );
     }
 
     return Mongoose
@@ -4876,9 +4902,9 @@ function registerModelTo$h ( Mongoose ) {
 
 var CubicBezierCurve3_1 = {
     name:            'CubicBezierCurve3',
-    getSchemaFrom:   getSchemaFrom$j,
-    getModelFrom:    getModelFrom$h,
-    registerModelTo: registerModelTo$h
+    getSchemaFrom:   getSchemaFrom$1X,
+    getModelFrom:    getModelFrom$1O,
+    registerModelTo: registerModelTo$1O
 };
 
 /**
@@ -4891,50 +4917,50 @@ var CubicBezierCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$8 } = Curve;
+const { Curve: Curve$8 } = Curve$g;
 
-let _schema$k = undefined;
-let _model$i  = undefined;
+let _schema$1W = undefined;
+let _model$1N  = undefined;
 
-function getSchemaFrom$k ( Mongoose ) {
+function getSchemaFrom$1W ( Mongoose ) {
 
-    if ( !_schema$k ) {
-        _createSchema$k( Mongoose );
+    if ( !_schema$1W ) {
+        _createSchema$1W( Mongoose );
     }
 
-    return _schema$k
+    return _schema$1W
 
 }
 
-function _createSchema$k ( Mongoose ) {
+function _createSchema$1W ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$k = new Schema( {} );
+    _schema$1W = new Schema( {} );
 
 }
 
-function getModelFrom$i ( Mongoose ) {
+function getModelFrom$1N ( Mongoose ) {
 
-    if ( !_model$i ) {
-        _createModel$i( Mongoose );
+    if ( !_model$1N ) {
+        _createModel$1N( Mongoose );
     }
 
-    return _model$i
+    return _model$1N
 
 }
 
-function _createModel$i ( Mongoose ) {
+function _createModel$1N ( Mongoose ) {
 
     const CurveBaseModel = Curve$8.getModelFrom( Mongoose );
-    _model$i               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom$k( Mongoose ) );
+    _model$1N               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom$1W( Mongoose ) );
 
 }
 
-function registerModelTo$i ( Mongoose ) {
+function registerModelTo$1N ( Mongoose ) {
 
-    if ( !_model$i ) {
-        _createModel$i( Mongoose );
+    if ( !_model$1N ) {
+        _createModel$1N( Mongoose );
     }
 
     return Mongoose
@@ -4943,9 +4969,9 @@ function registerModelTo$i ( Mongoose ) {
 
 var CurveExtras_1 = {
     name:            'CurveExtras',
-    getSchemaFrom:   getSchemaFrom$k,
-    getModelFrom:    getModelFrom$i,
-    registerModelTo: registerModelTo$i
+    getSchemaFrom:   getSchemaFrom$1W,
+    getModelFrom:    getModelFrom$1N,
+    registerModelTo: registerModelTo$1N
 };
 
 /**
@@ -4958,26 +4984,26 @@ var CurveExtras_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$9 } = Curve;
+const { Curve: Curve$7 } = Curve$g;
 
-let _schema$l = undefined;
-let _model$j  = undefined;
+let _schema$1V = undefined;
+let _model$1M  = undefined;
 
-function getSchemaFrom$l ( Mongoose ) {
+function getSchemaFrom$1V ( Mongoose ) {
 
-    if ( !_schema$l ) {
-        _createSchema$l( Mongoose );
+    if ( !_schema$1V ) {
+        _createSchema$1V( Mongoose );
     }
 
-    return _schema$l
+    return _schema$1V
 
 }
 
-function _createSchema$l ( Mongoose ) {
+function _createSchema$1V ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$l = new Schema( {
+    _schema$1V = new Schema( {
         aX:          Number,
         aY:          Number,
         xRadius:     Number,
@@ -4990,27 +5016,27 @@ function _createSchema$l ( Mongoose ) {
 
 }
 
-function getModelFrom$j ( Mongoose ) {
+function getModelFrom$1M ( Mongoose ) {
 
-    if ( !_model$j ) {
-        _createModel$j( Mongoose );
+    if ( !_model$1M ) {
+        _createModel$1M( Mongoose );
     }
 
-    return _model$j
+    return _model$1M
 
 }
 
-function _createModel$j ( Mongoose ) {
+function _createModel$1M ( Mongoose ) {
 
-    const CurveBaseModel = Curve$9.getModelFrom( Mongoose );
-    _model$j               = CurveBaseModel.discriminator( 'EllipseCurve', getSchemaFrom$l( Mongoose ) );
+    const CurveBaseModel = Curve$7.getModelFrom( Mongoose );
+    _model$1M               = CurveBaseModel.discriminator( 'EllipseCurve', getSchemaFrom$1V( Mongoose ) );
 
 }
 
-function registerModelTo$j ( Mongoose ) {
+function registerModelTo$1M ( Mongoose ) {
 
-    if ( !_model$j ) {
-        _createModel$j( Mongoose );
+    if ( !_model$1M ) {
+        _createModel$1M( Mongoose );
     }
 
     return Mongoose
@@ -5019,9 +5045,9 @@ function registerModelTo$j ( Mongoose ) {
 
 var EllipseCurve_1 = {
     name:            'EllipseCurve',
-    getSchemaFrom:   getSchemaFrom$l,
-    getModelFrom:    getModelFrom$j,
-    registerModelTo: registerModelTo$j
+    getSchemaFrom:   getSchemaFrom$1V,
+    getModelFrom:    getModelFrom$1M,
+    registerModelTo: registerModelTo$1M
 };
 
 /**
@@ -5034,55 +5060,55 @@ var EllipseCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$a } = Curve;
+const { Curve: Curve$6 } = Curve$g;
 
-let _schema$m = undefined;
-let _model$k  = undefined;
+let _schema$1U = undefined;
+let _model$1L  = undefined;
 
-function getSchemaFrom$m ( Mongoose ) {
+function getSchemaFrom$1U ( Mongoose ) {
 
-    if ( !_schema$m ) {
-        _createSchema$m( Mongoose );
+    if ( !_schema$1U ) {
+        _createSchema$1U( Mongoose );
     }
 
-    return _schema$m
+    return _schema$1U
 
 }
 
-function _createSchema$m ( Mongoose ) {
+function _createSchema$1U ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    _schema$m = new Schema( {
+    _schema$1U = new Schema( {
         v0: Vector2,
         v1: Vector2
     } );
 
 }
 
-function getModelFrom$k ( Mongoose ) {
+function getModelFrom$1L ( Mongoose ) {
 
-    if ( !_model$k ) {
-        _createModel$k( Mongoose );
+    if ( !_model$1L ) {
+        _createModel$1L( Mongoose );
     }
 
-    return _model$k
+    return _model$1L
 
 }
 
-function _createModel$k ( Mongoose ) {
+function _createModel$1L ( Mongoose ) {
 
-    const CurveBaseModel = Curve$a.getModelFrom( Mongoose );
-    _model$k               = CurveBaseModel.discriminator( 'LineCurve', getSchemaFrom$m( Mongoose ) );
+    const CurveBaseModel = Curve$6.getModelFrom( Mongoose );
+    _model$1L               = CurveBaseModel.discriminator( 'LineCurve', getSchemaFrom$1U( Mongoose ) );
 
 }
 
-function registerModelTo$k ( Mongoose ) {
+function registerModelTo$1L ( Mongoose ) {
 
-    if ( !_model$k ) {
-        _createModel$k( Mongoose );
+    if ( !_model$1L ) {
+        _createModel$1L( Mongoose );
     }
 
     return Mongoose
@@ -5091,9 +5117,9 @@ function registerModelTo$k ( Mongoose ) {
 
 var LineCurve_1 = {
     name:            'LineCurve',
-    getSchemaFrom:   getSchemaFrom$m,
-    getModelFrom:    getModelFrom$k,
-    registerModelTo: registerModelTo$k
+    getSchemaFrom:   getSchemaFrom$1U,
+    getModelFrom:    getModelFrom$1L,
+    registerModelTo: registerModelTo$1L
 };
 
 /**
@@ -5106,55 +5132,55 @@ var LineCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$b } = Curve;
+const { Curve: Curve$5 } = Curve$g;
 
-let _schema$n = undefined;
-let _model$l  = undefined;
+let _schema$1T = undefined;
+let _model$1K  = undefined;
 
-function getSchemaFrom$n ( Mongoose ) {
+function getSchemaFrom$1T ( Mongoose ) {
 
-    if ( !_schema$n ) {
-        _createSchema$n( Mongoose );
+    if ( !_schema$1T ) {
+        _createSchema$1T( Mongoose );
     }
 
-    return _schema$n
+    return _schema$1T
 
 }
 
-function _createSchema$n ( Mongoose ) {
+function _createSchema$1T ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$n = new Schema( {
+    _schema$1T = new Schema( {
         v0: Vector3,
         v1: Vector3
     } );
 
 }
 
-function getModelFrom$l ( Mongoose ) {
+function getModelFrom$1K ( Mongoose ) {
 
-    if ( !_model$l ) {
-        _createModel$l( Mongoose );
+    if ( !_model$1K ) {
+        _createModel$1K( Mongoose );
     }
 
-    return _model$l
+    return _model$1K
 
 }
 
-function _createModel$l ( Mongoose ) {
+function _createModel$1K ( Mongoose ) {
 
-    const CurveBaseModel = Curve$b.getModelFrom( Mongoose );
-    _model$l               = CurveBaseModel.discriminator( 'LineCurve3', getSchemaFrom$n( Mongoose ) );
+    const CurveBaseModel = Curve$5.getModelFrom( Mongoose );
+    _model$1K               = CurveBaseModel.discriminator( 'LineCurve3', getSchemaFrom$1T( Mongoose ) );
 
 }
 
-function registerModelTo$l ( Mongoose ) {
+function registerModelTo$1K ( Mongoose ) {
 
-    if ( !_model$l ) {
-        _createModel$l( Mongoose );
+    if ( !_model$1K ) {
+        _createModel$1K( Mongoose );
     }
 
     return Mongoose
@@ -5163,9 +5189,9 @@ function registerModelTo$l ( Mongoose ) {
 
 var LineCurve3_1 = {
     name:            'LineCurve3',
-    getSchemaFrom:   getSchemaFrom$n,
-    getModelFrom:    getModelFrom$l,
-    registerModelTo: registerModelTo$l
+    getSchemaFrom:   getSchemaFrom$1T,
+    getModelFrom:    getModelFrom$1K,
+    registerModelTo: registerModelTo$1K
 };
 
 /**
@@ -5178,50 +5204,50 @@ var LineCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$c } = Curve;
+const { Curve: Curve$4 } = Curve$g;
 
-let _schema$o = undefined;
-let _model$m  = undefined;
+let _schema$1S = undefined;
+let _model$1J  = undefined;
 
-function getSchemaFrom$o ( Mongoose ) {
+function getSchemaFrom$1S ( Mongoose ) {
 
-    if ( !_schema$o ) {
-        _createSchema$o( Mongoose );
+    if ( !_schema$1S ) {
+        _createSchema$1S( Mongoose );
     }
 
-    return _schema$o
+    return _schema$1S
 
 }
 
-function _createSchema$o ( Mongoose ) {
+function _createSchema$1S ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$o = new Schema( {} );
+    _schema$1S = new Schema( {} );
 
 }
 
-function getModelFrom$m ( Mongoose ) {
+function getModelFrom$1J ( Mongoose ) {
 
-    if ( !_model$m ) {
-        _createModel$m( Mongoose );
+    if ( !_model$1J ) {
+        _createModel$1J( Mongoose );
     }
 
-    return _model$m
+    return _model$1J
 
 }
 
-function _createModel$m ( Mongoose ) {
+function _createModel$1J ( Mongoose ) {
 
-    const CurveBaseModel = Curve$c.getModelFrom( Mongoose );
-    _model$m               = CurveBaseModel.discriminator( 'NURBSCurve', getSchemaFrom$o( Mongoose ) );
+    const CurveBaseModel = Curve$4.getModelFrom( Mongoose );
+    _model$1J               = CurveBaseModel.discriminator( 'NURBSCurve', getSchemaFrom$1S( Mongoose ) );
 
 }
 
-function registerModelTo$m ( Mongoose ) {
+function registerModelTo$1J ( Mongoose ) {
 
-    if ( !_model$m ) {
-        _createModel$m( Mongoose );
+    if ( !_model$1J ) {
+        _createModel$1J( Mongoose );
     }
 
     return Mongoose
@@ -5230,9 +5256,9 @@ function registerModelTo$m ( Mongoose ) {
 
 var NURBSCurve_1 = {
     name:            'NURBSCurve',
-    getSchemaFrom:   getSchemaFrom$o,
-    getModelFrom:    getModelFrom$m,
-    registerModelTo: registerModelTo$m
+    getSchemaFrom:   getSchemaFrom$1S,
+    getModelFrom:    getModelFrom$1J,
+    registerModelTo: registerModelTo$1J
 };
 
 /**
@@ -5245,50 +5271,50 @@ var NURBSCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$d } = Curve;
+const { Curve: Curve$3 } = Curve$g;
 
-let _schema$p = undefined;
-let _model$n  = undefined;
+let _schema$1R = undefined;
+let _model$1I  = undefined;
 
-function getSchemaFrom$p ( Mongoose ) {
+function getSchemaFrom$1R ( Mongoose ) {
 
-    if ( !_schema$p ) {
-        _createSchema$p( Mongoose );
+    if ( !_schema$1R ) {
+        _createSchema$1R( Mongoose );
     }
 
-    return _schema$p
+    return _schema$1R
 
 }
 
-function _createSchema$p ( Mongoose ) {
+function _createSchema$1R ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$p = new Schema( {} );
+    _schema$1R = new Schema( {} );
 
 }
 
-function getModelFrom$n ( Mongoose ) {
+function getModelFrom$1I ( Mongoose ) {
 
-    if ( !_model$n ) {
-        _createModel$n( Mongoose );
+    if ( !_model$1I ) {
+        _createModel$1I( Mongoose );
     }
 
-    return _model$n
+    return _model$1I
 
 }
 
-function _createModel$n ( Mongoose ) {
+function _createModel$1I ( Mongoose ) {
 
-    const CurveBaseModel = Curve$d.getModelFrom( Mongoose );
-    _model$n               = CurveBaseModel.discriminator( 'NURBSSurface', getSchemaFrom$p( Mongoose ) );
+    const CurveBaseModel = Curve$3.getModelFrom( Mongoose );
+    _model$1I               = CurveBaseModel.discriminator( 'NURBSSurface', getSchemaFrom$1R( Mongoose ) );
 
 }
 
-function registerModelTo$n ( Mongoose ) {
+function registerModelTo$1I ( Mongoose ) {
 
-    if ( !_model$n ) {
-        _createModel$n( Mongoose );
+    if ( !_model$1I ) {
+        _createModel$1I( Mongoose );
     }
 
     return Mongoose
@@ -5297,9 +5323,9 @@ function registerModelTo$n ( Mongoose ) {
 
 var NURBSSurface_1 = {
     name:            'NURBSSurface',
-    getSchemaFrom:   getSchemaFrom$p,
-    getModelFrom:    getModelFrom$n,
-    registerModelTo: registerModelTo$n
+    getSchemaFrom:   getSchemaFrom$1R,
+    getModelFrom:    getModelFrom$1I,
+    registerModelTo: registerModelTo$1I
 };
 
 /**
@@ -5312,28 +5338,28 @@ var NURBSSurface_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$e } = Curve;
+const { Curve: Curve$2 } = Curve$g;
 
-let _schema$q = undefined;
-let _model$o  = undefined;
+let _schema$1Q = undefined;
+let _model$1H  = undefined;
 
-function getSchemaFrom$q ( Mongoose ) {
+function getSchemaFrom$1Q ( Mongoose ) {
 
-    if ( !_schema$q ) {
-        _createSchema$q( Mongoose );
+    if ( !_schema$1Q ) {
+        _createSchema$1Q( Mongoose );
     }
 
-    return _schema$q
+    return _schema$1Q
 
 }
 
-function _createSchema$q ( Mongoose ) {
+function _createSchema$1Q ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    _schema$q = new Schema( {
+    _schema$1Q = new Schema( {
         v0: Vector2,
         v1: Vector2,
         v2: Vector2
@@ -5341,27 +5367,27 @@ function _createSchema$q ( Mongoose ) {
 
 }
 
-function getModelFrom$o ( Mongoose ) {
+function getModelFrom$1H ( Mongoose ) {
 
-    if ( !_model$o ) {
-        _createModel$o( Mongoose );
+    if ( !_model$1H ) {
+        _createModel$1H( Mongoose );
     }
 
-    return _model$o
+    return _model$1H
 
 }
 
-function _createModel$o ( Mongoose ) {
+function _createModel$1H ( Mongoose ) {
 
-    const CurveBaseModel = Curve$e.getModelFrom( Mongoose );
-    _model$o               = CurveBaseModel.discriminator( 'QuadraticBezierCurve', getSchemaFrom$q( Mongoose ) );
+    const CurveBaseModel = Curve$2.getModelFrom( Mongoose );
+    _model$1H               = CurveBaseModel.discriminator( 'QuadraticBezierCurve', getSchemaFrom$1Q( Mongoose ) );
 
 }
 
-function registerModelTo$o ( Mongoose ) {
+function registerModelTo$1H ( Mongoose ) {
 
-    if ( !_model$o ) {
-        _createModel$o( Mongoose );
+    if ( !_model$1H ) {
+        _createModel$1H( Mongoose );
     }
 
     return Mongoose
@@ -5370,9 +5396,9 @@ function registerModelTo$o ( Mongoose ) {
 
 var QuadraticBezierCurve_1 = {
     name:            'QuadraticBezierCurve',
-    getSchemaFrom:   getSchemaFrom$q,
-    getModelFrom:    getModelFrom$o,
-    registerModelTo: registerModelTo$o
+    getSchemaFrom:   getSchemaFrom$1Q,
+    getModelFrom:    getModelFrom$1H,
+    registerModelTo: registerModelTo$1H
 };
 
 /**
@@ -5385,28 +5411,28 @@ var QuadraticBezierCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$f } = Curve;
+const { Curve: Curve$1 } = Curve$g;
 
-let _schema$r = undefined;
-let _model$p  = undefined;
+let _schema$1P = undefined;
+let _model$1G  = undefined;
 
-function getSchemaFrom$r ( Mongoose ) {
+function getSchemaFrom$1P ( Mongoose ) {
 
-    if ( !_schema$r ) {
-        _createSchema$r( Mongoose );
+    if ( !_schema$1P ) {
+        _createSchema$1P( Mongoose );
     }
 
-    return _schema$r
+    return _schema$1P
 
 }
 
-function _createSchema$r ( Mongoose ) {
+function _createSchema$1P ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$r = new Schema( {
+    _schema$1P = new Schema( {
         v0: Vector3,
         v1: Vector3,
         v2: Vector3
@@ -5414,27 +5440,27 @@ function _createSchema$r ( Mongoose ) {
 
 }
 
-function getModelFrom$p ( Mongoose ) {
+function getModelFrom$1G ( Mongoose ) {
 
-    if ( !_model$p ) {
-        _createModel$p( Mongoose );
+    if ( !_model$1G ) {
+        _createModel$1G( Mongoose );
     }
 
-    return _model$p
+    return _model$1G
 
 }
 
-function _createModel$p ( Mongoose ) {
+function _createModel$1G ( Mongoose ) {
 
-    const CurveBaseModel = Curve$f.getModelFrom( Mongoose );
-    _model$p               = CurveBaseModel.discriminator( 'QuadraticBezierCurve3', getSchemaFrom$r( Mongoose ) );
+    const CurveBaseModel = Curve$1.getModelFrom( Mongoose );
+    _model$1G               = CurveBaseModel.discriminator( 'QuadraticBezierCurve3', getSchemaFrom$1P( Mongoose ) );
 
 }
 
-function registerModelTo$p ( Mongoose ) {
+function registerModelTo$1G ( Mongoose ) {
 
-    if ( !_model$p ) {
-        _createModel$p( Mongoose );
+    if ( !_model$1G ) {
+        _createModel$1G( Mongoose );
     }
 
     return Mongoose
@@ -5443,9 +5469,9 @@ function registerModelTo$p ( Mongoose ) {
 
 var QuadraticBezierCurve3_1 = {
     name:            'QuadraticBezierCurve3',
-    getSchemaFrom:   getSchemaFrom$r,
-    getModelFrom:    getModelFrom$p,
-    registerModelTo: registerModelTo$p
+    getSchemaFrom:   getSchemaFrom$1P,
+    getModelFrom:    getModelFrom$1G,
+    registerModelTo: registerModelTo$1G
 };
 
 /**
@@ -5458,54 +5484,54 @@ var QuadraticBezierCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$g } = Curve;
+const { Curve } = Curve$g;
 
-let _schema$s = undefined;
-let _model$q  = undefined;
+let _schema$1O = undefined;
+let _model$1F  = undefined;
 
-function getSchemaFrom$s ( Mongoose ) {
+function getSchemaFrom$1O ( Mongoose ) {
 
-    if ( !_schema$s ) {
-        _createSchema$s( Mongoose );
+    if ( !_schema$1O ) {
+        _createSchema$1O( Mongoose );
     }
 
-    return _schema$s
+    return _schema$1O
 
 }
 
-function _createSchema$s ( Mongoose ) {
+function _createSchema$1O ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$s = new Schema( {
+    _schema$1O = new Schema( {
         points: [ Vector3 ]
     } );
 
 }
 
-function getModelFrom$q ( Mongoose ) {
+function getModelFrom$1F ( Mongoose ) {
 
-    if ( !_model$q ) {
-        _createModel$q( Mongoose );
+    if ( !_model$1F ) {
+        _createModel$1F( Mongoose );
     }
 
-    return _model$q
+    return _model$1F
 
 }
 
-function _createModel$q ( Mongoose ) {
+function _createModel$1F ( Mongoose ) {
 
-    const CurveBaseModel = Curve$g.getModelFrom( Mongoose );
-    _model$q               = CurveBaseModel.discriminator( 'SplineCurve', getSchemaFrom$s( Mongoose ) );
+    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+    _model$1F               = CurveBaseModel.discriminator( 'SplineCurve', getSchemaFrom$1O( Mongoose ) );
 
 }
 
-function registerModelTo$q ( Mongoose ) {
+function registerModelTo$1F ( Mongoose ) {
 
-    if ( !_model$q ) {
-        _createModel$q( Mongoose );
+    if ( !_model$1F ) {
+        _createModel$1F( Mongoose );
     }
 
     return Mongoose
@@ -5514,9 +5540,9 @@ function registerModelTo$q ( Mongoose ) {
 
 var SplineCurve_1 = {
     name:            'SplineCurve',
-    getSchemaFrom:   getSchemaFrom$s,
-    getModelFrom:    getModelFrom$q,
-    registerModelTo: registerModelTo$q
+    getSchemaFrom:   getSchemaFrom$1O,
+    getModelFrom:    getModelFrom$1F,
+    registerModelTo: registerModelTo$1F
 };
 
 /**
@@ -5529,50 +5555,50 @@ var SplineCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$2 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$k } = BufferGeometry$m;
 
-let _schema$t = undefined;
-let _model$r  = undefined;
+let _schema$1N = undefined;
+let _model$1E  = undefined;
 
-function getSchemaFrom$t ( Mongoose ) {
+function getSchemaFrom$1N ( Mongoose ) {
 
-    if ( !_schema$t ) {
-        _createSchema$t( Mongoose );
+    if ( !_schema$1N ) {
+        _createSchema$1N( Mongoose );
     }
 
-    return _schema$t
+    return _schema$1N
 
 }
 
-function _createSchema$t ( Mongoose ) {
+function _createSchema$1N ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$t = new Schema( {} );
+    _schema$1N = new Schema( {} );
 
 }
 
-function getModelFrom$r ( Mongoose ) {
+function getModelFrom$1E ( Mongoose ) {
 
-    if ( !_model$r ) {
-        _createModel$r( Mongoose );
+    if ( !_model$1E ) {
+        _createModel$1E( Mongoose );
     }
 
-    return _model$r
+    return _model$1E
 
 }
 
-function _createModel$r ( Mongoose ) {
+function _createModel$1E ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
-    _model$r                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom$t( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
+    _model$1E                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom$1N( Mongoose ) );
 
 }
 
-function registerModelTo$r ( Mongoose ) {
+function registerModelTo$1E ( Mongoose ) {
 
-    if ( !_model$r ) {
-        _createModel$r( Mongoose );
+    if ( !_model$1E ) {
+        _createModel$1E( Mongoose );
     }
 
     return Mongoose
@@ -5581,9 +5607,9 @@ function registerModelTo$r ( Mongoose ) {
 
 var BoxBufferGeometry_1 = {
     name:            'BoxBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$t,
-    getModelFrom:    getModelFrom$r,
-    registerModelTo: registerModelTo$r
+    getSchemaFrom:   getSchemaFrom$1N,
+    getModelFrom:    getModelFrom$1E,
+    registerModelTo: registerModelTo$1E
 };
 
 /**
@@ -5596,50 +5622,50 @@ var BoxBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$2 } = Geometry$1;
+const { Geometry: Geometry$n } = Geometry$p;
 
-let _schema$u = undefined;
-let _model$s  = undefined;
+let _schema$1M = undefined;
+let _model$1D  = undefined;
 
-function getSchemaFrom$u ( Mongoose ) {
+function getSchemaFrom$1M ( Mongoose ) {
 
-    if ( !_schema$u ) {
-        _createSchema$u( Mongoose );
+    if ( !_schema$1M ) {
+        _createSchema$1M( Mongoose );
     }
 
-    return _schema$u
+    return _schema$1M
 
 }
 
-function _createSchema$u ( Mongoose ) {
+function _createSchema$1M ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$u = new Schema( {} );
+    _schema$1M = new Schema( {} );
 
 }
 
-function getModelFrom$s ( Mongoose ) {
+function getModelFrom$1D ( Mongoose ) {
 
-    if ( !_model$s ) {
-        _createModel$s( Mongoose );
+    if ( !_model$1D ) {
+        _createModel$1D( Mongoose );
     }
 
-    return _model$s
+    return _model$1D
 
 }
 
-function _createModel$s ( Mongoose ) {
+function _createModel$1D ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$2.getModelFrom( Mongoose );
-    _model$s                  = GeometryBaseModel.discriminator( 'BoxGeometry', getSchemaFrom$u( Mongoose ) );
+    const GeometryBaseModel = Geometry$n.getModelFrom( Mongoose );
+    _model$1D                  = GeometryBaseModel.discriminator( 'BoxGeometry', getSchemaFrom$1M( Mongoose ) );
 
 }
 
-function registerModelTo$s ( Mongoose ) {
+function registerModelTo$1D ( Mongoose ) {
 
-    if ( !_model$s ) {
-        _createModel$s( Mongoose );
+    if ( !_model$1D ) {
+        _createModel$1D( Mongoose );
     }
 
     return Mongoose
@@ -5648,9 +5674,9 @@ function registerModelTo$s ( Mongoose ) {
 
 var BoxGeometry_1 = {
     name:            'BoxGeometry',
-    getSchemaFrom:   getSchemaFrom$u,
-    getModelFrom:    getModelFrom$s,
-    registerModelTo: registerModelTo$s
+    getSchemaFrom:   getSchemaFrom$1M,
+    getModelFrom:    getModelFrom$1D,
+    registerModelTo: registerModelTo$1D
 };
 
 /**
@@ -5663,50 +5689,50 @@ var BoxGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$3 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$j } = BufferGeometry$m;
 
-let _schema$v = undefined;
-let _model$t  = undefined;
+let _schema$1L = undefined;
+let _model$1C  = undefined;
 
-function getSchemaFrom$v ( Mongoose ) {
+function getSchemaFrom$1L ( Mongoose ) {
 
-    if ( !_schema$v ) {
-        _createSchema$v( Mongoose );
+    if ( !_schema$1L ) {
+        _createSchema$1L( Mongoose );
     }
 
-    return _schema$v
+    return _schema$1L
 
 }
 
-function _createSchema$v ( Mongoose ) {
+function _createSchema$1L ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$v = new Schema( {} );
+    _schema$1L = new Schema( {} );
 
 }
 
-function getModelFrom$t ( Mongoose ) {
+function getModelFrom$1C ( Mongoose ) {
 
-    if ( !_model$t ) {
-        _createModel$t( Mongoose );
+    if ( !_model$1C ) {
+        _createModel$1C( Mongoose );
     }
 
-    return _model$t
+    return _model$1C
 
 }
 
-function _createModel$t ( Mongoose ) {
+function _createModel$1C ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
-    _model$t                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom$v( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
+    _model$1C                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom$1L( Mongoose ) );
 
 }
 
-function registerModelTo$t ( Mongoose ) {
+function registerModelTo$1C ( Mongoose ) {
 
-    if ( !_model$t ) {
-        _createModel$t( Mongoose );
+    if ( !_model$1C ) {
+        _createModel$1C( Mongoose );
     }
 
     return Mongoose
@@ -5715,9 +5741,9 @@ function registerModelTo$t ( Mongoose ) {
 
 var CircleBufferGeometry_1 = {
     name:            'CircleBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$v,
-    getModelFrom:    getModelFrom$t,
-    registerModelTo: registerModelTo$t
+    getSchemaFrom:   getSchemaFrom$1L,
+    getModelFrom:    getModelFrom$1C,
+    registerModelTo: registerModelTo$1C
 };
 
 /**
@@ -5730,50 +5756,50 @@ var CircleBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$3 } = Geometry$1;
+const { Geometry: Geometry$m } = Geometry$p;
 
-let _schema$w = undefined;
-let _model$u  = undefined;
+let _schema$1K = undefined;
+let _model$1B  = undefined;
 
-function getSchemaFrom$w ( Mongoose ) {
+function getSchemaFrom$1K ( Mongoose ) {
 
-    if ( !_schema$w ) {
-        _createSchema$w( Mongoose );
+    if ( !_schema$1K ) {
+        _createSchema$1K( Mongoose );
     }
 
-    return _schema$w
+    return _schema$1K
 
 }
 
-function _createSchema$w ( Mongoose ) {
+function _createSchema$1K ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$w = new Schema( {} );
+    _schema$1K = new Schema( {} );
 
 }
 
-function getModelFrom$u ( Mongoose ) {
+function getModelFrom$1B ( Mongoose ) {
 
-    if ( !_model$u ) {
-        _createModel$u( Mongoose );
+    if ( !_model$1B ) {
+        _createModel$1B( Mongoose );
     }
 
-    return _model$u
+    return _model$1B
 
 }
 
-function _createModel$u ( Mongoose ) {
+function _createModel$1B ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$3.getModelFrom( Mongoose );
-    _model$u                  = GeometryBaseModel.discriminator( 'CircleGeometry', getSchemaFrom$w( Mongoose ) );
+    const GeometryBaseModel = Geometry$m.getModelFrom( Mongoose );
+    _model$1B                  = GeometryBaseModel.discriminator( 'CircleGeometry', getSchemaFrom$1K( Mongoose ) );
 
 }
 
-function registerModelTo$u ( Mongoose ) {
+function registerModelTo$1B ( Mongoose ) {
 
-    if ( !_model$u ) {
-        _createModel$u( Mongoose );
+    if ( !_model$1B ) {
+        _createModel$1B( Mongoose );
     }
 
     return Mongoose
@@ -5782,9 +5808,9 @@ function registerModelTo$u ( Mongoose ) {
 
 var CircleGeometry_1 = {
     name:            'CircleGeometry',
-    getSchemaFrom:   getSchemaFrom$w,
-    getModelFrom:    getModelFrom$u,
-    registerModelTo: registerModelTo$u
+    getSchemaFrom:   getSchemaFrom$1K,
+    getModelFrom:    getModelFrom$1B,
+    registerModelTo: registerModelTo$1B
 };
 
 /**
@@ -5797,50 +5823,50 @@ var CircleGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$4 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$i } = BufferGeometry$m;
 
-let _schema$x = undefined;
-let _model$v  = undefined;
+let _schema$1J = undefined;
+let _model$1A  = undefined;
 
-function getSchemaFrom$x ( Mongoose ) {
+function getSchemaFrom$1J ( Mongoose ) {
 
-    if ( !_schema$x ) {
-        _createSchema$x( Mongoose );
+    if ( !_schema$1J ) {
+        _createSchema$1J( Mongoose );
     }
 
-    return _schema$x
+    return _schema$1J
 
 }
 
-function _createSchema$x ( Mongoose ) {
+function _createSchema$1J ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$x = new Schema( {} );
+    _schema$1J = new Schema( {} );
 
 }
 
-function getModelFrom$v ( Mongoose ) {
+function getModelFrom$1A ( Mongoose ) {
 
-    if ( !_model$v ) {
-        _createModel$v( Mongoose );
+    if ( !_model$1A ) {
+        _createModel$1A( Mongoose );
     }
 
-    return _model$v
+    return _model$1A
 
 }
 
-function _createModel$v ( Mongoose ) {
+function _createModel$1A ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
-    _model$v                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom$x( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
+    _model$1A                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom$1J( Mongoose ) );
 
 }
 
-function registerModelTo$v ( Mongoose ) {
+function registerModelTo$1A ( Mongoose ) {
 
-    if ( !_model$v ) {
-        _createModel$v( Mongoose );
+    if ( !_model$1A ) {
+        _createModel$1A( Mongoose );
     }
 
     return Mongoose
@@ -5849,9 +5875,9 @@ function registerModelTo$v ( Mongoose ) {
 
 var ConeBufferGeometry_1 = {
     name:            'ConeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$x,
-    getModelFrom:    getModelFrom$v,
-    registerModelTo: registerModelTo$v
+    getSchemaFrom:   getSchemaFrom$1J,
+    getModelFrom:    getModelFrom$1A,
+    registerModelTo: registerModelTo$1A
 };
 
 /**
@@ -5864,50 +5890,50 @@ var ConeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$4 } = Geometry$1;
+const { Geometry: Geometry$l } = Geometry$p;
 
-let _schema$y = undefined;
-let _model$w  = undefined;
+let _schema$1I = undefined;
+let _model$1z  = undefined;
 
-function getSchemaFrom$y ( Mongoose ) {
+function getSchemaFrom$1I ( Mongoose ) {
 
-    if ( !_schema$y ) {
-        _createSchema$y( Mongoose );
+    if ( !_schema$1I ) {
+        _createSchema$1I( Mongoose );
     }
 
-    return _schema$y
+    return _schema$1I
 
 }
 
-function _createSchema$y ( Mongoose ) {
+function _createSchema$1I ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$y = new Schema( {} );
+    _schema$1I = new Schema( {} );
 
 }
 
-function getModelFrom$w ( Mongoose ) {
+function getModelFrom$1z ( Mongoose ) {
 
-    if ( !_model$w ) {
-        _createModel$w( Mongoose );
+    if ( !_model$1z ) {
+        _createModel$1z( Mongoose );
     }
 
-    return _model$w
+    return _model$1z
 
 }
 
-function _createModel$w ( Mongoose ) {
+function _createModel$1z ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$4.getModelFrom( Mongoose );
-    _model$w                  = GeometryBaseModel.discriminator( 'ConeGeometry', getSchemaFrom$y( Mongoose ) );
+    const GeometryBaseModel = Geometry$l.getModelFrom( Mongoose );
+    _model$1z                  = GeometryBaseModel.discriminator( 'ConeGeometry', getSchemaFrom$1I( Mongoose ) );
 
 }
 
-function registerModelTo$w ( Mongoose ) {
+function registerModelTo$1z ( Mongoose ) {
 
-    if ( !_model$w ) {
-        _createModel$w( Mongoose );
+    if ( !_model$1z ) {
+        _createModel$1z( Mongoose );
     }
 
     return Mongoose
@@ -5916,9 +5942,9 @@ function registerModelTo$w ( Mongoose ) {
 
 var ConeGeometry_1 = {
     name:            'ConeGeometry',
-    getSchemaFrom:   getSchemaFrom$y,
-    getModelFrom:    getModelFrom$w,
-    registerModelTo: registerModelTo$w
+    getSchemaFrom:   getSchemaFrom$1I,
+    getModelFrom:    getModelFrom$1z,
+    registerModelTo: registerModelTo$1z
 };
 
 /**
@@ -5931,50 +5957,50 @@ var ConeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$5 } = Geometry$1;
+const { Geometry: Geometry$k } = Geometry$p;
 
-let _schema$z = undefined;
-let _model$x  = undefined;
+let _schema$1H = undefined;
+let _model$1y  = undefined;
 
-function getSchemaFrom$z ( Mongoose ) {
+function getSchemaFrom$1H ( Mongoose ) {
 
-    if ( !_schema$z ) {
-        _createSchema$z( Mongoose );
+    if ( !_schema$1H ) {
+        _createSchema$1H( Mongoose );
     }
 
-    return _schema$z
+    return _schema$1H
 
 }
 
-function _createSchema$z ( Mongoose ) {
+function _createSchema$1H ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$z = new Schema( {} );
+    _schema$1H = new Schema( {} );
 
 }
 
-function getModelFrom$x ( Mongoose ) {
+function getModelFrom$1y ( Mongoose ) {
 
-    if ( !_model$x ) {
-        _createModel$x( Mongoose );
+    if ( !_model$1y ) {
+        _createModel$1y( Mongoose );
     }
 
-    return _model$x
+    return _model$1y
 
 }
 
-function _createModel$x ( Mongoose ) {
+function _createModel$1y ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$5.getModelFrom( Mongoose );
-    _model$x                  = GeometryBaseModel.discriminator( 'ConvexGeometry', getSchemaFrom$z( Mongoose ) );
+    const GeometryBaseModel = Geometry$k.getModelFrom( Mongoose );
+    _model$1y                  = GeometryBaseModel.discriminator( 'ConvexGeometry', getSchemaFrom$1H( Mongoose ) );
 
 }
 
-function registerModelTo$x ( Mongoose ) {
+function registerModelTo$1y ( Mongoose ) {
 
-    if ( !_model$x ) {
-        _createModel$x( Mongoose );
+    if ( !_model$1y ) {
+        _createModel$1y( Mongoose );
     }
 
     return Mongoose
@@ -5983,9 +6009,9 @@ function registerModelTo$x ( Mongoose ) {
 
 var ConvexGeometry_1 = {
     name:            'ConvexGeometry',
-    getSchemaFrom:   getSchemaFrom$z,
-    getModelFrom:    getModelFrom$x,
-    registerModelTo: registerModelTo$x
+    getSchemaFrom:   getSchemaFrom$1H,
+    getModelFrom:    getModelFrom$1y,
+    registerModelTo: registerModelTo$1y
 };
 
 /**
@@ -5998,50 +6024,50 @@ var ConvexGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$5 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$h } = BufferGeometry$m;
 
-let _schema$A = undefined;
-let _model$y  = undefined;
+let _schema$1G = undefined;
+let _model$1x  = undefined;
 
-function getSchemaFrom$A ( Mongoose ) {
+function getSchemaFrom$1G ( Mongoose ) {
 
-    if ( !_schema$A ) {
-        _createSchema$A( Mongoose );
+    if ( !_schema$1G ) {
+        _createSchema$1G( Mongoose );
     }
 
-    return _schema$A
+    return _schema$1G
 
 }
 
-function _createSchema$A ( Mongoose ) {
+function _createSchema$1G ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$A = new Schema( {} );
+    _schema$1G = new Schema( {} );
 
 }
 
-function getModelFrom$y ( Mongoose ) {
+function getModelFrom$1x ( Mongoose ) {
 
-    if ( !_model$y ) {
-        _createModel$y( Mongoose );
+    if ( !_model$1x ) {
+        _createModel$1x( Mongoose );
     }
 
-    return _model$y
+    return _model$1x
 
 }
 
-function _createModel$y ( Mongoose ) {
+function _createModel$1x ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
-    _model$y                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom$A( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
+    _model$1x                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom$1G( Mongoose ) );
 
 }
 
-function registerModelTo$y ( Mongoose ) {
+function registerModelTo$1x ( Mongoose ) {
 
-    if ( !_model$y ) {
-        _createModel$y( Mongoose );
+    if ( !_model$1x ) {
+        _createModel$1x( Mongoose );
     }
 
     return Mongoose
@@ -6050,9 +6076,9 @@ function registerModelTo$y ( Mongoose ) {
 
 var CylinderBufferGeometry_1 = {
     name:            'CylinderBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$A,
-    getModelFrom:    getModelFrom$y,
-    registerModelTo: registerModelTo$y
+    getSchemaFrom:   getSchemaFrom$1G,
+    getModelFrom:    getModelFrom$1x,
+    registerModelTo: registerModelTo$1x
 };
 
 /**
@@ -6065,50 +6091,50 @@ var CylinderBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$6 } = Geometry$1;
+const { Geometry: Geometry$j } = Geometry$p;
 
-let _schema$B = undefined;
-let _model$z  = undefined;
+let _schema$1F = undefined;
+let _model$1w  = undefined;
 
-function getSchemaFrom$B ( Mongoose ) {
+function getSchemaFrom$1F ( Mongoose ) {
 
-    if ( !_schema$B ) {
-        _createSchema$B( Mongoose );
+    if ( !_schema$1F ) {
+        _createSchema$1F( Mongoose );
     }
 
-    return _schema$B
+    return _schema$1F
 
 }
 
-function _createSchema$B ( Mongoose ) {
+function _createSchema$1F ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$B = new Schema( {} );
+    _schema$1F = new Schema( {} );
 
 }
 
-function getModelFrom$z ( Mongoose ) {
+function getModelFrom$1w ( Mongoose ) {
 
-    if ( !_model$z ) {
-        _createModel$z( Mongoose );
+    if ( !_model$1w ) {
+        _createModel$1w( Mongoose );
     }
 
-    return _model$z
+    return _model$1w
 
 }
 
-function _createModel$z ( Mongoose ) {
+function _createModel$1w ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$6.getModelFrom( Mongoose );
-    _model$z                  = GeometryBaseModel.discriminator( 'CylinderGeometry', getSchemaFrom$B( Mongoose ) );
+    const GeometryBaseModel = Geometry$j.getModelFrom( Mongoose );
+    _model$1w                  = GeometryBaseModel.discriminator( 'CylinderGeometry', getSchemaFrom$1F( Mongoose ) );
 
 }
 
-function registerModelTo$z ( Mongoose ) {
+function registerModelTo$1w ( Mongoose ) {
 
-    if ( !_model$z ) {
-        _createModel$z( Mongoose );
+    if ( !_model$1w ) {
+        _createModel$1w( Mongoose );
     }
 
     return Mongoose
@@ -6117,9 +6143,9 @@ function registerModelTo$z ( Mongoose ) {
 
 var CylinderGeometry_1 = {
     name:            'CylinderGeometry',
-    getSchemaFrom:   getSchemaFrom$B,
-    getModelFrom:    getModelFrom$z,
-    registerModelTo: registerModelTo$z
+    getSchemaFrom:   getSchemaFrom$1F,
+    getModelFrom:    getModelFrom$1w,
+    registerModelTo: registerModelTo$1w
 };
 
 /**
@@ -6132,50 +6158,50 @@ var CylinderGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$7 } = Geometry$1;
+const { Geometry: Geometry$i } = Geometry$p;
 
-let _schema$C = undefined;
-let _model$A  = undefined;
+let _schema$1E = undefined;
+let _model$1v  = undefined;
 
-function getSchemaFrom$C ( Mongoose ) {
+function getSchemaFrom$1E ( Mongoose ) {
 
-    if ( !_schema$C ) {
-        _createSchema$C( Mongoose );
+    if ( !_schema$1E ) {
+        _createSchema$1E( Mongoose );
     }
 
-    return _schema$C
+    return _schema$1E
 
 }
 
-function _createSchema$C ( Mongoose ) {
+function _createSchema$1E ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$C = new Schema( {} );
+    _schema$1E = new Schema( {} );
 
 }
 
-function getModelFrom$A ( Mongoose ) {
+function getModelFrom$1v ( Mongoose ) {
 
-    if ( !_model$A ) {
-        _createModel$A( Mongoose );
+    if ( !_model$1v ) {
+        _createModel$1v( Mongoose );
     }
 
-    return _model$A
+    return _model$1v
 
 }
 
-function _createModel$A ( Mongoose ) {
+function _createModel$1v ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$7.getModelFrom( Mongoose );
-    _model$A                  = GeometryBaseModel.discriminator( 'DecalGeometry', getSchemaFrom$C( Mongoose ) );
+    const GeometryBaseModel = Geometry$i.getModelFrom( Mongoose );
+    _model$1v                  = GeometryBaseModel.discriminator( 'DecalGeometry', getSchemaFrom$1E( Mongoose ) );
 
 }
 
-function registerModelTo$A ( Mongoose ) {
+function registerModelTo$1v ( Mongoose ) {
 
-    if ( !_model$A ) {
-        _createModel$A( Mongoose );
+    if ( !_model$1v ) {
+        _createModel$1v( Mongoose );
     }
 
     return Mongoose
@@ -6184,9 +6210,9 @@ function registerModelTo$A ( Mongoose ) {
 
 var DecalGeometry_1 = {
     name:            'DecalGeometry',
-    getSchemaFrom:   getSchemaFrom$C,
-    getModelFrom:    getModelFrom$A,
-    registerModelTo: registerModelTo$A
+    getSchemaFrom:   getSchemaFrom$1E,
+    getModelFrom:    getModelFrom$1v,
+    registerModelTo: registerModelTo$1v
 };
 
 /**
@@ -6199,50 +6225,50 @@ var DecalGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$8 } = Geometry$1;
+const { Geometry: Geometry$h } = Geometry$p;
 
-let _schema$D = undefined;
-let _model$B  = undefined;
+let _schema$1D = undefined;
+let _model$1u  = undefined;
 
-function getSchemaFrom$D ( Mongoose ) {
+function getSchemaFrom$1D ( Mongoose ) {
 
-    if ( !_schema$D ) {
-        _createSchema$D( Mongoose );
+    if ( !_schema$1D ) {
+        _createSchema$1D( Mongoose );
     }
 
-    return _schema$D
+    return _schema$1D
 
 }
 
-function _createSchema$D ( Mongoose ) {
+function _createSchema$1D ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$D = new Schema( {} );
+    _schema$1D = new Schema( {} );
 
 }
 
-function getModelFrom$B ( Mongoose ) {
+function getModelFrom$1u ( Mongoose ) {
 
-    if ( !_model$B ) {
-        _createModel$B( Mongoose );
+    if ( !_model$1u ) {
+        _createModel$1u( Mongoose );
     }
 
-    return _model$B
+    return _model$1u
 
 }
 
-function _createModel$B ( Mongoose ) {
+function _createModel$1u ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$8.getModelFrom( Mongoose );
-    _model$B                  = GeometryBaseModel.discriminator( 'DodecahedronGeometry', getSchemaFrom$D( Mongoose ) );
+    const GeometryBaseModel = Geometry$h.getModelFrom( Mongoose );
+    _model$1u                  = GeometryBaseModel.discriminator( 'DodecahedronGeometry', getSchemaFrom$1D( Mongoose ) );
 
 }
 
-function registerModelTo$B ( Mongoose ) {
+function registerModelTo$1u ( Mongoose ) {
 
-    if ( !_model$B ) {
-        _createModel$B( Mongoose );
+    if ( !_model$1u ) {
+        _createModel$1u( Mongoose );
     }
 
     return Mongoose
@@ -6251,9 +6277,9 @@ function registerModelTo$B ( Mongoose ) {
 
 var DodecahedronGeometry_1 = {
     name:            'DodecahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$D,
-    getModelFrom:    getModelFrom$B,
-    registerModelTo: registerModelTo$B
+    getSchemaFrom:   getSchemaFrom$1D,
+    getModelFrom:    getModelFrom$1u,
+    registerModelTo: registerModelTo$1u
 };
 
 /**
@@ -6266,50 +6292,50 @@ var DodecahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$9 } = Geometry$1;
+const { Geometry: Geometry$g } = Geometry$p;
 
-let _schema$E = undefined;
-let _model$C  = undefined;
+let _schema$1C = undefined;
+let _model$1t  = undefined;
 
-function getSchemaFrom$E ( Mongoose ) {
+function getSchemaFrom$1C ( Mongoose ) {
 
-    if ( !_schema$E ) {
-        _createSchema$E( Mongoose );
+    if ( !_schema$1C ) {
+        _createSchema$1C( Mongoose );
     }
 
-    return _schema$E
+    return _schema$1C
 
 }
 
-function _createSchema$E ( Mongoose ) {
+function _createSchema$1C ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$E = new Schema( {} );
+    _schema$1C = new Schema( {} );
 
 }
 
-function getModelFrom$C ( Mongoose ) {
+function getModelFrom$1t ( Mongoose ) {
 
-    if ( !_model$C ) {
-        _createModel$C( Mongoose );
+    if ( !_model$1t ) {
+        _createModel$1t( Mongoose );
     }
 
-    return _model$C
+    return _model$1t
 
 }
 
-function _createModel$C ( Mongoose ) {
+function _createModel$1t ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$9.getModelFrom( Mongoose );
-    _model$C                  = GeometryBaseModel.discriminator( 'EdgesGeometry', getSchemaFrom$E( Mongoose ) );
+    const GeometryBaseModel = Geometry$g.getModelFrom( Mongoose );
+    _model$1t                  = GeometryBaseModel.discriminator( 'EdgesGeometry', getSchemaFrom$1C( Mongoose ) );
 
 }
 
-function registerModelTo$C ( Mongoose ) {
+function registerModelTo$1t ( Mongoose ) {
 
-    if ( !_model$C ) {
-        _createModel$C( Mongoose );
+    if ( !_model$1t ) {
+        _createModel$1t( Mongoose );
     }
 
     return Mongoose
@@ -6318,9 +6344,9 @@ function registerModelTo$C ( Mongoose ) {
 
 var EdgesGeometry_1 = {
     name:            'EdgesGeometry',
-    getSchemaFrom:   getSchemaFrom$E,
-    getModelFrom:    getModelFrom$C,
-    registerModelTo: registerModelTo$C
+    getSchemaFrom:   getSchemaFrom$1C,
+    getModelFrom:    getModelFrom$1t,
+    registerModelTo: registerModelTo$1t
 };
 
 /**
@@ -6333,50 +6359,50 @@ var EdgesGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$6 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$g } = BufferGeometry$m;
 
-let _schema$F = undefined;
-let _model$D  = undefined;
+let _schema$1B = undefined;
+let _model$1s  = undefined;
 
-function getSchemaFrom$F ( Mongoose ) {
+function getSchemaFrom$1B ( Mongoose ) {
 
-    if ( !_schema$F ) {
-        _createSchema$F( Mongoose );
+    if ( !_schema$1B ) {
+        _createSchema$1B( Mongoose );
     }
 
-    return _schema$F
+    return _schema$1B
 
 }
 
-function _createSchema$F ( Mongoose ) {
+function _createSchema$1B ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$F = new Schema( {} );
+    _schema$1B = new Schema( {} );
 
 }
 
-function getModelFrom$D ( Mongoose ) {
+function getModelFrom$1s ( Mongoose ) {
 
-    if ( !_model$D ) {
-        _createModel$D( Mongoose );
+    if ( !_model$1s ) {
+        _createModel$1s( Mongoose );
     }
 
-    return _model$D
+    return _model$1s
 
 }
 
-function _createModel$D ( Mongoose ) {
+function _createModel$1s ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
-    _model$D                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom$F( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
+    _model$1s                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom$1B( Mongoose ) );
 
 }
 
-function registerModelTo$D ( Mongoose ) {
+function registerModelTo$1s ( Mongoose ) {
 
-    if ( !_model$D ) {
-        _createModel$D( Mongoose );
+    if ( !_model$1s ) {
+        _createModel$1s( Mongoose );
     }
 
     return Mongoose
@@ -6385,9 +6411,9 @@ function registerModelTo$D ( Mongoose ) {
 
 var ExtrudeBufferGeometry_1 = {
     name:            'ExtrudeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$F,
-    getModelFrom:    getModelFrom$D,
-    registerModelTo: registerModelTo$D
+    getSchemaFrom:   getSchemaFrom$1B,
+    getModelFrom:    getModelFrom$1s,
+    registerModelTo: registerModelTo$1s
 };
 
 /**
@@ -6400,50 +6426,50 @@ var ExtrudeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$a } = Geometry$1;
+const { Geometry: Geometry$f } = Geometry$p;
 
-let _schema$G = undefined;
-let _model$E  = undefined;
+let _schema$1A = undefined;
+let _model$1r  = undefined;
 
-function getSchemaFrom$G ( Mongoose ) {
+function getSchemaFrom$1A ( Mongoose ) {
 
-    if ( !_schema$G ) {
-        _createSchema$G( Mongoose );
+    if ( !_schema$1A ) {
+        _createSchema$1A( Mongoose );
     }
 
-    return _schema$G
+    return _schema$1A
 
 }
 
-function _createSchema$G ( Mongoose ) {
+function _createSchema$1A ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$G = new Schema( {} );
+    _schema$1A = new Schema( {} );
 
 }
 
-function getModelFrom$E ( Mongoose ) {
+function getModelFrom$1r ( Mongoose ) {
 
-    if ( !_model$E ) {
-        _createModel$E( Mongoose );
+    if ( !_model$1r ) {
+        _createModel$1r( Mongoose );
     }
 
-    return _model$E
+    return _model$1r
 
 }
 
-function _createModel$E ( Mongoose ) {
+function _createModel$1r ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$a.getModelFrom( Mongoose );
-    _model$E                  = GeometryBaseModel.discriminator( 'ExtrudeGeometry', getSchemaFrom$G( Mongoose ) );
+    const GeometryBaseModel = Geometry$f.getModelFrom( Mongoose );
+    _model$1r                  = GeometryBaseModel.discriminator( 'ExtrudeGeometry', getSchemaFrom$1A( Mongoose ) );
 
 }
 
-function registerModelTo$E ( Mongoose ) {
+function registerModelTo$1r ( Mongoose ) {
 
-    if ( !_model$E ) {
-        _createModel$E( Mongoose );
+    if ( !_model$1r ) {
+        _createModel$1r( Mongoose );
     }
 
     return Mongoose
@@ -6452,9 +6478,9 @@ function registerModelTo$E ( Mongoose ) {
 
 var ExtrudeGeometry_1 = {
     name:            'ExtrudeGeometry',
-    getSchemaFrom:   getSchemaFrom$G,
-    getModelFrom:    getModelFrom$E,
-    registerModelTo: registerModelTo$E
+    getSchemaFrom:   getSchemaFrom$1A,
+    getModelFrom:    getModelFrom$1r,
+    registerModelTo: registerModelTo$1r
 };
 
 /**
@@ -6467,50 +6493,50 @@ var ExtrudeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$7 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$f } = BufferGeometry$m;
 
-let _schema$H = undefined;
-let _model$F  = undefined;
+let _schema$1z = undefined;
+let _model$1q  = undefined;
 
-function getSchemaFrom$H ( Mongoose ) {
+function getSchemaFrom$1z ( Mongoose ) {
 
-    if ( !_schema$H ) {
-        _createSchema$H( Mongoose );
+    if ( !_schema$1z ) {
+        _createSchema$1z( Mongoose );
     }
 
-    return _schema$H
+    return _schema$1z
 
 }
 
-function _createSchema$H ( Mongoose ) {
+function _createSchema$1z ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$H = new Schema( {} );
+    _schema$1z = new Schema( {} );
 
 }
 
-function getModelFrom$F ( Mongoose ) {
+function getModelFrom$1q ( Mongoose ) {
 
-    if ( !_model$F ) {
-        _createModel$F( Mongoose );
+    if ( !_model$1q ) {
+        _createModel$1q( Mongoose );
     }
 
-    return _model$F
+    return _model$1q
 
 }
 
-function _createModel$F ( Mongoose ) {
+function _createModel$1q ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
-    _model$F                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom$H( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
+    _model$1q                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom$1z( Mongoose ) );
 
 }
 
-function registerModelTo$F ( Mongoose ) {
+function registerModelTo$1q ( Mongoose ) {
 
-    if ( !_model$F ) {
-        _createModel$F( Mongoose );
+    if ( !_model$1q ) {
+        _createModel$1q( Mongoose );
     }
 
     return Mongoose
@@ -6519,9 +6545,9 @@ function registerModelTo$F ( Mongoose ) {
 
 var IcosahedronBufferGeometry_1 = {
     name:            'IcosahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$H,
-    getModelFrom:    getModelFrom$F,
-    registerModelTo: registerModelTo$F
+    getSchemaFrom:   getSchemaFrom$1z,
+    getModelFrom:    getModelFrom$1q,
+    registerModelTo: registerModelTo$1q
 };
 
 /**
@@ -6534,50 +6560,50 @@ var IcosahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$b } = Geometry$1;
+const { Geometry: Geometry$e } = Geometry$p;
 
-let _schema$I = undefined;
-let _model$G  = undefined;
+let _schema$1y = undefined;
+let _model$1p  = undefined;
 
-function getSchemaFrom$I ( Mongoose ) {
+function getSchemaFrom$1y ( Mongoose ) {
 
-    if ( !_schema$I ) {
-        _createSchema$I( Mongoose );
+    if ( !_schema$1y ) {
+        _createSchema$1y( Mongoose );
     }
 
-    return _schema$I
+    return _schema$1y
 
 }
 
-function _createSchema$I ( Mongoose ) {
+function _createSchema$1y ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$I = new Schema( {} );
+    _schema$1y = new Schema( {} );
 
 }
 
-function getModelFrom$G ( Mongoose ) {
+function getModelFrom$1p ( Mongoose ) {
 
-    if ( !_model$G ) {
-        _createModel$G( Mongoose );
+    if ( !_model$1p ) {
+        _createModel$1p( Mongoose );
     }
 
-    return _model$G
+    return _model$1p
 
 }
 
-function _createModel$G ( Mongoose ) {
+function _createModel$1p ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$b.getModelFrom( Mongoose );
-    _model$G                  = GeometryBaseModel.discriminator( 'IcosahedronGeometry', getSchemaFrom$I( Mongoose ) );
+    const GeometryBaseModel = Geometry$e.getModelFrom( Mongoose );
+    _model$1p                  = GeometryBaseModel.discriminator( 'IcosahedronGeometry', getSchemaFrom$1y( Mongoose ) );
 
 }
 
-function registerModelTo$G ( Mongoose ) {
+function registerModelTo$1p ( Mongoose ) {
 
-    if ( !_model$G ) {
-        _createModel$G( Mongoose );
+    if ( !_model$1p ) {
+        _createModel$1p( Mongoose );
     }
 
     return Mongoose
@@ -6586,9 +6612,9 @@ function registerModelTo$G ( Mongoose ) {
 
 var IcosahedronGeometry_1 = {
     name:            'IcosahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$I,
-    getModelFrom:    getModelFrom$G,
-    registerModelTo: registerModelTo$G
+    getSchemaFrom:   getSchemaFrom$1y,
+    getModelFrom:    getModelFrom$1p,
+    registerModelTo: registerModelTo$1p
 };
 
 /**
@@ -6601,50 +6627,50 @@ var IcosahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$8 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$e } = BufferGeometry$m;
 
-let _schema$J = undefined;
-let _model$H  = undefined;
+let _schema$1x = undefined;
+let _model$1o  = undefined;
 
-function getSchemaFrom$J ( Mongoose ) {
+function getSchemaFrom$1x ( Mongoose ) {
 
-    if ( !_schema$J ) {
-        _createSchema$J( Mongoose );
+    if ( !_schema$1x ) {
+        _createSchema$1x( Mongoose );
     }
 
-    return _schema$J
+    return _schema$1x
 
 }
 
-function _createSchema$J ( Mongoose ) {
+function _createSchema$1x ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$J = new Schema( {} );
+    _schema$1x = new Schema( {} );
 
 }
 
-function getModelFrom$H ( Mongoose ) {
+function getModelFrom$1o ( Mongoose ) {
 
-    if ( !_model$H ) {
-        _createModel$H( Mongoose );
+    if ( !_model$1o ) {
+        _createModel$1o( Mongoose );
     }
 
-    return _model$H
+    return _model$1o
 
 }
 
-function _createModel$H ( Mongoose ) {
+function _createModel$1o ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
-    _model$H                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom$J( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
+    _model$1o                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom$1x( Mongoose ) );
 
 }
 
-function registerModelTo$H ( Mongoose ) {
+function registerModelTo$1o ( Mongoose ) {
 
-    if ( !_model$H ) {
-        _createModel$H( Mongoose );
+    if ( !_model$1o ) {
+        _createModel$1o( Mongoose );
     }
 
     return Mongoose
@@ -6653,9 +6679,9 @@ function registerModelTo$H ( Mongoose ) {
 
 var InstancedBufferGeometry_1 = {
     name:            'InstancedBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$J,
-    getModelFrom:    getModelFrom$H,
-    registerModelTo: registerModelTo$H
+    getSchemaFrom:   getSchemaFrom$1x,
+    getModelFrom:    getModelFrom$1o,
+    registerModelTo: registerModelTo$1o
 };
 
 /**
@@ -6668,50 +6694,50 @@ var InstancedBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$9 } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$d } = BufferGeometry$m;
 
-let _schema$K = undefined;
-let _model$I  = undefined;
+let _schema$1w = undefined;
+let _model$1n  = undefined;
 
-function getSchemaFrom$K ( Mongoose ) {
+function getSchemaFrom$1w ( Mongoose ) {
 
-    if ( !_schema$K ) {
-        _createSchema$K( Mongoose );
+    if ( !_schema$1w ) {
+        _createSchema$1w( Mongoose );
     }
 
-    return _schema$K
+    return _schema$1w
 
 }
 
-function _createSchema$K ( Mongoose ) {
+function _createSchema$1w ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$K = new Schema( {} );
+    _schema$1w = new Schema( {} );
 
 }
 
-function getModelFrom$I ( Mongoose ) {
+function getModelFrom$1n ( Mongoose ) {
 
-    if ( !_model$I ) {
-        _createModel$I( Mongoose );
+    if ( !_model$1n ) {
+        _createModel$1n( Mongoose );
     }
 
-    return _model$I
+    return _model$1n
 
 }
 
-function _createModel$I ( Mongoose ) {
+function _createModel$1n ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
-    _model$I                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom$K( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
+    _model$1n                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom$1w( Mongoose ) );
 
 }
 
-function registerModelTo$I ( Mongoose ) {
+function registerModelTo$1n ( Mongoose ) {
 
-    if ( !_model$I ) {
-        _createModel$I( Mongoose );
+    if ( !_model$1n ) {
+        _createModel$1n( Mongoose );
     }
 
     return Mongoose
@@ -6720,9 +6746,9 @@ function registerModelTo$I ( Mongoose ) {
 
 var LatheBufferGeometry_1 = {
     name:            'LatheBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$K,
-    getModelFrom:    getModelFrom$I,
-    registerModelTo: registerModelTo$I
+    getSchemaFrom:   getSchemaFrom$1w,
+    getModelFrom:    getModelFrom$1n,
+    registerModelTo: registerModelTo$1n
 };
 
 /**
@@ -6735,50 +6761,50 @@ var LatheBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$c } = Geometry$1;
+const { Geometry: Geometry$d } = Geometry$p;
 
-let _schema$L = undefined;
-let _model$J  = undefined;
+let _schema$1v = undefined;
+let _model$1m  = undefined;
 
-function getSchemaFrom$L ( Mongoose ) {
+function getSchemaFrom$1v ( Mongoose ) {
 
-    if ( !_schema$L ) {
-        _createSchema$L( Mongoose );
+    if ( !_schema$1v ) {
+        _createSchema$1v( Mongoose );
     }
 
-    return _schema$L
+    return _schema$1v
 
 }
 
-function _createSchema$L ( Mongoose ) {
+function _createSchema$1v ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$L = new Schema( {} );
+    _schema$1v = new Schema( {} );
 
 }
 
-function getModelFrom$J ( Mongoose ) {
+function getModelFrom$1m ( Mongoose ) {
 
-    if ( !_model$J ) {
-        _createModel$J( Mongoose );
+    if ( !_model$1m ) {
+        _createModel$1m( Mongoose );
     }
 
-    return _model$J
+    return _model$1m
 
 }
 
-function _createModel$J ( Mongoose ) {
+function _createModel$1m ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$c.getModelFrom( Mongoose );
-    _model$J                  = GeometryBaseModel.discriminator( 'LatheGeometry', getSchemaFrom$L( Mongoose ) );
+    const GeometryBaseModel = Geometry$d.getModelFrom( Mongoose );
+    _model$1m                  = GeometryBaseModel.discriminator( 'LatheGeometry', getSchemaFrom$1v( Mongoose ) );
 
 }
 
-function registerModelTo$J ( Mongoose ) {
+function registerModelTo$1m ( Mongoose ) {
 
-    if ( !_model$J ) {
-        _createModel$J( Mongoose );
+    if ( !_model$1m ) {
+        _createModel$1m( Mongoose );
     }
 
     return Mongoose
@@ -6787,9 +6813,9 @@ function registerModelTo$J ( Mongoose ) {
 
 var LatheGeometry_1 = {
     name:            'LatheGeometry',
-    getSchemaFrom:   getSchemaFrom$L,
-    getModelFrom:    getModelFrom$J,
-    registerModelTo: registerModelTo$J
+    getSchemaFrom:   getSchemaFrom$1v,
+    getModelFrom:    getModelFrom$1m,
+    registerModelTo: registerModelTo$1m
 };
 
 /**
@@ -6802,50 +6828,50 @@ var LatheGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$a } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$c } = BufferGeometry$m;
 
-let _schema$M = undefined;
-let _model$K  = undefined;
+let _schema$1u = undefined;
+let _model$1l  = undefined;
 
-function getSchemaFrom$M ( Mongoose ) {
+function getSchemaFrom$1u ( Mongoose ) {
 
-    if ( !_schema$M ) {
-        _createSchema$M( Mongoose );
+    if ( !_schema$1u ) {
+        _createSchema$1u( Mongoose );
     }
 
-    return _schema$M
+    return _schema$1u
 
 }
 
-function _createSchema$M ( Mongoose ) {
+function _createSchema$1u ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$M = new Schema( {} );
+    _schema$1u = new Schema( {} );
 
 }
 
-function getModelFrom$K ( Mongoose ) {
+function getModelFrom$1l ( Mongoose ) {
 
-    if ( !_model$K ) {
-        _createModel$K( Mongoose );
+    if ( !_model$1l ) {
+        _createModel$1l( Mongoose );
     }
 
-    return _model$K
+    return _model$1l
 
 }
 
-function _createModel$K ( Mongoose ) {
+function _createModel$1l ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
-    _model$K                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom$M( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
+    _model$1l                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom$1u( Mongoose ) );
 
 }
 
-function registerModelTo$K ( Mongoose ) {
+function registerModelTo$1l ( Mongoose ) {
 
-    if ( !_model$K ) {
-        _createModel$K( Mongoose );
+    if ( !_model$1l ) {
+        _createModel$1l( Mongoose );
     }
 
     return Mongoose
@@ -6854,9 +6880,9 @@ function registerModelTo$K ( Mongoose ) {
 
 var OctahedronBufferGeometry_1 = {
     name:            'OctahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$M,
-    getModelFrom:    getModelFrom$K,
-    registerModelTo: registerModelTo$K
+    getSchemaFrom:   getSchemaFrom$1u,
+    getModelFrom:    getModelFrom$1l,
+    registerModelTo: registerModelTo$1l
 };
 
 /**
@@ -6869,50 +6895,50 @@ var OctahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$d } = Geometry$1;
+const { Geometry: Geometry$c } = Geometry$p;
 
-let _schema$N = undefined;
-let _model$L  = undefined;
+let _schema$1t = undefined;
+let _model$1k  = undefined;
 
-function getSchemaFrom$N ( Mongoose ) {
+function getSchemaFrom$1t ( Mongoose ) {
 
-    if ( !_schema$N ) {
-        _createSchema$N( Mongoose );
+    if ( !_schema$1t ) {
+        _createSchema$1t( Mongoose );
     }
 
-    return _schema$N
+    return _schema$1t
 
 }
 
-function _createSchema$N ( Mongoose ) {
+function _createSchema$1t ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$N = new Schema( {} );
+    _schema$1t = new Schema( {} );
 
 }
 
-function getModelFrom$L ( Mongoose ) {
+function getModelFrom$1k ( Mongoose ) {
 
-    if ( !_model$L ) {
-        _createModel$L( Mongoose );
+    if ( !_model$1k ) {
+        _createModel$1k( Mongoose );
     }
 
-    return _model$L
+    return _model$1k
 
 }
 
-function _createModel$L ( Mongoose ) {
+function _createModel$1k ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$d.getModelFrom( Mongoose );
-    _model$L                  = GeometryBaseModel.discriminator( 'OctahedronGeometry', getSchemaFrom$N( Mongoose ) );
+    const GeometryBaseModel = Geometry$c.getModelFrom( Mongoose );
+    _model$1k                  = GeometryBaseModel.discriminator( 'OctahedronGeometry', getSchemaFrom$1t( Mongoose ) );
 
 }
 
-function registerModelTo$L ( Mongoose ) {
+function registerModelTo$1k ( Mongoose ) {
 
-    if ( !_model$L ) {
-        _createModel$L( Mongoose );
+    if ( !_model$1k ) {
+        _createModel$1k( Mongoose );
     }
 
     return Mongoose
@@ -6921,9 +6947,9 @@ function registerModelTo$L ( Mongoose ) {
 
 var OctahedronGeometry_1 = {
     name:            'OctahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$N,
-    getModelFrom:    getModelFrom$L,
-    registerModelTo: registerModelTo$L
+    getSchemaFrom:   getSchemaFrom$1t,
+    getModelFrom:    getModelFrom$1k,
+    registerModelTo: registerModelTo$1k
 };
 
 /**
@@ -6936,50 +6962,50 @@ var OctahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$b } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$b } = BufferGeometry$m;
 
-let _schema$O = undefined;
-let _model$M  = undefined;
+let _schema$1s = undefined;
+let _model$1j  = undefined;
 
-function getSchemaFrom$O ( Mongoose ) {
+function getSchemaFrom$1s ( Mongoose ) {
 
-    if ( !_schema$O ) {
-        _createSchema$O( Mongoose );
+    if ( !_schema$1s ) {
+        _createSchema$1s( Mongoose );
     }
 
-    return _schema$O
+    return _schema$1s
 
 }
 
-function _createSchema$O ( Mongoose ) {
+function _createSchema$1s ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$O = new Schema( {} );
+    _schema$1s = new Schema( {} );
 
 }
 
-function getModelFrom$M ( Mongoose ) {
+function getModelFrom$1j ( Mongoose ) {
 
-    if ( !_model$M ) {
-        _createModel$M( Mongoose );
+    if ( !_model$1j ) {
+        _createModel$1j( Mongoose );
     }
 
-    return _model$M
+    return _model$1j
 
 }
 
-function _createModel$M ( Mongoose ) {
+function _createModel$1j ( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$b.getModelFrom( Mongoose );
-    _model$M                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom$O( Mongoose ) );
+    _model$1j                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom$1s( Mongoose ) );
 
 }
 
-function registerModelTo$M ( Mongoose ) {
+function registerModelTo$1j ( Mongoose ) {
 
-    if ( !_model$M ) {
-        _createModel$M( Mongoose );
+    if ( !_model$1j ) {
+        _createModel$1j( Mongoose );
     }
 
     return Mongoose
@@ -6988,9 +7014,9 @@ function registerModelTo$M ( Mongoose ) {
 
 var ParametricBufferGeometry_1 = {
     name:            'ParametricBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$O,
-    getModelFrom:    getModelFrom$M,
-    registerModelTo: registerModelTo$M
+    getSchemaFrom:   getSchemaFrom$1s,
+    getModelFrom:    getModelFrom$1j,
+    registerModelTo: registerModelTo$1j
 };
 
 /**
@@ -7003,50 +7029,50 @@ var ParametricBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$e } = Geometry$1;
+const { Geometry: Geometry$b } = Geometry$p;
 
-let _schema$P = undefined;
-let _model$N  = undefined;
+let _schema$1r = undefined;
+let _model$1i  = undefined;
 
-function getSchemaFrom$P ( Mongoose ) {
+function getSchemaFrom$1r ( Mongoose ) {
 
-    if ( !_schema$P ) {
-        _createSchema$P( Mongoose );
+    if ( !_schema$1r ) {
+        _createSchema$1r( Mongoose );
     }
 
-    return _schema$P
+    return _schema$1r
 
 }
 
-function _createSchema$P ( Mongoose ) {
+function _createSchema$1r ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$P = new Schema( {} );
+    _schema$1r = new Schema( {} );
 
 }
 
-function getModelFrom$N ( Mongoose ) {
+function getModelFrom$1i ( Mongoose ) {
 
-    if ( !_model$N ) {
-        _createModel$N( Mongoose );
+    if ( !_model$1i ) {
+        _createModel$1i( Mongoose );
     }
 
-    return _model$N
+    return _model$1i
 
 }
 
-function _createModel$N ( Mongoose ) {
+function _createModel$1i ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$e.getModelFrom( Mongoose );
-    _model$N                  = GeometryBaseModel.discriminator( 'ParametricGeometry', getSchemaFrom$P( Mongoose ) );
+    const GeometryBaseModel = Geometry$b.getModelFrom( Mongoose );
+    _model$1i                  = GeometryBaseModel.discriminator( 'ParametricGeometry', getSchemaFrom$1r( Mongoose ) );
 
 }
 
-function registerModelTo$N ( Mongoose ) {
+function registerModelTo$1i ( Mongoose ) {
 
-    if ( !_model$N ) {
-        _createModel$N( Mongoose );
+    if ( !_model$1i ) {
+        _createModel$1i( Mongoose );
     }
 
     return Mongoose
@@ -7055,9 +7081,9 @@ function registerModelTo$N ( Mongoose ) {
 
 var ParametricGeometry_1 = {
     name:            'ParametricGeometry',
-    getSchemaFrom:   getSchemaFrom$P,
-    getModelFrom:    getModelFrom$N,
-    registerModelTo: registerModelTo$N
+    getSchemaFrom:   getSchemaFrom$1r,
+    getModelFrom:    getModelFrom$1i,
+    registerModelTo: registerModelTo$1i
 };
 
 /**
@@ -7070,50 +7096,50 @@ var ParametricGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$c } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$a } = BufferGeometry$m;
 
-let _schema$Q = undefined;
-let _model$O  = undefined;
+let _schema$1q = undefined;
+let _model$1h  = undefined;
 
-function getSchemaFrom$Q ( Mongoose ) {
+function getSchemaFrom$1q ( Mongoose ) {
 
-    if ( !_schema$Q ) {
-        _createSchema$Q( Mongoose );
+    if ( !_schema$1q ) {
+        _createSchema$1q( Mongoose );
     }
 
-    return _schema$Q
+    return _schema$1q
 
 }
 
-function _createSchema$Q ( Mongoose ) {
+function _createSchema$1q ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$Q = new Schema( {} );
+    _schema$1q = new Schema( {} );
 
 }
 
-function getModelFrom$O ( Mongoose ) {
+function getModelFrom$1h ( Mongoose ) {
 
-    if ( !_model$O ) {
-        _createModel$O( Mongoose );
+    if ( !_model$1h ) {
+        _createModel$1h( Mongoose );
     }
 
-    return _model$O
+    return _model$1h
 
 }
 
-function _createModel$O ( Mongoose ) {
+function _createModel$1h ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
-    _model$O                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom$Q( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
+    _model$1h                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom$1q( Mongoose ) );
 
 }
 
-function registerModelTo$O ( Mongoose ) {
+function registerModelTo$1h ( Mongoose ) {
 
-    if ( !_model$O ) {
-        _createModel$O( Mongoose );
+    if ( !_model$1h ) {
+        _createModel$1h( Mongoose );
     }
 
     return Mongoose
@@ -7122,9 +7148,9 @@ function registerModelTo$O ( Mongoose ) {
 
 var PlaneBufferGeometry_1 = {
     name:            'PlaneBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$Q,
-    getModelFrom:    getModelFrom$O,
-    registerModelTo: registerModelTo$O
+    getSchemaFrom:   getSchemaFrom$1q,
+    getModelFrom:    getModelFrom$1h,
+    registerModelTo: registerModelTo$1h
 };
 
 /**
@@ -7137,50 +7163,50 @@ var PlaneBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$f } = Geometry$1;
+const { Geometry: Geometry$a } = Geometry$p;
 
-let _schema$R = undefined;
-let _model$P  = undefined;
+let _schema$1p = undefined;
+let _model$1g  = undefined;
 
-function getSchemaFrom$R ( Mongoose ) {
+function getSchemaFrom$1p ( Mongoose ) {
 
-    if ( !_schema$R ) {
-        _createSchema$R( Mongoose );
+    if ( !_schema$1p ) {
+        _createSchema$1p( Mongoose );
     }
 
-    return _schema$R
+    return _schema$1p
 
 }
 
-function _createSchema$R ( Mongoose ) {
+function _createSchema$1p ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$R = new Schema( {} );
+    _schema$1p = new Schema( {} );
 
 }
 
-function getModelFrom$P ( Mongoose ) {
+function getModelFrom$1g ( Mongoose ) {
 
-    if ( !_model$P ) {
-        _createModel$P( Mongoose );
+    if ( !_model$1g ) {
+        _createModel$1g( Mongoose );
     }
 
-    return _model$P
+    return _model$1g
 
 }
 
-function _createModel$P ( Mongoose ) {
+function _createModel$1g ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$f.getModelFrom( Mongoose );
-    _model$P                  = GeometryBaseModel.discriminator( 'PlaneGeometry', getSchemaFrom$R( Mongoose ) );
+    const GeometryBaseModel = Geometry$a.getModelFrom( Mongoose );
+    _model$1g                  = GeometryBaseModel.discriminator( 'PlaneGeometry', getSchemaFrom$1p( Mongoose ) );
 
 }
 
-function registerModelTo$P ( Mongoose ) {
+function registerModelTo$1g ( Mongoose ) {
 
-    if ( !_model$P ) {
-        _createModel$P( Mongoose );
+    if ( !_model$1g ) {
+        _createModel$1g( Mongoose );
     }
 
     return Mongoose
@@ -7189,9 +7215,9 @@ function registerModelTo$P ( Mongoose ) {
 
 var PlaneGeometry_1 = {
     name:            'PlaneGeometry',
-    getSchemaFrom:   getSchemaFrom$R,
-    getModelFrom:    getModelFrom$P,
-    registerModelTo: registerModelTo$P
+    getSchemaFrom:   getSchemaFrom$1p,
+    getModelFrom:    getModelFrom$1g,
+    registerModelTo: registerModelTo$1g
 };
 
 /**
@@ -7204,50 +7230,50 @@ var PlaneGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$d } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$9 } = BufferGeometry$m;
 
-let _schema$S = undefined;
-let _model$Q  = undefined;
+let _schema$1o = undefined;
+let _model$1f  = undefined;
 
-function getSchemaFrom$S ( Mongoose ) {
+function getSchemaFrom$1o ( Mongoose ) {
 
-    if ( !_schema$S ) {
-        _createSchema$S( Mongoose );
+    if ( !_schema$1o ) {
+        _createSchema$1o( Mongoose );
     }
 
-    return _schema$S
+    return _schema$1o
 
 }
 
-function _createSchema$S ( Mongoose ) {
+function _createSchema$1o ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$S = new Schema( {} );
+    _schema$1o = new Schema( {} );
 
 }
 
-function getModelFrom$Q ( Mongoose ) {
+function getModelFrom$1f ( Mongoose ) {
 
-    if ( !_model$Q ) {
-        _createModel$Q( Mongoose );
+    if ( !_model$1f ) {
+        _createModel$1f( Mongoose );
     }
 
-    return _model$Q
+    return _model$1f
 
 }
 
-function _createModel$Q ( Mongoose ) {
+function _createModel$1f ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
-    _model$Q                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom$S( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
+    _model$1f                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom$1o( Mongoose ) );
 
 }
 
-function registerModelTo$Q ( Mongoose ) {
+function registerModelTo$1f ( Mongoose ) {
 
-    if ( !_model$Q ) {
-        _createModel$Q( Mongoose );
+    if ( !_model$1f ) {
+        _createModel$1f( Mongoose );
     }
 
     return Mongoose
@@ -7256,9 +7282,9 @@ function registerModelTo$Q ( Mongoose ) {
 
 var PolyhedronBufferGeometry_1 = {
     name:            'PolyhedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$S,
-    getModelFrom:    getModelFrom$Q,
-    registerModelTo: registerModelTo$Q
+    getSchemaFrom:   getSchemaFrom$1o,
+    getModelFrom:    getModelFrom$1f,
+    registerModelTo: registerModelTo$1f
 };
 
 /**
@@ -7271,50 +7297,50 @@ var PolyhedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$g } = Geometry$1;
+const { Geometry: Geometry$9 } = Geometry$p;
 
-let _schema$T = undefined;
-let _model$R  = undefined;
+let _schema$1n = undefined;
+let _model$1e  = undefined;
 
-function getSchemaFrom$T ( Mongoose ) {
+function getSchemaFrom$1n ( Mongoose ) {
 
-    if ( !_schema$T ) {
-        _createSchema$T( Mongoose );
+    if ( !_schema$1n ) {
+        _createSchema$1n( Mongoose );
     }
 
-    return _schema$T
+    return _schema$1n
 
 }
 
-function _createSchema$T ( Mongoose ) {
+function _createSchema$1n ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$T = new Schema( {} );
+    _schema$1n = new Schema( {} );
 
 }
 
-function getModelFrom$R ( Mongoose ) {
+function getModelFrom$1e ( Mongoose ) {
 
-    if ( !_model$R ) {
-        _createModel$R( Mongoose );
+    if ( !_model$1e ) {
+        _createModel$1e( Mongoose );
     }
 
-    return _model$R
+    return _model$1e
 
 }
 
-function _createModel$R ( Mongoose ) {
+function _createModel$1e ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$g.getModelFrom( Mongoose );
-    _model$R                  = GeometryBaseModel.discriminator( 'PolyhedronGeometry', getSchemaFrom$T( Mongoose ) );
+    const GeometryBaseModel = Geometry$9.getModelFrom( Mongoose );
+    _model$1e                  = GeometryBaseModel.discriminator( 'PolyhedronGeometry', getSchemaFrom$1n( Mongoose ) );
 
 }
 
-function registerModelTo$R ( Mongoose ) {
+function registerModelTo$1e ( Mongoose ) {
 
-    if ( !_model$R ) {
-        _createModel$R( Mongoose );
+    if ( !_model$1e ) {
+        _createModel$1e( Mongoose );
     }
 
     return Mongoose
@@ -7323,9 +7349,9 @@ function registerModelTo$R ( Mongoose ) {
 
 var PolyhedronGeometry_1 = {
     name:            'PolyhedronGeometry',
-    getSchemaFrom:   getSchemaFrom$T,
-    getModelFrom:    getModelFrom$R,
-    registerModelTo: registerModelTo$R
+    getSchemaFrom:   getSchemaFrom$1n,
+    getModelFrom:    getModelFrom$1e,
+    registerModelTo: registerModelTo$1e
 };
 
 /**
@@ -7338,50 +7364,50 @@ var PolyhedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$e } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$8 } = BufferGeometry$m;
 
-let _schema$U = undefined;
-let _model$S  = undefined;
+let _schema$1m = undefined;
+let _model$1d  = undefined;
 
-function getSchemaFrom$U ( Mongoose ) {
+function getSchemaFrom$1m ( Mongoose ) {
 
-    if ( !_schema$U ) {
-        _createSchema$U( Mongoose );
+    if ( !_schema$1m ) {
+        _createSchema$1m( Mongoose );
     }
 
-    return _schema$U
+    return _schema$1m
 
 }
 
-function _createSchema$U ( Mongoose ) {
+function _createSchema$1m ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$U = new Schema( {} );
+    _schema$1m = new Schema( {} );
 
 }
 
-function getModelFrom$S ( Mongoose ) {
+function getModelFrom$1d ( Mongoose ) {
 
-    if ( !_model$S ) {
-        _createModel$S( Mongoose );
+    if ( !_model$1d ) {
+        _createModel$1d( Mongoose );
     }
 
-    return _model$S
+    return _model$1d
 
 }
 
-function _createModel$S ( Mongoose ) {
+function _createModel$1d ( Mongoose ) {
 
-    const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
-    _model$S                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom$U( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
+    _model$1d                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom$1m( Mongoose ) );
 
 }
 
-function registerModelTo$S ( Mongoose ) {
+function registerModelTo$1d ( Mongoose ) {
 
-    if ( !_model$S ) {
-        _createModel$S( Mongoose );
+    if ( !_model$1d ) {
+        _createModel$1d( Mongoose );
     }
 
     return Mongoose
@@ -7390,9 +7416,9 @@ function registerModelTo$S ( Mongoose ) {
 
 var RingBufferGeometry_1 = {
     name:            'RingBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$U,
-    getModelFrom:    getModelFrom$S,
-    registerModelTo: registerModelTo$S
+    getSchemaFrom:   getSchemaFrom$1m,
+    getModelFrom:    getModelFrom$1d,
+    registerModelTo: registerModelTo$1d
 };
 
 /**
@@ -7405,50 +7431,50 @@ var RingBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$h } = Geometry$1;
+const { Geometry: Geometry$8 } = Geometry$p;
 
-let _schema$V = undefined;
-let _model$T  = undefined;
+let _schema$1l = undefined;
+let _model$1c  = undefined;
 
-function getSchemaFrom$V ( Mongoose ) {
+function getSchemaFrom$1l ( Mongoose ) {
 
-    if ( !_schema$V ) {
-        _createSchema$V( Mongoose );
+    if ( !_schema$1l ) {
+        _createSchema$1l( Mongoose );
     }
 
-    return _schema$V
+    return _schema$1l
 
 }
 
-function _createSchema$V ( Mongoose ) {
+function _createSchema$1l ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$V = new Schema( {} );
+    _schema$1l = new Schema( {} );
 
 }
 
-function getModelFrom$T ( Mongoose ) {
+function getModelFrom$1c ( Mongoose ) {
 
-    if ( !_model$T ) {
-        _createModel$T( Mongoose );
+    if ( !_model$1c ) {
+        _createModel$1c( Mongoose );
     }
 
-    return _model$T
+    return _model$1c
 
 }
 
-function _createModel$T ( Mongoose ) {
+function _createModel$1c ( Mongoose ) {
 
-    const GeometryBaseModel = Geometry$h.getModelFrom( Mongoose );
-    _model$T                  = GeometryBaseModel.discriminator( 'RingGeometry', getSchemaFrom$V( Mongoose ) );
+    const GeometryBaseModel = Geometry$8.getModelFrom( Mongoose );
+    _model$1c                  = GeometryBaseModel.discriminator( 'RingGeometry', getSchemaFrom$1l( Mongoose ) );
 
 }
 
-function registerModelTo$T ( Mongoose ) {
+function registerModelTo$1c ( Mongoose ) {
 
-    if ( !_model$T ) {
-        _createModel$T( Mongoose );
+    if ( !_model$1c ) {
+        _createModel$1c( Mongoose );
     }
 
     return Mongoose
@@ -7457,9 +7483,9 @@ function registerModelTo$T ( Mongoose ) {
 
 var RingGeometry_1 = {
     name:            'RingGeometry',
-    getSchemaFrom:   getSchemaFrom$V,
-    getModelFrom:    getModelFrom$T,
-    registerModelTo: registerModelTo$T
+    getSchemaFrom:   getSchemaFrom$1l,
+    getModelFrom:    getModelFrom$1c,
+    registerModelTo: registerModelTo$1c
 };
 
 /**
@@ -7472,22 +7498,22 @@ var RingGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$f } = BufferGeometry$1;
+const { BufferGeometry: BufferGeometry$7 } = BufferGeometry$m;
 
-let _schema$W = undefined;
-let _model$U  = undefined;
+let _schema$1k = undefined;
+let _model$1b  = undefined;
 
-function getSchemaFrom$W ( Mongoose ) {
+function getSchemaFrom$1k ( Mongoose ) {
 
-    if ( !_schema$W ) {
-        _createSchema$W( Mongoose );
+    if ( !_schema$1k ) {
+        _createSchema$1k( Mongoose );
     }
 
-    return _schema$W
+    return _schema$1k
 
 }
 
-function _createSchema$W ( Mongoose ) {
+function _createSchema$1k ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -7542,1283 +7568,10 @@ function _createSchema$W ( Mongoose ) {
         _id: false
     } );
 
-    _schema$W = new Schema( {
+    _schema$1k = new Schema( {
         shapes:        [ NestedShapeSchema ],
         curveSegments: Number
     } );
-
-}
-
-function getModelFrom$U ( Mongoose ) {
-
-    if ( !_model$U ) {
-        _createModel$U( Mongoose );
-    }
-
-    return _model$U
-
-}
-
-function _createModel$U ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
-    _model$U                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom$W( Mongoose ) );
-
-}
-
-function registerModelTo$U ( Mongoose ) {
-
-    if ( !_model$U ) {
-        _createModel$U( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShapeBufferGeometry_1 = {
-    name:            'ShapeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$W,
-    getModelFrom:    getModelFrom$U,
-    registerModelTo: registerModelTo$U
-};
-
-/**
- * @module Schemas/Geometries/ShapeGeometry
- * @desc Export the ThreeJs ShapeGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$i } = Geometry$1;
-
-let _schema$X = undefined;
-let _model$V  = undefined;
-
-function getSchemaFrom$X ( Mongoose ) {
-
-    if ( !_schema$X ) {
-        _createSchema$X( Mongoose );
-    }
-
-    return _schema$X
-
-}
-
-function _createSchema$X ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$X = new Schema( {} );
-
-}
-
-function getModelFrom$V ( Mongoose ) {
-
-    if ( !_model$V ) {
-        _createModel$V( Mongoose );
-    }
-
-    return _model$V
-
-}
-
-function _createModel$V ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$i.getModelFrom( Mongoose );
-    _model$V                  = GeometryBaseModel.discriminator( 'ShapeGeometry', getSchemaFrom$X( Mongoose ) );
-
-}
-
-function registerModelTo$V ( Mongoose ) {
-
-    if ( !_model$V ) {
-        _createModel$V( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShapeGeometry_1 = {
-    name:            'ShapeGeometry',
-    getSchemaFrom:   getSchemaFrom$X,
-    getModelFrom:    getModelFrom$V,
-    registerModelTo: registerModelTo$V
-};
-
-/**
- * @module Schemas/Geometries/SphereBufferGeometry
- * @desc Export the ThreeJs SphereBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$g } = BufferGeometry$1;
-
-let _schema$Y = undefined;
-let _model$W  = undefined;
-
-function getSchemaFrom$Y ( Mongoose ) {
-
-    if ( !_schema$Y ) {
-        _createSchema$Y( Mongoose );
-    }
-
-    return _schema$Y
-
-}
-
-function _createSchema$Y ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$Y = new Schema( {} );
-
-}
-
-function getModelFrom$W ( Mongoose ) {
-
-    if ( !_model$W ) {
-        _createModel$W( Mongoose );
-    }
-
-    return _model$W
-
-}
-
-function _createModel$W ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
-    _model$W                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom$Y( Mongoose ) );
-
-}
-
-function registerModelTo$W ( Mongoose ) {
-
-    if ( !_model$W ) {
-        _createModel$W( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SphereBufferGeometry_1 = {
-    name:            'SphereBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$Y,
-    getModelFrom:    getModelFrom$W,
-    registerModelTo: registerModelTo$W
-};
-
-/**
- * @module Schemas/Geometries/SphereGeometry
- * @desc Export the ThreeJs SphereGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$j } = Geometry$1;
-
-let _schema$Z = undefined;
-let _model$X  = undefined;
-
-function getSchemaFrom$Z ( Mongoose ) {
-
-    if ( !_schema$Z ) {
-        _createSchema$Z( Mongoose );
-    }
-
-    return _schema$Z
-
-}
-
-function _createSchema$Z ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$Z = new Schema( {} );
-
-}
-
-function getModelFrom$X ( Mongoose ) {
-
-    if ( !_model$X ) {
-        _createModel$X( Mongoose );
-    }
-
-    return _model$X
-
-}
-
-function _createModel$X ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$j.getModelFrom( Mongoose );
-    _model$X                  = GeometryBaseModel.discriminator( 'SphereGeometry', getSchemaFrom$Z( Mongoose ) );
-
-}
-
-function registerModelTo$X ( Mongoose ) {
-
-    if ( !_model$X ) {
-        _createModel$X( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SphereGeometry_1 = {
-    name:            'SphereGeometry',
-    getSchemaFrom:   getSchemaFrom$Z,
-    getModelFrom:    getModelFrom$X,
-    registerModelTo: registerModelTo$X
-};
-
-/**
- * @module Schemas/Geometries/TeapotBufferGeometry
- * @desc Export the ThreeJs TeapotBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$h } = BufferGeometry$1;
-
-let _schema$_ = undefined;
-let _model$Y  = undefined;
-
-function getSchemaFrom$_ ( Mongoose ) {
-
-    if ( !_schema$_ ) {
-        _createSchema$_( Mongoose );
-    }
-
-    return _schema$_
-
-}
-
-function _createSchema$_ ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$_ = new Schema( {} );
-
-}
-
-function getModelFrom$Y ( Mongoose ) {
-
-    if ( !_model$Y ) {
-        _createModel$Y( Mongoose );
-    }
-
-    return _model$Y
-
-}
-
-function _createModel$Y ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
-    _model$Y                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom$_( Mongoose ) );
-
-}
-
-function registerModelTo$Y ( Mongoose ) {
-
-    if ( !_model$Y ) {
-        _createModel$Y( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TeapotBufferGeometry = {
-    name:            'TeapotBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$_,
-    getModelFrom:    getModelFrom$Y,
-    registerModelTo: registerModelTo$Y
-};
-
-/**
- * @module Schemas/Geometries/TetrahedronBufferGeometry
- * @desc Export the ThreeJs TetrahedronBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$i } = BufferGeometry$1;
-
-let _schema$$ = undefined;
-let _model$Z  = undefined;
-
-function getSchemaFrom$$ ( Mongoose ) {
-
-    if ( !_schema$$ ) {
-        _createSchema$$( Mongoose );
-    }
-
-    return _schema$$
-
-}
-
-function _createSchema$$ ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$$ = new Schema( {} );
-
-}
-
-function getModelFrom$Z ( Mongoose ) {
-
-    if ( !_model$Z ) {
-        _createModel$Z( Mongoose );
-    }
-
-    return _model$Z
-
-}
-
-function _createModel$Z ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
-    _model$Z                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom$$( Mongoose ) );
-
-}
-
-function registerModelTo$Z ( Mongoose ) {
-
-    if ( !_model$Z ) {
-        _createModel$Z( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TetrahedronBufferGeometry_1 = {
-    name:            'TetrahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$$,
-    getModelFrom:    getModelFrom$Z,
-    registerModelTo: registerModelTo$Z
-};
-
-/**
- * @module Schemas/Geometries/TetrahedronGeometry
- * @desc Export the ThreeJs TetrahedronGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$k } = Geometry$1;
-
-let _schema$10 = undefined;
-let _model$_  = undefined;
-
-function getSchemaFrom$10 ( Mongoose ) {
-
-    if ( !_schema$10 ) {
-        _createSchema$10( Mongoose );
-    }
-
-    return _schema$10
-
-}
-
-function _createSchema$10 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$10 = new Schema( {} );
-
-}
-
-function getModelFrom$_ ( Mongoose ) {
-
-    if ( !_model$_ ) {
-        _createModel$_( Mongoose );
-    }
-
-    return _model$_
-
-}
-
-function _createModel$_ ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$k.getModelFrom( Mongoose );
-    _model$_                  = GeometryBaseModel.discriminator( 'TetrahedronGeometry', getSchemaFrom$10( Mongoose ) );
-
-}
-
-function registerModelTo$_ ( Mongoose ) {
-
-    if ( !_model$_ ) {
-        _createModel$_( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TetrahedronGeometry_1 = {
-    name:            'TetrahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$10,
-    getModelFrom:    getModelFrom$_,
-    registerModelTo: registerModelTo$_
-};
-
-/**
- * @module Schemas/Geometries/TextBufferGeometry
- * @desc Export the ThreeJs TextBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$j } = BufferGeometry$1;
-
-let _schema$11 = undefined;
-let _model$$  = undefined;
-
-function getSchemaFrom$11 ( Mongoose ) {
-
-    if ( !_schema$11 ) {
-        _createSchema$11( Mongoose );
-    }
-
-    return _schema$11
-
-}
-
-function _createSchema$11 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$11 = new Schema( {} );
-
-}
-
-function getModelFrom$$ ( Mongoose ) {
-
-    if ( !_model$$ ) {
-        _createModel$$( Mongoose );
-    }
-
-    return _model$$
-
-}
-
-function _createModel$$ ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
-    _model$$                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom$11( Mongoose ) );
-
-}
-
-function registerModelTo$$ ( Mongoose ) {
-
-    if ( !_model$$ ) {
-        _createModel$$( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TextBufferGeometry_1 = {
-    name:            'TextBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$11,
-    getModelFrom:    getModelFrom$$,
-    registerModelTo: registerModelTo$$
-};
-
-/**
- * @module Schemas/Geometries/TextGeometry
- * @desc Export the ThreeJs TextGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$l } = Geometry$1;
-
-let _schema$12 = undefined;
-let _model$10  = undefined;
-
-function getSchemaFrom$12 ( Mongoose ) {
-
-    if ( !_schema$12 ) {
-        _createSchema$12( Mongoose );
-    }
-
-    return _schema$12
-
-}
-
-function _createSchema$12 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$12 = new Schema( {} );
-
-}
-
-function getModelFrom$10 ( Mongoose ) {
-
-    if ( !_model$10 ) {
-        _createModel$10( Mongoose );
-    }
-
-    return _model$10
-
-}
-
-function _createModel$10 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$l.getModelFrom( Mongoose );
-    _model$10                  = GeometryBaseModel.discriminator( 'TextGeometry', getSchemaFrom$12( Mongoose ) );
-
-}
-
-function registerModelTo$10 ( Mongoose ) {
-
-    if ( !_model$10 ) {
-        _createModel$10( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TextGeometry_1 = {
-    name:            'TextGeometry',
-    getSchemaFrom:   getSchemaFrom$12,
-    getModelFrom:    getModelFrom$10,
-    registerModelTo: registerModelTo$10
-};
-
-/**
- * @module Schemas/Geometries/TorusBufferGeometry
- * @desc Export the ThreeJs TorusBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$k } = BufferGeometry$1;
-
-let _schema$13 = undefined;
-let _model$11  = undefined;
-
-function getSchemaFrom$13 ( Mongoose ) {
-
-    if ( !_schema$13 ) {
-        _createSchema$13( Mongoose );
-    }
-
-    return _schema$13
-
-}
-
-function _createSchema$13 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$13 = new Schema( {} );
-
-}
-
-function getModelFrom$11 ( Mongoose ) {
-
-    if ( !_model$11 ) {
-        _createModel$11( Mongoose );
-    }
-
-    return _model$11
-
-}
-
-function _createModel$11 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
-    _model$11                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom$13( Mongoose ) );
-
-}
-
-function registerModelTo$11 ( Mongoose ) {
-
-    if ( !_model$11 ) {
-        _createModel$11( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusBufferGeometry_1 = {
-    name:            'TorusBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$13,
-    getModelFrom:    getModelFrom$11,
-    registerModelTo: registerModelTo$11
-};
-
-/**
- * @module Schemas/Geometries/TorusGeometry
- * @desc Export the ThreeJs TorusGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$m } = Geometry$1;
-
-let _schema$14 = undefined;
-let _model$12  = undefined;
-
-function getSchemaFrom$14 ( Mongoose ) {
-
-    if ( !_schema$14 ) {
-        _createSchema$14( Mongoose );
-    }
-
-    return _schema$14
-
-}
-
-function _createSchema$14 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$14 = new Schema( {} );
-
-}
-
-function getModelFrom$12 ( Mongoose ) {
-
-    if ( !_model$12 ) {
-        _createModel$12( Mongoose );
-    }
-
-    return _model$12
-
-}
-
-function _createModel$12 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$m.getModelFrom( Mongoose );
-    _model$12                  = GeometryBaseModel.discriminator( 'TorusGeometry', getSchemaFrom$14( Mongoose ) );
-
-}
-
-function registerModelTo$12 ( Mongoose ) {
-
-    if ( !_model$12 ) {
-        _createModel$12( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusGeometry_1 = {
-    name:            'TorusGeometry',
-    getSchemaFrom:   getSchemaFrom$14,
-    getModelFrom:    getModelFrom$12,
-    registerModelTo: registerModelTo$12
-};
-
-/**
- * @module Schemas/Geometries/TorusKnotBufferGeometry
- * @desc Export the ThreeJs TorusKnotBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$l } = BufferGeometry$1;
-
-let _schema$15 = undefined;
-let _model$13  = undefined;
-
-function getSchemaFrom$15 ( Mongoose ) {
-
-    if ( !_schema$15 ) {
-        _createSchema$15( Mongoose );
-    }
-
-    return _schema$15
-
-}
-
-function _createSchema$15 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$15 = new Schema( {} );
-
-}
-
-function getModelFrom$13 ( Mongoose ) {
-
-    if ( !_model$13 ) {
-        _createModel$13( Mongoose );
-    }
-
-    return _model$13
-
-}
-
-function _createModel$13 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$l.getModelFrom( Mongoose );
-    _model$13                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom$15( Mongoose ) );
-
-}
-
-function registerModelTo$13 ( Mongoose ) {
-
-    if ( !_model$13 ) {
-        _createModel$13( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusKnotBufferGeometry_1 = {
-    name:            'TorusKnotBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$15,
-    getModelFrom:    getModelFrom$13,
-    registerModelTo: registerModelTo$13
-};
-
-/**
- * @module Schemas/Geometries/TorusKnotGeometry
- * @desc Export the ThreeJs TorusKnotGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$n } = Geometry$1;
-
-let _schema$16 = undefined;
-let _model$14  = undefined;
-
-function getSchemaFrom$16 ( Mongoose ) {
-
-    if ( !_schema$16 ) {
-        _createSchema$16( Mongoose );
-    }
-
-    return _schema$16
-
-}
-
-function _createSchema$16 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$16 = new Schema( {} );
-
-}
-
-function getModelFrom$14 ( Mongoose ) {
-
-    if ( !_model$14 ) {
-        _createModel$14( Mongoose );
-    }
-
-    return _model$14
-
-}
-
-function _createModel$14 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$n.getModelFrom( Mongoose );
-    _model$14                  = GeometryBaseModel.discriminator( 'TorusKnotGeometry', getSchemaFrom$16( Mongoose ) );
-
-}
-
-function registerModelTo$14 ( Mongoose ) {
-
-    if ( !_model$14 ) {
-        _createModel$14( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusKnotGeometry_1 = {
-    name:            'TorusKnotGeometry',
-    getSchemaFrom:   getSchemaFrom$16,
-    getModelFrom:    getModelFrom$14,
-    registerModelTo: registerModelTo$14
-};
-
-/**
- * @module Schemas/Geometries/TubeBufferGeometry
- * @desc Export the ThreeJs TubeBufferGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { BufferGeometry: BufferGeometry$m } = BufferGeometry$1;
-
-let _schema$17 = undefined;
-let _model$15  = undefined;
-
-function getSchemaFrom$17 ( Mongoose ) {
-
-    if ( !_schema$17 ) {
-        _createSchema$17( Mongoose );
-    }
-
-    return _schema$17
-
-}
-
-function _createSchema$17 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$17 = new Schema( {} );
-
-}
-
-function getModelFrom$15 ( Mongoose ) {
-
-    if ( !_model$15 ) {
-        _createModel$15( Mongoose );
-    }
-
-    return _model$15
-
-}
-
-function _createModel$15 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$m.getModelFrom( Mongoose );
-    _model$15                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom$17( Mongoose ) );
-
-}
-
-function registerModelTo$15 ( Mongoose ) {
-
-    if ( !_model$15 ) {
-        _createModel$15( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TubeBufferGeometry_1 = {
-    name:            'TubeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$17,
-    getModelFrom:    getModelFrom$15,
-    registerModelTo: registerModelTo$15
-};
-
-/**
- * @module Schemas/Geometries/TubeGeometry
- * @desc Export the ThreeJs TubeGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$o } = Geometry$1;
-
-let _schema$18 = undefined;
-let _model$16  = undefined;
-
-function getSchemaFrom$18 ( Mongoose ) {
-
-    if ( !_schema$18 ) {
-        _createSchema$18( Mongoose );
-    }
-
-    return _schema$18
-
-}
-
-function _createSchema$18 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$18 = new Schema( {} );
-
-}
-
-function getModelFrom$16 ( Mongoose ) {
-
-    if ( !_model$16 ) {
-        _createModel$16( Mongoose );
-    }
-
-    return _model$16
-
-}
-
-function _createModel$16 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$o.getModelFrom( Mongoose );
-    _model$16                  = GeometryBaseModel.discriminator( 'TubeGeometry', getSchemaFrom$18( Mongoose ) );
-
-}
-
-function registerModelTo$16 ( Mongoose ) {
-
-    if ( !_model$16 ) {
-        _createModel$16( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TubeGeometry_1 = {
-    name:            'TubeGeometry',
-    getSchemaFrom:   getSchemaFrom$18,
-    getModelFrom:    getModelFrom$16,
-    registerModelTo: registerModelTo$16
-};
-
-/**
- * @module Schemas/Geometries/WireframeGeometry
- * @desc Export the ThreeJs WireframeGeometry Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Geometry: Geometry$p } = Geometry$1;
-
-let _schema$19 = undefined;
-let _model$17  = undefined;
-
-function getSchemaFrom$19 ( Mongoose ) {
-
-    if ( !_schema$19 ) {
-        _createSchema$19( Mongoose );
-    }
-
-    return _schema$19
-
-}
-
-function _createSchema$19 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$19 = new Schema( {} );
-
-}
-
-function getModelFrom$17 ( Mongoose ) {
-
-    if ( !_model$17 ) {
-        _createModel$17( Mongoose );
-    }
-
-    return _model$17
-
-}
-
-function _createModel$17 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$p.getModelFrom( Mongoose );
-    _model$17                  = GeometryBaseModel.discriminator( 'WireframeGeometry', getSchemaFrom$19( Mongoose ) );
-
-}
-
-function registerModelTo$17 ( Mongoose ) {
-
-    if ( !_model$17 ) {
-        _createModel$17( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var WireframeGeometry_1 = {
-    name:            'WireframeGeometry',
-    getSchemaFrom:   getSchemaFrom$19,
-    getModelFrom:    getModelFrom$17,
-    registerModelTo: registerModelTo$17
-};
-
-/**
- * @module Schemas/Helpers/ArrowHelper
- * @desc Export the ThreeJs ArrowHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$a } = Object3D$1;
-
-let _schema$1a = undefined;
-let _model$18  = undefined;
-
-function getSchemaFrom$1a ( Mongoose ) {
-
-    if ( !_schema$1a ) {
-        _createSchema$1a( Mongoose );
-    }
-
-    return _schema$1a
-
-}
-
-function _createSchema$1a ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1a = new Schema( {} );
-
-}
-
-function getModelFrom$18 ( Mongoose ) {
-
-    if ( !_model$18 ) {
-        _createModel$18( Mongoose );
-    }
-
-    return _model$18
-
-}
-
-function _createModel$18 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$a.getModelFrom( Mongoose );
-    _model$18                  = Object3DBaseModel.discriminator( 'ArrowHelper', getSchemaFrom$1a( Mongoose ) );
-
-}
-
-function registerModelTo$18 ( Mongoose ) {
-
-    if ( !_model$18 ) {
-        _createModel$18( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ArrowHelper_1 = {
-    name:            'ArrowHelper',
-    getSchemaFrom:   getSchemaFrom$1a,
-    getModelFrom:    getModelFrom$18,
-    registerModelTo: registerModelTo$18
-};
-
-/**
- * @module Schemas/Helpers/AxesHelper
- * @desc Export the ThreeJs AxesHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$b } = Object3D$1;
-
-let _schema$1b = undefined;
-let _model$19  = undefined;
-
-function getSchemaFrom$1b ( Mongoose ) {
-
-    if ( !_schema$1b ) {
-        _createSchema$1b( Mongoose );
-    }
-
-    return _schema$1b
-
-}
-
-function _createSchema$1b ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1b = new Schema( {} );
-
-}
-
-function getModelFrom$19 ( Mongoose ) {
-
-    if ( !_model$19 ) {
-        _createModel$19( Mongoose );
-    }
-
-    return _model$19
-
-}
-
-function _createModel$19 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$b.getModelFrom( Mongoose );
-    _model$19                  = Object3DBaseModel.discriminator( 'AxesHelper', getSchemaFrom$1b( Mongoose ) );
-
-}
-
-function registerModelTo$19 ( Mongoose ) {
-
-    if ( !_model$19 ) {
-        _createModel$19( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var AxesHelper_1 = {
-    name:            'AxesHelper',
-    getSchemaFrom:   getSchemaFrom$1b,
-    getModelFrom:    getModelFrom$19,
-    registerModelTo: registerModelTo$19
-};
-
-/**
- * @module Schemas/Helpers/Box3Helper
- * @desc Export the ThreeJs Box3Helper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$c } = Object3D$1;
-
-let _schema$1c = undefined;
-let _model$1a  = undefined;
-
-function getSchemaFrom$1c ( Mongoose ) {
-
-    if ( !_schema$1c ) {
-        _createSchema$1c( Mongoose );
-    }
-
-    return _schema$1c
-
-}
-
-function _createSchema$1c ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1c = new Schema( {} );
-
-}
-
-function getModelFrom$1a ( Mongoose ) {
-
-    if ( !_model$1a ) {
-        _createModel$1a( Mongoose );
-    }
-
-    return _model$1a
-
-}
-
-function _createModel$1a ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$c.getModelFrom( Mongoose );
-    _model$1a                  = Object3DBaseModel.discriminator( 'Box3Helper', getSchemaFrom$1c( Mongoose ) );
-
-}
-
-function registerModelTo$1a ( Mongoose ) {
-
-    if ( !_model$1a ) {
-        _createModel$1a( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Box3Helper_1 = {
-    name:            'Box3Helper',
-    getSchemaFrom:   getSchemaFrom$1c,
-    getModelFrom:    getModelFrom$1a,
-    registerModelTo: registerModelTo$1a
-};
-
-/**
- * @module Schemas/Helpers/BoxHelper
- * @desc Export the ThreeJs BoxHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$d } = Object3D$1;
-
-let _schema$1d = undefined;
-let _model$1b  = undefined;
-
-function getSchemaFrom$1d ( Mongoose ) {
-
-    if ( !_schema$1d ) {
-        _createSchema$1d( Mongoose );
-    }
-
-    return _schema$1d
-
-}
-
-function _createSchema$1d ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1d = new Schema( {} );
 
 }
 
@@ -8834,8 +7587,8 @@ function getModelFrom$1b ( Mongoose ) {
 
 function _createModel$1b ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$d.getModelFrom( Mongoose );
-    _model$1b                  = Object3DBaseModel.discriminator( 'BoxHelper', getSchemaFrom$1d( Mongoose ) );
+    const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
+    _model$1b                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom$1k( Mongoose ) );
 
 }
 
@@ -8849,362 +7602,27 @@ function registerModelTo$1b ( Mongoose ) {
 
 }
 
-var BoxHelper_1 = {
-    name:            'BoxHelper',
-    getSchemaFrom:   getSchemaFrom$1d,
+var ShapeBufferGeometry_1 = {
+    name:            'ShapeBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1k,
     getModelFrom:    getModelFrom$1b,
     registerModelTo: registerModelTo$1b
 };
 
 /**
- * @module Schemas/Helpers/CameraHelper
- * @desc Export the ThreeJs CameraHelper Model and Schema for Mongoose.
+ * @module Schemas/Geometries/ShapeGeometry
+ * @desc Export the ThreeJs ShapeGeometry Model and Schema for Mongoose.
  *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$e } = Object3D$1;
-
-let _schema$1e = undefined;
-let _model$1c  = undefined;
-
-function getSchemaFrom$1e ( Mongoose ) {
-
-    if ( !_schema$1e ) {
-        _createSchema$1e( Mongoose );
-    }
-
-    return _schema$1e
-
-}
-
-function _createSchema$1e ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1e = new Schema( {} );
-
-}
-
-function getModelFrom$1c ( Mongoose ) {
-
-    if ( !_model$1c ) {
-        _createModel$1c( Mongoose );
-    }
-
-    return _model$1c
-
-}
-
-function _createModel$1c ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$e.getModelFrom( Mongoose );
-    _model$1c                  = Object3DBaseModel.discriminator( 'CameraHelper', getSchemaFrom$1e( Mongoose ) );
-
-}
-
-function registerModelTo$1c ( Mongoose ) {
-
-    if ( !_model$1c ) {
-        _createModel$1c( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CameraHelper_1 = {
-    name:            'CameraHelper',
-    getSchemaFrom:   getSchemaFrom$1e,
-    getModelFrom:    getModelFrom$1c,
-    registerModelTo: registerModelTo$1c
-};
-
-/**
- * @module Schemas/Helpers/DirectionalLightHelper
- * @desc Export the ThreeJs DirectionalLightHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$f } = Object3D$1;
-
-let _schema$1f = undefined;
-let _model$1d  = undefined;
-
-function getSchemaFrom$1f ( Mongoose ) {
-
-    if ( !_schema$1f ) {
-        _createSchema$1f( Mongoose );
-    }
-
-    return _schema$1f
-
-}
-
-function _createSchema$1f ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1f = new Schema( {} );
-
-}
-
-function getModelFrom$1d ( Mongoose ) {
-
-    if ( !_model$1d ) {
-        _createModel$1d( Mongoose );
-    }
-
-    return _model$1d
-
-}
-
-function _createModel$1d ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$f.getModelFrom( Mongoose );
-    _model$1d                  = Object3DBaseModel.discriminator( 'DirectionalLightHelper', getSchemaFrom$1f( Mongoose ) );
-
-}
-
-function registerModelTo$1d ( Mongoose ) {
-
-    if ( !_model$1d ) {
-        _createModel$1d( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DirectionalLightHelper_1 = {
-    name:            'DirectionalLightHelper',
-    getSchemaFrom:   getSchemaFrom$1f,
-    getModelFrom:    getModelFrom$1d,
-    registerModelTo: registerModelTo$1d
-};
-
-/**
- * @module Schemas/Helpers/FaceNormalsHelper
- * @desc Export the ThreeJs FaceNormalsHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$g } = Object3D$1;
-
-let _schema$1g = undefined;
-let _model$1e  = undefined;
-
-function getSchemaFrom$1g ( Mongoose ) {
-
-    if ( !_schema$1g ) {
-        _createSchema$1g( Mongoose );
-    }
-
-    return _schema$1g
-
-}
-
-function _createSchema$1g ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1g = new Schema( {} );
-
-}
-
-function getModelFrom$1e ( Mongoose ) {
-
-    if ( !_model$1e ) {
-        _createModel$1e( Mongoose );
-    }
-
-    return _model$1e
-
-}
-
-function _createModel$1e ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$g.getModelFrom( Mongoose );
-    _model$1e                  = Object3DBaseModel.discriminator( 'FaceNormalsHelper', getSchemaFrom$1g( Mongoose ) );
-
-}
-
-function registerModelTo$1e ( Mongoose ) {
-
-    if ( !_model$1e ) {
-        _createModel$1e( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var FaceNormalsHelper_1 = {
-    name:            'FaceNormalsHelper',
-    getSchemaFrom:   getSchemaFrom$1g,
-    getModelFrom:    getModelFrom$1e,
-    registerModelTo: registerModelTo$1e
-};
-
-/**
- * @module Schemas/Helpers/GridHelper
- * @desc Export the ThreeJs GridHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$h } = Object3D$1;
-
-let _schema$1h = undefined;
-let _model$1f  = undefined;
-
-function getSchemaFrom$1h ( Mongoose ) {
-
-    if ( !_schema$1h ) {
-        _createSchema$1h( Mongoose );
-    }
-
-    return _schema$1h
-
-}
-
-function _createSchema$1h ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1h = new Schema( {} );
-
-}
-
-function getModelFrom$1f ( Mongoose ) {
-
-    if ( !_model$1f ) {
-        _createModel$1f( Mongoose );
-    }
-
-    return _model$1f
-
-}
-
-function _createModel$1f ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$h.getModelFrom( Mongoose );
-    _model$1f                  = Object3DBaseModel.discriminator( 'GridHelper', getSchemaFrom$1h( Mongoose ) );
-
-}
-
-function registerModelTo$1f ( Mongoose ) {
-
-    if ( !_model$1f ) {
-        _createModel$1f( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var GridHelper_1 = {
-    name:            'GridHelper',
-    getSchemaFrom:   getSchemaFrom$1h,
-    getModelFrom:    getModelFrom$1f,
-    registerModelTo: registerModelTo$1f
-};
-
-/**
- * @module Schemas/Helpers/HemisphereLightHelper
- * @desc Export the ThreeJs HemisphereLightHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$i } = Object3D$1;
-
-let _schema$1i = undefined;
-let _model$1g  = undefined;
-
-function getSchemaFrom$1i ( Mongoose ) {
-
-    if ( !_schema$1i ) {
-        _createSchema$1i( Mongoose );
-    }
-
-    return _schema$1i
-
-}
-
-function _createSchema$1i ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$1i = new Schema( {} );
-
-}
-
-function getModelFrom$1g ( Mongoose ) {
-
-    if ( !_model$1g ) {
-        _createModel$1g( Mongoose );
-    }
-
-    return _model$1g
-
-}
-
-function _createModel$1g ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$i.getModelFrom( Mongoose );
-    _model$1g                  = Object3DBaseModel.discriminator( 'HemisphereLightHelper', getSchemaFrom$1i( Mongoose ) );
-
-}
-
-function registerModelTo$1g ( Mongoose ) {
-
-    if ( !_model$1g ) {
-        _createModel$1g( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var HemisphereLightHelper_1 = {
-    name:            'HemisphereLightHelper',
-    getSchemaFrom:   getSchemaFrom$1i,
-    getModelFrom:    getModelFrom$1g,
-    registerModelTo: registerModelTo$1g
-};
-
-/**
- * @module Schemas/Helpers/PlaneHelper
- * @desc Export the ThreeJs PlaneHelper Model and Schema for Mongoose.
- *
- * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
- *
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-const { Object3D: Object3D$j } = Object3D$1;
+const { Geometry: Geometry$7 } = Geometry$p;
 
 let _schema$1j = undefined;
-let _model$1h  = undefined;
+let _model$1a  = undefined;
 
 function getSchemaFrom$1j ( Mongoose ) {
 
@@ -9224,27 +7642,1635 @@ function _createSchema$1j ( Mongoose ) {
 
 }
 
-function getModelFrom$1h ( Mongoose ) {
+function getModelFrom$1a ( Mongoose ) {
 
-    if ( !_model$1h ) {
-        _createModel$1h( Mongoose );
+    if ( !_model$1a ) {
+        _createModel$1a( Mongoose );
     }
 
-    return _model$1h
+    return _model$1a
 
 }
 
-function _createModel$1h ( Mongoose ) {
+function _createModel$1a ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$j.getModelFrom( Mongoose );
-    _model$1h                  = Object3DBaseModel.discriminator( 'PlaneHelper', getSchemaFrom$1j( Mongoose ) );
+    const GeometryBaseModel = Geometry$7.getModelFrom( Mongoose );
+    _model$1a                  = GeometryBaseModel.discriminator( 'ShapeGeometry', getSchemaFrom$1j( Mongoose ) );
 
 }
 
-function registerModelTo$1h ( Mongoose ) {
+function registerModelTo$1a ( Mongoose ) {
 
-    if ( !_model$1h ) {
-        _createModel$1h( Mongoose );
+    if ( !_model$1a ) {
+        _createModel$1a( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var ShapeGeometry_1 = {
+    name:            'ShapeGeometry',
+    getSchemaFrom:   getSchemaFrom$1j,
+    getModelFrom:    getModelFrom$1a,
+    registerModelTo: registerModelTo$1a
+};
+
+/**
+ * @module Schemas/Geometries/SphereBufferGeometry
+ * @desc Export the ThreeJs SphereBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$6 } = BufferGeometry$m;
+
+let _schema$1i = undefined;
+let _model$19  = undefined;
+
+function getSchemaFrom$1i ( Mongoose ) {
+
+    if ( !_schema$1i ) {
+        _createSchema$1i( Mongoose );
+    }
+
+    return _schema$1i
+
+}
+
+function _createSchema$1i ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1i = new Schema( {} );
+
+}
+
+function getModelFrom$19 ( Mongoose ) {
+
+    if ( !_model$19 ) {
+        _createModel$19( Mongoose );
+    }
+
+    return _model$19
+
+}
+
+function _createModel$19 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
+    _model$19                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom$1i( Mongoose ) );
+
+}
+
+function registerModelTo$19 ( Mongoose ) {
+
+    if ( !_model$19 ) {
+        _createModel$19( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var SphereBufferGeometry_1 = {
+    name:            'SphereBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1i,
+    getModelFrom:    getModelFrom$19,
+    registerModelTo: registerModelTo$19
+};
+
+/**
+ * @module Schemas/Geometries/SphereGeometry
+ * @desc Export the ThreeJs SphereGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$6 } = Geometry$p;
+
+let _schema$1h = undefined;
+let _model$18  = undefined;
+
+function getSchemaFrom$1h ( Mongoose ) {
+
+    if ( !_schema$1h ) {
+        _createSchema$1h( Mongoose );
+    }
+
+    return _schema$1h
+
+}
+
+function _createSchema$1h ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1h = new Schema( {} );
+
+}
+
+function getModelFrom$18 ( Mongoose ) {
+
+    if ( !_model$18 ) {
+        _createModel$18( Mongoose );
+    }
+
+    return _model$18
+
+}
+
+function _createModel$18 ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$6.getModelFrom( Mongoose );
+    _model$18                  = GeometryBaseModel.discriminator( 'SphereGeometry', getSchemaFrom$1h( Mongoose ) );
+
+}
+
+function registerModelTo$18 ( Mongoose ) {
+
+    if ( !_model$18 ) {
+        _createModel$18( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var SphereGeometry_1 = {
+    name:            'SphereGeometry',
+    getSchemaFrom:   getSchemaFrom$1h,
+    getModelFrom:    getModelFrom$18,
+    registerModelTo: registerModelTo$18
+};
+
+/**
+ * @module Schemas/Geometries/TeapotBufferGeometry
+ * @desc Export the ThreeJs TeapotBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$5 } = BufferGeometry$m;
+
+let _schema$1g = undefined;
+let _model$17  = undefined;
+
+function getSchemaFrom$1g ( Mongoose ) {
+
+    if ( !_schema$1g ) {
+        _createSchema$1g( Mongoose );
+    }
+
+    return _schema$1g
+
+}
+
+function _createSchema$1g ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1g = new Schema( {} );
+
+}
+
+function getModelFrom$17 ( Mongoose ) {
+
+    if ( !_model$17 ) {
+        _createModel$17( Mongoose );
+    }
+
+    return _model$17
+
+}
+
+function _createModel$17 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
+    _model$17                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom$1g( Mongoose ) );
+
+}
+
+function registerModelTo$17 ( Mongoose ) {
+
+    if ( !_model$17 ) {
+        _createModel$17( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TeapotBufferGeometry = {
+    name:            'TeapotBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1g,
+    getModelFrom:    getModelFrom$17,
+    registerModelTo: registerModelTo$17
+};
+
+/**
+ * @module Schemas/Geometries/TetrahedronBufferGeometry
+ * @desc Export the ThreeJs TetrahedronBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$4 } = BufferGeometry$m;
+
+let _schema$1f = undefined;
+let _model$16  = undefined;
+
+function getSchemaFrom$1f ( Mongoose ) {
+
+    if ( !_schema$1f ) {
+        _createSchema$1f( Mongoose );
+    }
+
+    return _schema$1f
+
+}
+
+function _createSchema$1f ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1f = new Schema( {} );
+
+}
+
+function getModelFrom$16 ( Mongoose ) {
+
+    if ( !_model$16 ) {
+        _createModel$16( Mongoose );
+    }
+
+    return _model$16
+
+}
+
+function _createModel$16 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
+    _model$16                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom$1f( Mongoose ) );
+
+}
+
+function registerModelTo$16 ( Mongoose ) {
+
+    if ( !_model$16 ) {
+        _createModel$16( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TetrahedronBufferGeometry_1 = {
+    name:            'TetrahedronBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1f,
+    getModelFrom:    getModelFrom$16,
+    registerModelTo: registerModelTo$16
+};
+
+/**
+ * @module Schemas/Geometries/TetrahedronGeometry
+ * @desc Export the ThreeJs TetrahedronGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$5 } = Geometry$p;
+
+let _schema$1e = undefined;
+let _model$15  = undefined;
+
+function getSchemaFrom$1e ( Mongoose ) {
+
+    if ( !_schema$1e ) {
+        _createSchema$1e( Mongoose );
+    }
+
+    return _schema$1e
+
+}
+
+function _createSchema$1e ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1e = new Schema( {} );
+
+}
+
+function getModelFrom$15 ( Mongoose ) {
+
+    if ( !_model$15 ) {
+        _createModel$15( Mongoose );
+    }
+
+    return _model$15
+
+}
+
+function _createModel$15 ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$5.getModelFrom( Mongoose );
+    _model$15                  = GeometryBaseModel.discriminator( 'TetrahedronGeometry', getSchemaFrom$1e( Mongoose ) );
+
+}
+
+function registerModelTo$15 ( Mongoose ) {
+
+    if ( !_model$15 ) {
+        _createModel$15( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TetrahedronGeometry_1 = {
+    name:            'TetrahedronGeometry',
+    getSchemaFrom:   getSchemaFrom$1e,
+    getModelFrom:    getModelFrom$15,
+    registerModelTo: registerModelTo$15
+};
+
+/**
+ * @module Schemas/Geometries/TextBufferGeometry
+ * @desc Export the ThreeJs TextBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$3 } = BufferGeometry$m;
+
+let _schema$1d = undefined;
+let _model$14  = undefined;
+
+function getSchemaFrom$1d ( Mongoose ) {
+
+    if ( !_schema$1d ) {
+        _createSchema$1d( Mongoose );
+    }
+
+    return _schema$1d
+
+}
+
+function _createSchema$1d ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1d = new Schema( {} );
+
+}
+
+function getModelFrom$14 ( Mongoose ) {
+
+    if ( !_model$14 ) {
+        _createModel$14( Mongoose );
+    }
+
+    return _model$14
+
+}
+
+function _createModel$14 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
+    _model$14                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom$1d( Mongoose ) );
+
+}
+
+function registerModelTo$14 ( Mongoose ) {
+
+    if ( !_model$14 ) {
+        _createModel$14( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TextBufferGeometry_1 = {
+    name:            'TextBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1d,
+    getModelFrom:    getModelFrom$14,
+    registerModelTo: registerModelTo$14
+};
+
+/**
+ * @module Schemas/Geometries/TextGeometry
+ * @desc Export the ThreeJs TextGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$4 } = Geometry$p;
+
+let _schema$1c = undefined;
+let _model$13  = undefined;
+
+function getSchemaFrom$1c ( Mongoose ) {
+
+    if ( !_schema$1c ) {
+        _createSchema$1c( Mongoose );
+    }
+
+    return _schema$1c
+
+}
+
+function _createSchema$1c ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1c = new Schema( {} );
+
+}
+
+function getModelFrom$13 ( Mongoose ) {
+
+    if ( !_model$13 ) {
+        _createModel$13( Mongoose );
+    }
+
+    return _model$13
+
+}
+
+function _createModel$13 ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$4.getModelFrom( Mongoose );
+    _model$13                  = GeometryBaseModel.discriminator( 'TextGeometry', getSchemaFrom$1c( Mongoose ) );
+
+}
+
+function registerModelTo$13 ( Mongoose ) {
+
+    if ( !_model$13 ) {
+        _createModel$13( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TextGeometry_1 = {
+    name:            'TextGeometry',
+    getSchemaFrom:   getSchemaFrom$1c,
+    getModelFrom:    getModelFrom$13,
+    registerModelTo: registerModelTo$13
+};
+
+/**
+ * @module Schemas/Geometries/TorusBufferGeometry
+ * @desc Export the ThreeJs TorusBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$2 } = BufferGeometry$m;
+
+let _schema$1b = undefined;
+let _model$12  = undefined;
+
+function getSchemaFrom$1b ( Mongoose ) {
+
+    if ( !_schema$1b ) {
+        _createSchema$1b( Mongoose );
+    }
+
+    return _schema$1b
+
+}
+
+function _createSchema$1b ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1b = new Schema( {} );
+
+}
+
+function getModelFrom$12 ( Mongoose ) {
+
+    if ( !_model$12 ) {
+        _createModel$12( Mongoose );
+    }
+
+    return _model$12
+
+}
+
+function _createModel$12 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
+    _model$12                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom$1b( Mongoose ) );
+
+}
+
+function registerModelTo$12 ( Mongoose ) {
+
+    if ( !_model$12 ) {
+        _createModel$12( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TorusBufferGeometry_1 = {
+    name:            'TorusBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$1b,
+    getModelFrom:    getModelFrom$12,
+    registerModelTo: registerModelTo$12
+};
+
+/**
+ * @module Schemas/Geometries/TorusGeometry
+ * @desc Export the ThreeJs TorusGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$3 } = Geometry$p;
+
+let _schema$1a = undefined;
+let _model$11  = undefined;
+
+function getSchemaFrom$1a ( Mongoose ) {
+
+    if ( !_schema$1a ) {
+        _createSchema$1a( Mongoose );
+    }
+
+    return _schema$1a
+
+}
+
+function _createSchema$1a ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$1a = new Schema( {} );
+
+}
+
+function getModelFrom$11 ( Mongoose ) {
+
+    if ( !_model$11 ) {
+        _createModel$11( Mongoose );
+    }
+
+    return _model$11
+
+}
+
+function _createModel$11 ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$3.getModelFrom( Mongoose );
+    _model$11                  = GeometryBaseModel.discriminator( 'TorusGeometry', getSchemaFrom$1a( Mongoose ) );
+
+}
+
+function registerModelTo$11 ( Mongoose ) {
+
+    if ( !_model$11 ) {
+        _createModel$11( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TorusGeometry_1 = {
+    name:            'TorusGeometry',
+    getSchemaFrom:   getSchemaFrom$1a,
+    getModelFrom:    getModelFrom$11,
+    registerModelTo: registerModelTo$11
+};
+
+/**
+ * @module Schemas/Geometries/TorusKnotBufferGeometry
+ * @desc Export the ThreeJs TorusKnotBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry: BufferGeometry$1 } = BufferGeometry$m;
+
+let _schema$19 = undefined;
+let _model$10  = undefined;
+
+function getSchemaFrom$19 ( Mongoose ) {
+
+    if ( !_schema$19 ) {
+        _createSchema$19( Mongoose );
+    }
+
+    return _schema$19
+
+}
+
+function _createSchema$19 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$19 = new Schema( {} );
+
+}
+
+function getModelFrom$10 ( Mongoose ) {
+
+    if ( !_model$10 ) {
+        _createModel$10( Mongoose );
+    }
+
+    return _model$10
+
+}
+
+function _createModel$10 ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry$1.getModelFrom( Mongoose );
+    _model$10                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom$19( Mongoose ) );
+
+}
+
+function registerModelTo$10 ( Mongoose ) {
+
+    if ( !_model$10 ) {
+        _createModel$10( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TorusKnotBufferGeometry_1 = {
+    name:            'TorusKnotBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$19,
+    getModelFrom:    getModelFrom$10,
+    registerModelTo: registerModelTo$10
+};
+
+/**
+ * @module Schemas/Geometries/TorusKnotGeometry
+ * @desc Export the ThreeJs TorusKnotGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$2 } = Geometry$p;
+
+let _schema$18 = undefined;
+let _model$$  = undefined;
+
+function getSchemaFrom$18 ( Mongoose ) {
+
+    if ( !_schema$18 ) {
+        _createSchema$18( Mongoose );
+    }
+
+    return _schema$18
+
+}
+
+function _createSchema$18 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$18 = new Schema( {} );
+
+}
+
+function getModelFrom$$ ( Mongoose ) {
+
+    if ( !_model$$ ) {
+        _createModel$$( Mongoose );
+    }
+
+    return _model$$
+
+}
+
+function _createModel$$ ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$2.getModelFrom( Mongoose );
+    _model$$                  = GeometryBaseModel.discriminator( 'TorusKnotGeometry', getSchemaFrom$18( Mongoose ) );
+
+}
+
+function registerModelTo$$ ( Mongoose ) {
+
+    if ( !_model$$ ) {
+        _createModel$$( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TorusKnotGeometry_1 = {
+    name:            'TorusKnotGeometry',
+    getSchemaFrom:   getSchemaFrom$18,
+    getModelFrom:    getModelFrom$$,
+    registerModelTo: registerModelTo$$
+};
+
+/**
+ * @module Schemas/Geometries/TubeBufferGeometry
+ * @desc Export the ThreeJs TubeBufferGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { BufferGeometry } = BufferGeometry$m;
+
+let _schema$17 = undefined;
+let _model$_  = undefined;
+
+function getSchemaFrom$17 ( Mongoose ) {
+
+    if ( !_schema$17 ) {
+        _createSchema$17( Mongoose );
+    }
+
+    return _schema$17
+
+}
+
+function _createSchema$17 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$17 = new Schema( {} );
+
+}
+
+function getModelFrom$_ ( Mongoose ) {
+
+    if ( !_model$_ ) {
+        _createModel$_( Mongoose );
+    }
+
+    return _model$_
+
+}
+
+function _createModel$_ ( Mongoose ) {
+
+    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+    _model$_                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom$17( Mongoose ) );
+
+}
+
+function registerModelTo$_ ( Mongoose ) {
+
+    if ( !_model$_ ) {
+        _createModel$_( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TubeBufferGeometry_1 = {
+    name:            'TubeBufferGeometry',
+    getSchemaFrom:   getSchemaFrom$17,
+    getModelFrom:    getModelFrom$_,
+    registerModelTo: registerModelTo$_
+};
+
+/**
+ * @module Schemas/Geometries/TubeGeometry
+ * @desc Export the ThreeJs TubeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Geometry Schemas/Core/Geometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry: Geometry$1 } = Geometry$p;
+
+let _schema$16 = undefined;
+let _model$Z  = undefined;
+
+function getSchemaFrom$16 ( Mongoose ) {
+
+    if ( !_schema$16 ) {
+        _createSchema$16( Mongoose );
+    }
+
+    return _schema$16
+
+}
+
+function _createSchema$16 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$16 = new Schema( {} );
+
+}
+
+function getModelFrom$Z ( Mongoose ) {
+
+    if ( !_model$Z ) {
+        _createModel$Z( Mongoose );
+    }
+
+    return _model$Z
+
+}
+
+function _createModel$Z ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry$1.getModelFrom( Mongoose );
+    _model$Z                  = GeometryBaseModel.discriminator( 'TubeGeometry', getSchemaFrom$16( Mongoose ) );
+
+}
+
+function registerModelTo$Z ( Mongoose ) {
+
+    if ( !_model$Z ) {
+        _createModel$Z( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var TubeGeometry_1 = {
+    name:            'TubeGeometry',
+    getSchemaFrom:   getSchemaFrom$16,
+    getModelFrom:    getModelFrom$Z,
+    registerModelTo: registerModelTo$Z
+};
+
+/**
+ * @module Schemas/Geometries/WireframeGeometry
+ * @desc Export the ThreeJs WireframeGeometry Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/BufferGeometry Schemas/Core/BufferGeometry}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Geometry } = Geometry$p;
+
+let _schema$15 = undefined;
+let _model$Y  = undefined;
+
+function getSchemaFrom$15 ( Mongoose ) {
+
+    if ( !_schema$15 ) {
+        _createSchema$15( Mongoose );
+    }
+
+    return _schema$15
+
+}
+
+function _createSchema$15 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$15 = new Schema( {} );
+
+}
+
+function getModelFrom$Y ( Mongoose ) {
+
+    if ( !_model$Y ) {
+        _createModel$Y( Mongoose );
+    }
+
+    return _model$Y
+
+}
+
+function _createModel$Y ( Mongoose ) {
+
+    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+    _model$Y                  = GeometryBaseModel.discriminator( 'WireframeGeometry', getSchemaFrom$15( Mongoose ) );
+
+}
+
+function registerModelTo$Y ( Mongoose ) {
+
+    if ( !_model$Y ) {
+        _createModel$Y( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var WireframeGeometry_1 = {
+    name:            'WireframeGeometry',
+    getSchemaFrom:   getSchemaFrom$15,
+    getModelFrom:    getModelFrom$Y,
+    registerModelTo: registerModelTo$Y
+};
+
+/**
+ * @module Schemas/Helpers/ArrowHelper
+ * @desc Export the ThreeJs ArrowHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$z } = Object3D$J;
+
+let _schema$14 = undefined;
+let _model$X  = undefined;
+
+function getSchemaFrom$14 ( Mongoose ) {
+
+    if ( !_schema$14 ) {
+        _createSchema$14( Mongoose );
+    }
+
+    return _schema$14
+
+}
+
+function _createSchema$14 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$14 = new Schema( {} );
+
+}
+
+function getModelFrom$X ( Mongoose ) {
+
+    if ( !_model$X ) {
+        _createModel$X( Mongoose );
+    }
+
+    return _model$X
+
+}
+
+function _createModel$X ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$z.getModelFrom( Mongoose );
+    _model$X                  = Object3DBaseModel.discriminator( 'ArrowHelper', getSchemaFrom$14( Mongoose ) );
+
+}
+
+function registerModelTo$X ( Mongoose ) {
+
+    if ( !_model$X ) {
+        _createModel$X( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var ArrowHelper_1 = {
+    name:            'ArrowHelper',
+    getSchemaFrom:   getSchemaFrom$14,
+    getModelFrom:    getModelFrom$X,
+    registerModelTo: registerModelTo$X
+};
+
+/**
+ * @module Schemas/Helpers/AxesHelper
+ * @desc Export the ThreeJs AxesHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$y } = Object3D$J;
+
+let _schema$13 = undefined;
+let _model$W  = undefined;
+
+function getSchemaFrom$13 ( Mongoose ) {
+
+    if ( !_schema$13 ) {
+        _createSchema$13( Mongoose );
+    }
+
+    return _schema$13
+
+}
+
+function _createSchema$13 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$13 = new Schema( {} );
+
+}
+
+function getModelFrom$W ( Mongoose ) {
+
+    if ( !_model$W ) {
+        _createModel$W( Mongoose );
+    }
+
+    return _model$W
+
+}
+
+function _createModel$W ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$y.getModelFrom( Mongoose );
+    _model$W                  = Object3DBaseModel.discriminator( 'AxesHelper', getSchemaFrom$13( Mongoose ) );
+
+}
+
+function registerModelTo$W ( Mongoose ) {
+
+    if ( !_model$W ) {
+        _createModel$W( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var AxesHelper_1 = {
+    name:            'AxesHelper',
+    getSchemaFrom:   getSchemaFrom$13,
+    getModelFrom:    getModelFrom$W,
+    registerModelTo: registerModelTo$W
+};
+
+/**
+ * @module Schemas/Helpers/Box3Helper
+ * @desc Export the ThreeJs Box3Helper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$x } = Object3D$J;
+
+let _schema$12 = undefined;
+let _model$V  = undefined;
+
+function getSchemaFrom$12 ( Mongoose ) {
+
+    if ( !_schema$12 ) {
+        _createSchema$12( Mongoose );
+    }
+
+    return _schema$12
+
+}
+
+function _createSchema$12 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$12 = new Schema( {} );
+
+}
+
+function getModelFrom$V ( Mongoose ) {
+
+    if ( !_model$V ) {
+        _createModel$V( Mongoose );
+    }
+
+    return _model$V
+
+}
+
+function _createModel$V ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$x.getModelFrom( Mongoose );
+    _model$V                  = Object3DBaseModel.discriminator( 'Box3Helper', getSchemaFrom$12( Mongoose ) );
+
+}
+
+function registerModelTo$V ( Mongoose ) {
+
+    if ( !_model$V ) {
+        _createModel$V( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var Box3Helper_1 = {
+    name:            'Box3Helper',
+    getSchemaFrom:   getSchemaFrom$12,
+    getModelFrom:    getModelFrom$V,
+    registerModelTo: registerModelTo$V
+};
+
+/**
+ * @module Schemas/Helpers/BoxHelper
+ * @desc Export the ThreeJs BoxHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$w } = Object3D$J;
+
+let _schema$11 = undefined;
+let _model$U  = undefined;
+
+function getSchemaFrom$11 ( Mongoose ) {
+
+    if ( !_schema$11 ) {
+        _createSchema$11( Mongoose );
+    }
+
+    return _schema$11
+
+}
+
+function _createSchema$11 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$11 = new Schema( {} );
+
+}
+
+function getModelFrom$U ( Mongoose ) {
+
+    if ( !_model$U ) {
+        _createModel$U( Mongoose );
+    }
+
+    return _model$U
+
+}
+
+function _createModel$U ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$w.getModelFrom( Mongoose );
+    _model$U                  = Object3DBaseModel.discriminator( 'BoxHelper', getSchemaFrom$11( Mongoose ) );
+
+}
+
+function registerModelTo$U ( Mongoose ) {
+
+    if ( !_model$U ) {
+        _createModel$U( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var BoxHelper_1 = {
+    name:            'BoxHelper',
+    getSchemaFrom:   getSchemaFrom$11,
+    getModelFrom:    getModelFrom$U,
+    registerModelTo: registerModelTo$U
+};
+
+/**
+ * @module Schemas/Helpers/CameraHelper
+ * @desc Export the ThreeJs CameraHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$v } = Object3D$J;
+
+let _schema$10 = undefined;
+let _model$T  = undefined;
+
+function getSchemaFrom$10 ( Mongoose ) {
+
+    if ( !_schema$10 ) {
+        _createSchema$10( Mongoose );
+    }
+
+    return _schema$10
+
+}
+
+function _createSchema$10 ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$10 = new Schema( {} );
+
+}
+
+function getModelFrom$T ( Mongoose ) {
+
+    if ( !_model$T ) {
+        _createModel$T( Mongoose );
+    }
+
+    return _model$T
+
+}
+
+function _createModel$T ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$v.getModelFrom( Mongoose );
+    _model$T                  = Object3DBaseModel.discriminator( 'CameraHelper', getSchemaFrom$10( Mongoose ) );
+
+}
+
+function registerModelTo$T ( Mongoose ) {
+
+    if ( !_model$T ) {
+        _createModel$T( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var CameraHelper_1 = {
+    name:            'CameraHelper',
+    getSchemaFrom:   getSchemaFrom$10,
+    getModelFrom:    getModelFrom$T,
+    registerModelTo: registerModelTo$T
+};
+
+/**
+ * @module Schemas/Helpers/DirectionalLightHelper
+ * @desc Export the ThreeJs DirectionalLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$u } = Object3D$J;
+
+let _schema$$ = undefined;
+let _model$S  = undefined;
+
+function getSchemaFrom$$ ( Mongoose ) {
+
+    if ( !_schema$$ ) {
+        _createSchema$$( Mongoose );
+    }
+
+    return _schema$$
+
+}
+
+function _createSchema$$ ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$$ = new Schema( {} );
+
+}
+
+function getModelFrom$S ( Mongoose ) {
+
+    if ( !_model$S ) {
+        _createModel$S( Mongoose );
+    }
+
+    return _model$S
+
+}
+
+function _createModel$S ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$u.getModelFrom( Mongoose );
+    _model$S                  = Object3DBaseModel.discriminator( 'DirectionalLightHelper', getSchemaFrom$$( Mongoose ) );
+
+}
+
+function registerModelTo$S ( Mongoose ) {
+
+    if ( !_model$S ) {
+        _createModel$S( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var DirectionalLightHelper_1 = {
+    name:            'DirectionalLightHelper',
+    getSchemaFrom:   getSchemaFrom$$,
+    getModelFrom:    getModelFrom$S,
+    registerModelTo: registerModelTo$S
+};
+
+/**
+ * @module Schemas/Helpers/FaceNormalsHelper
+ * @desc Export the ThreeJs FaceNormalsHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$t } = Object3D$J;
+
+let _schema$_ = undefined;
+let _model$R  = undefined;
+
+function getSchemaFrom$_ ( Mongoose ) {
+
+    if ( !_schema$_ ) {
+        _createSchema$_( Mongoose );
+    }
+
+    return _schema$_
+
+}
+
+function _createSchema$_ ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$_ = new Schema( {} );
+
+}
+
+function getModelFrom$R ( Mongoose ) {
+
+    if ( !_model$R ) {
+        _createModel$R( Mongoose );
+    }
+
+    return _model$R
+
+}
+
+function _createModel$R ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$t.getModelFrom( Mongoose );
+    _model$R                  = Object3DBaseModel.discriminator( 'FaceNormalsHelper', getSchemaFrom$_( Mongoose ) );
+
+}
+
+function registerModelTo$R ( Mongoose ) {
+
+    if ( !_model$R ) {
+        _createModel$R( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var FaceNormalsHelper_1 = {
+    name:            'FaceNormalsHelper',
+    getSchemaFrom:   getSchemaFrom$_,
+    getModelFrom:    getModelFrom$R,
+    registerModelTo: registerModelTo$R
+};
+
+/**
+ * @module Schemas/Helpers/GridHelper
+ * @desc Export the ThreeJs GridHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$s } = Object3D$J;
+
+let _schema$Z = undefined;
+let _model$Q  = undefined;
+
+function getSchemaFrom$Z ( Mongoose ) {
+
+    if ( !_schema$Z ) {
+        _createSchema$Z( Mongoose );
+    }
+
+    return _schema$Z
+
+}
+
+function _createSchema$Z ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$Z = new Schema( {} );
+
+}
+
+function getModelFrom$Q ( Mongoose ) {
+
+    if ( !_model$Q ) {
+        _createModel$Q( Mongoose );
+    }
+
+    return _model$Q
+
+}
+
+function _createModel$Q ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$s.getModelFrom( Mongoose );
+    _model$Q                  = Object3DBaseModel.discriminator( 'GridHelper', getSchemaFrom$Z( Mongoose ) );
+
+}
+
+function registerModelTo$Q ( Mongoose ) {
+
+    if ( !_model$Q ) {
+        _createModel$Q( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var GridHelper_1 = {
+    name:            'GridHelper',
+    getSchemaFrom:   getSchemaFrom$Z,
+    getModelFrom:    getModelFrom$Q,
+    registerModelTo: registerModelTo$Q
+};
+
+/**
+ * @module Schemas/Helpers/HemisphereLightHelper
+ * @desc Export the ThreeJs HemisphereLightHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$r } = Object3D$J;
+
+let _schema$Y = undefined;
+let _model$P  = undefined;
+
+function getSchemaFrom$Y ( Mongoose ) {
+
+    if ( !_schema$Y ) {
+        _createSchema$Y( Mongoose );
+    }
+
+    return _schema$Y
+
+}
+
+function _createSchema$Y ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$Y = new Schema( {} );
+
+}
+
+function getModelFrom$P ( Mongoose ) {
+
+    if ( !_model$P ) {
+        _createModel$P( Mongoose );
+    }
+
+    return _model$P
+
+}
+
+function _createModel$P ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$r.getModelFrom( Mongoose );
+    _model$P                  = Object3DBaseModel.discriminator( 'HemisphereLightHelper', getSchemaFrom$Y( Mongoose ) );
+
+}
+
+function registerModelTo$P ( Mongoose ) {
+
+    if ( !_model$P ) {
+        _createModel$P( Mongoose );
+    }
+
+    return Mongoose
+
+}
+
+var HemisphereLightHelper_1 = {
+    name:            'HemisphereLightHelper',
+    getSchemaFrom:   getSchemaFrom$Y,
+    getModelFrom:    getModelFrom$P,
+    registerModelTo: registerModelTo$P
+};
+
+/**
+ * @module Schemas/Helpers/PlaneHelper
+ * @desc Export the ThreeJs PlaneHelper Model and Schema for Mongoose.
+ *
+ * @requires {@link module:Schemas/Core/Object3D Schemas/Core/Object3D}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+const { Object3D: Object3D$q } = Object3D$J;
+
+let _schema$X = undefined;
+let _model$O  = undefined;
+
+function getSchemaFrom$X ( Mongoose ) {
+
+    if ( !_schema$X ) {
+        _createSchema$X( Mongoose );
+    }
+
+    return _schema$X
+
+}
+
+function _createSchema$X ( Mongoose ) {
+
+    const Schema = Mongoose.Schema;
+
+    _schema$X = new Schema( {} );
+
+}
+
+function getModelFrom$O ( Mongoose ) {
+
+    if ( !_model$O ) {
+        _createModel$O( Mongoose );
+    }
+
+    return _model$O
+
+}
+
+function _createModel$O ( Mongoose ) {
+
+    const Object3DBaseModel = Object3D$q.getModelFrom( Mongoose );
+    _model$O                  = Object3DBaseModel.discriminator( 'PlaneHelper', getSchemaFrom$X( Mongoose ) );
+
+}
+
+function registerModelTo$O ( Mongoose ) {
+
+    if ( !_model$O ) {
+        _createModel$O( Mongoose );
     }
 
     return Mongoose
@@ -9253,9 +9279,9 @@ function registerModelTo$1h ( Mongoose ) {
 
 var PlaneHelper_1 = {
     name:            'PlaneHelper',
-    getSchemaFrom:   getSchemaFrom$1j,
-    getModelFrom:    getModelFrom$1h,
-    registerModelTo: registerModelTo$1h
+    getSchemaFrom:   getSchemaFrom$X,
+    getModelFrom:    getModelFrom$O,
+    registerModelTo: registerModelTo$O
 };
 
 /**
@@ -9268,50 +9294,50 @@ var PlaneHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$k } = Object3D$1;
+const { Object3D: Object3D$p } = Object3D$J;
 
-let _schema$1k = undefined;
-let _model$1i  = undefined;
+let _schema$W = undefined;
+let _model$N  = undefined;
 
-function getSchemaFrom$1k ( Mongoose ) {
+function getSchemaFrom$W ( Mongoose ) {
 
-    if ( !_schema$1k ) {
-        _createSchema$1k( Mongoose );
+    if ( !_schema$W ) {
+        _createSchema$W( Mongoose );
     }
 
-    return _schema$1k
+    return _schema$W
 
 }
 
-function _createSchema$1k ( Mongoose ) {
+function _createSchema$W ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1k = new Schema( {} );
+    _schema$W = new Schema( {} );
 
 }
 
-function getModelFrom$1i ( Mongoose ) {
+function getModelFrom$N ( Mongoose ) {
 
-    if ( !_model$1i ) {
-        _createModel$1i( Mongoose );
+    if ( !_model$N ) {
+        _createModel$N( Mongoose );
     }
 
-    return _model$1i
+    return _model$N
 
 }
 
-function _createModel$1i ( Mongoose ) {
+function _createModel$N ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$k.getModelFrom( Mongoose );
-    _model$1i                  = Object3DBaseModel.discriminator( 'PointLightHelper', getSchemaFrom$1k( Mongoose ) );
+    const Object3DBaseModel = Object3D$p.getModelFrom( Mongoose );
+    _model$N                  = Object3DBaseModel.discriminator( 'PointLightHelper', getSchemaFrom$W( Mongoose ) );
 
 }
 
-function registerModelTo$1i ( Mongoose ) {
+function registerModelTo$N ( Mongoose ) {
 
-    if ( !_model$1i ) {
-        _createModel$1i( Mongoose );
+    if ( !_model$N ) {
+        _createModel$N( Mongoose );
     }
 
     return Mongoose
@@ -9320,9 +9346,9 @@ function registerModelTo$1i ( Mongoose ) {
 
 var PointLightHelper_1 = {
     name:            'PointLightHelper',
-    getSchemaFrom:   getSchemaFrom$1k,
-    getModelFrom:    getModelFrom$1i,
-    registerModelTo: registerModelTo$1i
+    getSchemaFrom:   getSchemaFrom$W,
+    getModelFrom:    getModelFrom$N,
+    registerModelTo: registerModelTo$N
 };
 
 /**
@@ -9335,50 +9361,50 @@ var PointLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$l } = Object3D$1;
+const { Object3D: Object3D$o } = Object3D$J;
 
-let _schema$1l = undefined;
-let _model$1j  = undefined;
+let _schema$V = undefined;
+let _model$M  = undefined;
 
-function getSchemaFrom$1l ( Mongoose ) {
+function getSchemaFrom$V ( Mongoose ) {
 
-    if ( !_schema$1l ) {
-        _createSchema$1l( Mongoose );
+    if ( !_schema$V ) {
+        _createSchema$V( Mongoose );
     }
 
-    return _schema$1l
+    return _schema$V
 
 }
 
-function _createSchema$1l ( Mongoose ) {
+function _createSchema$V ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1l = new Schema( {} );
+    _schema$V = new Schema( {} );
 
 }
 
-function getModelFrom$1j ( Mongoose ) {
+function getModelFrom$M ( Mongoose ) {
 
-    if ( !_model$1j ) {
-        _createModel$1j( Mongoose );
+    if ( !_model$M ) {
+        _createModel$M( Mongoose );
     }
 
-    return _model$1j
+    return _model$M
 
 }
 
-function _createModel$1j ( Mongoose ) {
+function _createModel$M ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$l.getModelFrom( Mongoose );
-    _model$1j                  = Object3DBaseModel.discriminator( 'PolarGridHelper', getSchemaFrom$1l( Mongoose ) );
+    const Object3DBaseModel = Object3D$o.getModelFrom( Mongoose );
+    _model$M                  = Object3DBaseModel.discriminator( 'PolarGridHelper', getSchemaFrom$V( Mongoose ) );
 
 }
 
-function registerModelTo$1j ( Mongoose ) {
+function registerModelTo$M ( Mongoose ) {
 
-    if ( !_model$1j ) {
-        _createModel$1j( Mongoose );
+    if ( !_model$M ) {
+        _createModel$M( Mongoose );
     }
 
     return Mongoose
@@ -9387,9 +9413,9 @@ function registerModelTo$1j ( Mongoose ) {
 
 var PolarGridHelper_1 = {
     name:            'PolarGridHelper',
-    getSchemaFrom:   getSchemaFrom$1l,
-    getModelFrom:    getModelFrom$1j,
-    registerModelTo: registerModelTo$1j
+    getSchemaFrom:   getSchemaFrom$V,
+    getModelFrom:    getModelFrom$M,
+    registerModelTo: registerModelTo$M
 };
 
 /**
@@ -9402,50 +9428,50 @@ var PolarGridHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$m } = Object3D$1;
+const { Object3D: Object3D$n } = Object3D$J;
 
-let _schema$1m = undefined;
-let _model$1k  = undefined;
+let _schema$U = undefined;
+let _model$L  = undefined;
 
-function getSchemaFrom$1m ( Mongoose ) {
+function getSchemaFrom$U ( Mongoose ) {
 
-    if ( !_schema$1m ) {
-        _createSchema$1m( Mongoose );
+    if ( !_schema$U ) {
+        _createSchema$U( Mongoose );
     }
 
-    return _schema$1m
+    return _schema$U
 
 }
 
-function _createSchema$1m ( Mongoose ) {
+function _createSchema$U ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1m = new Schema( {} );
+    _schema$U = new Schema( {} );
 
 }
 
-function getModelFrom$1k ( Mongoose ) {
+function getModelFrom$L ( Mongoose ) {
 
-    if ( !_model$1k ) {
-        _createModel$1k( Mongoose );
+    if ( !_model$L ) {
+        _createModel$L( Mongoose );
     }
 
-    return _model$1k
+    return _model$L
 
 }
 
-function _createModel$1k ( Mongoose ) {
+function _createModel$L ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$m.getModelFrom( Mongoose );
-    _model$1k                  = Object3DBaseModel.discriminator( 'RectAreaLightHelper', getSchemaFrom$1m( Mongoose ) );
+    const Object3DBaseModel = Object3D$n.getModelFrom( Mongoose );
+    _model$L                  = Object3DBaseModel.discriminator( 'RectAreaLightHelper', getSchemaFrom$U( Mongoose ) );
 
 }
 
-function registerModelTo$1k ( Mongoose ) {
+function registerModelTo$L ( Mongoose ) {
 
-    if ( !_model$1k ) {
-        _createModel$1k( Mongoose );
+    if ( !_model$L ) {
+        _createModel$L( Mongoose );
     }
 
     return Mongoose
@@ -9454,9 +9480,9 @@ function registerModelTo$1k ( Mongoose ) {
 
 var RectAreaLightHelper_1 = {
     name:            'RectAreaLightHelper',
-    getSchemaFrom:   getSchemaFrom$1m,
-    getModelFrom:    getModelFrom$1k,
-    registerModelTo: registerModelTo$1k
+    getSchemaFrom:   getSchemaFrom$U,
+    getModelFrom:    getModelFrom$L,
+    registerModelTo: registerModelTo$L
 };
 
 /**
@@ -9469,50 +9495,50 @@ var RectAreaLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$n } = Object3D$1;
+const { Object3D: Object3D$m } = Object3D$J;
 
-let _schema$1n = undefined;
-let _model$1l  = undefined;
+let _schema$T = undefined;
+let _model$K  = undefined;
 
-function getSchemaFrom$1n ( Mongoose ) {
+function getSchemaFrom$T ( Mongoose ) {
 
-    if ( !_schema$1n ) {
-        _createSchema$1n( Mongoose );
+    if ( !_schema$T ) {
+        _createSchema$T( Mongoose );
     }
 
-    return _schema$1n
+    return _schema$T
 
 }
 
-function _createSchema$1n ( Mongoose ) {
+function _createSchema$T ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1n = new Schema( {} );
+    _schema$T = new Schema( {} );
 
 }
 
-function getModelFrom$1l ( Mongoose ) {
+function getModelFrom$K ( Mongoose ) {
 
-    if ( !_model$1l ) {
-        _createModel$1l( Mongoose );
+    if ( !_model$K ) {
+        _createModel$K( Mongoose );
     }
 
-    return _model$1l
+    return _model$K
 
 }
 
-function _createModel$1l ( Mongoose ) {
+function _createModel$K ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$n.getModelFrom( Mongoose );
-    _model$1l                  = Object3DBaseModel.discriminator( 'SkeletonHelper', getSchemaFrom$1n( Mongoose ) );
+    const Object3DBaseModel = Object3D$m.getModelFrom( Mongoose );
+    _model$K                  = Object3DBaseModel.discriminator( 'SkeletonHelper', getSchemaFrom$T( Mongoose ) );
 
 }
 
-function registerModelTo$1l ( Mongoose ) {
+function registerModelTo$K ( Mongoose ) {
 
-    if ( !_model$1l ) {
-        _createModel$1l( Mongoose );
+    if ( !_model$K ) {
+        _createModel$K( Mongoose );
     }
 
     return Mongoose
@@ -9521,9 +9547,9 @@ function registerModelTo$1l ( Mongoose ) {
 
 var SkeletonHelper_1 = {
     name:            'SkeletonHelper',
-    getSchemaFrom:   getSchemaFrom$1n,
-    getModelFrom:    getModelFrom$1l,
-    registerModelTo: registerModelTo$1l
+    getSchemaFrom:   getSchemaFrom$T,
+    getModelFrom:    getModelFrom$K,
+    registerModelTo: registerModelTo$K
 };
 
 /**
@@ -9536,50 +9562,50 @@ var SkeletonHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$o } = Object3D$1;
+const { Object3D: Object3D$l } = Object3D$J;
 
-let _schema$1o = undefined;
-let _model$1m  = undefined;
+let _schema$S = undefined;
+let _model$J  = undefined;
 
-function getSchemaFrom$1o ( Mongoose ) {
+function getSchemaFrom$S ( Mongoose ) {
 
-    if ( !_schema$1o ) {
-        _createSchema$1o( Mongoose );
+    if ( !_schema$S ) {
+        _createSchema$S( Mongoose );
     }
 
-    return _schema$1o
+    return _schema$S
 
 }
 
-function _createSchema$1o ( Mongoose ) {
+function _createSchema$S ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1o = new Schema( {} );
+    _schema$S = new Schema( {} );
 
 }
 
-function getModelFrom$1m ( Mongoose ) {
+function getModelFrom$J ( Mongoose ) {
 
-    if ( !_model$1m ) {
-        _createModel$1m( Mongoose );
+    if ( !_model$J ) {
+        _createModel$J( Mongoose );
     }
 
-    return _model$1m
+    return _model$J
 
 }
 
-function _createModel$1m ( Mongoose ) {
+function _createModel$J ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$o.getModelFrom( Mongoose );
-    _model$1m                  = Object3DBaseModel.discriminator( 'SpotLightHelper', getSchemaFrom$1o( Mongoose ) );
+    const Object3DBaseModel = Object3D$l.getModelFrom( Mongoose );
+    _model$J                  = Object3DBaseModel.discriminator( 'SpotLightHelper', getSchemaFrom$S( Mongoose ) );
 
 }
 
-function registerModelTo$1m ( Mongoose ) {
+function registerModelTo$J ( Mongoose ) {
 
-    if ( !_model$1m ) {
-        _createModel$1m( Mongoose );
+    if ( !_model$J ) {
+        _createModel$J( Mongoose );
     }
 
     return Mongoose
@@ -9588,9 +9614,9 @@ function registerModelTo$1m ( Mongoose ) {
 
 var SpotLightHelper_1 = {
     name:            'SpotLightHelper',
-    getSchemaFrom:   getSchemaFrom$1o,
-    getModelFrom:    getModelFrom$1m,
-    registerModelTo: registerModelTo$1m
+    getSchemaFrom:   getSchemaFrom$S,
+    getModelFrom:    getModelFrom$J,
+    registerModelTo: registerModelTo$J
 };
 
 /**
@@ -9603,50 +9629,50 @@ var SpotLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$p } = Object3D$1;
+const { Object3D: Object3D$k } = Object3D$J;
 
-let _schema$1p = undefined;
-let _model$1n  = undefined;
+let _schema$R = undefined;
+let _model$I  = undefined;
 
-function getSchemaFrom$1p ( Mongoose ) {
+function getSchemaFrom$R ( Mongoose ) {
 
-    if ( !_schema$1p ) {
-        _createSchema$1p( Mongoose );
+    if ( !_schema$R ) {
+        _createSchema$R( Mongoose );
     }
 
-    return _schema$1p
+    return _schema$R
 
 }
 
-function _createSchema$1p ( Mongoose ) {
+function _createSchema$R ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1p = new Schema( {} );
+    _schema$R = new Schema( {} );
 
 }
 
-function getModelFrom$1n ( Mongoose ) {
+function getModelFrom$I ( Mongoose ) {
 
-    if ( !_model$1n ) {
-        _createModel$1n( Mongoose );
+    if ( !_model$I ) {
+        _createModel$I( Mongoose );
     }
 
-    return _model$1n
+    return _model$I
 
 }
 
-function _createModel$1n ( Mongoose ) {
+function _createModel$I ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$p.getModelFrom( Mongoose );
-    _model$1n                  = Object3DBaseModel.discriminator( 'VertexNormalsHelper', getSchemaFrom$1p( Mongoose ) );
+    const Object3DBaseModel = Object3D$k.getModelFrom( Mongoose );
+    _model$I                  = Object3DBaseModel.discriminator( 'VertexNormalsHelper', getSchemaFrom$R( Mongoose ) );
 
 }
 
-function registerModelTo$1n ( Mongoose ) {
+function registerModelTo$I ( Mongoose ) {
 
-    if ( !_model$1n ) {
-        _createModel$1n( Mongoose );
+    if ( !_model$I ) {
+        _createModel$I( Mongoose );
     }
 
     return Mongoose
@@ -9655,9 +9681,9 @@ function registerModelTo$1n ( Mongoose ) {
 
 var VertexNormalsHelper_1 = {
     name:            'VertexNormalsHelper',
-    getSchemaFrom:   getSchemaFrom$1p,
-    getModelFrom:    getModelFrom$1n,
-    registerModelTo: registerModelTo$1n
+    getSchemaFrom:   getSchemaFrom$R,
+    getModelFrom:    getModelFrom$I,
+    registerModelTo: registerModelTo$I
 };
 
 /**
@@ -9670,50 +9696,50 @@ var VertexNormalsHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$q } = Object3D$1;
+const { Object3D: Object3D$j } = Object3D$J;
 
-let _schema$1q = undefined;
-let _model$1o  = undefined;
+let _schema$Q = undefined;
+let _model$H  = undefined;
 
-function getSchemaFrom$1q ( Mongoose ) {
+function getSchemaFrom$Q ( Mongoose ) {
 
-    if ( !_schema$1q ) {
-        _createSchema$1q( Mongoose );
+    if ( !_schema$Q ) {
+        _createSchema$Q( Mongoose );
     }
 
-    return _schema$1q
+    return _schema$Q
 
 }
 
-function _createSchema$1q ( Mongoose ) {
+function _createSchema$Q ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1q = new Schema( {} );
+    _schema$Q = new Schema( {} );
 
 }
 
-function getModelFrom$1o ( Mongoose ) {
+function getModelFrom$H ( Mongoose ) {
 
-    if ( !_model$1o ) {
-        _createModel$1o( Mongoose );
+    if ( !_model$H ) {
+        _createModel$H( Mongoose );
     }
 
-    return _model$1o
+    return _model$H
 
 }
 
-function _createModel$1o ( Mongoose ) {
+function _createModel$H ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$q.getModelFrom( Mongoose );
-    _model$1o                  = Object3DBaseModel.discriminator( 'AmbientLight', getSchemaFrom$1q( Mongoose ) );
+    const Object3DBaseModel = Object3D$j.getModelFrom( Mongoose );
+    _model$H                  = Object3DBaseModel.discriminator( 'AmbientLight', getSchemaFrom$Q( Mongoose ) );
 
 }
 
-function registerModelTo$1o ( Mongoose ) {
+function registerModelTo$H ( Mongoose ) {
 
-    if ( !_model$1o ) {
-        _createModel$1o( Mongoose );
+    if ( !_model$H ) {
+        _createModel$H( Mongoose );
     }
 
     return Mongoose
@@ -9722,9 +9748,9 @@ function registerModelTo$1o ( Mongoose ) {
 
 var AmbientLight_1 = {
     name:            'AmbientLight',
-    getSchemaFrom:   getSchemaFrom$1q,
-    getModelFrom:    getModelFrom$1o,
-    registerModelTo: registerModelTo$1o
+    getSchemaFrom:   getSchemaFrom$Q,
+    getModelFrom:    getModelFrom$H,
+    registerModelTo: registerModelTo$H
 };
 
 /**
@@ -9737,50 +9763,50 @@ var AmbientLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$r } = Object3D$1;
+const { Object3D: Object3D$i } = Object3D$J;
 
-let _schema$1r = undefined;
-let _model$1p  = undefined;
+let _schema$P = undefined;
+let _model$G  = undefined;
 
-function getSchemaFrom$1r ( Mongoose ) {
+function getSchemaFrom$P ( Mongoose ) {
 
-    if ( !_schema$1r ) {
-        _createSchema$1r( Mongoose );
+    if ( !_schema$P ) {
+        _createSchema$P( Mongoose );
     }
 
-    return _schema$1r
+    return _schema$P
 
 }
 
-function _createSchema$1r ( Mongoose ) {
+function _createSchema$P ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1r = new Schema( {} );
+    _schema$P = new Schema( {} );
 
 }
 
-function getModelFrom$1p ( Mongoose ) {
+function getModelFrom$G ( Mongoose ) {
 
-    if ( !_model$1p ) {
-        _createModel$1p( Mongoose );
+    if ( !_model$G ) {
+        _createModel$G( Mongoose );
     }
 
-    return _model$1p
+    return _model$G
 
 }
 
-function _createModel$1p ( Mongoose ) {
+function _createModel$G ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$r.getModelFrom( Mongoose );
-    _model$1p                  = Object3DBaseModel.discriminator( 'DirectionalLight', getSchemaFrom$1r( Mongoose ) );
+    const Object3DBaseModel = Object3D$i.getModelFrom( Mongoose );
+    _model$G                  = Object3DBaseModel.discriminator( 'DirectionalLight', getSchemaFrom$P( Mongoose ) );
 
 }
 
-function registerModelTo$1p ( Mongoose ) {
+function registerModelTo$G ( Mongoose ) {
 
-    if ( !_model$1p ) {
-        _createModel$1p( Mongoose );
+    if ( !_model$G ) {
+        _createModel$G( Mongoose );
     }
 
     return Mongoose
@@ -9789,9 +9815,9 @@ function registerModelTo$1p ( Mongoose ) {
 
 var DirectionalLight_1 = {
     name:            'DirectionalLight',
-    getSchemaFrom:   getSchemaFrom$1r,
-    getModelFrom:    getModelFrom$1p,
-    registerModelTo: registerModelTo$1p
+    getSchemaFrom:   getSchemaFrom$P,
+    getModelFrom:    getModelFrom$G,
+    registerModelTo: registerModelTo$G
 };
 
 /**
@@ -9804,50 +9830,50 @@ var DirectionalLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$s } = Object3D$1;
+const { Object3D: Object3D$h } = Object3D$J;
 
-let _schema$1s = undefined;
-let _model$1q  = undefined;
+let _schema$O = undefined;
+let _model$F  = undefined;
 
-function getSchemaFrom$1s ( Mongoose ) {
+function getSchemaFrom$O ( Mongoose ) {
 
-    if ( !_schema$1s ) {
-        _createSchema$1s( Mongoose );
+    if ( !_schema$O ) {
+        _createSchema$O( Mongoose );
     }
 
-    return _schema$1s
+    return _schema$O
 
 }
 
-function _createSchema$1s ( Mongoose ) {
+function _createSchema$O ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1s = new Schema( {} );
+    _schema$O = new Schema( {} );
 
 }
 
-function getModelFrom$1q ( Mongoose ) {
+function getModelFrom$F ( Mongoose ) {
 
-    if ( !_model$1q ) {
-        _createModel$1q( Mongoose );
+    if ( !_model$F ) {
+        _createModel$F( Mongoose );
     }
 
-    return _model$1q
+    return _model$F
 
 }
 
-function _createModel$1q ( Mongoose ) {
+function _createModel$F ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$s.getModelFrom( Mongoose );
-    _model$1q                  = Object3DBaseModel.discriminator( 'HemisphereLight', getSchemaFrom$1s( Mongoose ) );
+    const Object3DBaseModel = Object3D$h.getModelFrom( Mongoose );
+    _model$F                  = Object3DBaseModel.discriminator( 'HemisphereLight', getSchemaFrom$O( Mongoose ) );
 
 }
 
-function registerModelTo$1q ( Mongoose ) {
+function registerModelTo$F ( Mongoose ) {
 
-    if ( !_model$1q ) {
-        _createModel$1q( Mongoose );
+    if ( !_model$F ) {
+        _createModel$F( Mongoose );
     }
 
     return Mongoose
@@ -9856,9 +9882,9 @@ function registerModelTo$1q ( Mongoose ) {
 
 var HemisphereLight_1 = {
     name:            'HemisphereLight',
-    getSchemaFrom:   getSchemaFrom$1s,
-    getModelFrom:    getModelFrom$1q,
-    registerModelTo: registerModelTo$1q
+    getSchemaFrom:   getSchemaFrom$O,
+    getModelFrom:    getModelFrom$F,
+    registerModelTo: registerModelTo$F
 };
 
 /**
@@ -9871,50 +9897,50 @@ var HemisphereLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$t } = Object3D$1;
+const { Object3D: Object3D$g } = Object3D$J;
 
-let _schema$1t = undefined;
-let _model$1r  = undefined;
+let _schema$N = undefined;
+let _model$E  = undefined;
 
-function getSchemaFrom$1t ( Mongoose ) {
+function getSchemaFrom$N ( Mongoose ) {
 
-    if ( !_schema$1t ) {
-        _createSchema$1t( Mongoose );
+    if ( !_schema$N ) {
+        _createSchema$N( Mongoose );
     }
 
-    return _schema$1t
+    return _schema$N
 
 }
 
-function _createSchema$1t ( Mongoose ) {
+function _createSchema$N ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1t = new Schema( {} );
+    _schema$N = new Schema( {} );
 
 }
 
-function getModelFrom$1r ( Mongoose ) {
+function getModelFrom$E ( Mongoose ) {
 
-    if ( !_model$1r ) {
-        _createModel$1r( Mongoose );
+    if ( !_model$E ) {
+        _createModel$E( Mongoose );
     }
 
-    return _model$1r
+    return _model$E
 
 }
 
-function _createModel$1r ( Mongoose ) {
+function _createModel$E ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$t.getModelFrom( Mongoose );
-    _model$1r                  = Object3DBaseModel.discriminator( 'Light', getSchemaFrom$1t( Mongoose ) );
+    const Object3DBaseModel = Object3D$g.getModelFrom( Mongoose );
+    _model$E                  = Object3DBaseModel.discriminator( 'Light', getSchemaFrom$N( Mongoose ) );
 
 }
 
-function registerModelTo$1r ( Mongoose ) {
+function registerModelTo$E ( Mongoose ) {
 
-    if ( !_model$1r ) {
-        _createModel$1r( Mongoose );
+    if ( !_model$E ) {
+        _createModel$E( Mongoose );
     }
 
     return Mongoose
@@ -9923,9 +9949,9 @@ function registerModelTo$1r ( Mongoose ) {
 
 var Light_1 = {
     name:            'Light',
-    getSchemaFrom:   getSchemaFrom$1t,
-    getModelFrom:    getModelFrom$1r,
-    registerModelTo: registerModelTo$1r
+    getSchemaFrom:   getSchemaFrom$N,
+    getModelFrom:    getModelFrom$E,
+    registerModelTo: registerModelTo$E
 };
 
 /**
@@ -9938,50 +9964,50 @@ var Light_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$u } = Object3D$1;
+const { Object3D: Object3D$f } = Object3D$J;
 
-let _schema$1u = undefined;
-let _model$1s  = undefined;
+let _schema$M = undefined;
+let _model$D  = undefined;
 
-function getSchemaFrom$1u ( Mongoose ) {
+function getSchemaFrom$M ( Mongoose ) {
 
-    if ( !_schema$1u ) {
-        _createSchema$1u( Mongoose );
+    if ( !_schema$M ) {
+        _createSchema$M( Mongoose );
     }
 
-    return _schema$1u
+    return _schema$M
 
 }
 
-function _createSchema$1u ( Mongoose ) {
+function _createSchema$M ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1u = new Schema( {} );
+    _schema$M = new Schema( {} );
 
 }
 
-function getModelFrom$1s ( Mongoose ) {
+function getModelFrom$D ( Mongoose ) {
 
-    if ( !_model$1s ) {
-        _createModel$1s( Mongoose );
+    if ( !_model$D ) {
+        _createModel$D( Mongoose );
     }
 
-    return _model$1s
+    return _model$D
 
 }
 
-function _createModel$1s ( Mongoose ) {
+function _createModel$D ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$u.getModelFrom( Mongoose );
-    _model$1s                  = Object3DBaseModel.discriminator( 'PointLight', getSchemaFrom$1u( Mongoose ) );
+    const Object3DBaseModel = Object3D$f.getModelFrom( Mongoose );
+    _model$D                  = Object3DBaseModel.discriminator( 'PointLight', getSchemaFrom$M( Mongoose ) );
 
 }
 
-function registerModelTo$1s ( Mongoose ) {
+function registerModelTo$D ( Mongoose ) {
 
-    if ( !_model$1s ) {
-        _createModel$1s( Mongoose );
+    if ( !_model$D ) {
+        _createModel$D( Mongoose );
     }
 
     return Mongoose
@@ -9990,9 +10016,9 @@ function registerModelTo$1s ( Mongoose ) {
 
 var PointLight_1 = {
     name:            'PointLight',
-    getSchemaFrom:   getSchemaFrom$1u,
-    getModelFrom:    getModelFrom$1s,
-    registerModelTo: registerModelTo$1s
+    getSchemaFrom:   getSchemaFrom$M,
+    getModelFrom:    getModelFrom$D,
+    registerModelTo: registerModelTo$D
 };
 
 /**
@@ -10005,50 +10031,50 @@ var PointLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$v } = Object3D$1;
+const { Object3D: Object3D$e } = Object3D$J;
 
-let _schema$1v = undefined;
-let _model$1t  = undefined;
+let _schema$L = undefined;
+let _model$C  = undefined;
 
-function getSchemaFrom$1v ( Mongoose ) {
+function getSchemaFrom$L ( Mongoose ) {
 
-    if ( !_schema$1v ) {
-        _createSchema$1v( Mongoose );
+    if ( !_schema$L ) {
+        _createSchema$L( Mongoose );
     }
 
-    return _schema$1v
+    return _schema$L
 
 }
 
-function _createSchema$1v ( Mongoose ) {
+function _createSchema$L ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1v = new Schema( {} );
+    _schema$L = new Schema( {} );
 
 }
 
-function getModelFrom$1t ( Mongoose ) {
+function getModelFrom$C ( Mongoose ) {
 
-    if ( !_model$1t ) {
-        _createModel$1t( Mongoose );
+    if ( !_model$C ) {
+        _createModel$C( Mongoose );
     }
 
-    return _model$1t
+    return _model$C
 
 }
 
-function _createModel$1t ( Mongoose ) {
+function _createModel$C ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$v.getModelFrom( Mongoose );
-    _model$1t                  = Object3DBaseModel.discriminator( 'RectAreaLight', getSchemaFrom$1v( Mongoose ) );
+    const Object3DBaseModel = Object3D$e.getModelFrom( Mongoose );
+    _model$C                  = Object3DBaseModel.discriminator( 'RectAreaLight', getSchemaFrom$L( Mongoose ) );
 
 }
 
-function registerModelTo$1t ( Mongoose ) {
+function registerModelTo$C ( Mongoose ) {
 
-    if ( !_model$1t ) {
-        _createModel$1t( Mongoose );
+    if ( !_model$C ) {
+        _createModel$C( Mongoose );
     }
 
     return Mongoose
@@ -10057,9 +10083,9 @@ function registerModelTo$1t ( Mongoose ) {
 
 var RectAreaLight_1 = {
     name:            'RectAreaLight',
-    getSchemaFrom:   getSchemaFrom$1v,
-    getModelFrom:    getModelFrom$1t,
-    registerModelTo: registerModelTo$1t
+    getSchemaFrom:   getSchemaFrom$L,
+    getModelFrom:    getModelFrom$C,
+    registerModelTo: registerModelTo$C
 };
 
 /**
@@ -10072,50 +10098,50 @@ var RectAreaLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$w } = Object3D$1;
+const { Object3D: Object3D$d } = Object3D$J;
 
-let _schema$1w = undefined;
-let _model$1u  = undefined;
+let _schema$K = undefined;
+let _model$B  = undefined;
 
-function getSchemaFrom$1w ( Mongoose ) {
+function getSchemaFrom$K ( Mongoose ) {
 
-    if ( !_schema$1w ) {
-        _createSchema$1w( Mongoose );
+    if ( !_schema$K ) {
+        _createSchema$K( Mongoose );
     }
 
-    return _schema$1w
+    return _schema$K
 
 }
 
-function _createSchema$1w ( Mongoose ) {
+function _createSchema$K ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1w = new Schema( {} );
+    _schema$K = new Schema( {} );
 
 }
 
-function getModelFrom$1u ( Mongoose ) {
+function getModelFrom$B ( Mongoose ) {
 
-    if ( !_model$1u ) {
-        _createModel$1u( Mongoose );
+    if ( !_model$B ) {
+        _createModel$B( Mongoose );
     }
 
-    return _model$1u
+    return _model$B
 
 }
 
-function _createModel$1u ( Mongoose ) {
+function _createModel$B ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$w.getModelFrom( Mongoose );
-    _model$1u                  = Object3DBaseModel.discriminator( 'SpotLight', getSchemaFrom$1w( Mongoose ) );
+    const Object3DBaseModel = Object3D$d.getModelFrom( Mongoose );
+    _model$B                  = Object3DBaseModel.discriminator( 'SpotLight', getSchemaFrom$K( Mongoose ) );
 
 }
 
-function registerModelTo$1u ( Mongoose ) {
+function registerModelTo$B ( Mongoose ) {
 
-    if ( !_model$1u ) {
-        _createModel$1u( Mongoose );
+    if ( !_model$B ) {
+        _createModel$B( Mongoose );
     }
 
     return Mongoose
@@ -10124,9 +10150,9 @@ function registerModelTo$1u ( Mongoose ) {
 
 var SpotLight_1 = {
     name:            'SpotLight',
-    getSchemaFrom:   getSchemaFrom$1w,
-    getModelFrom:    getModelFrom$1u,
-    registerModelTo: registerModelTo$1u
+    getSchemaFrom:   getSchemaFrom$K,
+    getModelFrom:    getModelFrom$B,
+    registerModelTo: registerModelTo$B
 };
 
 /**
@@ -10137,26 +10163,26 @@ var SpotLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1x = undefined;
-let _model$1v  = undefined;
+let _schema$J = undefined;
+let _model$A  = undefined;
 
-function getSchemaFrom$1x ( Mongoose ) {
+function getSchemaFrom$J ( Mongoose ) {
 
-    if ( !_schema$1x ) {
-        _createSchema$1x( Mongoose );
+    if ( !_schema$J ) {
+        _createSchema$J( Mongoose );
     }
 
-    return _schema$1x
+    return _schema$J
 
 }
 
-function _createSchema$1x ( Mongoose ) {
+function _createSchema$J ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
 
-    _schema$1x = new Schema( {
+    _schema$J = new Schema( {
         uuid:                String,
         name:                String,
         type:                String,
@@ -10199,30 +10225,30 @@ function _createSchema$1x ( Mongoose ) {
 
 }
 
-function getModelFrom$1v ( Mongoose ) {
+function getModelFrom$A ( Mongoose ) {
 
-    if ( !_model$1v ) {
-        _createModel$1v( Mongoose );
+    if ( !_model$A ) {
+        _createModel$A( Mongoose );
     }
 
-    return _model$1v
+    return _model$A
 
 }
 
-function _createModel$1v ( Mongoose ) {
+function _createModel$A ( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$1v = Mongoose.model( 'Materials', getSchemaFrom$1x( Mongoose ) );
-    _model$1v.discriminator( 'Material', new Mongoose.Schema( {} ) );
+    _model$A = Mongoose.model( 'Materials', getSchemaFrom$J( Mongoose ) );
+    _model$A.discriminator( 'Material', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$1v ( Mongoose ) {
+function registerModelTo$A ( Mongoose ) {
 
-    if ( !_model$1v ) {
-        _createModel$1v( Mongoose );
+    if ( !_model$A ) {
+        _createModel$A( Mongoose );
     }
 
     return Mongoose
@@ -10231,12 +10257,12 @@ function registerModelTo$1v ( Mongoose ) {
 
 var Material_1 = {
     name:            'Material',
-    getSchemaFrom:   getSchemaFrom$1x,
-    getModelFrom:    getModelFrom$1v,
-    registerModelTo: registerModelTo$1v
+    getSchemaFrom:   getSchemaFrom$J,
+    getModelFrom:    getModelFrom$A,
+    registerModelTo: registerModelTo$A
 };
 
-var Material = {
+var Material$f = {
 	Material: Material_1
 };
 
@@ -10250,28 +10276,28 @@ var Material = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$1 } = Material;
+const { Material: Material$e } = Material$f;
 
-let _schema$1y = undefined;
-let _model$1w  = undefined;
+let _schema$I = undefined;
+let _model$z  = undefined;
 
-function getSchemaFrom$1y ( Mongoose ) {
+function getSchemaFrom$I ( Mongoose ) {
 
-    if ( !_schema$1y ) {
-        _createSchema$1y( Mongoose );
+    if ( !_schema$I ) {
+        _createSchema$I( Mongoose );
     }
 
-    return _schema$1y
+    return _schema$I
 
 }
 
-function _createSchema$1y ( Mongoose ) {
+function _createSchema$I ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
 
-    _schema$1y = new Schema( {
+    _schema$I = new Schema( {
         color:     Color,
         light:     Boolean,
         lineWidth: Number,
@@ -10281,27 +10307,27 @@ function _createSchema$1y ( Mongoose ) {
 
 }
 
-function getModelFrom$1w ( Mongoose ) {
+function getModelFrom$z ( Mongoose ) {
 
-    if ( !_model$1w ) {
-        _createModel$1w( Mongoose );
+    if ( !_model$z ) {
+        _createModel$z( Mongoose );
     }
 
-    return _model$1w
+    return _model$z
 
 }
 
-function _createModel$1w ( Mongoose ) {
+function _createModel$z ( Mongoose ) {
 
-    const MaterialBaseModel = Material$1.getModelFrom( Mongoose );
-    _model$1w                  = MaterialBaseModel.discriminator( 'LineBasicMaterial', getSchemaFrom$1y( Mongoose ) );
+    const MaterialBaseModel = Material$e.getModelFrom( Mongoose );
+    _model$z                  = MaterialBaseModel.discriminator( 'LineBasicMaterial', getSchemaFrom$I( Mongoose ) );
 
 }
 
-function registerModelTo$1w ( Mongoose ) {
+function registerModelTo$z ( Mongoose ) {
 
-    if ( !_model$1w ) {
-        _createModel$1w( Mongoose );
+    if ( !_model$z ) {
+        _createModel$z( Mongoose );
     }
 
     return Mongoose
@@ -10310,9 +10336,9 @@ function registerModelTo$1w ( Mongoose ) {
 
 var LineBasicMaterial_1 = {
     name:            'LineBasicMaterial',
-    getSchemaFrom:   getSchemaFrom$1y,
-    getModelFrom:    getModelFrom$1w,
-    registerModelTo: registerModelTo$1w
+    getSchemaFrom:   getSchemaFrom$I,
+    getModelFrom:    getModelFrom$z,
+    registerModelTo: registerModelTo$z
 };
 
 /**
@@ -10325,28 +10351,28 @@ var LineBasicMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$2 } = Material;
+const { Material: Material$d } = Material$f;
 
-let _schema$1z = undefined;
-let _model$1x  = undefined;
+let _schema$H = undefined;
+let _model$y  = undefined;
 
-function getSchemaFrom$1z ( Mongoose ) {
+function getSchemaFrom$H ( Mongoose ) {
 
-    if ( !_schema$1z ) {
-        _createSchema$1z( Mongoose );
+    if ( !_schema$H ) {
+        _createSchema$H( Mongoose );
     }
 
-    return _schema$1z
+    return _schema$H
 
 }
 
-function _createSchema$1z ( Mongoose ) {
+function _createSchema$H ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
 
-    _schema$1z = new Schema( {
+    _schema$H = new Schema( {
         // LineBasicMaterial
         color:     Color,
         light:     Boolean,
@@ -10362,27 +10388,27 @@ function _createSchema$1z ( Mongoose ) {
 
 }
 
-function getModelFrom$1x ( Mongoose ) {
+function getModelFrom$y ( Mongoose ) {
 
-    if ( !_model$1x ) {
-        _createModel$1x( Mongoose );
+    if ( !_model$y ) {
+        _createModel$y( Mongoose );
     }
 
-    return _model$1x
+    return _model$y
 
 }
 
-function _createModel$1x ( Mongoose ) {
+function _createModel$y ( Mongoose ) {
 
-    const MaterialBaseModel = Material$2.getModelFrom( Mongoose );
-    _model$1x                  = MaterialBaseModel.discriminator( 'LineDashedMaterial', getSchemaFrom$1z( Mongoose ) );
+    const MaterialBaseModel = Material$d.getModelFrom( Mongoose );
+    _model$y                  = MaterialBaseModel.discriminator( 'LineDashedMaterial', getSchemaFrom$H( Mongoose ) );
 
 }
 
-function registerModelTo$1x ( Mongoose ) {
+function registerModelTo$y ( Mongoose ) {
 
-    if ( !_model$1x ) {
-        _createModel$1x( Mongoose );
+    if ( !_model$y ) {
+        _createModel$y( Mongoose );
     }
 
     return Mongoose
@@ -10391,9 +10417,9 @@ function registerModelTo$1x ( Mongoose ) {
 
 var LineDashedMaterial_1 = {
     name:            'LineDashedMaterial',
-    getSchemaFrom:   getSchemaFrom$1z,
-    getModelFrom:    getModelFrom$1x,
-    registerModelTo: registerModelTo$1x
+    getSchemaFrom:   getSchemaFrom$H,
+    getModelFrom:    getModelFrom$y,
+    registerModelTo: registerModelTo$y
 };
 
 /**
@@ -10406,29 +10432,29 @@ var LineDashedMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$3 } = Material;
+const { Material: Material$c } = Material$f;
 
-let _schema$1A = undefined;
-let _model$1y  = undefined;
+let _schema$G = undefined;
+let _model$x  = undefined;
 
-function getSchemaFrom$1A ( Mongoose ) {
+function getSchemaFrom$G ( Mongoose ) {
 
-    if ( !_schema$1A ) {
-        _createSchema$1A( Mongoose );
+    if ( !_schema$G ) {
+        _createSchema$G( Mongoose );
     }
 
-    return _schema$1A
+    return _schema$G
 
 }
 
-function _createSchema$1A ( Mongoose ) {
+function _createSchema$G ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
     const Color  = Types.Color;
 
-    _schema$1A = new Schema( {
+    _schema$G = new Schema( {
         color:              Color,
         map:                Mixed, // Unknown yet
         lightMap:           Mixed, // Unknown yet
@@ -10452,27 +10478,27 @@ function _createSchema$1A ( Mongoose ) {
 
 }
 
-function getModelFrom$1y ( Mongoose ) {
+function getModelFrom$x ( Mongoose ) {
 
-    if ( !_model$1y ) {
-        _createModel$1y( Mongoose );
+    if ( !_model$x ) {
+        _createModel$x( Mongoose );
     }
 
-    return _model$1y
+    return _model$x
 
 }
 
-function _createModel$1y ( Mongoose ) {
+function _createModel$x ( Mongoose ) {
 
-    const MaterialBaseModel = Material$3.getModelFrom( Mongoose );
-    _model$1y                  = MaterialBaseModel.discriminator( 'MeshBasicMaterial', getSchemaFrom$1A( Mongoose ) );
+    const MaterialBaseModel = Material$c.getModelFrom( Mongoose );
+    _model$x                  = MaterialBaseModel.discriminator( 'MeshBasicMaterial', getSchemaFrom$G( Mongoose ) );
 
 }
 
-function registerModelTo$1y ( Mongoose ) {
+function registerModelTo$x ( Mongoose ) {
 
-    if ( !_model$1y ) {
-        _createModel$1y( Mongoose );
+    if ( !_model$x ) {
+        _createModel$x( Mongoose );
     }
 
     return Mongoose
@@ -10481,9 +10507,9 @@ function registerModelTo$1y ( Mongoose ) {
 
 var MeshBasicMaterial_1 = {
     name:            'MeshBasicMaterial',
-    getSchemaFrom:   getSchemaFrom$1A,
-    getModelFrom:    getModelFrom$1y,
-    registerModelTo: registerModelTo$1y
+    getSchemaFrom:   getSchemaFrom$G,
+    getModelFrom:    getModelFrom$x,
+    registerModelTo: registerModelTo$x
 };
 
 /**
@@ -10496,28 +10522,28 @@ var MeshBasicMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$4 } = Material;
+const { Material: Material$b } = Material$f;
 
-let _schema$1B = undefined;
-let _model$1z  = undefined;
+let _schema$F = undefined;
+let _model$w  = undefined;
 
-function getSchemaFrom$1B ( Mongoose ) {
+function getSchemaFrom$F ( Mongoose ) {
 
-    if ( !_schema$1B ) {
-        _createSchema$1B( Mongoose );
+    if ( !_schema$F ) {
+        _createSchema$F( Mongoose );
     }
 
-    return _schema$1B
+    return _schema$F
 
 }
 
-function _createSchema$1B ( Mongoose ) {
+function _createSchema$F ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
 
-    _schema$1B = new Schema( {
+    _schema$F = new Schema( {
         depthPacking:       Number,
         skinning:           Boolean,
         morphTargets:       Boolean,
@@ -10534,27 +10560,27 @@ function _createSchema$1B ( Mongoose ) {
 
 }
 
-function getModelFrom$1z ( Mongoose ) {
+function getModelFrom$w ( Mongoose ) {
 
-    if ( !_model$1z ) {
-        _createModel$1z( Mongoose );
+    if ( !_model$w ) {
+        _createModel$w( Mongoose );
     }
 
-    return _model$1z
+    return _model$w
 
 }
 
-function _createModel$1z ( Mongoose ) {
+function _createModel$w ( Mongoose ) {
 
-    const MaterialBaseModel = Material$4.getModelFrom( Mongoose );
-    _model$1z                  = MaterialBaseModel.discriminator( 'MeshDepthMaterial', getSchemaFrom$1B( Mongoose ) );
+    const MaterialBaseModel = Material$b.getModelFrom( Mongoose );
+    _model$w                  = MaterialBaseModel.discriminator( 'MeshDepthMaterial', getSchemaFrom$F( Mongoose ) );
 
 }
 
-function registerModelTo$1z ( Mongoose ) {
+function registerModelTo$w ( Mongoose ) {
 
-    if ( !_model$1z ) {
-        _createModel$1z( Mongoose );
+    if ( !_model$w ) {
+        _createModel$w( Mongoose );
     }
 
     return Mongoose
@@ -10563,9 +10589,9 @@ function registerModelTo$1z ( Mongoose ) {
 
 var MeshDepthMaterial_1 = {
     name:            'MeshDepthMaterial',
-    getSchemaFrom:   getSchemaFrom$1B,
-    getModelFrom:    getModelFrom$1z,
-    registerModelTo: registerModelTo$1z
+    getSchemaFrom:   getSchemaFrom$F,
+    getModelFrom:    getModelFrom$w,
+    registerModelTo: registerModelTo$w
 };
 
 /**
@@ -10578,29 +10604,29 @@ var MeshDepthMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$5 } = Material;
+const { Material: Material$a } = Material$f;
 
-let _schema$1C = undefined;
-let _model$1A  = undefined;
+let _schema$E = undefined;
+let _model$v  = undefined;
 
-function getSchemaFrom$1C ( Mongoose ) {
+function getSchemaFrom$E ( Mongoose ) {
 
-    if ( !_schema$1C ) {
-        _createSchema$1C( Mongoose );
+    if ( !_schema$E ) {
+        _createSchema$E( Mongoose );
     }
 
-    return _schema$1C
+    return _schema$E
 
 }
 
-function _createSchema$1C ( Mongoose ) {
+function _createSchema$E ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
     const Mixed  = Types.Mixed;
 
-    _schema$1C = new Schema( {
+    _schema$E = new Schema( {
         color:              Color,
         map:                Mixed, // Unknown yet
         lightMap:           Mixed, // Unknown yet
@@ -10627,27 +10653,27 @@ function _createSchema$1C ( Mongoose ) {
 
 }
 
-function getModelFrom$1A ( Mongoose ) {
+function getModelFrom$v ( Mongoose ) {
 
-    if ( !_model$1A ) {
-        _createModel$1A( Mongoose );
+    if ( !_model$v ) {
+        _createModel$v( Mongoose );
     }
 
-    return _model$1A
+    return _model$v
 
 }
 
-function _createModel$1A ( Mongoose ) {
+function _createModel$v ( Mongoose ) {
 
-    const MaterialBaseModel = Material$5.getModelFrom( Mongoose );
-    _model$1A                  = MaterialBaseModel.discriminator( 'MeshLambertMaterial', getSchemaFrom$1C( Mongoose ) );
+    const MaterialBaseModel = Material$a.getModelFrom( Mongoose );
+    _model$v                  = MaterialBaseModel.discriminator( 'MeshLambertMaterial', getSchemaFrom$E( Mongoose ) );
 
 }
 
-function registerModelTo$1A ( Mongoose ) {
+function registerModelTo$v ( Mongoose ) {
 
-    if ( !_model$1A ) {
-        _createModel$1A( Mongoose );
+    if ( !_model$v ) {
+        _createModel$v( Mongoose );
     }
 
     return Mongoose
@@ -10656,9 +10682,9 @@ function registerModelTo$1A ( Mongoose ) {
 
 var MeshLambertMaterial_1 = {
     name:            'MeshLambertMaterial',
-    getSchemaFrom:   getSchemaFrom$1C,
-    getModelFrom:    getModelFrom$1A,
-    registerModelTo: registerModelTo$1A
+    getSchemaFrom:   getSchemaFrom$E,
+    getModelFrom:    getModelFrom$v,
+    registerModelTo: registerModelTo$v
 };
 
 /**
@@ -10671,29 +10697,29 @@ var MeshLambertMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$6 } = Material;
+const { Material: Material$9 } = Material$f;
 
-let _schema$1D = undefined;
-let _model$1B  = undefined;
+let _schema$D = undefined;
+let _model$u  = undefined;
 
-function getSchemaFrom$1D ( Mongoose ) {
+function getSchemaFrom$D ( Mongoose ) {
 
-    if ( !_schema$1D ) {
-        _createSchema$1D( Mongoose );
+    if ( !_schema$D ) {
+        _createSchema$D( Mongoose );
     }
 
-    return _schema$1D
+    return _schema$D
 
 }
 
-function _createSchema$1D ( Mongoose ) {
+function _createSchema$D ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Mixed   = Types.Mixed;
     const Vector2 = Types.Vector2;
 
-    _schema$1D = new Schema( {
+    _schema$D = new Schema( {
         bumpMap:            Mixed, // Unknown yet
         bumpScale:          Number,
         normalMap:          Mixed, // Unknown yet
@@ -10712,27 +10738,27 @@ function _createSchema$1D ( Mongoose ) {
 
 }
 
-function getModelFrom$1B ( Mongoose ) {
+function getModelFrom$u ( Mongoose ) {
 
-    if ( !_model$1B ) {
-        _createModel$1B( Mongoose );
+    if ( !_model$u ) {
+        _createModel$u( Mongoose );
     }
 
-    return _model$1B
+    return _model$u
 
 }
 
-function _createModel$1B ( Mongoose ) {
+function _createModel$u ( Mongoose ) {
 
-    const MaterialBaseModel = Material$6.getModelFrom( Mongoose );
-    _model$1B                  = MaterialBaseModel.discriminator( 'MeshNormalMaterial', getSchemaFrom$1D( Mongoose ) );
+    const MaterialBaseModel = Material$9.getModelFrom( Mongoose );
+    _model$u                  = MaterialBaseModel.discriminator( 'MeshNormalMaterial', getSchemaFrom$D( Mongoose ) );
 
 }
 
-function registerModelTo$1B ( Mongoose ) {
+function registerModelTo$u ( Mongoose ) {
 
-    if ( !_model$1B ) {
-        _createModel$1B( Mongoose );
+    if ( !_model$u ) {
+        _createModel$u( Mongoose );
     }
 
     return Mongoose
@@ -10741,9 +10767,9 @@ function registerModelTo$1B ( Mongoose ) {
 
 var MeshNormalMaterial_1 = {
     name:            'MeshNormalMaterial',
-    getSchemaFrom:   getSchemaFrom$1D,
-    getModelFrom:    getModelFrom$1B,
-    registerModelTo: registerModelTo$1B
+    getSchemaFrom:   getSchemaFrom$D,
+    getModelFrom:    getModelFrom$u,
+    registerModelTo: registerModelTo$u
 };
 
 /**
@@ -10756,22 +10782,22 @@ var MeshNormalMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$7 } = Material;
+const { Material: Material$8 } = Material$f;
 
-let _schema$1E = undefined;
-let _model$1C  = undefined;
+let _schema$C = undefined;
+let _model$t  = undefined;
 
-function getSchemaFrom$1E ( Mongoose ) {
+function getSchemaFrom$C ( Mongoose ) {
 
-    if ( !_schema$1E ) {
-        _createSchema$1E( Mongoose );
+    if ( !_schema$C ) {
+        _createSchema$C( Mongoose );
     }
 
-    return _schema$1E
+    return _schema$C
 
 }
 
-function _createSchema$1E ( Mongoose ) {
+function _createSchema$C ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -10779,7 +10805,7 @@ function _createSchema$1E ( Mongoose ) {
     const Color   = Types.Color;
     const Vector2 = Types.Vector2;
 
-    _schema$1E = new Schema( {
+    _schema$C = new Schema( {
         color:              Color,
         specular:           Color,
         shininess:          Number,
@@ -10815,27 +10841,27 @@ function _createSchema$1E ( Mongoose ) {
 
 }
 
-function getModelFrom$1C ( Mongoose ) {
+function getModelFrom$t ( Mongoose ) {
 
-    if ( !_model$1C ) {
-        _createModel$1C( Mongoose );
+    if ( !_model$t ) {
+        _createModel$t( Mongoose );
     }
 
-    return _model$1C
+    return _model$t
 
 }
 
-function _createModel$1C ( Mongoose ) {
+function _createModel$t ( Mongoose ) {
 
-    const MaterialBaseModel = Material$7.getModelFrom( Mongoose );
-    _model$1C                  = MaterialBaseModel.discriminator( 'MeshPhongMaterial', getSchemaFrom$1E( Mongoose ) );
+    const MaterialBaseModel = Material$8.getModelFrom( Mongoose );
+    _model$t                  = MaterialBaseModel.discriminator( 'MeshPhongMaterial', getSchemaFrom$C( Mongoose ) );
 
 }
 
-function registerModelTo$1C ( Mongoose ) {
+function registerModelTo$t ( Mongoose ) {
 
-    if ( !_model$1C ) {
-        _createModel$1C( Mongoose );
+    if ( !_model$t ) {
+        _createModel$t( Mongoose );
     }
 
     return Mongoose
@@ -10844,9 +10870,9 @@ function registerModelTo$1C ( Mongoose ) {
 
 var MeshPhongMaterial_1 = {
     name:            'MeshPhongMaterial',
-    getSchemaFrom:   getSchemaFrom$1E,
-    getModelFrom:    getModelFrom$1C,
-    registerModelTo: registerModelTo$1C
+    getSchemaFrom:   getSchemaFrom$C,
+    getModelFrom:    getModelFrom$t,
+    registerModelTo: registerModelTo$t
 };
 
 /**
@@ -10859,26 +10885,26 @@ var MeshPhongMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$8 } = Material;
+const { Material: Material$7 } = Material$f;
 
-let _schema$1F = undefined;
-let _model$1D  = undefined;
+let _schema$B = undefined;
+let _model$s  = undefined;
 
-function getSchemaFrom$1F ( Mongoose ) {
+function getSchemaFrom$B ( Mongoose ) {
 
-    if ( !_schema$1F ) {
-        _createSchema$1F( Mongoose );
+    if ( !_schema$B ) {
+        _createSchema$B( Mongoose );
     }
 
-    return _schema$1F
+    return _schema$B
 
 }
 
-function _createSchema$1F ( Mongoose ) {
+function _createSchema$B ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1F = new Schema( {
+    _schema$B = new Schema( {
         reflectivity:       Number,
         clearCoat:          Number,
         clearCoatRoughness: Number
@@ -10886,27 +10912,27 @@ function _createSchema$1F ( Mongoose ) {
 
 }
 
-function getModelFrom$1D ( Mongoose ) {
+function getModelFrom$s ( Mongoose ) {
 
-    if ( !_model$1D ) {
-        _createModel$1D( Mongoose );
+    if ( !_model$s ) {
+        _createModel$s( Mongoose );
     }
 
-    return _model$1D
+    return _model$s
 
 }
 
-function _createModel$1D ( Mongoose ) {
+function _createModel$s ( Mongoose ) {
 
-    const MaterialBaseModel = Material$8.getModelFrom( Mongoose );
-    _model$1D                  = MaterialBaseModel.discriminator( 'MeshPhysicalMaterial', getSchemaFrom$1F( Mongoose ) );
+    const MaterialBaseModel = Material$7.getModelFrom( Mongoose );
+    _model$s                  = MaterialBaseModel.discriminator( 'MeshPhysicalMaterial', getSchemaFrom$B( Mongoose ) );
 
 }
 
-function registerModelTo$1D ( Mongoose ) {
+function registerModelTo$s ( Mongoose ) {
 
-    if ( !_model$1D ) {
-        _createModel$1D( Mongoose );
+    if ( !_model$s ) {
+        _createModel$s( Mongoose );
     }
 
     return Mongoose
@@ -10915,9 +10941,9 @@ function registerModelTo$1D ( Mongoose ) {
 
 var MeshPhysicalMaterial_1 = {
     name:            'MeshPhysicalMaterial',
-    getSchemaFrom:   getSchemaFrom$1F,
-    getModelFrom:    getModelFrom$1D,
-    registerModelTo: registerModelTo$1D
+    getSchemaFrom:   getSchemaFrom$B,
+    getModelFrom:    getModelFrom$s,
+    registerModelTo: registerModelTo$s
 };
 
 /**
@@ -10930,22 +10956,22 @@ var MeshPhysicalMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$9 } = Material;
+const { Material: Material$6 } = Material$f;
 
-let _schema$1G = undefined;
-let _model$1E  = undefined;
+let _schema$A = undefined;
+let _model$r  = undefined;
 
-function getSchemaFrom$1G ( Mongoose ) {
+function getSchemaFrom$A ( Mongoose ) {
 
-    if ( !_schema$1G ) {
-        _createSchema$1G( Mongoose );
+    if ( !_schema$A ) {
+        _createSchema$A( Mongoose );
     }
 
-    return _schema$1G
+    return _schema$A
 
 }
 
-function _createSchema$1G ( Mongoose ) {
+function _createSchema$A ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -10953,7 +10979,7 @@ function _createSchema$1G ( Mongoose ) {
     const Color   = Types.Color;
     const Vector2 = Types.Vector2;
 
-    _schema$1G = new Schema( {
+    _schema$A = new Schema( {
         color:              Color,
         roughness:          Number,
         metalness:          Number,
@@ -10989,27 +11015,27 @@ function _createSchema$1G ( Mongoose ) {
 
 }
 
-function getModelFrom$1E ( Mongoose ) {
+function getModelFrom$r ( Mongoose ) {
 
-    if ( !_model$1E ) {
-        _createModel$1E( Mongoose );
+    if ( !_model$r ) {
+        _createModel$r( Mongoose );
     }
 
-    return _model$1E
+    return _model$r
 
 }
 
-function _createModel$1E ( Mongoose ) {
+function _createModel$r ( Mongoose ) {
 
-    const MaterialBaseModel = Material$9.getModelFrom( Mongoose );
-    _model$1E                  = MaterialBaseModel.discriminator( 'MeshStandardMaterial', getSchemaFrom$1G( Mongoose ) );
+    const MaterialBaseModel = Material$6.getModelFrom( Mongoose );
+    _model$r                  = MaterialBaseModel.discriminator( 'MeshStandardMaterial', getSchemaFrom$A( Mongoose ) );
 
 }
 
-function registerModelTo$1E ( Mongoose ) {
+function registerModelTo$r ( Mongoose ) {
 
-    if ( !_model$1E ) {
-        _createModel$1E( Mongoose );
+    if ( !_model$r ) {
+        _createModel$r( Mongoose );
     }
 
     return Mongoose
@@ -11018,9 +11044,9 @@ function registerModelTo$1E ( Mongoose ) {
 
 var MeshStandardMaterial_1 = {
     name:            'MeshStandardMaterial',
-    getSchemaFrom:   getSchemaFrom$1G,
-    getModelFrom:    getModelFrom$1E,
-    registerModelTo: registerModelTo$1E
+    getSchemaFrom:   getSchemaFrom$A,
+    getModelFrom:    getModelFrom$r,
+    registerModelTo: registerModelTo$r
 };
 
 /**
@@ -11033,22 +11059,22 @@ var MeshStandardMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$a } = Material;
+const { Material: Material$5 } = Material$f;
 
-let _schema$1H = undefined;
-let _model$1F  = undefined;
+let _schema$z = undefined;
+let _model$q  = undefined;
 
-function getSchemaFrom$1H ( Mongoose ) {
+function getSchemaFrom$z ( Mongoose ) {
 
-    if ( !_schema$1H ) {
-        _createSchema$1H( Mongoose );
+    if ( !_schema$z ) {
+        _createSchema$z( Mongoose );
     }
 
-    return _schema$1H
+    return _schema$z
 
 }
 
-function _createSchema$1H ( Mongoose ) {
+function _createSchema$z ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11056,7 +11082,7 @@ function _createSchema$1H ( Mongoose ) {
     const Color   = Types.Color;
     const Vector2 = Types.Vector2;
 
-    _schema$1H = new Schema( {
+    _schema$z = new Schema( {
         // MeshPhongMaterial
         color:              Color,
         specular:           Color,
@@ -11096,27 +11122,27 @@ function _createSchema$1H ( Mongoose ) {
 
 }
 
-function getModelFrom$1F ( Mongoose ) {
+function getModelFrom$q ( Mongoose ) {
 
-    if ( !_model$1F ) {
-        _createModel$1F( Mongoose );
+    if ( !_model$q ) {
+        _createModel$q( Mongoose );
     }
 
-    return _model$1F
+    return _model$q
 
 }
 
-function _createModel$1F ( Mongoose ) {
+function _createModel$q ( Mongoose ) {
 
-    const MaterialBaseModel = Material$a.getModelFrom( Mongoose );
-    _model$1F                  = MaterialBaseModel.discriminator( 'MeshToonMaterial', getSchemaFrom$1H( Mongoose ) );
+    const MaterialBaseModel = Material$5.getModelFrom( Mongoose );
+    _model$q                  = MaterialBaseModel.discriminator( 'MeshToonMaterial', getSchemaFrom$z( Mongoose ) );
 
 }
 
-function registerModelTo$1F ( Mongoose ) {
+function registerModelTo$q ( Mongoose ) {
 
-    if ( !_model$1F ) {
-        _createModel$1F( Mongoose );
+    if ( !_model$q ) {
+        _createModel$q( Mongoose );
     }
 
     return Mongoose
@@ -11125,9 +11151,9 @@ function registerModelTo$1F ( Mongoose ) {
 
 var MeshToonMaterial_1 = {
     name:            'MeshToonMaterial',
-    getSchemaFrom:   getSchemaFrom$1H,
-    getModelFrom:    getModelFrom$1F,
-    registerModelTo: registerModelTo$1F
+    getSchemaFrom:   getSchemaFrom$z,
+    getModelFrom:    getModelFrom$q,
+    registerModelTo: registerModelTo$q
 };
 
 /**
@@ -11140,29 +11166,29 @@ var MeshToonMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$b } = Material;
+const { Material: Material$4 } = Material$f;
 
-let _schema$1I = undefined;
-let _model$1G  = undefined;
+let _schema$y = undefined;
+let _model$p  = undefined;
 
-function getSchemaFrom$1I ( Mongoose ) {
+function getSchemaFrom$y ( Mongoose ) {
 
-    if ( !_schema$1I ) {
-        _createSchema$1I( Mongoose );
+    if ( !_schema$y ) {
+        _createSchema$y( Mongoose );
     }
 
-    return _schema$1I
+    return _schema$y
 
 }
 
-function _createSchema$1I ( Mongoose ) {
+function _createSchema$y ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
     const Mixed  = Types.Mixed;
 
-    _schema$1I = new Schema( {
+    _schema$y = new Schema( {
         color:           Color,
         map:             Mixed, // Unknown yet
         size:            Number,
@@ -11172,27 +11198,27 @@ function _createSchema$1I ( Mongoose ) {
 
 }
 
-function getModelFrom$1G ( Mongoose ) {
+function getModelFrom$p ( Mongoose ) {
 
-    if ( !_model$1G ) {
-        _createModel$1G( Mongoose );
+    if ( !_model$p ) {
+        _createModel$p( Mongoose );
     }
 
-    return _model$1G
+    return _model$p
 
 }
 
-function _createModel$1G ( Mongoose ) {
+function _createModel$p ( Mongoose ) {
 
-    const MaterialBaseModel = Material$b.getModelFrom( Mongoose );
-    _model$1G                  = MaterialBaseModel.discriminator( 'PointsMaterial', getSchemaFrom$1I( Mongoose ) );
+    const MaterialBaseModel = Material$4.getModelFrom( Mongoose );
+    _model$p                  = MaterialBaseModel.discriminator( 'PointsMaterial', getSchemaFrom$y( Mongoose ) );
 
 }
 
-function registerModelTo$1G ( Mongoose ) {
+function registerModelTo$p ( Mongoose ) {
 
-    if ( !_model$1G ) {
-        _createModel$1G( Mongoose );
+    if ( !_model$p ) {
+        _createModel$p( Mongoose );
     }
 
     return Mongoose
@@ -11201,9 +11227,9 @@ function registerModelTo$1G ( Mongoose ) {
 
 var PointsMaterial_1 = {
     name:            'PointsMaterial',
-    getSchemaFrom:   getSchemaFrom$1I,
-    getModelFrom:    getModelFrom$1G,
-    registerModelTo: registerModelTo$1G
+    getSchemaFrom:   getSchemaFrom$y,
+    getModelFrom:    getModelFrom$p,
+    registerModelTo: registerModelTo$p
 };
 
 /**
@@ -11216,28 +11242,28 @@ var PointsMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$c } = Material;
+const { Material: Material$3 } = Material$f;
 
-let _schema$1J = undefined;
-let _model$1H  = undefined;
+let _schema$x = undefined;
+let _model$o  = undefined;
 
-function getSchemaFrom$1J ( Mongoose ) {
+function getSchemaFrom$x ( Mongoose ) {
 
-    if ( !_schema$1J ) {
-        _createSchema$1J( Mongoose );
+    if ( !_schema$x ) {
+        _createSchema$x( Mongoose );
     }
 
-    return _schema$1J
+    return _schema$x
 
 }
 
-function _createSchema$1J ( Mongoose ) {
+function _createSchema$x ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
 
-    _schema$1J = new Schema( {
+    _schema$x = new Schema( {
         // ShaderMaterial
         defines:            Mixed, // Unknown yet
         uniforms:           Mixed, // Unknown yet
@@ -11262,27 +11288,27 @@ function _createSchema$1J ( Mongoose ) {
 
 }
 
-function getModelFrom$1H ( Mongoose ) {
+function getModelFrom$o ( Mongoose ) {
 
-    if ( !_model$1H ) {
-        _createModel$1H( Mongoose );
+    if ( !_model$o ) {
+        _createModel$o( Mongoose );
     }
 
-    return _model$1H
+    return _model$o
 
 }
 
-function _createModel$1H ( Mongoose ) {
+function _createModel$o ( Mongoose ) {
 
-    const MaterialBaseModel = Material$c.getModelFrom( Mongoose );
-    _model$1H                  = MaterialBaseModel.discriminator( 'RawShaderMaterial', getSchemaFrom$1J( Mongoose ) );
+    const MaterialBaseModel = Material$3.getModelFrom( Mongoose );
+    _model$o                  = MaterialBaseModel.discriminator( 'RawShaderMaterial', getSchemaFrom$x( Mongoose ) );
 
 }
 
-function registerModelTo$1H ( Mongoose ) {
+function registerModelTo$o ( Mongoose ) {
 
-    if ( !_model$1H ) {
-        _createModel$1H( Mongoose );
+    if ( !_model$o ) {
+        _createModel$o( Mongoose );
     }
 
     return Mongoose
@@ -11291,9 +11317,9 @@ function registerModelTo$1H ( Mongoose ) {
 
 var RawShaderMaterial_1 = {
     name:            'RawShaderMaterial',
-    getSchemaFrom:   getSchemaFrom$1J,
-    getModelFrom:    getModelFrom$1H,
-    registerModelTo: registerModelTo$1H
+    getSchemaFrom:   getSchemaFrom$x,
+    getModelFrom:    getModelFrom$o,
+    registerModelTo: registerModelTo$o
 };
 
 /**
@@ -11306,28 +11332,28 @@ var RawShaderMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$d } = Material;
+const { Material: Material$2 } = Material$f;
 
-let _schema$1K = undefined;
-let _model$1I  = undefined;
+let _schema$w = undefined;
+let _model$n  = undefined;
 
-function getSchemaFrom$1K ( Mongoose ) {
+function getSchemaFrom$w ( Mongoose ) {
 
-    if ( !_schema$1K ) {
-        _createSchema$1K( Mongoose );
+    if ( !_schema$w ) {
+        _createSchema$w( Mongoose );
     }
 
-    return _schema$1K
+    return _schema$w
 
 }
 
-function _createSchema$1K ( Mongoose ) {
+function _createSchema$w ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
 
-    _schema$1K = new Schema( {
+    _schema$w = new Schema( {
         defines:            Mixed, // Unknown yet
         uniforms:           Mixed, // Unknown yet
         vertexShader:       String,
@@ -11349,27 +11375,27 @@ function _createSchema$1K ( Mongoose ) {
 
 }
 
-function getModelFrom$1I ( Mongoose ) {
+function getModelFrom$n ( Mongoose ) {
 
-    if ( !_model$1I ) {
-        _createModel$1I( Mongoose );
+    if ( !_model$n ) {
+        _createModel$n( Mongoose );
     }
 
-    return _model$1I
+    return _model$n
 
 }
 
-function _createModel$1I ( Mongoose ) {
+function _createModel$n ( Mongoose ) {
 
-    const MaterialBaseModel = Material$d.getModelFrom( Mongoose );
-    _model$1I                  = MaterialBaseModel.discriminator( 'ShaderMaterial', getSchemaFrom$1K( Mongoose ) );
+    const MaterialBaseModel = Material$2.getModelFrom( Mongoose );
+    _model$n                  = MaterialBaseModel.discriminator( 'ShaderMaterial', getSchemaFrom$w( Mongoose ) );
 
 }
 
-function registerModelTo$1I ( Mongoose ) {
+function registerModelTo$n ( Mongoose ) {
 
-    if ( !_model$1I ) {
-        _createModel$1I( Mongoose );
+    if ( !_model$n ) {
+        _createModel$n( Mongoose );
     }
 
     return Mongoose
@@ -11378,9 +11404,9 @@ function registerModelTo$1I ( Mongoose ) {
 
 var ShaderMaterial_1 = {
     name:            'ShaderMaterial',
-    getSchemaFrom:   getSchemaFrom$1K,
-    getModelFrom:    getModelFrom$1I,
-    registerModelTo: registerModelTo$1I
+    getSchemaFrom:   getSchemaFrom$w,
+    getModelFrom:    getModelFrom$n,
+    registerModelTo: registerModelTo$n
 };
 
 /**
@@ -11393,28 +11419,28 @@ var ShaderMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$e } = Material;
+const { Material: Material$1 } = Material$f;
 
-let _schema$1L = undefined;
-let _model$1J  = undefined;
+let _schema$v = undefined;
+let _model$m  = undefined;
 
-function getSchemaFrom$1L ( Mongoose ) {
+function getSchemaFrom$v ( Mongoose ) {
 
-    if ( !_schema$1L ) {
-        _createSchema$1L( Mongoose );
+    if ( !_schema$v ) {
+        _createSchema$v( Mongoose );
     }
 
-    return _schema$1L
+    return _schema$v
 
 }
 
-function _createSchema$1L ( Mongoose ) {
+function _createSchema$v ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
 
-    _schema$1L = new Schema( {
+    _schema$v = new Schema( {
         color:       Color,
         opacity:     Number,
         lights:      Boolean,
@@ -11423,27 +11449,27 @@ function _createSchema$1L ( Mongoose ) {
 
 }
 
-function getModelFrom$1J ( Mongoose ) {
+function getModelFrom$m ( Mongoose ) {
 
-    if ( !_model$1J ) {
-        _createModel$1J( Mongoose );
+    if ( !_model$m ) {
+        _createModel$m( Mongoose );
     }
 
-    return _model$1J
+    return _model$m
 
 }
 
-function _createModel$1J ( Mongoose ) {
+function _createModel$m ( Mongoose ) {
 
-    const MaterialBaseModel = Material$e.getModelFrom( Mongoose );
-    _model$1J                  = MaterialBaseModel.discriminator( 'ShadowMaterial', getSchemaFrom$1L( Mongoose ) );
+    const MaterialBaseModel = Material$1.getModelFrom( Mongoose );
+    _model$m                  = MaterialBaseModel.discriminator( 'ShadowMaterial', getSchemaFrom$v( Mongoose ) );
 
 }
 
-function registerModelTo$1J ( Mongoose ) {
+function registerModelTo$m ( Mongoose ) {
 
-    if ( !_model$1J ) {
-        _createModel$1J( Mongoose );
+    if ( !_model$m ) {
+        _createModel$m( Mongoose );
     }
 
     return Mongoose
@@ -11452,9 +11478,9 @@ function registerModelTo$1J ( Mongoose ) {
 
 var ShadowMaterial_1 = {
     name:            'ShadowMaterial',
-    getSchemaFrom:   getSchemaFrom$1L,
-    getModelFrom:    getModelFrom$1J,
-    registerModelTo: registerModelTo$1J
+    getSchemaFrom:   getSchemaFrom$v,
+    getModelFrom:    getModelFrom$m,
+    registerModelTo: registerModelTo$m
 };
 
 /**
@@ -11467,29 +11493,29 @@ var ShadowMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$f } = Material;
+const { Material } = Material$f;
 
-let _schema$1M = undefined;
-let _model$1K  = undefined;
+let _schema$u = undefined;
+let _model$l  = undefined;
 
-function getSchemaFrom$1M ( Mongoose ) {
+function getSchemaFrom$u ( Mongoose ) {
 
-    if ( !_schema$1M ) {
-        _createSchema$1M( Mongoose );
+    if ( !_schema$u ) {
+        _createSchema$u( Mongoose );
     }
 
-    return _schema$1M
+    return _schema$u
 
 }
 
-function _createSchema$1M ( Mongoose ) {
+function _createSchema$u ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Color  = Types.Color;
     const Mixed  = Types.Mixed;
 
-    _schema$1M = new Schema( {
+    _schema$u = new Schema( {
         color:    Color,
         map:      Mixed, // Unknown yet
         rotation: Number,
@@ -11499,27 +11525,27 @@ function _createSchema$1M ( Mongoose ) {
 
 }
 
-function getModelFrom$1K ( Mongoose ) {
+function getModelFrom$l ( Mongoose ) {
 
-    if ( !_model$1K ) {
-        _createModel$1K( Mongoose );
+    if ( !_model$l ) {
+        _createModel$l( Mongoose );
     }
 
-    return _model$1K
+    return _model$l
 
 }
 
-function _createModel$1K ( Mongoose ) {
+function _createModel$l ( Mongoose ) {
 
-    const MaterialBaseModel = Material$f.getModelFrom( Mongoose );
-    _model$1K                  = MaterialBaseModel.discriminator( 'SpriteMaterial', getSchemaFrom$1M( Mongoose ) );
+    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+    _model$l                  = MaterialBaseModel.discriminator( 'SpriteMaterial', getSchemaFrom$u( Mongoose ) );
 
 }
 
-function registerModelTo$1K ( Mongoose ) {
+function registerModelTo$l ( Mongoose ) {
 
-    if ( !_model$1K ) {
-        _createModel$1K( Mongoose );
+    if ( !_model$l ) {
+        _createModel$l( Mongoose );
     }
 
     return Mongoose
@@ -11528,9 +11554,9 @@ function registerModelTo$1K ( Mongoose ) {
 
 var SpriteMaterial_1 = {
     name:            'SpriteMaterial',
-    getSchemaFrom:   getSchemaFrom$1M,
-    getModelFrom:    getModelFrom$1K,
-    registerModelTo: registerModelTo$1K
+    getSchemaFrom:   getSchemaFrom$u,
+    getModelFrom:    getModelFrom$l,
+    registerModelTo: registerModelTo$l
 };
 
 /**
@@ -11541,25 +11567,25 @@ var SpriteMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1N = undefined;
+let _schema$t = undefined;
 
-function getSchemaFrom$1N ( Mongoose ) {
+function getSchemaFrom$t ( Mongoose ) {
 
-    if ( !_schema$1N ) {
-        _createSchema$1N( Mongoose );
+    if ( !_schema$t ) {
+        _createSchema$t( Mongoose );
     }
 
-    return _schema$1N
+    return _schema$t
 
 }
 
-function _createSchema$1N ( Mongoose ) {
+function _createSchema$t ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector2 = Types.Vector2;
 
-    _schema$1N = new Schema( {
+    _schema$t = new Schema( {
         min: Vector2,
         max: Vector2
     }, {
@@ -11571,7 +11597,7 @@ function _createSchema$1N ( Mongoose ) {
 
 var Box2_1 = {
     name:            'Box2',
-    getSchemaFrom:   getSchemaFrom$1N,
+    getSchemaFrom:   getSchemaFrom$t,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11584,25 +11610,25 @@ var Box2_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1O = undefined;
+let _schema$s = undefined;
 
-function getSchemaFrom$1O ( Mongoose ) {
+function getSchemaFrom$s ( Mongoose ) {
 
-    if ( !_schema$1O ) {
-        _createSchema$1O( Mongoose );
+    if ( !_schema$s ) {
+        _createSchema$s( Mongoose );
     }
 
-    return _schema$1O
+    return _schema$s
 
 }
 
-function _createSchema$1O ( Mongoose ) {
+function _createSchema$s ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1O = new Schema( {
+    _schema$s = new Schema( {
         min: Vector3,
         max: Vector3
     }, {
@@ -11614,7 +11640,7 @@ function _createSchema$1O ( Mongoose ) {
 
 var Box3_1 = {
     name:            'Box3',
-    getSchemaFrom:   getSchemaFrom$1O,
+    getSchemaFrom:   getSchemaFrom$s,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11627,25 +11653,25 @@ var Box3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1P = undefined;
+let _schema$r = undefined;
 
-function getSchemaFrom$1P ( Mongoose ) {
+function getSchemaFrom$r ( Mongoose ) {
 
-    if ( !_schema$1P ) {
-        _createSchema$1P( Mongoose );
+    if ( !_schema$r ) {
+        _createSchema$r( Mongoose );
     }
 
-    return _schema$1P
+    return _schema$r
 
 }
 
-function _createSchema$1P ( Mongoose ) {
+function _createSchema$r ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1P = new Schema( {
+    _schema$r = new Schema( {
         start: Vector3,
         end:   Vector3
     }, {
@@ -11657,7 +11683,7 @@ function _createSchema$1P ( Mongoose ) {
 
 var Line3_1 = {
     name:            'Line3',
-    getSchemaFrom:   getSchemaFrom$1P,
+    getSchemaFrom:   getSchemaFrom$r,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11670,25 +11696,25 @@ var Line3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1Q = undefined;
+let _schema$q = undefined;
 
-function getSchemaFrom$1Q ( Mongoose ) {
+function getSchemaFrom$q ( Mongoose ) {
 
-    if ( !_schema$1Q ) {
-        _createSchema$1Q( Mongoose );
+    if ( !_schema$q ) {
+        _createSchema$q( Mongoose );
     }
 
-    return _schema$1Q
+    return _schema$q
 
 }
 
-function _createSchema$1Q ( Mongoose ) {
+function _createSchema$q ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1Q = new Schema( {
+    _schema$q = new Schema( {
         normal:   Vector3,
         constant: Number
     }, {
@@ -11700,7 +11726,7 @@ function _createSchema$1Q ( Mongoose ) {
 
 var Plane_1 = {
     name:            'Plane',
-    getSchemaFrom:   getSchemaFrom$1Q,
+    getSchemaFrom:   getSchemaFrom$q,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11713,25 +11739,25 @@ var Plane_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1R = undefined;
+let _schema$p = undefined;
 
-function getSchemaFrom$1R ( Mongoose ) {
+function getSchemaFrom$p ( Mongoose ) {
 
-    if ( !_schema$1R ) {
-        _createSchema$1R( Mongoose );
+    if ( !_schema$p ) {
+        _createSchema$p( Mongoose );
     }
 
-    return _schema$1R
+    return _schema$p
 
 }
 
-function _createSchema$1R ( Mongoose ) {
+function _createSchema$p ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1R = new Schema( {
+    _schema$p = new Schema( {
         origin:    Vector3,
         direction: Vector3
     }, {
@@ -11743,7 +11769,7 @@ function _createSchema$1R ( Mongoose ) {
 
 var Ray_1 = {
     name:            'Ray',
-    getSchemaFrom:   getSchemaFrom$1R,
+    getSchemaFrom:   getSchemaFrom$p,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11756,25 +11782,25 @@ var Ray_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1S = undefined;
+let _schema$o = undefined;
 
-function getSchemaFrom$1S ( Mongoose ) {
+function getSchemaFrom$o ( Mongoose ) {
 
-    if ( !_schema$1S ) {
-        _createSchema$1S( Mongoose );
+    if ( !_schema$o ) {
+        _createSchema$o( Mongoose );
     }
 
-    return _schema$1S
+    return _schema$o
 
 }
 
-function _createSchema$1S ( Mongoose ) {
+function _createSchema$o ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1S = new Schema( {
+    _schema$o = new Schema( {
         center: Vector3,
         radius: Number
     }, {
@@ -11786,7 +11812,7 @@ function _createSchema$1S ( Mongoose ) {
 
 var Sphere_1 = {
     name:            'Sphere',
-    getSchemaFrom:   getSchemaFrom$1S,
+    getSchemaFrom:   getSchemaFrom$o,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11799,23 +11825,23 @@ var Sphere_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1T = undefined;
+let _schema$n = undefined;
 
-function getSchemaFrom$1T ( Mongoose ) {
+function getSchemaFrom$n ( Mongoose ) {
 
-    if ( !_schema$1T ) {
-        _createSchema$1T( Mongoose );
+    if ( !_schema$n ) {
+        _createSchema$n( Mongoose );
     }
 
-    return _schema$1T
+    return _schema$n
 
 }
 
-function _createSchema$1T ( Mongoose ) {
+function _createSchema$n ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1T = new Schema( {
+    _schema$n = new Schema( {
         radius: Number,
         phi:    Number,
         theta:  Number
@@ -11828,7 +11854,7 @@ function _createSchema$1T ( Mongoose ) {
 
 var Spherical_1 = {
     name:            'Spherical',
-    getSchemaFrom:   getSchemaFrom$1T,
+    getSchemaFrom:   getSchemaFrom$n,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11841,25 +11867,25 @@ var Spherical_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1U = undefined;
+let _schema$m = undefined;
 
-function getSchemaFrom$1U ( Mongoose ) {
+function getSchemaFrom$m ( Mongoose ) {
 
-    if ( !_schema$1U ) {
-        _createSchema$1U( Mongoose );
+    if ( !_schema$m ) {
+        _createSchema$m( Mongoose );
     }
 
-    return _schema$1U
+    return _schema$m
 
 }
 
-function _createSchema$1U ( Mongoose ) {
+function _createSchema$m ( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Vector3 = Types.Vector3;
 
-    _schema$1U = new Schema( {
+    _schema$m = new Schema( {
         a: Vector3,
         b: Vector3,
         c: Vector3
@@ -11872,7 +11898,7 @@ function _createSchema$1U ( Mongoose ) {
 
 var Triangle_1 = {
     name:            'Triangle',
-    getSchemaFrom:   getSchemaFrom$1U,
+    getSchemaFrom:   getSchemaFrom$m,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
@@ -11887,50 +11913,50 @@ var Triangle_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$x } = Object3D$1;
+const { Object3D: Object3D$c } = Object3D$J;
 
-let _schema$1V = undefined;
-let _model$1L  = undefined;
+let _schema$l = undefined;
+let _model$k  = undefined;
 
-function getSchemaFrom$1V ( Mongoose ) {
+function getSchemaFrom$l ( Mongoose ) {
 
-    if ( !_schema$1V ) {
-        _createSchema$1V( Mongoose );
+    if ( !_schema$l ) {
+        _createSchema$l( Mongoose );
     }
 
-    return _schema$1V
+    return _schema$l
 
 }
 
-function _createSchema$1V ( Mongoose ) {
+function _createSchema$l ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1V = new Schema( {} );
+    _schema$l = new Schema( {} );
 
 }
 
-function getModelFrom$1L ( Mongoose ) {
+function getModelFrom$k ( Mongoose ) {
 
-    if ( !_model$1L ) {
-        _createModel$1L( Mongoose );
+    if ( !_model$k ) {
+        _createModel$k( Mongoose );
     }
 
-    return _model$1L
+    return _model$k
 
 }
 
-function _createModel$1L ( Mongoose ) {
+function _createModel$k ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$x.getModelFrom( Mongoose );
-    _model$1L                  = Object3DBaseModel.discriminator( 'Bone', getSchemaFrom$1V( Mongoose ) );
+    const Object3DBaseModel = Object3D$c.getModelFrom( Mongoose );
+    _model$k                  = Object3DBaseModel.discriminator( 'Bone', getSchemaFrom$l( Mongoose ) );
 
 }
 
-function registerModelTo$1L ( Mongoose ) {
+function registerModelTo$k ( Mongoose ) {
 
-    if ( !_model$1L ) {
-        _createModel$1L( Mongoose );
+    if ( !_model$k ) {
+        _createModel$k( Mongoose );
     }
 
     return Mongoose
@@ -11939,9 +11965,9 @@ function registerModelTo$1L ( Mongoose ) {
 
 var Bone_1 = {
     name:            'Bone',
-    getSchemaFrom:   getSchemaFrom$1V,
-    getModelFrom:    getModelFrom$1L,
-    registerModelTo: registerModelTo$1L
+    getSchemaFrom:   getSchemaFrom$l,
+    getModelFrom:    getModelFrom$k,
+    registerModelTo: registerModelTo$k
 };
 
 /**
@@ -11954,48 +11980,48 @@ var Bone_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$1W = undefined;
-let _model$1M  = undefined;
+let _schema$k = undefined;
+let _model$j  = undefined;
 
-function getSchemaFrom$1W ( Mongoose ) {
+function getSchemaFrom$k ( Mongoose ) {
 
-    if ( !_schema$1W ) {
-        _createSchema$1W( Mongoose );
+    if ( !_schema$k ) {
+        _createSchema$k( Mongoose );
     }
 
-    return _schema$1W
+    return _schema$k
 
 }
 
-function _createSchema$1W ( Mongoose ) {
+function _createSchema$k ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1W = new Schema( {} );
+    _schema$k = new Schema( {} );
 
 }
 
-function getModelFrom$1M ( Mongoose ) {
+function getModelFrom$j ( Mongoose ) {
 
-    if ( !_model$1M ) {
-        _createModel$1M( Mongoose );
+    if ( !_model$j ) {
+        _createModel$j( Mongoose );
     }
 
-    return _model$1M
+    return _model$j
 
 }
 
-function _createModel$1M ( Mongoose ) {
+function _createModel$j ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
-    _model$1M                  = Object3DBaseModel.discriminator( 'Group', getSchemaFrom$1W( Mongoose ) );
+    const Object3DBaseModel = Object3D$I.getModelFrom( Mongoose );
+    _model$j                  = Object3DBaseModel.discriminator( 'Group', getSchemaFrom$k( Mongoose ) );
 
 }
 
-function registerModelTo$1M ( Mongoose ) {
+function registerModelTo$j ( Mongoose ) {
 
-    if ( !_model$1M ) {
-        _createModel$1M( Mongoose );
+    if ( !_model$j ) {
+        _createModel$j( Mongoose );
     }
 
     return Mongoose
@@ -12004,9 +12030,9 @@ function registerModelTo$1M ( Mongoose ) {
 
 const Group = {
     name:            'Group',
-    getSchemaFrom:   getSchemaFrom$1W,
-    getModelFrom:    getModelFrom$1M,
-    registerModelTo: registerModelTo$1M
+    getSchemaFrom:   getSchemaFrom$k,
+    getModelFrom:    getModelFrom$j,
+    registerModelTo: registerModelTo$j
 };
 
 /**
@@ -12019,50 +12045,50 @@ const Group = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$y } = Object3D$1;
+const { Object3D: Object3D$b } = Object3D$J;
 
-let _schema$1X = undefined;
-let _model$1N  = undefined;
+let _schema$j = undefined;
+let _model$i  = undefined;
 
-function getSchemaFrom$1X ( Mongoose ) {
+function getSchemaFrom$j ( Mongoose ) {
 
-    if ( !_schema$1X ) {
-        _createSchema$1X( Mongoose );
+    if ( !_schema$j ) {
+        _createSchema$j( Mongoose );
     }
 
-    return _schema$1X
+    return _schema$j
 
 }
 
-function _createSchema$1X ( Mongoose ) {
+function _createSchema$j ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$1X = new Schema( {} );
+    _schema$j = new Schema( {} );
 
 }
 
-function getModelFrom$1N ( Mongoose ) {
+function getModelFrom$i ( Mongoose ) {
 
-    if ( !_model$1N ) {
-        _createModel$1N( Mongoose );
+    if ( !_model$i ) {
+        _createModel$i( Mongoose );
     }
 
-    return _model$1N
+    return _model$i
 
 }
 
-function _createModel$1N ( Mongoose ) {
+function _createModel$i ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$y.getModelFrom( Mongoose );
-    _model$1N                  = Object3DBaseModel.discriminator( 'ImmediateRenderObject', getSchemaFrom$1X( Mongoose ) );
+    const Object3DBaseModel = Object3D$b.getModelFrom( Mongoose );
+    _model$i                  = Object3DBaseModel.discriminator( 'ImmediateRenderObject', getSchemaFrom$j( Mongoose ) );
 
 }
 
-function registerModelTo$1N ( Mongoose ) {
+function registerModelTo$i ( Mongoose ) {
 
-    if ( !_model$1N ) {
-        _createModel$1N( Mongoose );
+    if ( !_model$i ) {
+        _createModel$i( Mongoose );
     }
 
     return Mongoose
@@ -12071,9 +12097,9 @@ function registerModelTo$1N ( Mongoose ) {
 
 var ImmediateRenderObject_1 = {
     name:            'ImmediateRenderObject',
-    getSchemaFrom:   getSchemaFrom$1X,
-    getModelFrom:    getModelFrom$1N,
-    registerModelTo: registerModelTo$1N
+    getSchemaFrom:   getSchemaFrom$j,
+    getModelFrom:    getModelFrom$i,
+    registerModelTo: registerModelTo$i
 };
 
 /**
@@ -12086,22 +12112,22 @@ var ImmediateRenderObject_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$z } = Object3D$1;
+const { Object3D: Object3D$a } = Object3D$J;
 
-let _schema$1Y = undefined;
-let _model$1O  = undefined;
+let _schema$i = undefined;
+let _model$h  = undefined;
 
-function getSchemaFrom$1Y ( Mongoose ) {
+function getSchemaFrom$i ( Mongoose ) {
 
-    if ( !_schema$1Y ) {
-        _createSchema$1Y( Mongoose );
+    if ( !_schema$i ) {
+        _createSchema$i( Mongoose );
     }
 
-    return _schema$1Y
+    return _schema$i
 
 }
 
-function _createSchema$1Y ( Mongoose ) {
+function _createSchema$i ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12109,7 +12135,7 @@ function _createSchema$1Y ( Mongoose ) {
     const Color    = Types.Color;
     const Vector3  = Types.Vector3;
 
-    _schema$1Y = new Schema( {
+    _schema$i = new Schema( {
         lensFlares: [ {
             texture:  ObjectId,
             size:     Number,
@@ -12128,27 +12154,27 @@ function _createSchema$1Y ( Mongoose ) {
 
 }
 
-function getModelFrom$1O ( Mongoose ) {
+function getModelFrom$h ( Mongoose ) {
 
-    if ( !_model$1O ) {
-        _createModel$1O( Mongoose );
+    if ( !_model$h ) {
+        _createModel$h( Mongoose );
     }
 
-    return _model$1O
+    return _model$h
 
 }
 
-function _createModel$1O ( Mongoose ) {
+function _createModel$h ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$z.getModelFrom( Mongoose );
-    _model$1O                  = Object3DBaseModel.discriminator( 'LensFlare', getSchemaFrom$1Y( Mongoose ) );
+    const Object3DBaseModel = Object3D$a.getModelFrom( Mongoose );
+    _model$h                  = Object3DBaseModel.discriminator( 'LensFlare', getSchemaFrom$i( Mongoose ) );
 
 }
 
-function registerModelTo$1O ( Mongoose ) {
+function registerModelTo$h ( Mongoose ) {
 
-    if ( !_model$1O ) {
-        _createModel$1O( Mongoose );
+    if ( !_model$h ) {
+        _createModel$h( Mongoose );
     }
 
     return Mongoose
@@ -12157,9 +12183,9 @@ function registerModelTo$1O ( Mongoose ) {
 
 var LensFlare = {
     name:            'LensFlare',
-    getSchemaFrom:   getSchemaFrom$1Y,
-    getModelFrom:    getModelFrom$1O,
-    registerModelTo: registerModelTo$1O
+    getSchemaFrom:   getSchemaFrom$i,
+    getModelFrom:    getModelFrom$h,
+    registerModelTo: registerModelTo$h
 };
 
 /**
@@ -12172,28 +12198,28 @@ var LensFlare = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$A } = Object3D$1;
+const { Object3D: Object3D$9 } = Object3D$J;
 
-let _schema$1Z = undefined;
-let _model$1P  = undefined;
+let _schema$h = undefined;
+let _model$g  = undefined;
 
-function getSchemaFrom$1Z ( Mongoose ) {
+function getSchemaFrom$h ( Mongoose ) {
 
-    if ( !_schema$1Z ) {
-        _createSchema$1Z( Mongoose );
+    if ( !_schema$h ) {
+        _createSchema$h( Mongoose );
     }
 
-    return _schema$1Z
+    return _schema$h
 
 }
 
-function _createSchema$1Z ( Mongoose ) {
+function _createSchema$h ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$1Z = new Schema( {
+    _schema$h = new Schema( {
         geometry: {
             type: ObjectId,
             ref:  'Geometry'
@@ -12207,27 +12233,27 @@ function _createSchema$1Z ( Mongoose ) {
 
 }
 
-function getModelFrom$1P ( Mongoose ) {
+function getModelFrom$g ( Mongoose ) {
 
-    if ( !_model$1P ) {
-        _createModel$1P( Mongoose );
+    if ( !_model$g ) {
+        _createModel$g( Mongoose );
     }
 
-    return _model$1P
+    return _model$g
 
 }
 
-function _createModel$1P ( Mongoose ) {
+function _createModel$g ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$A.getModelFrom( Mongoose );
-    _model$1P                  = Object3DBaseModel.discriminator( 'Line', getSchemaFrom$1Z( Mongoose ) );
+    const Object3DBaseModel = Object3D$9.getModelFrom( Mongoose );
+    _model$g                  = Object3DBaseModel.discriminator( 'Line', getSchemaFrom$h( Mongoose ) );
 
 }
 
-function registerModelTo$1P ( Mongoose ) {
+function registerModelTo$g ( Mongoose ) {
 
-    if ( !_model$1P ) {
-        _createModel$1P( Mongoose );
+    if ( !_model$g ) {
+        _createModel$g( Mongoose );
     }
 
     return Mongoose
@@ -12236,9 +12262,9 @@ function registerModelTo$1P ( Mongoose ) {
 
 var Line_1 = {
     name:            'Line',
-    getSchemaFrom:   getSchemaFrom$1Z,
-    getModelFrom:    getModelFrom$1P,
-    registerModelTo: registerModelTo$1P
+    getSchemaFrom:   getSchemaFrom$h,
+    getModelFrom:    getModelFrom$g,
+    registerModelTo: registerModelTo$g
 };
 
 /**
@@ -12251,28 +12277,28 @@ var Line_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$B } = Object3D$1;
+const { Object3D: Object3D$8 } = Object3D$J;
 
-let _schema$1_ = undefined;
-let _model$1Q  = undefined;
+let _schema$g = undefined;
+let _model$f  = undefined;
 
-function getSchemaFrom$1_ ( Mongoose ) {
+function getSchemaFrom$g ( Mongoose ) {
 
-    if ( !_schema$1_ ) {
-        _createSchema$1_( Mongoose );
+    if ( !_schema$g ) {
+        _createSchema$g( Mongoose );
     }
 
-    return _schema$1_
+    return _schema$g
 
 }
 
-function _createSchema$1_ ( Mongoose ) {
+function _createSchema$g ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$1_ = new Schema( {
+    _schema$g = new Schema( {
         geometry: {
             type: ObjectId,
             ref:  'Geometry'
@@ -12286,27 +12312,27 @@ function _createSchema$1_ ( Mongoose ) {
 
 }
 
-function getModelFrom$1Q ( Mongoose ) {
+function getModelFrom$f ( Mongoose ) {
 
-    if ( !_model$1Q ) {
-        _createModel$1Q( Mongoose );
+    if ( !_model$f ) {
+        _createModel$f( Mongoose );
     }
 
-    return _model$1Q
+    return _model$f
 
 }
 
-function _createModel$1Q ( Mongoose ) {
+function _createModel$f ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$B.getModelFrom( Mongoose );
-    _model$1Q                  = Object3DBaseModel.discriminator( 'LineLoop', getSchemaFrom$1_( Mongoose ) );
+    const Object3DBaseModel = Object3D$8.getModelFrom( Mongoose );
+    _model$f                  = Object3DBaseModel.discriminator( 'LineLoop', getSchemaFrom$g( Mongoose ) );
 
 }
 
-function registerModelTo$1Q ( Mongoose ) {
+function registerModelTo$f ( Mongoose ) {
 
-    if ( !_model$1Q ) {
-        _createModel$1Q( Mongoose );
+    if ( !_model$f ) {
+        _createModel$f( Mongoose );
     }
 
     return Mongoose
@@ -12315,9 +12341,9 @@ function registerModelTo$1Q ( Mongoose ) {
 
 var LineLoop_1 = {
     name:            'LineLoop',
-    getSchemaFrom:   getSchemaFrom$1_,
-    getModelFrom:    getModelFrom$1Q,
-    registerModelTo: registerModelTo$1Q
+    getSchemaFrom:   getSchemaFrom$g,
+    getModelFrom:    getModelFrom$f,
+    registerModelTo: registerModelTo$f
 };
 
 /**
@@ -12330,28 +12356,28 @@ var LineLoop_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$C } = Object3D$1;
+const { Object3D: Object3D$7 } = Object3D$J;
 
-let _schema$1$ = undefined;
-let _model$1R  = undefined;
+let _schema$f = undefined;
+let _model$e  = undefined;
 
-function getSchemaFrom$1$ ( Mongoose ) {
+function getSchemaFrom$f ( Mongoose ) {
 
-    if ( !_schema$1$ ) {
-        _createSchema$1$( Mongoose );
+    if ( !_schema$f ) {
+        _createSchema$f( Mongoose );
     }
 
-    return _schema$1$
+    return _schema$f
 
 }
 
-function _createSchema$1$ ( Mongoose ) {
+function _createSchema$f ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$1$ = new Schema( {
+    _schema$f = new Schema( {
         geometry: {
             type: ObjectId,
             ref:  'Geometry'
@@ -12365,27 +12391,27 @@ function _createSchema$1$ ( Mongoose ) {
 
 }
 
-function getModelFrom$1R ( Mongoose ) {
+function getModelFrom$e ( Mongoose ) {
 
-    if ( !_model$1R ) {
-        _createModel$1R( Mongoose );
+    if ( !_model$e ) {
+        _createModel$e( Mongoose );
     }
 
-    return _model$1R
+    return _model$e
 
 }
 
-function _createModel$1R ( Mongoose ) {
+function _createModel$e ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$C.getModelFrom( Mongoose );
-    _model$1R                  = Object3DBaseModel.discriminator( 'LineSegments', getSchemaFrom$1$( Mongoose ) );
+    const Object3DBaseModel = Object3D$7.getModelFrom( Mongoose );
+    _model$e                  = Object3DBaseModel.discriminator( 'LineSegments', getSchemaFrom$f( Mongoose ) );
 
 }
 
-function registerModelTo$1R ( Mongoose ) {
+function registerModelTo$e ( Mongoose ) {
 
-    if ( !_model$1R ) {
-        _createModel$1R( Mongoose );
+    if ( !_model$e ) {
+        _createModel$e( Mongoose );
     }
 
     return Mongoose
@@ -12394,9 +12420,9 @@ function registerModelTo$1R ( Mongoose ) {
 
 var LineSegments_1 = {
     name:            'LineSegments',
-    getSchemaFrom:   getSchemaFrom$1$,
-    getModelFrom:    getModelFrom$1R,
-    registerModelTo: registerModelTo$1R
+    getSchemaFrom:   getSchemaFrom$f,
+    getModelFrom:    getModelFrom$e,
+    registerModelTo: registerModelTo$e
 };
 
 /**
@@ -12409,54 +12435,54 @@ var LineSegments_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$D } = Object3D$1;
+const { Object3D: Object3D$6 } = Object3D$J;
 
-let _schema$20 = undefined;
-let _model$1S  = undefined;
+let _schema$e = undefined;
+let _model$d  = undefined;
 
-function getSchemaFrom$20 ( Mongoose ) {
+function getSchemaFrom$e ( Mongoose ) {
 
-    if ( !_schema$20 ) {
-        _createSchema$20( Mongoose );
+    if ( !_schema$e ) {
+        _createSchema$e( Mongoose );
     }
 
-    return _schema$20
+    return _schema$e
 
 }
 
-function _createSchema$20 ( Mongoose ) {
+function _createSchema$e ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
     const Mixed  = Types.Mixed;
 
-    _schema$20 = new Schema( {
+    _schema$e = new Schema( {
         levels: [ Mixed ]
     } );
 
 }
 
-function getModelFrom$1S ( Mongoose ) {
+function getModelFrom$d ( Mongoose ) {
 
-    if ( !_model$1S ) {
-        _createModel$1S( Mongoose );
+    if ( !_model$d ) {
+        _createModel$d( Mongoose );
     }
 
-    return _model$1S
+    return _model$d
 
 }
 
-function _createModel$1S ( Mongoose ) {
+function _createModel$d ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$D.getModelFrom( Mongoose );
-    _model$1S                  = Object3DBaseModel.discriminator( 'LOD', getSchemaFrom$20( Mongoose ) );
+    const Object3DBaseModel = Object3D$6.getModelFrom( Mongoose );
+    _model$d                  = Object3DBaseModel.discriminator( 'LOD', getSchemaFrom$e( Mongoose ) );
 
 }
 
-function registerModelTo$1S ( Mongoose ) {
+function registerModelTo$d ( Mongoose ) {
 
-    if ( !_model$1S ) {
-        _createModel$1S( Mongoose );
+    if ( !_model$d ) {
+        _createModel$d( Mongoose );
     }
 
     return Mongoose
@@ -12465,9 +12491,9 @@ function registerModelTo$1S ( Mongoose ) {
 
 var LOD_1 = {
     name:            'LOD',
-    getSchemaFrom:   getSchemaFrom$20,
-    getModelFrom:    getModelFrom$1S,
-    registerModelTo: registerModelTo$1S
+    getSchemaFrom:   getSchemaFrom$e,
+    getModelFrom:    getModelFrom$d,
+    registerModelTo: registerModelTo$d
 };
 
 /**
@@ -12480,28 +12506,28 @@ var LOD_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$E } = Object3D$1;
+const { Object3D: Object3D$5 } = Object3D$J;
 
-let _schema$21 = undefined;
-let _model$1T  = undefined;
+let _schema$d = undefined;
+let _model$c  = undefined;
 
-function getSchemaFrom$21 ( Mongoose ) {
+function getSchemaFrom$d ( Mongoose ) {
 
-    if ( !_schema$21 ) {
-        _createSchema$21( Mongoose );
+    if ( !_schema$d ) {
+        _createSchema$d( Mongoose );
     }
 
-    return _schema$21
+    return _schema$d
 
 }
 
-function _createSchema$21 ( Mongoose ) {
+function _createSchema$d ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$21 = new Schema( {
+    _schema$d = new Schema( {
         geometry: {
             type: ObjectId,
             ref:  'Geometry'
@@ -12515,27 +12541,27 @@ function _createSchema$21 ( Mongoose ) {
 
 }
 
-function getModelFrom$1T ( Mongoose ) {
+function getModelFrom$c ( Mongoose ) {
 
-    if ( !_model$1T ) {
-        _createModel$1T( Mongoose );
+    if ( !_model$c ) {
+        _createModel$c( Mongoose );
     }
 
-    return _model$1T
+    return _model$c
 
 }
 
-function _createModel$1T ( Mongoose ) {
+function _createModel$c ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$E.getModelFrom( Mongoose );
-    _model$1T                  = Object3DBaseModel.discriminator( 'Mesh', getSchemaFrom$21( Mongoose ) );
+    const Object3DBaseModel = Object3D$5.getModelFrom( Mongoose );
+    _model$c                  = Object3DBaseModel.discriminator( 'Mesh', getSchemaFrom$d( Mongoose ) );
 
 }
 
-function registerModelTo$1T ( Mongoose ) {
+function registerModelTo$c ( Mongoose ) {
 
-    if ( !_model$1T ) {
-        _createModel$1T( Mongoose );
+    if ( !_model$c ) {
+        _createModel$c( Mongoose );
     }
 
     return Mongoose
@@ -12544,9 +12570,9 @@ function registerModelTo$1T ( Mongoose ) {
 
 var Mesh_1 = {
     name:            'Mesh',
-    getSchemaFrom:   getSchemaFrom$21,
-    getModelFrom:    getModelFrom$1T,
-    registerModelTo: registerModelTo$1T
+    getSchemaFrom:   getSchemaFrom$d,
+    getModelFrom:    getModelFrom$c,
+    registerModelTo: registerModelTo$c
 };
 
 /**
@@ -12559,28 +12585,28 @@ var Mesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$F } = Object3D$1;
+const { Object3D: Object3D$4 } = Object3D$J;
 
-let _schema$22 = undefined;
-let _model$1U  = undefined;
+let _schema$c = undefined;
+let _model$b  = undefined;
 
-function getSchemaFrom$22 ( Mongoose ) {
+function getSchemaFrom$c ( Mongoose ) {
 
-    if ( !_schema$22 ) {
-        _createSchema$22( Mongoose );
+    if ( !_schema$c ) {
+        _createSchema$c( Mongoose );
     }
 
-    return _schema$22
+    return _schema$c
 
 }
 
-function _createSchema$22 ( Mongoose ) {
+function _createSchema$c ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$22 = new Schema( {
+    _schema$c = new Schema( {
         geometry: {
             type: ObjectId,
             ref:  'Geometry'
@@ -12594,27 +12620,27 @@ function _createSchema$22 ( Mongoose ) {
 
 }
 
-function getModelFrom$1U ( Mongoose ) {
+function getModelFrom$b ( Mongoose ) {
 
-    if ( !_model$1U ) {
-        _createModel$1U( Mongoose );
+    if ( !_model$b ) {
+        _createModel$b( Mongoose );
     }
 
-    return _model$1U
+    return _model$b
 
 }
 
-function _createModel$1U ( Mongoose ) {
+function _createModel$b ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$F.getModelFrom( Mongoose );
-    _model$1U                  = Object3DBaseModel.discriminator( 'Points', getSchemaFrom$22( Mongoose ) );
+    const Object3DBaseModel = Object3D$4.getModelFrom( Mongoose );
+    _model$b                  = Object3DBaseModel.discriminator( 'Points', getSchemaFrom$c( Mongoose ) );
 
 }
 
-function registerModelTo$1U ( Mongoose ) {
+function registerModelTo$b ( Mongoose ) {
 
-    if ( !_model$1U ) {
-        _createModel$1U( Mongoose );
+    if ( !_model$b ) {
+        _createModel$b( Mongoose );
     }
 
     return Mongoose
@@ -12623,9 +12649,9 @@ function registerModelTo$1U ( Mongoose ) {
 
 var Points_1 = {
     name:            'Points',
-    getSchemaFrom:   getSchemaFrom$22,
-    getModelFrom:    getModelFrom$1U,
-    registerModelTo: registerModelTo$1U
+    getSchemaFrom:   getSchemaFrom$c,
+    getModelFrom:    getModelFrom$b,
+    registerModelTo: registerModelTo$b
 };
 
 /**
@@ -12638,55 +12664,55 @@ var Points_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$G } = Object3D$1;
+const { Object3D: Object3D$3 } = Object3D$J;
 
-let _schema$23 = undefined;
-let _model$1V  = undefined;
+let _schema$b = undefined;
+let _model$a  = undefined;
 
-function getSchemaFrom$23 ( Mongoose ) {
+function getSchemaFrom$b ( Mongoose ) {
 
-    if ( !_schema$23 ) {
-        _createSchema$23( Mongoose );
+    if ( !_schema$b ) {
+        _createSchema$b( Mongoose );
     }
 
-    return _schema$23
+    return _schema$b
 
 }
 
-function _createSchema$23 ( Mongoose ) {
+function _createSchema$b ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$23 = new Schema( {
+    _schema$b = new Schema( {
         bones:        [ ObjectId ],
         boneMatrices: [ Number ] // Float32Array( this.bones.length * 16 )
     } );
 
 }
 
-function getModelFrom$1V ( Mongoose ) {
+function getModelFrom$a ( Mongoose ) {
 
-    if ( !_model$1V ) {
-        _createModel$1V( Mongoose );
+    if ( !_model$a ) {
+        _createModel$a( Mongoose );
     }
 
-    return _model$1V
+    return _model$a
 
 }
 
-function _createModel$1V ( Mongoose ) {
+function _createModel$a ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$G.getModelFrom( Mongoose );
-    _model$1V                  = Object3DBaseModel.discriminator( 'Skeleton', getSchemaFrom$23( Mongoose ) );
+    const Object3DBaseModel = Object3D$3.getModelFrom( Mongoose );
+    _model$a                  = Object3DBaseModel.discriminator( 'Skeleton', getSchemaFrom$b( Mongoose ) );
 
 }
 
-function registerModelTo$1V ( Mongoose ) {
+function registerModelTo$a ( Mongoose ) {
 
-    if ( !_model$1V ) {
-        _createModel$1V( Mongoose );
+    if ( !_model$a ) {
+        _createModel$a( Mongoose );
     }
 
     return Mongoose
@@ -12695,9 +12721,9 @@ function registerModelTo$1V ( Mongoose ) {
 
 var Skeleton_1 = {
     name:            'Skeleton',
-    getSchemaFrom:   getSchemaFrom$23,
-    getModelFrom:    getModelFrom$1V,
-    registerModelTo: registerModelTo$1V
+    getSchemaFrom:   getSchemaFrom$b,
+    getModelFrom:    getModelFrom$a,
+    registerModelTo: registerModelTo$a
 };
 
 /**
@@ -12710,28 +12736,28 @@ var Skeleton_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$H } = Object3D$1;
+const { Object3D: Object3D$2 } = Object3D$J;
 
-let _schema$24 = undefined;
-let _model$1W  = undefined;
+let _schema$a = undefined;
+let _model$9  = undefined;
 
-function getSchemaFrom$24 ( Mongoose ) {
+function getSchemaFrom$a ( Mongoose ) {
 
-    if ( !_schema$24 ) {
-        _createSchema$24( Mongoose );
+    if ( !_schema$a ) {
+        _createSchema$a( Mongoose );
     }
 
-    return _schema$24
+    return _schema$a
 
 }
 
-function _createSchema$24 ( Mongoose ) {
+function _createSchema$a ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$24 = new Schema( {
+    _schema$a = new Schema( {
         // Mesh
         geometry: {
             type: ObjectId,
@@ -12752,27 +12778,27 @@ function _createSchema$24 ( Mongoose ) {
 
 }
 
-function getModelFrom$1W ( Mongoose ) {
+function getModelFrom$9 ( Mongoose ) {
 
-    if ( !_model$1W ) {
-        _createModel$1W( Mongoose );
+    if ( !_model$9 ) {
+        _createModel$9( Mongoose );
     }
 
-    return _model$1W
+    return _model$9
 
 }
 
-function _createModel$1W ( Mongoose ) {
+function _createModel$9 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$H.getModelFrom( Mongoose );
-    _model$1W                  = Object3DBaseModel.discriminator( 'SkinnedMesh', getSchemaFrom$24( Mongoose ) );
+    const Object3DBaseModel = Object3D$2.getModelFrom( Mongoose );
+    _model$9                  = Object3DBaseModel.discriminator( 'SkinnedMesh', getSchemaFrom$a( Mongoose ) );
 
 }
 
-function registerModelTo$1W ( Mongoose ) {
+function registerModelTo$9 ( Mongoose ) {
 
-    if ( !_model$1W ) {
-        _createModel$1W( Mongoose );
+    if ( !_model$9 ) {
+        _createModel$9( Mongoose );
     }
 
     return Mongoose
@@ -12781,9 +12807,9 @@ function registerModelTo$1W ( Mongoose ) {
 
 var SkinnedMesh_1 = {
     name:            'SkinnedMesh',
-    getSchemaFrom:   getSchemaFrom$24,
-    getModelFrom:    getModelFrom$1W,
-    registerModelTo: registerModelTo$1W
+    getSchemaFrom:   getSchemaFrom$a,
+    getModelFrom:    getModelFrom$9,
+    registerModelTo: registerModelTo$9
 };
 
 /**
@@ -12796,28 +12822,28 @@ var SkinnedMesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$I } = Object3D$1;
+const { Object3D: Object3D$1 } = Object3D$J;
 
-let _schema$25 = undefined;
-let _model$1X  = undefined;
+let _schema$9 = undefined;
+let _model$8  = undefined;
 
-function getSchemaFrom$25 ( Mongoose ) {
+function getSchemaFrom$9 ( Mongoose ) {
 
-    if ( !_schema$25 ) {
-        _createSchema$25( Mongoose );
+    if ( !_schema$9 ) {
+        _createSchema$9( Mongoose );
     }
 
-    return _schema$25
+    return _schema$9
 
 }
 
-function _createSchema$25 ( Mongoose ) {
+function _createSchema$9 ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
-    _schema$25 = new Schema( {
+    _schema$9 = new Schema( {
         material: [ {
             type: ObjectId,
             ref:  'SpriteMaterial'
@@ -12826,27 +12852,27 @@ function _createSchema$25 ( Mongoose ) {
 
 }
 
-function getModelFrom$1X ( Mongoose ) {
+function getModelFrom$8 ( Mongoose ) {
 
-    if ( !_model$1X ) {
-        _createModel$1X( Mongoose );
+    if ( !_model$8 ) {
+        _createModel$8( Mongoose );
     }
 
-    return _model$1X
+    return _model$8
 
 }
 
-function _createModel$1X ( Mongoose ) {
+function _createModel$8 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$I.getModelFrom( Mongoose );
-    _model$1X                  = Object3DBaseModel.discriminator( 'Sprite', getSchemaFrom$25( Mongoose ) );
+    const Object3DBaseModel = Object3D$1.getModelFrom( Mongoose );
+    _model$8                  = Object3DBaseModel.discriminator( 'Sprite', getSchemaFrom$9( Mongoose ) );
 
 }
 
-function registerModelTo$1X ( Mongoose ) {
+function registerModelTo$8 ( Mongoose ) {
 
-    if ( !_model$1X ) {
-        _createModel$1X( Mongoose );
+    if ( !_model$8 ) {
+        _createModel$8( Mongoose );
     }
 
     return Mongoose
@@ -12855,9 +12881,9 @@ function registerModelTo$1X ( Mongoose ) {
 
 var Sprite_1 = {
     name:            'Sprite',
-    getSchemaFrom:   getSchemaFrom$25,
-    getModelFrom:    getModelFrom$1X,
-    registerModelTo: registerModelTo$1X
+    getSchemaFrom:   getSchemaFrom$9,
+    getModelFrom:    getModelFrom$8,
+    registerModelTo: registerModelTo$8
 };
 
 /**
@@ -12870,23 +12896,23 @@ var Sprite_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$26 = undefined;
+let _schema$8 = undefined;
 
-function getSchemaFrom$26 ( Mongoose ) {
+function getSchemaFrom$8 ( Mongoose ) {
 
-    if ( !_schema$26 ) {
-        _createSchema$26( Mongoose );
+    if ( !_schema$8 ) {
+        _createSchema$8( Mongoose );
     }
 
-    return _schema$26
+    return _schema$8
 
 }
 
-function _createSchema$26 ( Mongoose ) {
+function _createSchema$8 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$26 = new Schema( {
+    _schema$8 = new Schema( {
         coordinates: {
             x: Number,
             y: Number,
@@ -12908,12 +12934,12 @@ function _createSchema$26 ( Mongoose ) {
 
 var Fog_1 = {
     name:            'Fog',
-    getSchemaFrom:   getSchemaFrom$26,
+    getSchemaFrom:   getSchemaFrom$8,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
 };
 
-var Fog = {
+var Fog$1 = {
 	Fog: Fog_1
 };
 
@@ -12928,30 +12954,30 @@ var Fog = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$J } = Object3D$1;
-const { Fog: Fog$1 }      = Fog;
+const { Object3D } = Object3D$J;
+const { Fog }      = Fog$1;
 
-let _schema$27 = undefined;
-let _model$1Y  = undefined;
+let _schema$7 = undefined;
+let _model$7  = undefined;
 
-function getSchemaFrom$27 ( Mongoose ) {
+function getSchemaFrom$7 ( Mongoose ) {
 
-    if ( !_schema$27 ) {
-        _createSchema$27( Mongoose );
+    if ( !_schema$7 ) {
+        _createSchema$7( Mongoose );
     }
 
-    return _schema$27
+    return _schema$7
 
 }
 
-function _createSchema$27 ( Mongoose ) {
+function _createSchema$7 ( Mongoose ) {
 
-    const FogSchema = Fog$1.getSchemaFrom( Mongoose );
+    const FogSchema = Fog.getSchemaFrom( Mongoose );
     const Schema    = Mongoose.Schema;
     const Types     = Schema.Types;
     const Color     = Types.Color;
 
-    _schema$27 = new Schema( {
+    _schema$7 = new Schema( {
         background:       Color,
         fog:              FogSchema,
         overrideMaterial: String,
@@ -12960,27 +12986,27 @@ function _createSchema$27 ( Mongoose ) {
 
 }
 
-function getModelFrom$1Y ( Mongoose ) {
+function getModelFrom$7 ( Mongoose ) {
 
-    if ( !_model$1Y ) {
-        _createModel$1Y( Mongoose );
+    if ( !_model$7 ) {
+        _createModel$7( Mongoose );
     }
 
-    return _model$1Y
+    return _model$7
 
 }
 
-function _createModel$1Y ( Mongoose ) {
+function _createModel$7 ( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$J.getModelFrom( Mongoose );
-    _model$1Y                  = Object3DBaseModel.discriminator( 'Scene', getSchemaFrom$27( Mongoose ) );
+    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+    _model$7                  = Object3DBaseModel.discriminator( 'Scene', getSchemaFrom$7( Mongoose ) );
 
 }
 
-function registerModelTo$1Y ( Mongoose ) {
+function registerModelTo$7 ( Mongoose ) {
 
-    if ( !_model$1Y ) {
-        _createModel$1Y( Mongoose );
+    if ( !_model$7 ) {
+        _createModel$7( Mongoose );
     }
 
     return Mongoose
@@ -12989,9 +13015,9 @@ function registerModelTo$1Y ( Mongoose ) {
 
 var Scene_1 = {
     name: 'Scene',
-    getSchemaFrom: getSchemaFrom$27,
-    getModelFrom: getModelFrom$1Y,
-    registerModelTo: registerModelTo$1Y
+    getSchemaFrom: getSchemaFrom$7,
+    getModelFrom: getModelFrom$7,
+    registerModelTo: registerModelTo$7
 };
 
 /**
@@ -13001,20 +13027,20 @@ var Scene_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$28 = undefined;
-let _model$1Z  = undefined;
+let _schema$6 = undefined;
+let _model$6  = undefined;
 
-function getSchemaFrom$28 ( Mongoose ) {
+function getSchemaFrom$6 ( Mongoose ) {
 
-    if ( !_schema$28 ) {
-        _createSchema$28( Mongoose );
+    if ( !_schema$6 ) {
+        _createSchema$6( Mongoose );
     }
 
-    return _schema$28
+    return _schema$6
 
 }
 
-function _createSchema$28 ( Mongoose ) {
+function _createSchema$6 ( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -13022,7 +13048,7 @@ function _createSchema$28 ( Mongoose ) {
     const Vector2  = Types.Vector2;
     const Matrix3  = Types.Matrix3;
 
-    _schema$28 = new Schema( {
+    _schema$6 = new Schema( {
         uuid:             String,
         name:             String,
         image:            ObjectId,
@@ -13054,30 +13080,30 @@ function _createSchema$28 ( Mongoose ) {
 
 }
 
-function getModelFrom$1Z ( Mongoose ) {
+function getModelFrom$6 ( Mongoose ) {
 
-    if ( !_model$1Z ) {
-        _createModel$1Z( Mongoose );
+    if ( !_model$6 ) {
+        _createModel$6( Mongoose );
     }
 
-    return _model$1Z
+    return _model$6
 
 }
 
-function _createModel$1Z ( Mongoose ) {
+function _createModel$6 ( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$1Z = Mongoose.model( 'Textures', getSchemaFrom$28( Mongoose ) );
-    _model$1Z.discriminator( 'Texture', new Mongoose.Schema( {} ) );
+    _model$6 = Mongoose.model( 'Textures', getSchemaFrom$6( Mongoose ) );
+    _model$6.discriminator( 'Texture', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$1Z ( Mongoose ) {
+function registerModelTo$6 ( Mongoose ) {
 
-    if ( !_model$1Z ) {
-        _createModel$1Z( Mongoose );
+    if ( !_model$6 ) {
+        _createModel$6( Mongoose );
     }
 
     return Mongoose
@@ -13086,12 +13112,12 @@ function registerModelTo$1Z ( Mongoose ) {
 
 var Texture_1 = {
     name: 'Texture',
-    getSchemaFrom: getSchemaFrom$28,
-    getModelFrom: getModelFrom$1Z,
-    registerModelTo: registerModelTo$1Z
+    getSchemaFrom: getSchemaFrom$6,
+    getModelFrom: getModelFrom$6,
+    registerModelTo: registerModelTo$6
 };
 
-var Texture = {
+var Texture$6 = {
 	Texture: Texture_1
 };
 
@@ -13106,52 +13132,52 @@ var Texture = {
  */
 
 
-const { Texture: Texture$1 } = Texture;
+const { Texture: Texture$5 } = Texture$6;
 
-let _schema$29 = undefined;
-let _model$1_  = undefined;
+let _schema$5 = undefined;
+let _model$5  = undefined;
 
-function getSchemaFrom$29 ( Mongoose ) {
+function getSchemaFrom$5 ( Mongoose ) {
 
-    if ( !_schema$29 ) {
-        _createSchema$29( Mongoose );
+    if ( !_schema$5 ) {
+        _createSchema$5( Mongoose );
     }
 
-    return _schema$29
+    return _schema$5
 
 }
 
-function _createSchema$29 ( Mongoose ) {
+function _createSchema$5 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$29 = new Schema( {
+    _schema$5 = new Schema( {
         needsUpdate: Boolean
     } );
 
 }
 
-function getModelFrom$1_ ( Mongoose ) {
+function getModelFrom$5 ( Mongoose ) {
 
-    if ( !_model$1_ ) {
-        _createModel$1_( Mongoose );
+    if ( !_model$5 ) {
+        _createModel$5( Mongoose );
     }
 
-    return _model$1_
+    return _model$5
 
 }
 
-function _createModel$1_ ( Mongoose ) {
+function _createModel$5 ( Mongoose ) {
 
-    const TextureBaseModel = Texture$1.getModelFrom( Mongoose );
-    _model$1_                 = TextureBaseModel.discriminator( 'CanvasTexture', getSchemaFrom$29( Mongoose ) );
+    const TextureBaseModel = Texture$5.getModelFrom( Mongoose );
+    _model$5                 = TextureBaseModel.discriminator( 'CanvasTexture', getSchemaFrom$5( Mongoose ) );
 
 }
 
-function registerModelTo$1_ ( Mongoose ) {
+function registerModelTo$5 ( Mongoose ) {
 
-    if ( !_model$1_ ) {
-        _createModel$1_( Mongoose );
+    if ( !_model$5 ) {
+        _createModel$5( Mongoose );
     }
 
     return Mongoose
@@ -13160,9 +13186,9 @@ function registerModelTo$1_ ( Mongoose ) {
 
 var CanvasTexture_1 = {
     name:            'CanvasTexture',
-    getSchemaFrom:   getSchemaFrom$29,
-    getModelFrom:    getModelFrom$1_,
-    registerModelTo: registerModelTo$1_
+    getSchemaFrom:   getSchemaFrom$5,
+    getModelFrom:    getModelFrom$5,
+    registerModelTo: registerModelTo$5
 };
 
 /**
@@ -13175,50 +13201,50 @@ var CanvasTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$2 } = Texture;
+const { Texture: Texture$4 } = Texture$6;
 
-let _schema$2a = undefined;
-let _model$1$  = undefined;
+let _schema$4 = undefined;
+let _model$4  = undefined;
 
-function getSchemaFrom$2a ( Mongoose ) {
+function getSchemaFrom$4 ( Mongoose ) {
 
-    if ( !_schema$2a ) {
-        _createSchema$2a( Mongoose );
+    if ( !_schema$4 ) {
+        _createSchema$4( Mongoose );
     }
 
-    return _schema$2a
+    return _schema$4
 
 }
 
-function _createSchema$2a ( Mongoose ) {
+function _createSchema$4 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2a = new Schema( {} );
+    _schema$4 = new Schema( {} );
 
 }
 
-function getModelFrom$1$ ( Mongoose ) {
+function getModelFrom$4 ( Mongoose ) {
 
-    if ( !_model$1$ ) {
-        _createModel$1$( Mongoose );
+    if ( !_model$4 ) {
+        _createModel$4( Mongoose );
     }
 
-    return _model$1$
+    return _model$4
 
 }
 
-function _createModel$1$ ( Mongoose ) {
+function _createModel$4 ( Mongoose ) {
 
-    const TextureBaseModel = Texture$2.getModelFrom( Mongoose );
-    _model$1$                 = TextureBaseModel.discriminator( 'CompressedTexture', getSchemaFrom$2a( Mongoose ) );
+    const TextureBaseModel = Texture$4.getModelFrom( Mongoose );
+    _model$4                 = TextureBaseModel.discriminator( 'CompressedTexture', getSchemaFrom$4( Mongoose ) );
 
 }
 
-function registerModelTo$1$ ( Mongoose ) {
+function registerModelTo$4 ( Mongoose ) {
 
-    if ( !_model$1$ ) {
-        _createModel$1$( Mongoose );
+    if ( !_model$4 ) {
+        _createModel$4( Mongoose );
     }
 
     return Mongoose
@@ -13227,9 +13253,9 @@ function registerModelTo$1$ ( Mongoose ) {
 
 var CompressedTexture_1 = {
     name:            'CompressedTexture',
-    getSchemaFrom:   getSchemaFrom$2a,
-    getModelFrom:    getModelFrom$1$,
-    registerModelTo: registerModelTo$1$
+    getSchemaFrom:   getSchemaFrom$4,
+    getModelFrom:    getModelFrom$4,
+    registerModelTo: registerModelTo$4
 };
 
 /**
@@ -13242,50 +13268,50 @@ var CompressedTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$3 } = Texture;
+const { Texture: Texture$3 } = Texture$6;
 
-let _schema$2b = undefined;
-let _model$20  = undefined;
+let _schema$3 = undefined;
+let _model$3  = undefined;
 
-function getSchemaFrom$2b ( Mongoose ) {
+function getSchemaFrom$3 ( Mongoose ) {
 
-    if ( !_schema$2b ) {
-        _createSchema$2b( Mongoose );
+    if ( !_schema$3 ) {
+        _createSchema$3( Mongoose );
     }
 
-    return _schema$2b
+    return _schema$3
 
 }
 
-function _createSchema$2b ( Mongoose ) {
+function _createSchema$3 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2b = new Schema( {} );
+    _schema$3 = new Schema( {} );
 
 }
 
-function getModelFrom$20 ( Mongoose ) {
+function getModelFrom$3 ( Mongoose ) {
 
-    if ( !_model$20 ) {
-        _createModel$20( Mongoose );
+    if ( !_model$3 ) {
+        _createModel$3( Mongoose );
     }
 
-    return _model$20
+    return _model$3
 
 }
 
-function _createModel$20 ( Mongoose ) {
+function _createModel$3 ( Mongoose ) {
 
     const TextureBaseModel = Texture$3.getModelFrom( Mongoose );
-    _model$20                 = TextureBaseModel.discriminator( 'CubeTexture', getSchemaFrom$2b( Mongoose ) );
+    _model$3                 = TextureBaseModel.discriminator( 'CubeTexture', getSchemaFrom$3( Mongoose ) );
 
 }
 
-function registerModelTo$20 ( Mongoose ) {
+function registerModelTo$3 ( Mongoose ) {
 
-    if ( !_model$20 ) {
-        _createModel$20( Mongoose );
+    if ( !_model$3 ) {
+        _createModel$3( Mongoose );
     }
 
     return Mongoose
@@ -13294,9 +13320,9 @@ function registerModelTo$20 ( Mongoose ) {
 
 var CubeTexture_1 = {
     name:            'CubeTexture',
-    getSchemaFrom:   getSchemaFrom$2b,
-    getModelFrom:    getModelFrom$20,
-    registerModelTo: registerModelTo$20
+    getSchemaFrom:   getSchemaFrom$3,
+    getModelFrom:    getModelFrom$3,
+    registerModelTo: registerModelTo$3
 };
 
 /**
@@ -13309,50 +13335,50 @@ var CubeTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$4 } = Texture;
+const { Texture: Texture$2 } = Texture$6;
 
-let _schema$2c = undefined;
-let _model$21  = undefined;
+let _schema$2 = undefined;
+let _model$2  = undefined;
 
-function getSchemaFrom$2c ( Mongoose ) {
+function getSchemaFrom$2 ( Mongoose ) {
 
-    if ( !_schema$2c ) {
-        _createSchema$2c( Mongoose );
+    if ( !_schema$2 ) {
+        _createSchema$2( Mongoose );
     }
 
-    return _schema$2c
+    return _schema$2
 
 }
 
-function _createSchema$2c ( Mongoose ) {
+function _createSchema$2 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2c = new Schema( {} );
+    _schema$2 = new Schema( {} );
 
 }
 
-function getModelFrom$21 ( Mongoose ) {
+function getModelFrom$2 ( Mongoose ) {
 
-    if ( !_model$21 ) {
-        _createModel$21( Mongoose );
+    if ( !_model$2 ) {
+        _createModel$2( Mongoose );
     }
 
-    return _model$21
+    return _model$2
 
 }
 
-function _createModel$21 ( Mongoose ) {
+function _createModel$2 ( Mongoose ) {
 
-    const TextureBaseModel = Texture$4.getModelFrom( Mongoose );
-    _model$21                 = TextureBaseModel.discriminator( 'DataTexture', getSchemaFrom$2c( Mongoose ) );
+    const TextureBaseModel = Texture$2.getModelFrom( Mongoose );
+    _model$2                 = TextureBaseModel.discriminator( 'DataTexture', getSchemaFrom$2( Mongoose ) );
 
 }
 
-function registerModelTo$21 ( Mongoose ) {
+function registerModelTo$2 ( Mongoose ) {
 
-    if ( !_model$21 ) {
-        _createModel$21( Mongoose );
+    if ( !_model$2 ) {
+        _createModel$2( Mongoose );
     }
 
     return Mongoose
@@ -13361,9 +13387,9 @@ function registerModelTo$21 ( Mongoose ) {
 
 var DataTexture_1 = {
     name:            'DataTexture',
-    getSchemaFrom:   getSchemaFrom$2c,
-    getModelFrom:    getModelFrom$21,
-    registerModelTo: registerModelTo$21
+    getSchemaFrom:   getSchemaFrom$2,
+    getModelFrom:    getModelFrom$2,
+    registerModelTo: registerModelTo$2
 };
 
 /**
@@ -13376,50 +13402,50 @@ var DataTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$5 } = Texture;
+const { Texture: Texture$1 } = Texture$6;
 
-let _schema$2d = undefined;
-let _model$22  = undefined;
+let _schema$1 = undefined;
+let _model$1  = undefined;
 
-function getSchemaFrom$2d ( Mongoose ) {
+function getSchemaFrom$1 ( Mongoose ) {
 
-    if ( !_schema$2d ) {
-        _createSchema$2d( Mongoose );
+    if ( !_schema$1 ) {
+        _createSchema$1( Mongoose );
     }
 
-    return _schema$2d
+    return _schema$1
 
 }
 
-function _createSchema$2d ( Mongoose ) {
+function _createSchema$1 ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2d = new Schema( {} );
+    _schema$1 = new Schema( {} );
 
 }
 
-function getModelFrom$22 ( Mongoose ) {
+function getModelFrom$1 ( Mongoose ) {
 
-    if ( !_model$22 ) {
-        _createModel$22( Mongoose );
+    if ( !_model$1 ) {
+        _createModel$1( Mongoose );
     }
 
-    return _model$22
+    return _model$1
 
 }
 
-function _createModel$22 ( Mongoose ) {
+function _createModel$1 ( Mongoose ) {
 
-    const TextureBaseModel = Texture$5.getModelFrom( Mongoose );
-    _model$22                 = TextureBaseModel.discriminator( 'DepthTexture', getSchemaFrom$2d( Mongoose ) );
+    const TextureBaseModel = Texture$1.getModelFrom( Mongoose );
+    _model$1                 = TextureBaseModel.discriminator( 'DepthTexture', getSchemaFrom$1( Mongoose ) );
 
 }
 
-function registerModelTo$22 ( Mongoose ) {
+function registerModelTo$1 ( Mongoose ) {
 
-    if ( !_model$22 ) {
-        _createModel$22( Mongoose );
+    if ( !_model$1 ) {
+        _createModel$1( Mongoose );
     }
 
     return Mongoose
@@ -13428,9 +13454,9 @@ function registerModelTo$22 ( Mongoose ) {
 
 var DepthTexture_1 = {
     name:            'DepthTexture',
-    getSchemaFrom:   getSchemaFrom$2d,
-    getModelFrom:    getModelFrom$22,
-    registerModelTo: registerModelTo$22
+    getSchemaFrom:   getSchemaFrom$1,
+    getModelFrom:    getModelFrom$1,
+    registerModelTo: registerModelTo$1
 };
 
 /**
@@ -13443,50 +13469,50 @@ var DepthTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$6 } = Texture;
+const { Texture } = Texture$6;
 
-let _schema$2e = undefined;
-let _model$23  = undefined;
+let _schema = undefined;
+let _model  = undefined;
 
-function getSchemaFrom$2e ( Mongoose ) {
+function getSchemaFrom ( Mongoose ) {
 
-    if ( !_schema$2e ) {
-        _createSchema$2e( Mongoose );
+    if ( !_schema ) {
+        _createSchema( Mongoose );
     }
 
-    return _schema$2e
+    return _schema
 
 }
 
-function _createSchema$2e ( Mongoose ) {
+function _createSchema ( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$2e = new Schema( {} );
+    _schema = new Schema( {} );
 
 }
 
-function getModelFrom$23 ( Mongoose ) {
+function getModelFrom ( Mongoose ) {
 
-    if ( !_model$23 ) {
-        _createModel$23( Mongoose );
+    if ( !_model ) {
+        _createModel( Mongoose );
     }
 
-    return _model$23
+    return _model
 
 }
 
-function _createModel$23 ( Mongoose ) {
+function _createModel ( Mongoose ) {
 
-    const TextureBaseModel = Texture$6.getModelFrom( Mongoose );
-    _model$23                 = TextureBaseModel.discriminator( 'VideoTexture', getSchemaFrom$2e( Mongoose ) );
+    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+    _model                 = TextureBaseModel.discriminator( 'VideoTexture', getSchemaFrom( Mongoose ) );
 
 }
 
-function registerModelTo$23 ( Mongoose ) {
+function registerModelTo ( Mongoose ) {
 
-    if ( !_model$23 ) {
-        _createModel$23( Mongoose );
+    if ( !_model ) {
+        _createModel( Mongoose );
     }
 
     return Mongoose
@@ -13495,9 +13521,9 @@ function registerModelTo$23 ( Mongoose ) {
 
 var VideoTexture_1 = {
     name:            'VideoTexture',
-    getSchemaFrom:   getSchemaFrom$2e,
-    getModelFrom:    getModelFrom$23,
-    registerModelTo: registerModelTo$23
+    getSchemaFrom:   getSchemaFrom,
+    getModelFrom:    getModelFrom,
+    registerModelTo: registerModelTo
 };
 
 /**
@@ -14303,11 +14329,11 @@ var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
     .addSchema( OrthographicCamera_1 )
     .addSchema( PerspectiveCamera_1 )
     .addSchema( BufferAttribute_1 )
-    .addSchema( BufferGeometry )
+    .addSchema( BufferGeometry$l )
     .addSchema( CurvePath_1 )
     .addSchema( Face3_1 )
-    .addSchema( Geometry )
-    .addSchema( Object3D )
+    .addSchema( Geometry$o )
+    .addSchema( Object3D$I )
     .addSchema( Path_1 )
     .addSchema( Shape_1 )
     .addSchema( ArcCurve_1 )
