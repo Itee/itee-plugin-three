@@ -1,3 +1,22 @@
+# [1.5.0](https://github.com/Itee/itee-plugin-three/compare/v1.4.2...v1.5.0) (2021-07-05)
+
+
+### Bug Fixes
+
+* **clippingcontrol:** fix handle raycasting ([789bd74](https://github.com/Itee/itee-plugin-three/commit/789bd74c413f0c046cd374fcdb7263e6164a43f7))
+* **clippingcontrol:** fix member name of Mouse enum ([5cec9e9](https://github.com/Itee/itee-plugin-three/commit/5cec9e9cf54781892599a29e12f2400d1fd7a250))
+* **eslint:** remove unused import and wrong lib usage ([8d4064d](https://github.com/Itee/itee-plugin-three/commit/8d4064d55204cebbd51c63ff076d045bc8026f83))
+* **object3d:** update three-full import ([fe7f678](https://github.com/Itee/itee-plugin-three/commit/fe7f67870abad5dcbe827b45e2790f8cab652e36))
+* **package:** apply npm audit fix ([fe01475](https://github.com/Itee/itee-plugin-three/commit/fe01475eb74b5f5cb1a51959eb2c513a2fb2c63a))
+* **package:** update all dependencies to their latest version ([046a840](https://github.com/Itee/itee-plugin-three/commit/046a8400a30cf8a493893b03deb70d9747be6c82))
+
+
+### Features
+
+* **bitarray:** add new util class for manage bits array ([79aae98](https://github.com/Itee/itee-plugin-three/commit/79aae98585a84bc0bee14e1513492438adbed3c4))
+* **clippingcontrols:** release all inner class of 3d object to be reused in complex controls ([a1ec3c2](https://github.com/Itee/itee-plugin-three/commit/a1ec3c2087f5095c4e7472a17ad86755e5114226))
+* **lasloader:** add new class loader for Las files ([02938c8](https://github.com/Itee/itee-plugin-three/commit/02938c8729f711b9721635cc74a62d2dd453d4ca))
+
 ## [1.4.2](https://github.com/Itee/itee-plugin-three/compare/v1.4.1...v1.4.2) (2021-01-23)
 
 
