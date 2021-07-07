@@ -13,13 +13,13 @@
  * @requires {@link module: [rollup-plugin-terser]{@link https://github.com/TrySound/rollup-plugin-terser}}
  */
 
-const packageInfos = require( '../package' )
-const commonjs     = require( 'rollup-plugin-commonjs' )
-const path         = require( 'path' )
-const replace      = require( 'rollup-plugin-re' )
-const resolve      = require( 'rollup-plugin-node-resolve' )
-const terser       = require( 'rollup-plugin-terser' ).terser
-const alias       = require( 'rollup-plugin-alias' )
+const packageInfos    = require( '../package' )
+const path            = require( 'path' )
+const alias           = require( '@rollup/plugin-alias' )
+const commonjs        = require( '@rollup/plugin-commonjs' )
+const { nodeResolve } = require( '@rollup/plugin-node-resolve' )
+const terser          = require( 'rollup-plugin-terser' ).terser
+const replace         = require( 'rollup-plugin-re' )
 
 function _computeBanner ( name, format ) {
 
@@ -45,11 +45,11 @@ function _computeBanner ( name, format ) {
             break
 
         default:
-            throw new RangeError( `Invalid switch parameter: ${format}` )
+            throw new RangeError( `Invalid switch parameter: ${ format }` )
 
     }
 
-    return `console.log('${packageName} v${packageInfos.version} - ${prettyFormat}')`
+    return `console.log('${ packageName } v${ packageInfos.version } - ${ prettyFormat }')`
 
 }
 
@@ -90,11 +90,11 @@ function CreateRollupConfigs ( options ) {
             const env        = envs[ envIndex ]
             const isProd     = ( env.includes( 'prod' ) )
             const format     = formats[ formatIndex ]
-            const outputPath = ( isProd ) ? path.join( output, `${fileName}.${format}.min.js` ) : path.join( output, `${fileName}.${format}.js` )
+            const outputPath = ( isProd ) ? path.join( output, `${ fileName }.${ format }.min.js` ) : path.join( output, `${ fileName }.${ format }.js` )
 
             configs.push( {
-                input:    input,
-                external: ( format === 'cjs' ) ? [
+                input:     input,
+                external:  ( format === 'cjs' ) ? [
                     'itee-client',
                     'itee-database',
                     'itee-utils',
@@ -109,7 +109,7 @@ function CreateRollupConfigs ( options ) {
                     'itee-validators',
                     'three-full'
                 ],
-                plugins: [
+                plugins:   [
                     ( format === 'cjs' ) && alias( {
                         resolve: [ '.js' ],
                         entries: [
@@ -168,20 +168,24 @@ function CreateRollupConfigs ( options ) {
                     commonjs( {
                         include: [ 'sources/backend/**', 'node_modules/**' ]
                     } ),
-                    resolve( {
+                    nodeResolve( {
                         preferBuiltins: true
                     } ),
                     isProd && terser()
                 ],
-                onwarn: ( { loc, frame, message } ) => {
+                onwarn:    ( {
+                    loc,
+                    frame,
+                    message
+                } ) => {
 
                     // Ignore some errors
                     if ( message.includes( 'Circular dependency' ) ) { return }
 
                     if ( loc ) {
-                        process.stderr.write( `/!\\ ${loc.file} (${loc.line}:${loc.column}) ${frame} ${message}\n` )
+                        process.stderr.write( `/!\\ ${ loc.file } (${ loc.line }:${ loc.column }) ${ frame } ${ message }\n` )
                     } else {
-                        process.stderr.write( `/!\\ ${message}\n` )
+                        process.stderr.write( `/!\\ ${ message }\n` )
                     }
 
                 },
