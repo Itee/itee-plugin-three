@@ -1,3 +1,12 @@
+## [1.5.1](https://github.com/Itee/itee-plugin-three/compare/v1.5.0...v1.5.1) (2021-07-08)
+
+
+### Bug Fixes
+
+* **package:** apply dependencies fix ([e3e29ef](https://github.com/Itee/itee-plugin-three/commit/e3e29eff655581801dd6e72bb1bf3e4c40f58038))
+* **releaserc:** fix missing dev maps ([fbab630](https://github.com/Itee/itee-plugin-three/commit/fbab6307d44ea08bece004a83ecb6028044ecee4))
+* **tmongodbplugin:** wrap it inside iife function that allow to handle config ([08bfc49](https://github.com/Itee/itee-plugin-three/commit/08bfc49ff8c8294fd074422225faaf44243f9d1c))
+
 # [1.5.0](https://github.com/Itee/itee-plugin-three/compare/v1.4.2...v1.5.0) (2021-07-05)
 
 
