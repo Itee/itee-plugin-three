@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/Itee/itee-plugin-three/compare/v1.5.1...v1.5.2) (2021-07-08)
+
+
+### Bug Fixes
+
+* **iteecore:** move logging usage to itee-core and update rollup config ([fe97d9e](https://github.com/Itee/itee-plugin-three/commit/fe97d9e9c335a3fc44eb5a8bd3d270e49b67407b))
+
 ## [1.5.1](https://github.com/Itee/itee-plugin-three/compare/v1.5.0...v1.5.1) (2021-07-08)
 
 

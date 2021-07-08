@@ -165,6 +165,7 @@ function _computeIntro () {
     return '' +
         'if( iteeValidators === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeUtils === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( iteeCore === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Core to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeClient === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( threeFull === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
 
@@ -205,6 +206,7 @@ function CreateRollupConfigs ( options ) {
                     'itee-client',
                     'itee-database',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'itee-mongodb',
                     'bson',
@@ -213,6 +215,7 @@ function CreateRollupConfigs ( options ) {
                 ] : [
                     'itee-client',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'three-full'
                 ],
@@ -305,6 +308,7 @@ function CreateRollupConfigs ( options ) {
                     globals: {
                         'itee-client':     'Itee.Client',
                         'itee-utils':      'Itee.Utils',
+                        'itee-core':       'Itee.Core',
                         'itee-validators': 'Itee.Validators',
                         'three-full':      'Three'
                     },

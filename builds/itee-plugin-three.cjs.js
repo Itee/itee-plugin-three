@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.1 - CommonJs')
+console.log('Itee.Plugin.Three v1.5.2 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');
@@ -6,6 +6,7 @@ var iteeMongodb = require('itee-mongodb');
 var require$$0$3 = require('itee-validators');
 var threeFull = require('three-full');
 var iteeClient = require('itee-client');
+var iteeCore = require('itee-core');
 var iteeUtils = require('itee-utils');
 var bson = require('bson');
 
@@ -508,7 +509,7 @@ class DBFLoader {
         const _parameters = {
             ...{
                 manager: threeFull.DefaultLoadingManager,
-                logger:  iteeClient.DefaultLogger,
+                logger:  iteeCore.DefaultLogger,
                 reader:  new iteeClient.TBinaryReader()
             }, ...parameters
         };
@@ -1544,7 +1545,7 @@ class SHPLoader {
         const _parameters = {
             ...{
                 manager:      threeFull.DefaultLoadingManager,
-                logger:       iteeClient.DefaultLogger,
+                logger:       iteeCore.DefaultLogger,
                 reader:       new iteeClient.TBinaryReader(),
                 globalOffset: new threeFull.Vector3( 0, 0, 0 ),
                 worldAxis:    {
@@ -2343,13 +2344,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
-     * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
+     * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
-                logger: iteeClient.DefaultLogger
+                logger: iteeCore.DefaultLogger
             }, ...parameters
         };
         super( _parameters );
