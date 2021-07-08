@@ -1,17 +1,18 @@
-console.log('Itee.Plugin.Three v1.5.0 - CommonJs')
+console.log('Itee.Plugin.Three v1.5.2 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');
 var iteeMongodb = require('itee-mongodb');
-var iteeValidators = require('itee-validators');
+var require$$0$3 = require('itee-validators');
 var threeFull = require('three-full');
 var iteeClient = require('itee-client');
+var iteeCore = require('itee-core');
 var iteeUtils = require('itee-utils');
 var bson = require('bson');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var iteeValidators__default = /*#__PURE__*/_interopDefaultLegacy(iteeValidators);
+var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -46,14 +47,14 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _readOneDocument ( type, query ) {
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) { return null }
+        if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         const model = await this._driver
                                 .model( type )
                                 .findOne( query )
                                 .exec();
 
-        return ( iteeValidators.isDefined( model ) ) ? model._doc : null
+        return ( require$$0$3.isDefined( model ) ) ? model._doc : null
 
     }
 
@@ -68,7 +69,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _readManyDocument ( type, query, projection ) {
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) { return null }
+        if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         let models = await this._driver
                                .model( type )
@@ -91,7 +92,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      */
     async _updateDocument ( document, updateQuery, queryOptions ) {
 
-        if ( iteeValidators.isNotDefined( document ) ) {
+        if ( require$$0$3.isNotDefined( document ) ) {
             return null
         }
 
@@ -122,18 +123,18 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
             const child   = children[ childIndex ];
             const childId = child._id.toString();
 
-            if ( iteeValidators.isDefined( childId ) ) {
+            if ( require$$0$3.isDefined( childId ) ) {
                 result.children.push( childId );
             }
 
             const childGeometry = child.geometry;
-            if ( iteeValidators.isDefined( childGeometry ) ) {
+            if ( require$$0$3.isDefined( childGeometry ) ) {
                 result.geometries.push( childGeometry.toString() );
             }
 
             const childMaterials = child.material;
             if ( childMaterials ) {
-                const _materials = iteeValidators.isArray( childMaterials ) ? childMaterials.map( mat => mat.toString() ) : [ childMaterials.toString() ];
+                const _materials = require$$0$3.isArray( childMaterials ) ? childMaterials.map( mat => mat.toString() ) : [ childMaterials.toString() ];
                 result.materials.push( ..._materials );
             }
 
@@ -206,7 +207,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
     }
 
     async _deleteDocuments ( type, documentIds ) {
-        if ( iteeValidators.isEmptyArray( documentIds ) ) { return 0 }
+        if ( require$$0$3.isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
                                        .model( type )
@@ -230,7 +231,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _deleteDocument ( document ) {
-        if ( iteeValidators.isNotDefined( document ) ) { return null }
+        if ( require$$0$3.isNotDefined( document ) ) { return null }
 
         //        console.log( `Delete: ${ document.name } [${ document._id }]` )
 
@@ -247,7 +248,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     async _removeParentReference ( document ) {
         const parentId = document.parent;
-        if ( iteeValidators.isNotDefined( parentId ) ) { return null }
+        if ( require$$0$3.isNotDefined( parentId ) ) { return null }
 
         const parentDocument         = await this._readOneDocument( 'Objects3D', { _id: parentId } );
         const childrenIds            = parentDocument.children;
@@ -319,7 +320,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanGeometryWithId ( geometryId ) {
-        if ( iteeValidators.isNotDefined( geometryId ) ) { return }
+        if ( require$$0$3.isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
         if ( referencingObjects.length > 1 ) { return }
@@ -339,8 +340,8 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanMaterialsWithIds ( materialsIds ) {
-        if ( iteeValidators.isNotDefined( materialsIds ) ) { return }
-        if ( iteeValidators.isEmptyArray( materialsIds ) ) { return }
+        if ( require$$0$3.isNotDefined( materialsIds ) ) { return }
+        if ( require$$0$3.isEmptyArray( materialsIds ) ) { return }
 
         const removed = [];
         for ( let index = 0, numberOfMaterials = materialsIds.length ; index < numberOfMaterials ; index++ ) {
@@ -359,7 +360,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @private
      */
     async _removeOrphanMaterialWithId ( materialId ) {
-        if ( iteeValidators.isNotDefined( materialId ) ) { return }
+        if ( require$$0$3.isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
         if ( referencingObjects.length > 1 ) { return }
@@ -508,7 +509,7 @@ class DBFLoader {
         const _parameters = {
             ...{
                 manager: threeFull.DefaultLoadingManager,
-                logger:  iteeClient.DefaultLogger,
+                logger:  iteeCore.DefaultLogger,
                 reader:  new iteeClient.TBinaryReader()
             }, ...parameters
         };
@@ -1544,7 +1545,7 @@ class SHPLoader {
         const _parameters = {
             ...{
                 manager:      threeFull.DefaultLoadingManager,
-                logger:       iteeClient.DefaultLogger,
+                logger:       iteeCore.DefaultLogger,
                 reader:       new iteeClient.TBinaryReader(),
                 globalOffset: new threeFull.Vector3( 0, 0, 0 ),
                 worldAxis:    {
@@ -2343,13 +2344,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
-     * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
+     * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
-                logger: iteeClient.DefaultLogger
+                logger: iteeCore.DefaultLogger
             }, ...parameters
         };
         super( _parameters );
@@ -2375,9 +2376,9 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         let array = [];
 
-        if ( iteeValidators.isDefined( data ) ) {
+        if ( require$$0$3.isDefined( data ) ) {
 
-            if ( iteeValidators.isArray( data ) ) {
+            if ( require$$0$3.isArray( data ) ) {
                 array = data;
             } else {
                 array = [ data ];
@@ -2415,7 +2416,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = ThreeToMongoDB._arrayify( data );
-        if ( iteeValidators.isEmptyArray( dataToParse ) ) {
+        if ( require$$0$3.isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' );
             return
         }
@@ -2434,10 +2435,10 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             const parentId  = parameters.parentId;
             let children    = null;
             let childrenIds = null;
-            if ( iteeValidators.isDefined( parentId ) ) {
+            if ( require$$0$3.isDefined( parentId ) ) {
 
                 const parentDocument = await this._readDocument( 'Objects3D', { _id: parentId } );
-                if ( iteeValidators.isNull( parentDocument ) ) {
+                if ( require$$0$3.isNull( parentDocument ) ) {
                     onError( `Unable to retrieve parent with id (${ parameters.parentId }). Abort insert !` );
                     return
                 }
@@ -2447,7 +2448,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                     // If parent exist let create children
                     children    = await this._parseObjects( dataToParse, parentId );
-                    childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+                    childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
                     // Add children to given parent
                     await this._updateDocument( parentDocument, {
@@ -2469,7 +2470,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                     // If parent exist let create children
                     children    = await this._parseObjects( dataToParse, parentId );
-                    childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+                    childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
                     await this._updateDocument( parentDocument, {
                         $set: {
@@ -2483,7 +2484,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
                 // If not required just create children as root objects
                 children    = await this._parseObjects( dataToParse, null );
-                childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+                childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
             }
 
@@ -2512,7 +2513,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger.debug(`_parseObjects(...)`);
 
         const _objects = ThreeToMongoDB._arrayify( objects );
-        if ( iteeValidators.isEmptyArray( _objects ) ) {
+        if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
 
@@ -2536,7 +2537,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _parseObject ( object, parentId = null ) {
         this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` );
 
-        if ( iteeValidators.isNotDefined( object ) ) {
+        if ( require$$0$3.isNotDefined( object ) ) {
             return null
         }
 
@@ -2548,12 +2549,12 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         const objectMaterials = ThreeToMongoDB._arrayify( object.material );
 
         // If it is a terminal object ( No children ) with an empty geometry
-        if ( iteeValidators.isDefined( objectGeometry ) && iteeValidators.isEmptyArray( objectChildren ) ) {
+        if ( require$$0$3.isDefined( objectGeometry ) && require$$0$3.isEmptyArray( objectChildren ) ) {
 
             if ( objectGeometry.isGeometry ) {
 
                 const vertices = objectGeometry.vertices;
-                if ( iteeValidators.isNotDefined( vertices ) || iteeValidators.isEmptyArray( vertices ) ) {
+                if ( require$$0$3.isNotDefined( vertices ) || require$$0$3.isEmptyArray( vertices ) ) {
                     this.logger.error( `Leaf object ${ objectName } have a geometry that doesn't contain vertices ! Skip it.` );
                     return null
                 }
@@ -2561,13 +2562,13 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             } else if ( objectGeometry.isBufferGeometry ) {
 
                 const attributes = objectGeometry.attributes;
-                if ( iteeValidators.isNotDefined( attributes ) ) {
+                if ( require$$0$3.isNotDefined( attributes ) ) {
                     this.logger.error( `Buffer geometry of ${ objectName } doesn't contain attributes ! Skip it.` );
                     return null
                 }
 
                 const positions = attributes.position;
-                if ( iteeValidators.isNotDefined( positions ) || positions.count === 0 ) {
+                if ( require$$0$3.isNotDefined( positions ) || positions.count === 0 ) {
                     this.logger.error( `Leaf object ${ objectName } have a buffer geometry that doesn't contain position attribute ! Skip it.` );
                     return null
                 }
@@ -2583,7 +2584,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         if ( ThreeToMongoDB.AvailableLineTypes.includes( objectType ) ) {
 
-            if ( iteeValidators.isNotDefined( objectGeometry ) ) {
+            if ( require$$0$3.isNotDefined( objectGeometry ) ) {
                 this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
                 return null
             }
@@ -2592,7 +2593,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         } else if ( ThreeToMongoDB.AvailablePointTypes.includes( objectType ) ) {
 
-            if ( iteeValidators.isNotDefined( objectGeometry ) ) {
+            if ( require$$0$3.isNotDefined( objectGeometry ) ) {
                 this.logger.error( `Missing geometry for object ${ object.name } of type ${ objectType }. Only Sprite can contains material without geometry ! Skip it.` );
                 return null
             }
@@ -2621,10 +2622,10 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         }
 
         const geometry   = await this._getOrCreateDocuments( objectGeometry );
-        const geometryId = ( iteeValidators.isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null;
+        const geometryId = ( require$$0$3.isDefined( geometry ) ) ? geometry.filter( geometry => geometry ).map( geometry => geometry._id ).pop() : null;
 
         const materials    = await this._getOrCreateDocuments( objectMaterials );
-        const materialsIds = ( iteeValidators.isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : [];
+        const materialsIds = ( require$$0$3.isDefined( materials ) ) ? materials.filter( material => material ).map( material => material._id ) : [];
 
         // Check if object already exist
         // We could use getOrCreateDocument here only if children/geometry/materials cleanup is perform on schema database side
@@ -2634,7 +2635,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         } );
 
         // Todo if document.parent != parentId warn id collision !n m
-        if ( iteeValidators.isDefined( document ) ) {
+        if ( require$$0$3.isDefined( document ) ) {
 
             // Check merge strategie
             // If add, only update existing and create new objects
@@ -2642,7 +2643,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             if ( this.mergeStrategy === 'add' ) {
 
                 const children    = await this._parseObjects( objectChildren, document._id );
-                const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+                const childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
                 await this._updateDocument( document, {
                     $addToSet: {
@@ -2662,7 +2663,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                 await this._removeChildrenDocuments( dbChildrenToRemove );
 
                 const children    = await this._parseObjects( objectChildren, document._id );
-                const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+                const childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
                 await this._updateDocument( document, {
                     $set: {
@@ -2685,7 +2686,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
             document        = await this._createDocument( object );
 
             const children    = await this._parseObjects( objectChildren, document._id );
-            const childrenIds = ( iteeValidators.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
+            const childrenIds = ( require$$0$3.isDefined( children ) ) ? children.filter( child => child ).map( child => child._id ) : [];
 
             await this._updateDocument( document, {
                 $set: {
@@ -2714,7 +2715,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger.debug( `_getOrCreateDocuments(...)` );
 
         const _objects = ThreeToMongoDB._arrayify( objects );
-        if ( iteeValidators.isEmptyArray( _objects ) ) {
+        if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
 
@@ -2739,12 +2740,12 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _getOrCreateDocument ( data ) {
         this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
-        if ( iteeValidators.isNotDefined( data ) ) {
+        if ( require$$0$3.isNotDefined( data ) ) {
             return null
         }
 
         let document = await this._readDocument( data.type, { uuid: data.uuid } );
-        if ( iteeValidators.isDefined( document ) ) {
+        if ( require$$0$3.isDefined( document ) ) {
             document = await this._updateDocument( document, data );
         } else {
             document = await this._createDocument( data );
@@ -2767,7 +2768,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger.debug( `_createDocuments(...)` );
 
         const _datas = ThreeToMongoDB._arrayify( datas );
-        if ( iteeValidators.isEmptyArray( _datas ) ) {
+        if ( require$$0$3.isEmptyArray( _datas ) ) {
             return null
         }
 
@@ -2791,7 +2792,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _createDocument ( data ) {
         this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
-        if ( iteeValidators.isNotDefined( data ) ) {
+        if ( require$$0$3.isNotDefined( data ) ) {
             return null
         }
 
@@ -2802,7 +2803,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         //        const model         = this._driver.model( data.type )
         //        const savedModel = await model( data ).save()
 
-        const savedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        const savedDocument = ( require$$0$3.isDefined( model ) ) ? model._doc : null;
         if ( savedDocument ) {
             this._cache[ savedDocument.uuid ] = savedDocument;
         }
@@ -2823,7 +2824,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _readDocuments ( type, query ) {
         this.logger.debug( `_readDocuments(...)` );
 
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+        if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
             return null
         }
 
@@ -2847,7 +2848,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _readDocument ( type, query ) {
         this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` );
 
-        if ( iteeValidators.isNotDefined( type ) || iteeValidators.isNotDefined( query ) ) {
+        if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
             return null
         }
 
@@ -2861,7 +2862,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                                 .findOne( query )
                                 .exec();
 
-        const readDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        const readDocument = ( require$$0$3.isDefined( model ) ) ? model._doc : null;
         if ( readDocument ) {
             this._cache[ readDocument.uuid ] = readDocument;
         }
@@ -2884,7 +2885,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger.debug( `_updateDocuments(...)` );
 
         const _documents = ThreeToMongoDB._arrayify( documents );
-        if ( iteeValidators.isEmptyArray( _documents ) ) {
+        if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
 
@@ -2910,7 +2911,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
         this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` );
 
-        if ( iteeValidators.isNotDefined( document ) ) {
+        if ( require$$0$3.isNotDefined( document ) ) {
             return null
         }
 
@@ -2919,7 +2920,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                                 .findByIdAndUpdate( document._id, updateQuery, queryOptions )
                                 .exec();
 
-        const updatedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        const updatedDocument = ( require$$0$3.isDefined( model ) ) ? model._doc : null;
         if ( updatedDocument ) {
             this._cache[ updatedDocument.uuid ] = updatedDocument;
         }
@@ -2940,7 +2941,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         this.logger.debug( `_deleteDocuments(...)` );
 
         const _documents = ThreeToMongoDB._arrayify( documents );
-        if ( iteeValidators.isEmptyArray( _documents ) ) {
+        if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
 
@@ -2964,7 +2965,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _deleteDocument ( document ) {
         this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
-        if ( iteeValidators.isNotDefined( document ) ) {
+        if ( require$$0$3.isNotDefined( document ) ) {
             return null
         }
 
@@ -2973,7 +2974,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
                                 .findByIdAndDelete( document._id )
                                 .exec();
 
-        const deletedDocument = ( iteeValidators.isDefined( model ) ) ? model._doc : null;
+        const deletedDocument = ( require$$0$3.isDefined( model ) ) ? model._doc : null;
         if ( deletedDocument ) {
             delete this._cache[ deletedDocument.uuid ];
         }
@@ -3035,7 +3036,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _removeOrphanGeometryWithId ( geometryId ) {
         this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` );
 
-        if ( iteeValidators.isNotDefined( geometryId ) ) { return }
+        if ( require$$0$3.isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readDocuments( 'Objects3D', { geometry: geometryId } );
         if ( referencingObjects.length > 1 ) { return }
@@ -3112,6 +3113,21 @@ ThreeToMongoDB.AvailablePointTypes          = [ 'Points' ];
 ThreeToMongoDB.AvailablePointMaterialTypes  = [ 'PointsMaterial' ];
 ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ];
 ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ];
+
+function getAugmentedNamespace(n) {
+	if (n.__esModule) return n;
+	var a = Object.defineProperty({}, '__esModule', {value: true});
+	Object.keys(n).forEach(function (k) {
+		var d = Object.getOwnPropertyDescriptor(n, k);
+		Object.defineProperty(a, k, d.get ? d : {
+			enumerable: true,
+			get: function () {
+				return n[k];
+			}
+		});
+	});
+	return a;
+}
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -3246,6 +3262,8 @@ var Object3D$J = /*#__PURE__*/Object.freeze({
 	Object3D: Object3D$I
 });
 
+var require$$0$2 = /*@__PURE__*/getAugmentedNamespace(Object3D$J);
+
 /**
  * @module Schemas/Audio/Audio
  * @desc Export the ThreeJs Audio Model and Schema for Mongoose.
@@ -3256,7 +3274,7 @@ var Object3D$J = /*#__PURE__*/Object.freeze({
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$H } = Object3D$J;
+const { Object3D: Object3D$H } = require$$0$2;
 
 let _schema$2e = undefined;
 let _model$23  = undefined;
@@ -3324,7 +3342,7 @@ var Audio_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$G } = Object3D$J;
+const { Object3D: Object3D$G } = require$$0$2;
 
 let _schema$2d = undefined;
 let _model$22  = undefined;
@@ -3391,7 +3409,7 @@ var AudioListener_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$F } = Object3D$J;
+const { Object3D: Object3D$F } = require$$0$2;
 
 let _schema$2c = undefined;
 let _model$21  = undefined;
@@ -3458,8 +3476,7 @@ var PositionalAudio_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-
-const { Object3D: Object3D$E } = Object3D$J;
+const { Object3D: Object3D$E } = require$$0$2;
 
 let _schema$2b = undefined;
 let _model$20  = undefined;
@@ -3526,8 +3543,7 @@ var ArrayCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-
-const { Object3D: Object3D$D } = Object3D$J;
+const { Object3D: Object3D$D } = require$$0$2;
 
 let _schema$2a = undefined;
 let _model$1$  = undefined;
@@ -3594,7 +3610,7 @@ var Camera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$C } = Object3D$J;
+const { Object3D: Object3D$C } = require$$0$2;
 
 let _schema$29 = undefined;
 let _model$1_  = undefined;
@@ -3661,7 +3677,7 @@ var CubeCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$B } = Object3D$J;
+const { Object3D: Object3D$B } = require$$0$2;
 
 let _schema$28 = undefined;
 let _model$1Z  = undefined;
@@ -3728,7 +3744,7 @@ var OrthographicCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$A } = Object3D$J;
+const { Object3D: Object3D$A } = require$$0$2;
 
 let _schema$27 = undefined;
 let _model$1Y  = undefined;
@@ -3795,7 +3811,7 @@ var PerspectiveCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = iteeValidators__default['default'];
+const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = require$$0__default['default'];
 
 let _schema$26 = undefined;
 
@@ -4082,6 +4098,8 @@ var BufferGeometry$m = /*#__PURE__*/Object.freeze({
 	BufferGeometry: BufferGeometry$l
 });
 
+var Curve$g = {};
+
 /**
  * @module Schemas/Curves/Curve
  * @desc Export the ThreeJs Curve Model and Schema for Mongoose.
@@ -4149,15 +4167,11 @@ function registerModelTo$1W ( Mongoose ) {
 
 }
 
-var Curve_1 = {
+var Curve_1 = Curve$g.Curve = {
     name: 'Curve',
     getSchemaFrom: getSchemaFrom$24,
     getModelFrom: getModelFrom$1W,
     registerModelTo: registerModelTo$1W
-};
-
-var Curve$g = {
-	Curve: Curve_1
 };
 
 /**
@@ -5545,6 +5559,8 @@ var SplineCurve_1 = {
     registerModelTo: registerModelTo$1F
 };
 
+var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(BufferGeometry$m);
+
 /**
  * @module Schemas/Geometries/BoxBufferGeometry
  * @desc Export the ThreeJs BoxBufferGeometry Model and Schema for Mongoose.
@@ -5555,7 +5571,7 @@ var SplineCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$k } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$k } = require$$0$1;
 
 let _schema$1N = undefined;
 let _model$1E  = undefined;
@@ -5612,6 +5628,8 @@ var BoxBufferGeometry_1 = {
     registerModelTo: registerModelTo$1E
 };
 
+var require$$0 = /*@__PURE__*/getAugmentedNamespace(Geometry$p);
+
 /**
  * @module Schemas/Geometries/BoxGeometry
  * @desc Export the ThreeJs BoxGeometry Model and Schema for Mongoose.
@@ -5622,7 +5640,7 @@ var BoxBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$n } = Geometry$p;
+const { Geometry: Geometry$n } = require$$0;
 
 let _schema$1M = undefined;
 let _model$1D  = undefined;
@@ -5689,7 +5707,7 @@ var BoxGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$j } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$j } = require$$0$1;
 
 let _schema$1L = undefined;
 let _model$1C  = undefined;
@@ -5756,7 +5774,7 @@ var CircleBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$m } = Geometry$p;
+const { Geometry: Geometry$m } = require$$0;
 
 let _schema$1K = undefined;
 let _model$1B  = undefined;
@@ -5823,7 +5841,7 @@ var CircleGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$i } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$i } = require$$0$1;
 
 let _schema$1J = undefined;
 let _model$1A  = undefined;
@@ -5890,7 +5908,7 @@ var ConeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$l } = Geometry$p;
+const { Geometry: Geometry$l } = require$$0;
 
 let _schema$1I = undefined;
 let _model$1z  = undefined;
@@ -5957,7 +5975,7 @@ var ConeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$k } = Geometry$p;
+const { Geometry: Geometry$k } = require$$0;
 
 let _schema$1H = undefined;
 let _model$1y  = undefined;
@@ -6024,7 +6042,7 @@ var ConvexGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$h } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$h } = require$$0$1;
 
 let _schema$1G = undefined;
 let _model$1x  = undefined;
@@ -6091,7 +6109,7 @@ var CylinderBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$j } = Geometry$p;
+const { Geometry: Geometry$j } = require$$0;
 
 let _schema$1F = undefined;
 let _model$1w  = undefined;
@@ -6158,7 +6176,7 @@ var CylinderGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$i } = Geometry$p;
+const { Geometry: Geometry$i } = require$$0;
 
 let _schema$1E = undefined;
 let _model$1v  = undefined;
@@ -6225,7 +6243,7 @@ var DecalGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$h } = Geometry$p;
+const { Geometry: Geometry$h } = require$$0;
 
 let _schema$1D = undefined;
 let _model$1u  = undefined;
@@ -6292,7 +6310,7 @@ var DodecahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$g } = Geometry$p;
+const { Geometry: Geometry$g } = require$$0;
 
 let _schema$1C = undefined;
 let _model$1t  = undefined;
@@ -6359,7 +6377,7 @@ var EdgesGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$g } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$g } = require$$0$1;
 
 let _schema$1B = undefined;
 let _model$1s  = undefined;
@@ -6426,7 +6444,7 @@ var ExtrudeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$f } = Geometry$p;
+const { Geometry: Geometry$f } = require$$0;
 
 let _schema$1A = undefined;
 let _model$1r  = undefined;
@@ -6493,7 +6511,7 @@ var ExtrudeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$f } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$f } = require$$0$1;
 
 let _schema$1z = undefined;
 let _model$1q  = undefined;
@@ -6560,7 +6578,7 @@ var IcosahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$e } = Geometry$p;
+const { Geometry: Geometry$e } = require$$0;
 
 let _schema$1y = undefined;
 let _model$1p  = undefined;
@@ -6627,7 +6645,7 @@ var IcosahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$e } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$e } = require$$0$1;
 
 let _schema$1x = undefined;
 let _model$1o  = undefined;
@@ -6694,7 +6712,7 @@ var InstancedBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$d } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$d } = require$$0$1;
 
 let _schema$1w = undefined;
 let _model$1n  = undefined;
@@ -6761,7 +6779,7 @@ var LatheBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$d } = Geometry$p;
+const { Geometry: Geometry$d } = require$$0;
 
 let _schema$1v = undefined;
 let _model$1m  = undefined;
@@ -6828,7 +6846,7 @@ var LatheGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$c } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$c } = require$$0$1;
 
 let _schema$1u = undefined;
 let _model$1l  = undefined;
@@ -6895,7 +6913,7 @@ var OctahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$c } = Geometry$p;
+const { Geometry: Geometry$c } = require$$0;
 
 let _schema$1t = undefined;
 let _model$1k  = undefined;
@@ -6962,7 +6980,7 @@ var OctahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$b } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$b } = require$$0$1;
 
 let _schema$1s = undefined;
 let _model$1j  = undefined;
@@ -7029,7 +7047,7 @@ var ParametricBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$b } = Geometry$p;
+const { Geometry: Geometry$b } = require$$0;
 
 let _schema$1r = undefined;
 let _model$1i  = undefined;
@@ -7096,7 +7114,7 @@ var ParametricGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$a } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$a } = require$$0$1;
 
 let _schema$1q = undefined;
 let _model$1h  = undefined;
@@ -7163,7 +7181,7 @@ var PlaneBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$a } = Geometry$p;
+const { Geometry: Geometry$a } = require$$0;
 
 let _schema$1p = undefined;
 let _model$1g  = undefined;
@@ -7230,7 +7248,7 @@ var PlaneGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$9 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$9 } = require$$0$1;
 
 let _schema$1o = undefined;
 let _model$1f  = undefined;
@@ -7297,7 +7315,7 @@ var PolyhedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$9 } = Geometry$p;
+const { Geometry: Geometry$9 } = require$$0;
 
 let _schema$1n = undefined;
 let _model$1e  = undefined;
@@ -7364,7 +7382,7 @@ var PolyhedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$8 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$8 } = require$$0$1;
 
 let _schema$1m = undefined;
 let _model$1d  = undefined;
@@ -7431,7 +7449,7 @@ var RingBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$8 } = Geometry$p;
+const { Geometry: Geometry$8 } = require$$0;
 
 let _schema$1l = undefined;
 let _model$1c  = undefined;
@@ -7498,7 +7516,7 @@ var RingGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$7 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$7 } = require$$0$1;
 
 let _schema$1k = undefined;
 let _model$1b  = undefined;
@@ -7619,7 +7637,7 @@ var ShapeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$7 } = Geometry$p;
+const { Geometry: Geometry$7 } = require$$0;
 
 let _schema$1j = undefined;
 let _model$1a  = undefined;
@@ -7686,7 +7704,7 @@ var ShapeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$6 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$6 } = require$$0$1;
 
 let _schema$1i = undefined;
 let _model$19  = undefined;
@@ -7753,7 +7771,7 @@ var SphereBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$6 } = Geometry$p;
+const { Geometry: Geometry$6 } = require$$0;
 
 let _schema$1h = undefined;
 let _model$18  = undefined;
@@ -7820,7 +7838,7 @@ var SphereGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$5 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$5 } = require$$0$1;
 
 let _schema$1g = undefined;
 let _model$17  = undefined;
@@ -7887,7 +7905,7 @@ var TeapotBufferGeometry = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$4 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$4 } = require$$0$1;
 
 let _schema$1f = undefined;
 let _model$16  = undefined;
@@ -7954,7 +7972,7 @@ var TetrahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$5 } = Geometry$p;
+const { Geometry: Geometry$5 } = require$$0;
 
 let _schema$1e = undefined;
 let _model$15  = undefined;
@@ -8021,7 +8039,7 @@ var TetrahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$3 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$3 } = require$$0$1;
 
 let _schema$1d = undefined;
 let _model$14  = undefined;
@@ -8088,7 +8106,7 @@ var TextBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$4 } = Geometry$p;
+const { Geometry: Geometry$4 } = require$$0;
 
 let _schema$1c = undefined;
 let _model$13  = undefined;
@@ -8155,7 +8173,7 @@ var TextGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$2 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$2 } = require$$0$1;
 
 let _schema$1b = undefined;
 let _model$12  = undefined;
@@ -8222,7 +8240,7 @@ var TorusBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$3 } = Geometry$p;
+const { Geometry: Geometry$3 } = require$$0;
 
 let _schema$1a = undefined;
 let _model$11  = undefined;
@@ -8289,7 +8307,7 @@ var TorusGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$1 } = BufferGeometry$m;
+const { BufferGeometry: BufferGeometry$1 } = require$$0$1;
 
 let _schema$19 = undefined;
 let _model$10  = undefined;
@@ -8356,7 +8374,7 @@ var TorusKnotBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$2 } = Geometry$p;
+const { Geometry: Geometry$2 } = require$$0;
 
 let _schema$18 = undefined;
 let _model$$  = undefined;
@@ -8423,7 +8441,7 @@ var TorusKnotGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry } = BufferGeometry$m;
+const { BufferGeometry } = require$$0$1;
 
 let _schema$17 = undefined;
 let _model$_  = undefined;
@@ -8490,7 +8508,7 @@ var TubeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$1 } = Geometry$p;
+const { Geometry: Geometry$1 } = require$$0;
 
 let _schema$16 = undefined;
 let _model$Z  = undefined;
@@ -8557,7 +8575,7 @@ var TubeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry } = Geometry$p;
+const { Geometry } = require$$0;
 
 let _schema$15 = undefined;
 let _model$Y  = undefined;
@@ -8624,7 +8642,7 @@ var WireframeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$z } = Object3D$J;
+const { Object3D: Object3D$z } = require$$0$2;
 
 let _schema$14 = undefined;
 let _model$X  = undefined;
@@ -8691,7 +8709,7 @@ var ArrowHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$y } = Object3D$J;
+const { Object3D: Object3D$y } = require$$0$2;
 
 let _schema$13 = undefined;
 let _model$W  = undefined;
@@ -8758,7 +8776,7 @@ var AxesHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$x } = Object3D$J;
+const { Object3D: Object3D$x } = require$$0$2;
 
 let _schema$12 = undefined;
 let _model$V  = undefined;
@@ -8825,7 +8843,7 @@ var Box3Helper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$w } = Object3D$J;
+const { Object3D: Object3D$w } = require$$0$2;
 
 let _schema$11 = undefined;
 let _model$U  = undefined;
@@ -8892,7 +8910,7 @@ var BoxHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$v } = Object3D$J;
+const { Object3D: Object3D$v } = require$$0$2;
 
 let _schema$10 = undefined;
 let _model$T  = undefined;
@@ -8959,7 +8977,7 @@ var CameraHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$u } = Object3D$J;
+const { Object3D: Object3D$u } = require$$0$2;
 
 let _schema$$ = undefined;
 let _model$S  = undefined;
@@ -9026,7 +9044,7 @@ var DirectionalLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$t } = Object3D$J;
+const { Object3D: Object3D$t } = require$$0$2;
 
 let _schema$_ = undefined;
 let _model$R  = undefined;
@@ -9093,7 +9111,7 @@ var FaceNormalsHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$s } = Object3D$J;
+const { Object3D: Object3D$s } = require$$0$2;
 
 let _schema$Z = undefined;
 let _model$Q  = undefined;
@@ -9160,7 +9178,7 @@ var GridHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$r } = Object3D$J;
+const { Object3D: Object3D$r } = require$$0$2;
 
 let _schema$Y = undefined;
 let _model$P  = undefined;
@@ -9227,7 +9245,7 @@ var HemisphereLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$q } = Object3D$J;
+const { Object3D: Object3D$q } = require$$0$2;
 
 let _schema$X = undefined;
 let _model$O  = undefined;
@@ -9294,7 +9312,7 @@ var PlaneHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$p } = Object3D$J;
+const { Object3D: Object3D$p } = require$$0$2;
 
 let _schema$W = undefined;
 let _model$N  = undefined;
@@ -9361,7 +9379,7 @@ var PointLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$o } = Object3D$J;
+const { Object3D: Object3D$o } = require$$0$2;
 
 let _schema$V = undefined;
 let _model$M  = undefined;
@@ -9428,7 +9446,7 @@ var PolarGridHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$n } = Object3D$J;
+const { Object3D: Object3D$n } = require$$0$2;
 
 let _schema$U = undefined;
 let _model$L  = undefined;
@@ -9495,7 +9513,7 @@ var RectAreaLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$m } = Object3D$J;
+const { Object3D: Object3D$m } = require$$0$2;
 
 let _schema$T = undefined;
 let _model$K  = undefined;
@@ -9562,7 +9580,7 @@ var SkeletonHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$l } = Object3D$J;
+const { Object3D: Object3D$l } = require$$0$2;
 
 let _schema$S = undefined;
 let _model$J  = undefined;
@@ -9629,7 +9647,7 @@ var SpotLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$k } = Object3D$J;
+const { Object3D: Object3D$k } = require$$0$2;
 
 let _schema$R = undefined;
 let _model$I  = undefined;
@@ -9696,7 +9714,7 @@ var VertexNormalsHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$j } = Object3D$J;
+const { Object3D: Object3D$j } = require$$0$2;
 
 let _schema$Q = undefined;
 let _model$H  = undefined;
@@ -9763,7 +9781,7 @@ var AmbientLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$i } = Object3D$J;
+const { Object3D: Object3D$i } = require$$0$2;
 
 let _schema$P = undefined;
 let _model$G  = undefined;
@@ -9830,7 +9848,7 @@ var DirectionalLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$h } = Object3D$J;
+const { Object3D: Object3D$h } = require$$0$2;
 
 let _schema$O = undefined;
 let _model$F  = undefined;
@@ -9897,7 +9915,7 @@ var HemisphereLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$g } = Object3D$J;
+const { Object3D: Object3D$g } = require$$0$2;
 
 let _schema$N = undefined;
 let _model$E  = undefined;
@@ -9964,7 +9982,7 @@ var Light_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$f } = Object3D$J;
+const { Object3D: Object3D$f } = require$$0$2;
 
 let _schema$M = undefined;
 let _model$D  = undefined;
@@ -10031,7 +10049,7 @@ var PointLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$e } = Object3D$J;
+const { Object3D: Object3D$e } = require$$0$2;
 
 let _schema$L = undefined;
 let _model$C  = undefined;
@@ -10098,7 +10116,7 @@ var RectAreaLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$d } = Object3D$J;
+const { Object3D: Object3D$d } = require$$0$2;
 
 let _schema$K = undefined;
 let _model$B  = undefined;
@@ -10154,6 +10172,8 @@ var SpotLight_1 = {
     getModelFrom:    getModelFrom$B,
     registerModelTo: registerModelTo$B
 };
+
+var Material$f = {};
 
 /**
  * @module Schemas/Materials/Material
@@ -10255,15 +10275,11 @@ function registerModelTo$A ( Mongoose ) {
 
 }
 
-var Material_1 = {
+var Material_1 = Material$f.Material = {
     name:            'Material',
     getSchemaFrom:   getSchemaFrom$J,
     getModelFrom:    getModelFrom$A,
     registerModelTo: registerModelTo$A
-};
-
-var Material$f = {
-	Material: Material_1
 };
 
 /**
@@ -11913,7 +11929,7 @@ var Triangle_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$c } = Object3D$J;
+const { Object3D: Object3D$c } = require$$0$2;
 
 let _schema$l = undefined;
 let _model$k  = undefined;
@@ -12045,7 +12061,7 @@ const Group = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$b } = Object3D$J;
+const { Object3D: Object3D$b } = require$$0$2;
 
 let _schema$j = undefined;
 let _model$i  = undefined;
@@ -12112,7 +12128,7 @@ var ImmediateRenderObject_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$a } = Object3D$J;
+const { Object3D: Object3D$a } = require$$0$2;
 
 let _schema$i = undefined;
 let _model$h  = undefined;
@@ -12198,7 +12214,7 @@ var LensFlare = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$9 } = Object3D$J;
+const { Object3D: Object3D$9 } = require$$0$2;
 
 let _schema$h = undefined;
 let _model$g  = undefined;
@@ -12277,7 +12293,7 @@ var Line_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$8 } = Object3D$J;
+const { Object3D: Object3D$8 } = require$$0$2;
 
 let _schema$g = undefined;
 let _model$f  = undefined;
@@ -12356,7 +12372,7 @@ var LineLoop_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$7 } = Object3D$J;
+const { Object3D: Object3D$7 } = require$$0$2;
 
 let _schema$f = undefined;
 let _model$e  = undefined;
@@ -12435,7 +12451,7 @@ var LineSegments_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$6 } = Object3D$J;
+const { Object3D: Object3D$6 } = require$$0$2;
 
 let _schema$e = undefined;
 let _model$d  = undefined;
@@ -12506,7 +12522,7 @@ var LOD_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$5 } = Object3D$J;
+const { Object3D: Object3D$5 } = require$$0$2;
 
 let _schema$d = undefined;
 let _model$c  = undefined;
@@ -12585,7 +12601,7 @@ var Mesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$4 } = Object3D$J;
+const { Object3D: Object3D$4 } = require$$0$2;
 
 let _schema$c = undefined;
 let _model$b  = undefined;
@@ -12664,7 +12680,7 @@ var Points_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$3 } = Object3D$J;
+const { Object3D: Object3D$3 } = require$$0$2;
 
 let _schema$b = undefined;
 let _model$a  = undefined;
@@ -12736,7 +12752,7 @@ var Skeleton_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$2 } = Object3D$J;
+const { Object3D: Object3D$2 } = require$$0$2;
 
 let _schema$a = undefined;
 let _model$9  = undefined;
@@ -12822,7 +12838,7 @@ var SkinnedMesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$1 } = Object3D$J;
+const { Object3D: Object3D$1 } = require$$0$2;
 
 let _schema$9 = undefined;
 let _model$8  = undefined;
@@ -12886,6 +12902,8 @@ var Sprite_1 = {
     registerModelTo: registerModelTo$8
 };
 
+var Fog$1 = {};
+
 /**
  * @module Schemas/Scenes/Fog
  * @desc Export the ThreeJs Fog Model and Schema for Mongoose.
@@ -12932,15 +12950,11 @@ function _createSchema$8 ( Mongoose ) {
 
 }
 
-var Fog_1 = {
+var Fog_1 = Fog$1.Fog = {
     name:            'Fog',
     getSchemaFrom:   getSchemaFrom$8,
     getModelFrom:    () => null,
     registerModelTo: Mongoose => Mongoose
-};
-
-var Fog$1 = {
-	Fog: Fog_1
 };
 
 /**
@@ -12954,7 +12968,7 @@ var Fog$1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D } = Object3D$J;
+const { Object3D } = require$$0$2;
 const { Fog }      = Fog$1;
 
 let _schema$7 = undefined;
@@ -13019,6 +13033,8 @@ var Scene_1 = {
     getModelFrom: getModelFrom$7,
     registerModelTo: registerModelTo$7
 };
+
+var Texture$6 = {};
 
 /**
  * @module Schemas/Textures/Texture
@@ -13110,15 +13126,11 @@ function registerModelTo$6 ( Mongoose ) {
 
 }
 
-var Texture_1 = {
+var Texture_1 = Texture$6.Texture = {
     name: 'Texture',
     getSchemaFrom: getSchemaFrom$6,
     getModelFrom: getModelFrom$6,
     registerModelTo: registerModelTo$6
-};
-
-var Texture$6 = {
-	Texture: Texture_1
 };
 
 /**
@@ -13130,7 +13142,6 @@ var Texture$6 = {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-
 
 const { Texture: Texture$5 } = Texture$6;
 
@@ -13582,17 +13593,17 @@ function ColorType ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }
 
             if ( !( 'r' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain r property` ) }
-            if ( iteeValidators.isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.r ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
             if ( !( 'g' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain g property` ) }
-            if ( iteeValidators.isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.g ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
             if ( !( 'b' in value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } does not contain b property` ) }
-            if ( iteeValidators.isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.b ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } expected to be a number` ) }
 
             return {
                 r: value.r,
@@ -13675,20 +13686,20 @@ function EulerType ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
 
             if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected x to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected x to be a number` ) }
 
             if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected y to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected y to be a number` ) }
 
             if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected z to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected z to be a number` ) }
 
             if ( !( 'order' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain order property` ) }
-            if ( iteeValidators.isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
+            if ( require$$0$3.isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
             if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
@@ -13768,8 +13779,8 @@ function Matrix3Type ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix3 ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is not an array or Matrix3 instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotArray( value ) && !value.isMatrix3 ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is not an array or Matrix3 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix3 ) {
@@ -13789,11 +13800,11 @@ function Matrix3Type ( Mongoose ) {
 
                 val = result[ index ];
 
-                if ( iteeValidators.isNotNumber( val ) ) {
+                if ( require$$0$3.isNotNumber( val ) ) {
                     throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
-                if ( iteeValidators.isNaN( val ) ) {
+                if ( require$$0$3.isNaN( val ) ) {
                     throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
@@ -13871,8 +13882,8 @@ function Matrix4Type ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }
 
             let result = undefined;
             if ( value.isMatrix4 ) {
@@ -13892,11 +13903,11 @@ function Matrix4Type ( Mongoose ) {
 
                 val = result[ index ];
 
-                if ( iteeValidators.isNotNumber( val ) ) {
+                if ( require$$0$3.isNotNumber( val ) ) {
                     throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
-                if ( iteeValidators.isNaN( val ) ) {
+                if ( require$$0$3.isNaN( val ) ) {
                     throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } does not seem to contain right values. Expect values in range 0 and 1.` )
                 }
 
@@ -13980,20 +13991,20 @@ function QuaternionType ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }
 
             if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
             if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
             if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
             if ( !( 'w' in value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } does not contain w property` ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -14074,14 +14085,14 @@ function Vector2Type ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }
 
             if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
 
             if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -14162,17 +14173,17 @@ function Vector3Type ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector3 ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is not a object or Vector3 instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isVector3 ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is not a object or Vector3 instance` ) }
 
             if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
             if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
             if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -14256,20 +14267,20 @@ function Vector4Type ( Mongoose ) {
          */
         cast ( value ) {
 
-            if ( iteeValidators.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is null or undefined` ) }
-            if ( iteeValidators.isNotObject( value ) && !value.isVector4 ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is not a object or Vector4 instance` ) }
+            if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is null or undefined` ) }
+            if ( require$$0$3.isNotObject( value ) && !value.isVector4 ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is not a object or Vector4 instance` ) }
 
             if ( !( 'x' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain x property` ) }
-            if ( iteeValidators.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.x ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
             if ( !( 'y' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain y property` ) }
-            if ( iteeValidators.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.y ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
             if ( !( 'z' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain z property` ) }
-            if ( iteeValidators.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.z ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
             if ( !( 'w' in value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } does not contain w property` ) }
-            if ( iteeValidators.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
+            if ( require$$0$3.isNotNumber( value.w ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } expected to be a number` ) }
 
             return {
                 x: value.x,
@@ -14308,389 +14319,391 @@ function Vector4Type ( Mongoose ) {
  * @license [MIT]{@link https://opensource.org/licenses/MIT}
  */
 
-var MongoDBThreePlugin = new iteeMongodb.TMongoDBPlugin()
-    .addType( ColorType )
-    .addType( EulerType )
-    .addType( Matrix3Type )
-    .addType( Matrix4Type )
-    .addType( QuaternionType )
-    .addType( Vector2Type )
-    .addType( Vector3Type )
-    .addType( Vector4Type )
-    //    .addSchema( KeyframeTrack )
-    //    .addSchema( BooleanKeyframeTrack )
-    //    .addSchema( ColorKeyframeTrack )
-    .addSchema( Audio_1 )
-    .addSchema( AudioListener_1 )
-    .addSchema( PositionalAudio_1 )
-    .addSchema( ArrayCamera_1 )
-    .addSchema( Camera_1 )
-    .addSchema( CubeCamera_1 )
-    .addSchema( OrthographicCamera_1 )
-    .addSchema( PerspectiveCamera_1 )
-    .addSchema( BufferAttribute_1 )
-    .addSchema( BufferGeometry$l )
-    .addSchema( CurvePath_1 )
-    .addSchema( Face3_1 )
-    .addSchema( Geometry$o )
-    .addSchema( Object3D$I )
-    .addSchema( Path_1 )
-    .addSchema( Shape_1 )
-    .addSchema( ArcCurve_1 )
-    .addSchema( CatmullRomCurve3_1 )
-    .addSchema( CubicBezierCurve_1 )
-    .addSchema( CubicBezierCurve3_1 )
-    .addSchema( Curve_1 )
-    .addSchema( CurveExtras_1 )
-    .addSchema( EllipseCurve_1 )
-    .addSchema( LineCurve_1 )
-    .addSchema( LineCurve3_1 )
-    .addSchema( NURBSCurve_1 )
-    .addSchema( NURBSSurface_1 )
-    .addSchema( QuadraticBezierCurve_1 )
-    .addSchema( QuadraticBezierCurve3_1 )
-    .addSchema( SplineCurve_1 )
-    .addSchema( BoxBufferGeometry_1 )
-    .addSchema( BoxGeometry_1 )
-    .addSchema( CircleBufferGeometry_1 )
-    .addSchema( CircleGeometry_1 )
-    .addSchema( ConeBufferGeometry_1 )
-    .addSchema( ConeGeometry_1 )
-    .addSchema( ConvexGeometry_1 )
-    .addSchema( CylinderBufferGeometry_1 )
-    .addSchema( CylinderGeometry_1 )
-    .addSchema( DecalGeometry_1 )
-    .addSchema( DodecahedronGeometry_1 )
-    .addSchema( EdgesGeometry_1 )
-    .addSchema( ExtrudeBufferGeometry_1 )
-    .addSchema( ExtrudeGeometry_1 )
-    .addSchema( IcosahedronBufferGeometry_1 )
-    .addSchema( IcosahedronGeometry_1 )
-    .addSchema( InstancedBufferGeometry_1 )
-    .addSchema( LatheBufferGeometry_1 )
-    .addSchema( LatheGeometry_1 )
-    .addSchema( OctahedronBufferGeometry_1 )
-    .addSchema( OctahedronGeometry_1 )
-    .addSchema( ParametricBufferGeometry_1 )
-    .addSchema( ParametricGeometry_1 )
-    .addSchema( PlaneBufferGeometry_1 )
-    .addSchema( PlaneGeometry_1 )
-    .addSchema( PolyhedronBufferGeometry_1 )
-    .addSchema( PolyhedronGeometry_1 )
-    .addSchema( RingBufferGeometry_1 )
-    .addSchema( RingGeometry_1 )
-    .addSchema( ShapeBufferGeometry_1 )
-    .addSchema( ShapeGeometry_1 )
-    .addSchema( SphereBufferGeometry_1 )
-    .addSchema( SphereGeometry_1 )
-    .addSchema( TeapotBufferGeometry )
-    .addSchema( TetrahedronBufferGeometry_1 )
-    .addSchema( TetrahedronGeometry_1 )
-    .addSchema( TextBufferGeometry_1 )
-    .addSchema( TextGeometry_1 )
-    .addSchema( TorusBufferGeometry_1 )
-    .addSchema( TorusGeometry_1 )
-    .addSchema( TorusKnotBufferGeometry_1 )
-    .addSchema( TorusKnotGeometry_1 )
-    .addSchema( TubeBufferGeometry_1 )
-    .addSchema( TubeGeometry_1 )
-    .addSchema( WireframeGeometry_1 )
-    .addSchema( ArrowHelper_1 )
-    .addSchema( AxesHelper_1 )
-    .addSchema( Box3Helper_1 )
-    .addSchema( BoxHelper_1 )
-    .addSchema( CameraHelper_1 )
-    .addSchema( DirectionalLightHelper_1 )
-    .addSchema( FaceNormalsHelper_1 )
-    .addSchema( GridHelper_1 )
-    .addSchema( HemisphereLightHelper_1 )
-    .addSchema( PlaneHelper_1 )
-    .addSchema( PointLightHelper_1 )
-    .addSchema( PolarGridHelper_1 )
-    .addSchema( RectAreaLightHelper_1 )
-    .addSchema( SkeletonHelper_1 )
-    .addSchema( SpotLightHelper_1 )
-    .addSchema( VertexNormalsHelper_1 )
-    .addSchema( AmbientLight_1 )
-    .addSchema( DirectionalLight_1 )
-    //    .addSchema( DirectionalLightShadow )
-    .addSchema( HemisphereLight_1 )
-    .addSchema( Light_1 )
-    //    .addSchema( LightShadow )
-    .addSchema( PointLight_1 )
-    .addSchema( RectAreaLight_1 )
-    .addSchema( SpotLight_1 )
-    //    .addSchema( SpotLightShadow )
-    .addSchema( MeshPhongMaterial_1 )
-    .addSchema( LineBasicMaterial_1 )
-    .addSchema( LineDashedMaterial_1 )
-    .addSchema( Material_1 )
-    .addSchema( MeshBasicMaterial_1 )
-    .addSchema( MeshDepthMaterial_1 )
-    .addSchema( MeshLambertMaterial_1 )
-    .addSchema( MeshNormalMaterial_1 )
-    .addSchema( MeshPhysicalMaterial_1 )
-    .addSchema( MeshStandardMaterial_1 )
-    .addSchema( MeshToonMaterial_1 )
-    .addSchema( PointsMaterial_1 )
-    .addSchema( RawShaderMaterial_1 )
-    .addSchema( ShaderMaterial_1 )
-    .addSchema( ShadowMaterial_1 )
-    .addSchema( SpriteMaterial_1 )
-    .addSchema( Box2_1 )
-    .addSchema( Box3_1 )
-    //    .addSchema( ColorConverter )
-    //    .addSchema( Cylindrical )
-    //    .addSchema( Frustum )
-    //    .addSchema( Interpolant )
-    .addSchema( Line3_1 )
-    //    .addSchema( Lut )
-    //    .addSchema( Math )
-    .addSchema( Plane_1 )
-    .addSchema( Ray_1 )
-    .addSchema( Sphere_1 )
-    .addSchema( Spherical_1 )
-    .addSchema( Triangle_1 )
-    .addSchema( Bone_1 )
-    //    .addSchema( Car )
-    //    .addSchema( GPUParticleSystem )
-    .addSchema( Group )
-    //    .addSchema( Gyroscope )
-    .addSchema( ImmediateRenderObject_1 )
-    .addSchema( LensFlare )
-    .addSchema( Line_1 )
-    .addSchema( LineLoop_1 )
-    .addSchema( LineSegments_1 )
-    .addSchema( LOD_1 )
-    //    .addSchema( MarchingCubes )
-    //    .addSchema( MD2Character )
-    //    .addSchema( MD2CharacterComplex )
-    .addSchema( Mesh_1 )
-    //    .addSchema( MorphAnimMesh )
-    //    .addSchema( MorphBlendMesh )
-    //    .addSchema( Ocean )
-    .addSchema( Points_1 )
-    //    .addSchema( Reflector )
-    //    .addSchema( ReflectorRTT )
-    //    .addSchema( Refractor )
-    //    .addSchema( RollerCoaster )
-    //    .addSchema( ShadowMesh )
-    .addSchema( Skeleton_1 )
-    .addSchema( SkinnedMesh_1 )
-    //    .addSchema( Sky )
-    .addSchema( Sprite_1 )
-    //    .addSchema( UCSCharacter )
-    //    .addSchema( Water )
-    //    .addSchema( Water2 )
-    .addSchema( Fog_1 )
-    //    .addSchema( FogExp2 )
-    .addSchema( Scene_1 )
-    .addSchema( CanvasTexture_1 )
-    .addSchema( CompressedTexture_1 )
-    .addSchema( CubeTexture_1 )
-    .addSchema( DataTexture_1 )
-    .addSchema( DepthTexture_1 )
-    .addSchema( Texture_1 )
-    .addSchema( VideoTexture_1 )
-    .addController( TObjects3DController )
-    .addDescriptor( {
-        route:      '/objects',
-        controller: {
-            name:    'TObjects3DController',
-            options: {
-                schemaName: 'Objects3D'
-            },
-            can: {
-                create: {
-                    on:   'put',
-                    over: '/(:id)?'
+var MongoDBThreePlugin = (parameters) => {
+    return new iteeMongodb.TMongoDBPlugin(parameters)
+        .addType( ColorType )
+        .addType( EulerType )
+        .addType( Matrix3Type )
+        .addType( Matrix4Type )
+        .addType( QuaternionType )
+        .addType( Vector2Type )
+        .addType( Vector3Type )
+        .addType( Vector4Type )
+        //    .addSchema( KeyframeTrack )
+        //    .addSchema( BooleanKeyframeTrack )
+        //    .addSchema( ColorKeyframeTrack )
+        .addSchema( Audio_1 )
+        .addSchema( AudioListener_1 )
+        .addSchema( PositionalAudio_1 )
+        .addSchema( ArrayCamera_1 )
+        .addSchema( Camera_1 )
+        .addSchema( CubeCamera_1 )
+        .addSchema( OrthographicCamera_1 )
+        .addSchema( PerspectiveCamera_1 )
+        .addSchema( BufferAttribute_1 )
+        .addSchema( BufferGeometry$l )
+        .addSchema( CurvePath_1 )
+        .addSchema( Face3_1 )
+        .addSchema( Geometry$o )
+        .addSchema( Object3D$I )
+        .addSchema( Path_1 )
+        .addSchema( Shape_1 )
+        .addSchema( ArcCurve_1 )
+        .addSchema( CatmullRomCurve3_1 )
+        .addSchema( CubicBezierCurve_1 )
+        .addSchema( CubicBezierCurve3_1 )
+        .addSchema( Curve_1 )
+        .addSchema( CurveExtras_1 )
+        .addSchema( EllipseCurve_1 )
+        .addSchema( LineCurve_1 )
+        .addSchema( LineCurve3_1 )
+        .addSchema( NURBSCurve_1 )
+        .addSchema( NURBSSurface_1 )
+        .addSchema( QuadraticBezierCurve_1 )
+        .addSchema( QuadraticBezierCurve3_1 )
+        .addSchema( SplineCurve_1 )
+        .addSchema( BoxBufferGeometry_1 )
+        .addSchema( BoxGeometry_1 )
+        .addSchema( CircleBufferGeometry_1 )
+        .addSchema( CircleGeometry_1 )
+        .addSchema( ConeBufferGeometry_1 )
+        .addSchema( ConeGeometry_1 )
+        .addSchema( ConvexGeometry_1 )
+        .addSchema( CylinderBufferGeometry_1 )
+        .addSchema( CylinderGeometry_1 )
+        .addSchema( DecalGeometry_1 )
+        .addSchema( DodecahedronGeometry_1 )
+        .addSchema( EdgesGeometry_1 )
+        .addSchema( ExtrudeBufferGeometry_1 )
+        .addSchema( ExtrudeGeometry_1 )
+        .addSchema( IcosahedronBufferGeometry_1 )
+        .addSchema( IcosahedronGeometry_1 )
+        .addSchema( InstancedBufferGeometry_1 )
+        .addSchema( LatheBufferGeometry_1 )
+        .addSchema( LatheGeometry_1 )
+        .addSchema( OctahedronBufferGeometry_1 )
+        .addSchema( OctahedronGeometry_1 )
+        .addSchema( ParametricBufferGeometry_1 )
+        .addSchema( ParametricGeometry_1 )
+        .addSchema( PlaneBufferGeometry_1 )
+        .addSchema( PlaneGeometry_1 )
+        .addSchema( PolyhedronBufferGeometry_1 )
+        .addSchema( PolyhedronGeometry_1 )
+        .addSchema( RingBufferGeometry_1 )
+        .addSchema( RingGeometry_1 )
+        .addSchema( ShapeBufferGeometry_1 )
+        .addSchema( ShapeGeometry_1 )
+        .addSchema( SphereBufferGeometry_1 )
+        .addSchema( SphereGeometry_1 )
+        .addSchema( TeapotBufferGeometry )
+        .addSchema( TetrahedronBufferGeometry_1 )
+        .addSchema( TetrahedronGeometry_1 )
+        .addSchema( TextBufferGeometry_1 )
+        .addSchema( TextGeometry_1 )
+        .addSchema( TorusBufferGeometry_1 )
+        .addSchema( TorusGeometry_1 )
+        .addSchema( TorusKnotBufferGeometry_1 )
+        .addSchema( TorusKnotGeometry_1 )
+        .addSchema( TubeBufferGeometry_1 )
+        .addSchema( TubeGeometry_1 )
+        .addSchema( WireframeGeometry_1 )
+        .addSchema( ArrowHelper_1 )
+        .addSchema( AxesHelper_1 )
+        .addSchema( Box3Helper_1 )
+        .addSchema( BoxHelper_1 )
+        .addSchema( CameraHelper_1 )
+        .addSchema( DirectionalLightHelper_1 )
+        .addSchema( FaceNormalsHelper_1 )
+        .addSchema( GridHelper_1 )
+        .addSchema( HemisphereLightHelper_1 )
+        .addSchema( PlaneHelper_1 )
+        .addSchema( PointLightHelper_1 )
+        .addSchema( PolarGridHelper_1 )
+        .addSchema( RectAreaLightHelper_1 )
+        .addSchema( SkeletonHelper_1 )
+        .addSchema( SpotLightHelper_1 )
+        .addSchema( VertexNormalsHelper_1 )
+        .addSchema( AmbientLight_1 )
+        .addSchema( DirectionalLight_1 )
+        //    .addSchema( DirectionalLightShadow )
+        .addSchema( HemisphereLight_1 )
+        .addSchema( Light_1 )
+        //    .addSchema( LightShadow )
+        .addSchema( PointLight_1 )
+        .addSchema( RectAreaLight_1 )
+        .addSchema( SpotLight_1 )
+        //    .addSchema( SpotLightShadow )
+        .addSchema( MeshPhongMaterial_1 )
+        .addSchema( LineBasicMaterial_1 )
+        .addSchema( LineDashedMaterial_1 )
+        .addSchema( Material_1 )
+        .addSchema( MeshBasicMaterial_1 )
+        .addSchema( MeshDepthMaterial_1 )
+        .addSchema( MeshLambertMaterial_1 )
+        .addSchema( MeshNormalMaterial_1 )
+        .addSchema( MeshPhysicalMaterial_1 )
+        .addSchema( MeshStandardMaterial_1 )
+        .addSchema( MeshToonMaterial_1 )
+        .addSchema( PointsMaterial_1 )
+        .addSchema( RawShaderMaterial_1 )
+        .addSchema( ShaderMaterial_1 )
+        .addSchema( ShadowMaterial_1 )
+        .addSchema( SpriteMaterial_1 )
+        .addSchema( Box2_1 )
+        .addSchema( Box3_1 )
+        //    .addSchema( ColorConverter )
+        //    .addSchema( Cylindrical )
+        //    .addSchema( Frustum )
+        //    .addSchema( Interpolant )
+        .addSchema( Line3_1 )
+        //    .addSchema( Lut )
+        //    .addSchema( Math )
+        .addSchema( Plane_1 )
+        .addSchema( Ray_1 )
+        .addSchema( Sphere_1 )
+        .addSchema( Spherical_1 )
+        .addSchema( Triangle_1 )
+        .addSchema( Bone_1 )
+        //    .addSchema( Car )
+        //    .addSchema( GPUParticleSystem )
+        .addSchema( Group )
+        //    .addSchema( Gyroscope )
+        .addSchema( ImmediateRenderObject_1 )
+        .addSchema( LensFlare )
+        .addSchema( Line_1 )
+        .addSchema( LineLoop_1 )
+        .addSchema( LineSegments_1 )
+        .addSchema( LOD_1 )
+        //    .addSchema( MarchingCubes )
+        //    .addSchema( MD2Character )
+        //    .addSchema( MD2CharacterComplex )
+        .addSchema( Mesh_1 )
+        //    .addSchema( MorphAnimMesh )
+        //    .addSchema( MorphBlendMesh )
+        //    .addSchema( Ocean )
+        .addSchema( Points_1 )
+        //    .addSchema( Reflector )
+        //    .addSchema( ReflectorRTT )
+        //    .addSchema( Refractor )
+        //    .addSchema( RollerCoaster )
+        //    .addSchema( ShadowMesh )
+        .addSchema( Skeleton_1 )
+        .addSchema( SkinnedMesh_1 )
+        //    .addSchema( Sky )
+        .addSchema( Sprite_1 )
+        //    .addSchema( UCSCharacter )
+        //    .addSchema( Water )
+        //    .addSchema( Water2 )
+        .addSchema( Fog_1 )
+        //    .addSchema( FogExp2 )
+        .addSchema( Scene_1 )
+        .addSchema( CanvasTexture_1 )
+        .addSchema( CompressedTexture_1 )
+        .addSchema( CubeTexture_1 )
+        .addSchema( DataTexture_1 )
+        .addSchema( DepthTexture_1 )
+        .addSchema( Texture_1 )
+        .addSchema( VideoTexture_1 )
+        .addController( TObjects3DController )
+        .addDescriptor( {
+            route:      '/objects',
+            controller: {
+                name:    'TObjects3DController',
+                options: {
+                    schemaName: 'Objects3D'
                 },
-                read: {
-                    on:   'post',
-                    over: '/(:id)?'
-                },
-                update: {
-                    on:   'patch',
-                    over: '/(:id)?'
-                },
-                delete: {
-                    on:   'delete',
-                    over: '/(:id)?'
+                can: {
+                    create: {
+                        on:   'put',
+                        over: '/(:id)?'
+                    },
+                    read: {
+                        on:   'post',
+                        over: '/(:id)?'
+                    },
+                    update: {
+                        on:   'patch',
+                        over: '/(:id)?'
+                    },
+                    delete: {
+                        on:   'delete',
+                        over: '/(:id)?'
+                    }
                 }
             }
-        }
-    } )
-    .addController( iteeMongodb.TMongooseController )
-    .addDescriptor( {
-        route:      '/curves',
-        controller: {
-            name:    'TMongooseController',
-            options: {
-                schemaName: 'Curves'
-            },
-            can: {
-                create: {
-                    on:   'put',
-                    over: '/(:id)?'
+        } )
+        .addController( iteeMongodb.TMongooseController )
+        .addDescriptor( {
+            route:      '/curves',
+            controller: {
+                name:    'TMongooseController',
+                options: {
+                    schemaName: 'Curves'
                 },
-                read: {
-                    on:   'post',
-                    over: '/(:id)?'
-                },
-                update: {
-                    on:   'patch',
-                    over: '/(:id)?'
-                },
-                delete: {
-                    on:   'delete',
-                    over: '/(:id)?'
+                can: {
+                    create: {
+                        on:   'put',
+                        over: '/(:id)?'
+                    },
+                    read: {
+                        on:   'post',
+                        over: '/(:id)?'
+                    },
+                    update: {
+                        on:   'patch',
+                        over: '/(:id)?'
+                    },
+                    delete: {
+                        on:   'delete',
+                        over: '/(:id)?'
+                    }
                 }
             }
-        }
-    } )
-    .addDescriptor( {
-        route:      '/geometries',
-        controller: {
-            name:    'TMongooseController',
-            options: {
-                schemaName: 'Geometries'
-            },
-            can: {
-                create: {
-                    on:   'put',
-                    over: '/(:id)?'
+        } )
+        .addDescriptor( {
+            route:      '/geometries',
+            controller: {
+                name:    'TMongooseController',
+                options: {
+                    schemaName: 'Geometries'
                 },
-                read: {
-                    on:   'post',
-                    over: '/(:id)?'
-                },
-                update: {
-                    on:   'patch',
-                    over: '/(:id)?'
-                },
-                delete: {
-                    on:   'delete',
-                    over: '/(:id)?'
+                can: {
+                    create: {
+                        on:   'put',
+                        over: '/(:id)?'
+                    },
+                    read: {
+                        on:   'post',
+                        over: '/(:id)?'
+                    },
+                    update: {
+                        on:   'patch',
+                        over: '/(:id)?'
+                    },
+                    delete: {
+                        on:   'delete',
+                        over: '/(:id)?'
+                    }
                 }
             }
-        }
-    } )
-    .addDescriptor( {
-        route:      '/materials',
-        controller: {
-            name:    'TMongooseController',
-            options: {
-                schemaName: 'Materials'
-            },
-            can: {
-                create: {
-                    on:   'put',
-                    over: '/(:id)?'
+        } )
+        .addDescriptor( {
+            route:      '/materials',
+            controller: {
+                name:    'TMongooseController',
+                options: {
+                    schemaName: 'Materials'
                 },
-                read: {
-                    on:   'post',
-                    over: '/(:id)?'
-                },
-                update: {
-                    on:   'patch',
-                    over: '/(:id)?'
-                },
-                delete: {
-                    on:   'delete',
-                    over: '/(:id)?'
+                can: {
+                    create: {
+                        on:   'put',
+                        over: '/(:id)?'
+                    },
+                    read: {
+                        on:   'post',
+                        over: '/(:id)?'
+                    },
+                    update: {
+                        on:   'patch',
+                        over: '/(:id)?'
+                    },
+                    delete: {
+                        on:   'delete',
+                        over: '/(:id)?'
+                    }
                 }
             }
-        }
-    } )
-    .addDescriptor( {
-        route:      '/textures',
-        controller: {
-            name:    'TMongooseController',
-            options: {
-                schemaName: 'Textures'
-            },
-            can: {
-                create: {
-                    on:   'put',
-                    over: '/(:id)?'
+        } )
+        .addDescriptor( {
+            route:      '/textures',
+            controller: {
+                name:    'TMongooseController',
+                options: {
+                    schemaName: 'Textures'
                 },
-                read: {
-                    on:   'post',
-                    over: '/(:id)?'
-                },
-                update: {
-                    on:   'patch',
-                    over: '/(:id)?'
-                },
-                delete: {
-                    on:   'delete',
-                    over: '/(:id)?'
+                can: {
+                    create: {
+                        on:   'put',
+                        over: '/(:id)?'
+                    },
+                    read: {
+                        on:   'post',
+                        over: '/(:id)?'
+                    },
+                    update: {
+                        on:   'patch',
+                        over: '/(:id)?'
+                    },
+                    delete: {
+                        on:   'delete',
+                        over: '/(:id)?'
+                    }
                 }
             }
-        }
-    } )
-    .addController( iteeDatabase.TAbstractConverterManager )
-    .addDescriptor( {
-        route:      '/uploads',
-        controller: {
-            name:    'TAbstractConverterManager',
-            options: {
-                useNext:    true,
-                converters: {
-                    JsonToThree:    new JsonToThree(),
-                    ShpToThree:     new ShpToThree(),
-                    DbfToThree:     new DbfToThree(),
-                    FbxToThree:     new FbxToThree(),
-                    ColladaToThree: new ColladaToThree(),
-                    StlToThree:     new StlToThree(),
-                    TdsToThree:     new TdsToThree(),
-                    MtlToThree:     new MtlToThree(),
-                    ObjToThree:     new Obj2ToThree()
+        } )
+        .addController( iteeDatabase.TAbstractConverterManager )
+        .addDescriptor( {
+            route:      '/uploads',
+            controller: {
+                name:    'TAbstractConverterManager',
+                options: {
+                    useNext:    true,
+                    converters: {
+                        JsonToThree:    new JsonToThree(),
+                        ShpToThree:     new ShpToThree(),
+                        DbfToThree:     new DbfToThree(),
+                        FbxToThree:     new FbxToThree(),
+                        ColladaToThree: new ColladaToThree(),
+                        StlToThree:     new StlToThree(),
+                        TdsToThree:     new TdsToThree(),
+                        MtlToThree:     new MtlToThree(),
+                        ObjToThree:     new Obj2ToThree()
+                    },
+                    rules: [ {
+                        on:  '.json',
+                        use: 'JsonToThree'
+                    }, {
+                        on:  '.dae',
+                        use: 'ColladaToThree'
+                    }, {
+                        on:  '.fbx',
+                        use: 'FbxToThree'
+                    }, {
+                        on:  '.stl',
+                        use: 'StlToThree'
+                    }, {
+                        on:  '.3ds',
+                        use: 'TdsToThree'
+                    }, {
+                        on:  '.shp',
+                        use: 'ShpToThree'
+                    }, {
+                        on:  '.dbf',
+                        use: 'DbfToThree'
+                    }, {
+                        on:  [ '.shp', '.dbf' ],
+                        use: [ 'ShpToThree', 'DbfToThree' ]
+                    }, {
+                        on:  '.mtl',
+                        use: 'MtlToThree'
+                    }, {
+                        on:  '.obj',
+                        use: 'ObjToThree'
+                    }, {
+                        on:  [ '.mtl', '.obj' ],
+                        use: [ 'MtlToThree', 'ObjToThree' ]
+                    } ],
+                    inserter: ThreeToMongoDB
                 },
-                rules: [ {
-                    on:  '.json',
-                    use: 'JsonToThree'
-                }, {
-                    on:  '.dae',
-                    use: 'ColladaToThree'
-                }, {
-                    on:  '.fbx',
-                    use: 'FbxToThree'
-                }, {
-                    on:  '.stl',
-                    use: 'StlToThree'
-                }, {
-                    on:  '.3ds',
-                    use: 'TdsToThree'
-                }, {
-                    on:  '.shp',
-                    use: 'ShpToThree'
-                }, {
-                    on:  '.dbf',
-                    use: 'DbfToThree'
-                }, {
-                    on:  [ '.shp', '.dbf' ],
-                    use: [ 'ShpToThree', 'DbfToThree' ]
-                }, {
-                    on:  '.mtl',
-                    use: 'MtlToThree'
-                }, {
-                    on:  '.obj',
-                    use: 'ObjToThree'
-                }, {
-                    on:  [ '.mtl', '.obj' ],
-                    use: [ 'MtlToThree', 'ObjToThree' ]
-                } ],
-                inserter: ThreeToMongoDB
-            },
-            can: {
-                processFiles: {
-                    on:   'post',
-                    over: '/'
+                can: {
+                    processFiles: {
+                        on:   'post',
+                        over: '/'
+                    }
                 }
             }
-        }
-    } );
+        } )
+};
 
 module.exports = MongoDBThreePlugin;
 //# sourceMappingURL=itee-plugin-three.cjs.js.map

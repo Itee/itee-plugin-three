@@ -116,14 +116,12 @@
 
 // TODO: The path displacement logic need to be implemented under CameraControls
 
-import {
-    DefaultLogger as TLogger,
-    Keys
-}                            from 'itee-client'
+import { Keys }                     from 'itee-client'
+import { DefaultLogger as TLogger } from 'itee-core'
 import {
     isNull,
     isUndefined
-}                            from 'itee-validators'
+}                                   from 'itee-validators'
 import {
     Camera,
     EventDispatcher,
@@ -131,8 +129,8 @@ import {
     Object3D,
     Quaternion,
     Vector3
-}                            from 'three-full'
-import { CameraControlMode } from './CameraControls'
+}                                   from 'three-full'
+import { CameraControlMode }        from './CameraControls'
 
 const PI_2    = Math.PI / 2
 const STATE   = {

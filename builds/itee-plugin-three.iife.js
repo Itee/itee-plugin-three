@@ -1,11 +1,12 @@
-console.log('Itee.Plugin.Three v1.5.0 - Standalone')
+console.log('Itee.Plugin.Three v1.5.2 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
-this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, iteeValidators) {
+this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, iteeUtils, iteeValidators) {
 	'use strict';
 
 	if( iteeValidators === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.') }
 	if( iteeUtils === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.') }
+	if( iteeCore === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Core to be defined first. Please check your scripts loading order.') }
 	if( iteeClient === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.') }
 	if( threeFull === undefined ) { throw new Error('Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.') }
 
@@ -54,7 +55,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
+	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
@@ -914,7 +915,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        const _parameters = {
 	            ...{
 	                manager: threeFull.DefaultLoadingManager,
-	                logger:  iteeClient.DefaultLogger,
+	                logger:  iteeCore.DefaultLogger,
 	                reader:  new iteeClient.TBinaryReader()
 	            }, ...parameters
 	        };
@@ -1717,7 +1718,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeClient.DefaultLogger ) {
+	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
@@ -2774,7 +2775,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 	        const _parameters = {
 	            ...{
 	                manager:      threeFull.DefaultLoadingManager,
-	                logger:       iteeClient.DefaultLogger,
+	                logger:       iteeCore.DefaultLogger,
 	                reader:       new iteeClient.TBinaryReader(),
 	                globalOffset: new threeFull.Vector3( 0, 0, 0 ),
 	                worldAxis:    {
@@ -3500,7 +3501,7 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	        const _parameters = {
 	            ...{
-	                logger:     iteeClient.DefaultLogger,
+	                logger:     iteeCore.DefaultLogger,
 	                camera:     null,
 	                target:     new threeFull.Object3D(),
 	                mode:       CameraControlMode.Orbit,
@@ -11368,5 +11369,5 @@ this.Itee.Plugin.Three = (function (exports, iteeClient, threeFull, iteeUtils, i
 
 	return exports;
 
-}({}, Itee.Client, Three, Itee.Utils, Itee.Validators));
+}({}, Itee.Core, Three, Itee.Client, Itee.Utils, Itee.Validators));
 //# sourceMappingURL=itee-plugin-three.iife.js.map

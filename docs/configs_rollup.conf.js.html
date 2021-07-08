@@ -120,13 +120,13 @@
  * @requires {@link module: [rollup-plugin-terser]{@link https://github.com/TrySound/rollup-plugin-terser}}
  */
 
-const packageInfos = require( '../package' )
-const commonjs     = require( 'rollup-plugin-commonjs' )
-const path         = require( 'path' )
-const replace      = require( 'rollup-plugin-re' )
-const resolve      = require( 'rollup-plugin-node-resolve' )
-const terser       = require( 'rollup-plugin-terser' ).terser
-const alias       = require( 'rollup-plugin-alias' )
+const packageInfos    = require( '../package' )
+const path            = require( 'path' )
+const alias           = require( '@rollup/plugin-alias' )
+const commonjs        = require( '@rollup/plugin-commonjs' )
+const { nodeResolve } = require( '@rollup/plugin-node-resolve' )
+const terser          = require( 'rollup-plugin-terser' ).terser
+const replace         = require( 'rollup-plugin-re' )
 
 function _computeBanner ( name, format ) {
 
@@ -152,11 +152,11 @@ function _computeBanner ( name, format ) {
             break
 
         default:
-            throw new RangeError( `Invalid switch parameter: ${format}` )
+            throw new RangeError( `Invalid switch parameter: ${ format }` )
 
     }
 
-    return `console.log('${packageName} v${packageInfos.version} - ${prettyFormat}')`
+    return `console.log('${ packageName } v${ packageInfos.version } - ${ prettyFormat }')`
 
 }
 
@@ -165,6 +165,7 @@ function _computeIntro () {
     return '' +
         'if( iteeValidators === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeUtils === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( iteeCore === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Core to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeClient === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( threeFull === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
 
@@ -197,7 +198,7 @@ function CreateRollupConfigs ( options ) {
             const env        = envs[ envIndex ]
             const isProd     = ( env.includes( 'prod' ) )
             const format     = formats[ formatIndex ]
-            const outputPath = ( isProd ) ? path.join( output, `${fileName}.${format}.min.js` ) : path.join( output, `${fileName}.${format}.js` )
+            const outputPath = ( isProd ) ? path.join( output, `${ fileName }.${ format }.min.js` ) : path.join( output, `${ fileName }.${ format }.js` )
 
             configs.push( {
                 input:    input,
@@ -205,6 +206,7 @@ function CreateRollupConfigs ( options ) {
                     'itee-client',
                     'itee-database',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'itee-mongodb',
                     'bson',
@@ -213,6 +215,7 @@ function CreateRollupConfigs ( options ) {
                 ] : [
                     'itee-client',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'three-full'
                 ],
@@ -275,20 +278,24 @@ function CreateRollupConfigs ( options ) {
                     commonjs( {
                         include: [ 'sources/backend/**', 'node_modules/**' ]
                     } ),
-                    resolve( {
+                    nodeResolve( {
                         preferBuiltins: true
                     } ),
                     isProd &amp;&amp; terser()
                 ],
-                onwarn: ( { loc, frame, message } ) => {
+                onwarn: ( {
+                    loc,
+                    frame,
+                    message
+                } ) => {
 
                     // Ignore some errors
                     if ( message.includes( 'Circular dependency' ) ) { return }
 
                     if ( loc ) {
-                        process.stderr.write( `/!\\ ${loc.file} (${loc.line}:${loc.column}) ${frame} ${message}\n` )
+                        process.stderr.write( `/!\\ ${ loc.file } (${ loc.line }:${ loc.column }) ${ frame } ${ message }\n` )
                     } else {
-                        process.stderr.write( `/!\\ ${message}\n` )
+                        process.stderr.write( `/!\\ ${ message }\n` )
                     }
 
                 },
@@ -301,6 +308,7 @@ function CreateRollupConfigs ( options ) {
                     globals: {
                         'itee-client':     'Itee.Client',
                         'itee-utils':      'Itee.Utils',
+                        'itee-core':       'Itee.Core',
                         'itee-validators': 'Itee.Validators',
                         'three-full':      'Three'
                     },

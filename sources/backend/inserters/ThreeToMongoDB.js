@@ -10,7 +10,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { DefaultLogger }         from 'itee-client'
+import { DefaultLogger }         from 'itee-core'
 import { TAbstractDataInserter } from 'itee-database'
 import {
     isArray,
@@ -31,7 +31,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
-     * @param {TLogger} [parameters.logger=Itee.Client.DefaultLogger]
+     * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
     constructor ( parameters = {} ) {
 

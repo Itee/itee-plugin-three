@@ -32,10 +32,10 @@
 /* eslint-env browser */
 
 import {
-    DefaultLogger,
     TBinaryReader,
     Byte
 }                                from 'itee-client'
+import { DefaultLogger }         from 'itee-core'
 import {
     BufferAttribute,
     BufferGeometry,
