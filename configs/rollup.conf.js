@@ -58,6 +58,7 @@ function _computeIntro () {
     return '' +
         'if( iteeValidators === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeUtils === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Utils to be defined first. Please check your scripts loading order.\') }' + '\n' +
+        'if( iteeCore === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Core to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( iteeClient === undefined ) { throw new Error(\'Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.\') }' + '\n' +
         'if( threeFull === undefined ) { throw new Error(\'Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.\') }' + '\n'
 
@@ -93,11 +94,12 @@ function CreateRollupConfigs ( options ) {
             const outputPath = ( isProd ) ? path.join( output, `${ fileName }.${ format }.min.js` ) : path.join( output, `${ fileName }.${ format }.js` )
 
             configs.push( {
-                input:     input,
-                external:  ( format === 'cjs' ) ? [
+                input:    input,
+                external: ( format === 'cjs' ) ? [
                     'itee-client',
                     'itee-database',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'itee-mongodb',
                     'bson',
@@ -106,10 +108,11 @@ function CreateRollupConfigs ( options ) {
                 ] : [
                     'itee-client',
                     'itee-utils',
+                    'itee-core',
                     'itee-validators',
                     'three-full'
                 ],
-                plugins:   [
+                plugins: [
                     ( format === 'cjs' ) && alias( {
                         resolve: [ '.js' ],
                         entries: [
@@ -173,7 +176,7 @@ function CreateRollupConfigs ( options ) {
                     } ),
                     isProd && terser()
                 ],
-                onwarn:    ( {
+                onwarn: ( {
                     loc,
                     frame,
                     message
@@ -198,6 +201,7 @@ function CreateRollupConfigs ( options ) {
                     globals: {
                         'itee-client':     'Itee.Client',
                         'itee-utils':      'Itee.Utils',
+                        'itee-core':       'Itee.Core',
                         'itee-validators': 'Itee.Validators',
                         'three-full':      'Three'
                     },

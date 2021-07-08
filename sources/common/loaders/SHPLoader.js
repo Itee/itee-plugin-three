@@ -15,10 +15,10 @@
 /* eslint-env browser */
 
 import {
-    DefaultLogger,
     Endianness,
     TBinaryReader
 }                                from 'itee-client'
+import { DefaultLogger }         from 'itee-core'
 import {
     ringClockwise,
     ringContainsSome,

@@ -59,6 +59,7 @@
   },
   "peerDependencies": {
     "itee-client": "^7.4.3",
+    "itee-core": "^1.0.3",
     "itee-database": "^8.1.2",
     "itee-mongodb": "^1.1.3",
     "itee-utils": "^5.2.3",

@@ -17,10 +17,10 @@
  */
 
 import {
-    DefaultLogger,
     Keys,
     Mouse
 }                          from 'itee-client'
+import { DefaultLogger }         from 'itee-core'
 import {
     degreesToRadians,
     toEnum
