@@ -15,51 +15,62 @@
 function CreateJsdocConfiguration () {
 
     return {
-        'tags': {
-            'allowUnknownTags': false,
-            'dictionaries':     [ 'jsdoc', 'closure' ]
+        tags: {
+            allowUnknownTags: false,
+            dictionaries:     [ 'jsdoc', 'closure' ]
         },
-        'source': {
-            'include':        [ 'README.md' ],
-            'includePattern': '.+\\.js(doc|x)?$',
-            'excludePattern': '(node_modules|docs|builds|tests)'
+        source: {
+            include:        [ 'README.md' ],
+            includePattern: '.+\\.js(doc|x)?$',
+            excludePattern: '(node_modules|docs|builds|tests)',
+            exclude:        []
         },
-        'sourceType':   'module',
-        'plugins':      [],
-        'recurseDepth': 2,
-        'opts':         {
-            'encoding':    'utf8',
-            'destination': './docs/',
-            'recurse':     true,
-            'verbose':     false,
-            'private':     true
+        sourceType:   'module',
+        plugins:      [],
+        recurseDepth: 5,
+        opts:         {
+            access:      'all',
+            debug:       false,
+            encoding:    'utf8',
+            destination: 'docs',
+            recurse:     true,
+            verbose:     true,
+            private:     true
         },
-        'templates': {
-            'includeDate': false,
-            'navType':     'inline',
-            'theme':       [
-                                     'cerulean',
-                                     'cosmo',
-                                     'darkly',
-                                     'cyborg',
-                                     'flatly',
-                                     'journal',
-                                     'lumen',
-                                     'paper',
-                                     'readable',
-                                     'sandstone',
-                                     'simplex',
-                                     'slate',
-                                     'spacelab',
-                                     'superhero',
-                                     'united',
-                                     'yeti'
-                                 ][ 3 ],
-            'linenums':          true,
-            'collapseSymbols':   true,
-            'outputSourceFiles': true,
-            'sort':              'longname, version, since',
-            'search':            true
+        templates: {
+            cleverLinks:       false,
+            monospaceLinks:    false,
+            navType:           'inline',
+            theme:             [
+                                   'cerulean',
+                                   'cosmo',
+                                   'darkly',
+                                   'cyborg',
+                                   'flatly',
+                                   'journal',
+                                   'lumen',
+                                   'paper',
+                                   'readable',
+                                   'sandstone',
+                                   'simplex',
+                                   'slate',
+                                   'spacelab',
+                                   'superhero',
+                                   'united',
+                                   'yeti'
+                               ][ 3 ],
+            syntaxTheme:       'dark',
+            linenums:          true,
+            collapseSymbols:   false,
+            sort:              'longname, version, since',
+            search:            true,
+            systemName:        'Itee-Plugin-Three',
+            footer:            '',
+            copyright:         'Copyright 2015-Present <a href="https://github.com/Itee">Itee</a> (Tristan Valcke)',
+            includeDate:       false,
+            inverseNav:        false,
+            outputSourceFiles: true,
+            outputSourcePath:  true
         }
     }
 
