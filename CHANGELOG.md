@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/Itee/itee-plugin-three/compare/v1.5.2...v1.5.3) (2021-07-21)
+
+
+### Bug Fixes
+
+* **readme:** fix readme tags ([abe9305](https://github.com/Itee/itee-plugin-three/commit/abe93050a62f4895bdcbebb8e8cc246d6dfafd33))
+
 ## [1.5.2](https://github.com/Itee/itee-plugin-three/compare/v1.5.1...v1.5.2) (2021-07-08)
 
 
