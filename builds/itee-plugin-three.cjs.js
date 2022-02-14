@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.4 - CommonJs')
+console.log('Itee.Plugin.Three v1.5.5 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');

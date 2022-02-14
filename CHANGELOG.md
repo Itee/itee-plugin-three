@@ -1,3 +1,10 @@
+## [1.5.5](https://github.com/Itee/itee-plugin-three/compare/v1.5.4...v1.5.5) (2022-02-14)
+
+
+### Bug Fixes
+
+* **package:** update deps to latest version ([dd12dd1](https://github.com/Itee/itee-plugin-three/commit/dd12dd17cbff00f815ea8b289d3ce5f6a2680124))
+
 ## [1.5.4](https://github.com/Itee/itee-plugin-three/compare/v1.5.3...v1.5.4) (2022-02-14)
 
 
