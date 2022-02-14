@@ -6,10 +6,10 @@
 import {
     ConeBufferGeometry,
     Mesh
-}                                    from 'three-full'
-import { AbstractHandle }            from './AbstractHandle'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { BoxHitbox }                 from '../hitboxes/BoxHitbox'
+}                                from 'three-full'
+import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
+import { BoxHitbox }             from '../hitboxes/BoxHitbox'
+import { AbstractHandle }        from './AbstractHandle'
 
 class ConeHandle extends AbstractHandle {
 

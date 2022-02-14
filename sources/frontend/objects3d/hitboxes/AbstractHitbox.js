@@ -4,10 +4,10 @@
  */
 
 import {
-    DoubleSide,
     BufferGeometry,
-    MeshBasicMaterial,
-    Mesh
+    DoubleSide,
+    Mesh,
+    MeshBasicMaterial
 } from 'three-full'
 //import { DoubleSide }        from 'three-full/sources/constants'
 //import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'

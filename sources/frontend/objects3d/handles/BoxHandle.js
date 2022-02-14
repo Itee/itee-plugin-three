@@ -4,19 +4,19 @@
  */
 
 import {
-    EdgesGeometry,
     BoxBufferGeometry,
+    EdgesGeometry,
     LineSegments,
     Mesh
 }                                    from 'three-full'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { BoxHitbox }                 from '../hitboxes/BoxHitbox'
 //import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
 //import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
 //import { LineSegments }              from 'three-full/sources/objects/LineSegments'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { BoxHitbox }                 from '../hitboxes/BoxHitbox'
 
 class BoxHandle extends AbstractHandle {
 

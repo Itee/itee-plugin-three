@@ -4,8 +4,8 @@
  */
 
 import {
-    Float32BufferAttribute,
     BufferGeometry,
+    Float32BufferAttribute,
     Vector3
 } from 'three-full'
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'

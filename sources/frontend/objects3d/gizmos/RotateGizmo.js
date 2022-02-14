@@ -4,21 +4,21 @@
  */
 
 import {
-    Float32BufferAttribute,
     BufferGeometry,
-    OctahedronBufferGeometry,
+    Float32BufferAttribute,
     Line,
-    Mesh
+    Mesh,
+    OctahedronBufferGeometry
 }                                    from 'three-full'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { TorusHitbox }               from '../hitboxes/TorusHitbox'
 //import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
 //import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractGizmo }             from './AbstractGizmo'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { TorusHitbox }               from '../hitboxes/TorusHitbox'
 
 class RotateGizmo extends AbstractGizmo {
 
@@ -92,7 +92,7 @@ class RotateGizmo extends AbstractGizmo {
         //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
 
         this._setupHandles( this.handleGizmos )
-//        this.init()
+        //        this.init()
 
     }
 
@@ -102,7 +102,7 @@ class RotateGizmo extends AbstractGizmo {
         if ( !isIntersected ) { return }
 
         for ( let handle of this.children ) {
-            if(handle.name === this.intersectPlane.name) {continue}
+            if ( handle.name === this.intersectPlane.name ) {continue}
             handle.raycast( raycaster, intersects )
         }
 

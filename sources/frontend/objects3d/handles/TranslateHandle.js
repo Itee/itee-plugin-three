@@ -9,19 +9,19 @@ import {
 }                                    from 'itee-validators'
 import {
     ConeBufferGeometry,
-    Vector3,
     Line,
-    Mesh
+    Mesh,
+    Vector3
 }                                    from 'three-full'
+import { LineGeometry }              from '../../geometries/LineGeometry'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
 //import { ConeBufferGeometry }        from 'three-full/sources/geometries/ConeGeometry'
 //import { Vector3 }                   from 'three-full/sources/math/Vector3'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
-import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { LineGeometry }              from '../../geometries/LineGeometry'
 
 class TranslateHandle extends AbstractHandle {
 

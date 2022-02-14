@@ -5,18 +5,18 @@
 
 import {
     EdgesGeometry,
-    OctahedronBufferGeometry,
     LineSegments,
-    Mesh
+    Mesh,
+    OctahedronBufferGeometry
 }                                    from 'three-full'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { OctahedricalHitbox }        from '../hitboxes/OctahedricalHitbox'
 //import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
 //import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
 //import { LineSegments }              from 'three-full/sources/objects/LineSegments'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { OctahedricalHitbox }        from '../hitboxes/OctahedricalHitbox'
 
 class OctahedricalHandle extends AbstractHandle {
 

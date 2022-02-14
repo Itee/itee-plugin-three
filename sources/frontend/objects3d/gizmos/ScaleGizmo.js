@@ -5,11 +5,11 @@
 
 import { degreesToRadians }   from 'itee-utils'
 import { Vector3 }            from 'three-full'
-//import { Vector3 }            from 'three-full/sources/math/Vector3'
-import { AbstractGizmo }      from './AbstractGizmo'
 import { OctahedricalHandle } from '../handles/OctahedricalHandle'
 import { PlaneHandle }        from '../handles/PlaneHandle'
 import { ScaleHandle }        from '../handles/ScaleHandle'
+//import { Vector3 }            from 'three-full/sources/math/Vector3'
+import { AbstractGizmo }      from './AbstractGizmo'
 
 class ScaleGizmo extends AbstractGizmo {
 
@@ -60,7 +60,7 @@ class ScaleGizmo extends AbstractGizmo {
         }
 
         this._setupHandles( this.handleGizmos )
-//        this.init()
+        //        this.init()
 
     }
 
@@ -70,7 +70,7 @@ class ScaleGizmo extends AbstractGizmo {
         if ( !isIntersected ) { return }
 
         for ( let handle of this.children ) {
-            if(handle.name === this.intersectPlane.name) {continue}
+            if ( handle.name === this.intersectPlane.name ) {continue}
             handle.raycast( raycaster, intersects )
         }
 

@@ -8,14 +8,14 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager }   from 'itee-client'
+import { TDataBaseManager }  from 'itee-client'
 import {
     isDefined,
     isNotBoolean,
     isNotEmptyArray,
     isNull,
     isUndefined
-}                             from 'itee-validators'
+}                            from 'itee-validators'
 //import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera'
 //import { PerspectiveCamera }  from 'three-full/sources/cameras/PerspectiveCamera'
 //import { Object3D }           from 'three-full/sources/core/Object3D'
@@ -63,8 +63,8 @@ import {
     SpotLight,
     Sprite
 }                            from 'three-full'
-import { GeometriesManager }  from './GeometriesManager'
-import { MaterialsManager }   from './MaterialsManager'
+import { GeometriesManager } from './GeometriesManager'
+import { MaterialsManager }  from './MaterialsManager'
 
 /**
  * @class
@@ -622,7 +622,7 @@ class ObjectsManager extends TDataBaseManager {
 
         // Else fill geometries and materials for filtered objects
         let geometriesMap = undefined
-        let materialsMap = undefined
+        let materialsMap  = undefined
 
         this._retrieveGeometriesOf( objectsArray, ( geometries ) => {
             geometriesMap = geometries

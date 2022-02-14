@@ -28,6 +28,36 @@ import {
  */
 class ThreeToMongoDB extends TAbstractDataInserter {
 
+    // Todo: Use itee-utils
+    static _arrayify ( data ) {
+
+        let array = []
+
+        if ( isDefined( data ) ) {
+
+            if ( isArray( data ) ) {
+                array = data
+            } else {
+                array = [ data ]
+            }
+
+        }
+
+        return array
+
+    }
+
+    // Utils
+    static _toLog ( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
+
+    }
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
@@ -56,38 +86,6 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         // Update objects in database if existing in file
 
     }
-
-    // Utils
-    // Todo: Use itee-utils
-    static _arrayify ( data ) {
-
-        let array = []
-
-        if ( isDefined( data ) ) {
-
-            if ( isArray( data ) ) {
-                array = data
-            } else {
-                array = [ data ]
-            }
-
-        }
-
-        return array
-
-    }
-
-    static _toLog ( object ) {
-
-        return JSON.stringify( {
-            type: object.type || 'undefined',
-            name: object.name || 'undefined',
-            uuid: object.uuid || 'undefined',
-            id:   object._id || 'undefined'
-        } )
-
-    }
-
     /**
      * Main entry point to insert data into database; It apply merge strategy over data to insert.
      *
@@ -197,7 +195,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @private
      */
     async _parseObjects ( objects = [], parentId = null ) {
-        this.logger.debug(`_parseObjects(...)`)
+        this.logger.debug( `_parseObjects(...)` )
 
         const _objects = ThreeToMongoDB._arrayify( objects )
         if ( isEmptyArray( _objects ) ) {

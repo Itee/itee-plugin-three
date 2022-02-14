@@ -4,6 +4,7 @@
  */
 
 import { LineBasicMaterial } from 'three-full'
+
 //import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
 
 class HighlightableLineMaterial extends LineBasicMaterial {

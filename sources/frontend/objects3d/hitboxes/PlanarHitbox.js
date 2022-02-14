@@ -4,8 +4,8 @@
  */
 
 import {
-    Float32BufferAttribute,
-    BufferGeometry
+    BufferGeometry,
+    Float32BufferAttribute
 }                         from 'three-full'
 import { AbstractHitbox } from './AbstractHitbox'
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'

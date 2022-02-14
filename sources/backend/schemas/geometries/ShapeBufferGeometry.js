@@ -32,7 +32,7 @@ function _createSchema ( Mongoose ) {
     const Vector2 = Types.Vector2
 
     const NestedCurveSchema = new Schema( {
-        type: {
+        type:               {
             type:    String,
             default: 'Curve'
         },

@@ -13,15 +13,15 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager }        from 'itee-client'
-import { toEnum }                  from 'itee-utils'
+import { TDataBaseManager } from 'itee-client'
+import { toEnum }           from 'itee-utils'
 import {
     isDefined,
     isNotBoolean,
     isNull,
     isObject,
     isUndefined
-}                                  from 'itee-validators'
+}                           from 'itee-validators'
 //import { BufferAttribute }         from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }          from 'three-full/sources/core/BufferGeometry'
 //import { Face3 }                   from 'three-full/sources/core/Face3'
