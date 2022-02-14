@@ -9,19 +9,19 @@ import {
 }                                    from 'itee-validators'
 import {
     BoxBufferGeometry,
-    Vector3,
     Line,
-    Mesh
+    Mesh,
+    Vector3
 }                                    from 'three-full'
+import { LineGeometry }              from '../../geometries/LineGeometry'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
 //import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
 //import { Vector3 }                   from 'three-full/sources/math/Vector3'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
 import { AbstractHandle }            from './AbstractHandle'
-import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
-import { LineGeometry }              from '../../geometries/LineGeometry'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
 
 class ScaleHandle extends AbstractHandle {
 

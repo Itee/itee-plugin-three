@@ -31,7 +31,7 @@
 
 /* eslint-env browser */
 
-import { DefaultLogger }         from 'itee-core'
+import { DefaultLogger } from 'itee-core'
 //import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'

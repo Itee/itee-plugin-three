@@ -208,8 +208,8 @@ import { Vector2Type }    from './types/Vector2'
 import { Vector3Type }    from './types/Vector3'
 import { Vector4Type }    from './types/Vector4'
 
-export default (parameters) => {
-    return new TMongoDBPlugin(parameters)
+export default ( parameters ) => {
+    return new TMongoDBPlugin( parameters )
         .addType( ColorType )
         .addType( EulerType )
         .addType( Matrix3Type )
@@ -401,12 +401,12 @@ export default (parameters) => {
                 options: {
                     schemaName: 'Objects3D'
                 },
-                can: {
+                can:     {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read: {
+                    read:   {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -429,12 +429,12 @@ export default (parameters) => {
                 options: {
                     schemaName: 'Curves'
                 },
-                can: {
+                can:     {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read: {
+                    read:   {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -456,12 +456,12 @@ export default (parameters) => {
                 options: {
                     schemaName: 'Geometries'
                 },
-                can: {
+                can:     {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read: {
+                    read:   {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -483,12 +483,12 @@ export default (parameters) => {
                 options: {
                     schemaName: 'Materials'
                 },
-                can: {
+                can:     {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read: {
+                    read:   {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -510,12 +510,12 @@ export default (parameters) => {
                 options: {
                     schemaName: 'Textures'
                 },
-                can: {
+                can:     {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read: {
+                    read:   {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -548,7 +548,7 @@ export default (parameters) => {
                         MtlToThree:     new MtlToThree(),
                         ObjToThree:     new Obj2ToThree()
                     },
-                    rules: [ {
+                    rules:      [ {
                         on:  '.json',
                         use: 'JsonToThree'
                     }, {
@@ -582,9 +582,9 @@ export default (parameters) => {
                         on:  [ '.mtl', '.obj' ],
                         use: [ 'MtlToThree', 'ObjToThree' ]
                     } ],
-                    inserter: ThreeToMongoDB
+                    inserter:   ThreeToMongoDB
                 },
-                can: {
+                can:     {
                     processFiles: {
                         on:   'post',
                         over: '/'

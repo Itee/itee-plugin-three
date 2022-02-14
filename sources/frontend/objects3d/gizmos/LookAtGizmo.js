@@ -3,7 +3,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 import { degreesToRadians } from 'itee-utils'
-import { Vector3 }                           from 'three-full'
+import { Vector3 }          from 'three-full'
 import { BoxHandle }        from '../handles/BoxHandle'
 import { ConeHandle }       from '../handles/ConeHandle'
 import { AbstractGizmo }    from './AbstractGizmo'

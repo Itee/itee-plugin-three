@@ -10,7 +10,7 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager }    from 'itee-client'
+import { TDataBaseManager } from 'itee-client'
 import {
     isBlankString,
     isDefined,
@@ -23,7 +23,7 @@ import {
     isObject,
     isString,
     isUndefined
-}                              from 'itee-validators'
+}                           from 'itee-validators'
 //import { LinearFilter }        from 'three-full/sources/constants'
 //import { ImageLoader }         from 'three-full/sources/loaders/ImageLoader'
 //import { TextureLoader }       from 'three-full/sources/loaders/TextureLoader'
@@ -45,7 +45,7 @@ import {
     TextureLoader,
     Vector2
 }                           from 'three-full'
-import { TexturesManager }     from './TexturesManager'
+import { TexturesManager }  from './TexturesManager'
 
 const DEFAULT_IMAGE = new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )
 

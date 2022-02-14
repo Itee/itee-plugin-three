@@ -6,10 +6,10 @@
 import { isNotArray } from 'itee-validators'
 import {
     DoubleSide,
-    Object3D,
-    PlaneBufferGeometry,
+    Mesh,
     MeshBasicMaterial,
-    Mesh
+    Object3D,
+    PlaneBufferGeometry
 }                     from 'three-full'
 //import { DoubleSide }          from 'three-full/sources/constants'
 //import { Object3D }            from 'three-full/sources/core/Object3D'

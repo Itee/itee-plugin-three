@@ -19,19 +19,19 @@
 import {
     Keys,
     Mouse
-}                          from 'itee-client'
-import { DefaultLogger }         from 'itee-core'
+}                        from 'itee-client'
+import { DefaultLogger } from 'itee-core'
 import {
     degreesToRadians,
     toEnum
-}                          from 'itee-utils'
+}                        from 'itee-utils'
 import {
     isEmptyArray,
     isNotBoolean,
     isNotDefined,
     isNull,
     isUndefined
-}                          from 'itee-validators'
+}                        from 'itee-validators'
 //import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
 //import { Object3D }        from 'three-full/sources/core/Object3D'
 //import { Spherical }       from 'three-full/sources/math/Spherical'
@@ -44,7 +44,7 @@ import {
     Spherical,
     Vector2,
     Vector3
-} from 'three-full'
+}                        from 'three-full'
 
 const FRONT = new Vector3( 0, 0, -1 )
 const BACK  = new Vector3( 0, 0, 1 )
@@ -305,15 +305,15 @@ class CameraControls extends EventDispatcher {
 
         // The actions map about input events
         this.actionsMap = {
-            front:  [ Keys.Z.value, Keys.UP_ARROW.value ],
-            back:   [ Keys.S.value, Keys.DOWN_ARROW.value ],
-            up:     [ Keys.A.value, Keys.PAGE_UP.value ],
-            down:   [ Keys.E.value, Keys.PAGE_DOWN.value ],
-            left:   [ Keys.Q.value, Keys.LEFT_ARROW.value ],
-            right:  [ Keys.D.value, Keys.RIGHT_ARROW.value ],
-            rotate: [ Mouse.Left.value ],
-            pan:    [ Mouse.Middle.value ],
-            roll:   {
+            front:            [ Keys.Z.value, Keys.UP_ARROW.value ],
+            back:             [ Keys.S.value, Keys.DOWN_ARROW.value ],
+            up:               [ Keys.A.value, Keys.PAGE_UP.value ],
+            down:             [ Keys.E.value, Keys.PAGE_DOWN.value ],
+            left:             [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+            right:            [ Keys.D.value, Keys.RIGHT_ARROW.value ],
+            rotate:           [ Mouse.Left.value ],
+            pan:              [ Mouse.Middle.value ],
+            roll:             {
                 left:  [ Keys.R.value ],
                 right: [ Keys.T.value ]
             },

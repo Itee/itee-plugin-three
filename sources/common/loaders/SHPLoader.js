@@ -17,13 +17,13 @@
 import {
     Endianness,
     TBinaryReader
-}                                from 'itee-client'
-import { DefaultLogger }         from 'itee-core'
+}                        from 'itee-client'
+import { DefaultLogger } from 'itee-core'
 import {
     ringClockwise,
     ringContainsSome,
     toEnum
-}                                from 'itee-utils'
+}                        from 'itee-utils'
 //import { Shape }                 from 'three-full/sources/core/Shape'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
 //import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
@@ -34,7 +34,7 @@ import {
     FileLoader,
     Shape,
     Vector3
-} from 'three-full'
+}                        from 'three-full'
 
 /**
  *

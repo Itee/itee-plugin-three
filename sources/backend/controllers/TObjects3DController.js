@@ -203,12 +203,12 @@ class TObjects3DController extends TMongooseController {
 
             } else {
 
-//                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
-//                    _id:      true,
-//                    geometry: true,
-//                    material: true,
-//                    children: true
-//                } )
+                //                const parent = await this._readOneDocumentByQuery( 'Objects3D', { _id: id }, {
+                //                    _id:      true,
+                //                    geometry: true,
+                //                    material: true,
+                //                    children: true
+                //                } )
 
             }
 

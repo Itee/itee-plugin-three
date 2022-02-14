@@ -32,20 +32,20 @@
 /* eslint-env browser */
 
 import {
-    TBinaryReader,
-    Byte
-}                                from 'itee-client'
-import { DefaultLogger }         from 'itee-core'
+    Byte,
+    TBinaryReader
+}                        from 'itee-client'
+import { DefaultLogger } from 'itee-core'
 import {
+    Box3,
     BufferAttribute,
     BufferGeometry,
-    FileLoader,
-    Box3,
     DefaultLoadingManager,
-    PointsMaterial,
+    FileLoader,
     Group,
-    Points
-}                                from 'three-full'
+    Points,
+    PointsMaterial
+}                        from 'three-full'
 //import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
@@ -225,8 +225,8 @@ class LASLoader {
                 PointDataRecords:      pointDataRecords
             } )
 
-        } catch(error) {
-            onError(error)
+        } catch ( error ) {
+            onError( error )
         }
 
     }
@@ -463,7 +463,7 @@ class LASLoader {
 
         //        this._reader.skipOffsetTo( header.HeaderSize )
 
-        const minorVersion = header.VersionMinor
+        const minorVersion           = header.VersionMinor
         const variablesLengthRecords = []
         switch ( minorVersion ) {
             case 0:
@@ -685,11 +685,11 @@ class LASLoader {
     _parsePointDataRecordFormat0 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -705,11 +705,11 @@ class LASLoader {
     _parsePointDataRecordFormat1 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -726,11 +726,11 @@ class LASLoader {
     _parsePointDataRecordFormat2 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -749,11 +749,11 @@ class LASLoader {
     _parsePointDataRecordFormat3 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -773,11 +773,11 @@ class LASLoader {
     _parsePointDataRecordFormat4 () {
 
         return {
-            X:                           this._reader.getUint32(),
-            Y:                           this._reader.getUint32(),
-            Z:                           this._reader.getUint32(),
-            Intensity:                   this._reader.getUint16(),
-            _bitFields:                  this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -801,11 +801,11 @@ class LASLoader {
     _parsePointDataRecordFormat5 () {
 
         return {
-            X:                           this._reader.getUint32(),
-            Y:                           this._reader.getUint32(),
-            Z:                           this._reader.getUint32(),
-            Intensity:                   this._reader.getUint16(),
-            _bitFields:                  this._reader.getUint8(),
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint8(),
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2 ),
             //            NumberOfReturns:   this._reader.getBit( 3, 4, 5 ),
             //            ScanDirectionFlag: this._reader.getBit( 6 ),
@@ -832,11 +832,11 @@ class LASLoader {
     _parsePointDataRecordFormat6 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint16(), //!\
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint16(), //!\
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
             //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
             //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
@@ -855,11 +855,11 @@ class LASLoader {
     _parsePointDataRecordFormat7 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint16(), //!\
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint16(), //!\
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
             //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
             //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
@@ -881,11 +881,11 @@ class LASLoader {
     _parsePointDataRecordFormat8 () {
 
         return {
-            X:              this._reader.getUint32(),
-            Y:              this._reader.getUint32(),
-            Z:              this._reader.getUint32(),
-            Intensity:      this._reader.getUint16(),
-            _bitFields:     this._reader.getUint16(), //!\
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint16(), //!\
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
             //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
             //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
@@ -908,11 +908,11 @@ class LASLoader {
     _parsePointDataRecordFormat9 () {
 
         return {
-            X:                           this._reader.getUint32(),
-            Y:                           this._reader.getUint32(),
-            Z:                           this._reader.getUint32(),
-            Intensity:                   this._reader.getUint16(),
-            _bitFields:                  this._reader.getUint16(), //!\
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint16(), //!\
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
             //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
             //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),
@@ -938,11 +938,11 @@ class LASLoader {
     _parsePointDataRecordFormat10 () {
 
         return {
-            X:                           this._reader.getUint32(),
-            Y:                           this._reader.getUint32(),
-            Z:                           this._reader.getUint32(),
-            Intensity:                   this._reader.getUint16(),
-            _bitFields:                  this._reader.getUint16(), //!\
+            X:          this._reader.getUint32(),
+            Y:          this._reader.getUint32(),
+            Z:          this._reader.getUint32(),
+            Intensity:  this._reader.getUint16(),
+            _bitFields: this._reader.getUint16(), //!\
             //            ReturnNumber:      this._reader.getBit( 0, 1, 2, 3 ),
             //            NumberOfReturns:   this._reader.getBit( 4, 5, 6, 7 ),
             //            ClassificationFlags: this._reader.getBit( 0, 1, 2, 3 ),

@@ -8,17 +8,17 @@ import {
     isUndefined
 }                                    from 'itee-validators'
 import {
-    Float32BufferAttribute,
-    BufferGeometry,
-    Vector3,
     ArrowHelper,
+    BufferGeometry,
+    Float32BufferAttribute,
     Line,
-    Mesh
+    Mesh,
+    Vector3
 }                                    from 'three-full'
-import { AbstractHandle }            from './AbstractHandle'
-import { PlanarHitbox }              from '../hitboxes/PlanarHitbox'
 import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
 import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
+import { PlanarHitbox }              from '../hitboxes/PlanarHitbox'
+import { AbstractHandle }            from './AbstractHandle'
 
 class PlaneHandle extends AbstractHandle {
 
