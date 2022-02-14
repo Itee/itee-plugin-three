@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.3 - CommonJs')
+console.log('Itee.Plugin.Three v1.5.4 - CommonJs')
 'use strict';
 
 var iteeDatabase = require('itee-database');
@@ -2341,6 +2341,36 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  */
 class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
+    // Todo: Use itee-utils
+    static _arrayify ( data ) {
+
+        let array = [];
+
+        if ( require$$0$3.isDefined( data ) ) {
+
+            if ( require$$0$3.isArray( data ) ) {
+                array = data;
+            } else {
+                array = [ data ];
+            }
+
+        }
+
+        return array
+
+    }
+
+    // Utils
+    static _toLog ( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
+
+    }
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
@@ -2369,38 +2399,6 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         // Update objects in database if existing in file
 
     }
-
-    // Utils
-    // Todo: Use itee-utils
-    static _arrayify ( data ) {
-
-        let array = [];
-
-        if ( require$$0$3.isDefined( data ) ) {
-
-            if ( require$$0$3.isArray( data ) ) {
-                array = data;
-            } else {
-                array = [ data ];
-            }
-
-        }
-
-        return array
-
-    }
-
-    static _toLog ( object ) {
-
-        return JSON.stringify( {
-            type: object.type || 'undefined',
-            name: object.name || 'undefined',
-            uuid: object.uuid || 'undefined',
-            id:   object._id || 'undefined'
-        } )
-
-    }
-
     /**
      * Main entry point to insert data into database; It apply merge strategy over data to insert.
      *
@@ -2510,7 +2508,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @private
      */
     async _parseObjects ( objects = [], parentId = null ) {
-        this.logger.debug(`_parseObjects(...)`);
+        this.logger.debug( `_parseObjects(...)` );
 
         const _objects = ThreeToMongoDB._arrayify( objects );
         if ( require$$0$3.isEmptyArray( _objects ) ) {
@@ -3811,7 +3809,19 @@ var PerspectiveCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { isInt8Array, isInt16Array, isInt32Array, isFloat32Array, isFloat64Array, isUint8Array, isUint8ClampedArray, isUint16Array, isUint32Array, isBigInt64Array, isBigUint64Array } = require$$0__default['default'];
+const {
+          isInt8Array,
+          isInt16Array,
+          isInt32Array,
+          isFloat32Array,
+          isFloat64Array,
+          isUint8Array,
+          isUint8ClampedArray,
+          isUint16Array,
+          isUint32Array,
+          isBigInt64Array,
+          isBigUint64Array
+      } = require$$0__default["default"];
 
 let _schema$26 = undefined;
 
@@ -14319,8 +14329,8 @@ function Vector4Type ( Mongoose ) {
  * @license [MIT]{@link https://opensource.org/licenses/MIT}
  */
 
-var MongoDBThreePlugin = (parameters) => {
-    return new iteeMongodb.TMongoDBPlugin(parameters)
+var MongoDBThreePlugin = ( parameters ) => {
+    return new iteeMongodb.TMongoDBPlugin( parameters )
         .addType( ColorType )
         .addType( EulerType )
         .addType( Matrix3Type )

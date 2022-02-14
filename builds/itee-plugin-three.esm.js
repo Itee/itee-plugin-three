@@ -1,6 +1,6 @@
-console.log('Itee.Plugin.Three v1.5.3 - EsModule')
+console.log('Itee.Plugin.Three v1.5.4 - EsModule')
 import { DefaultLogger } from 'itee-core';
-import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, PlaneBufferGeometry, MeshBasicMaterial, DoubleSide, Mesh, Quaternion, CylinderBufferGeometry, LineBasicMaterial, Float32BufferAttribute, Line, ConeBufferGeometry, OctahedronBufferGeometry, EdgesGeometry, LineSegments, ArrowHelper, BoxBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
+import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
 import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isNotArray, isArray, isDefined, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
@@ -1807,8 +1807,8 @@ class LASLoader {
                 PointDataRecords:      pointDataRecords
             } );
 
-        } catch(error) {
-            onError(error);
+        } catch ( error ) {
+            onError( error );
         }
 
     }
@@ -2045,7 +2045,7 @@ class LASLoader {
 
         //        this._reader.skipOffsetTo( header.HeaderSize )
 
-        const minorVersion = header.VersionMinor;
+        const minorVersion           = header.VersionMinor;
         const variablesLengthRecords = [];
         switch ( minorVersion ) {
             case 0:
@@ -5429,153 +5429,151 @@ class CameraControls extends EventDispatcher {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-//import { DoubleSide }          from 'three-full/sources/constants'
-//import { Object3D }            from 'three-full/sources/core/Object3D'
-//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
-//import { MeshBasicMaterial }   from 'three-full/sources/materials/MeshBasicMaterial'
-//import { Mesh }                from 'three-full/sources/objects/Mesh'
 
-class AbstractGizmo extends Object3D {
+//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
+
+class HighlightableLineMaterial extends LineBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters );
+        this.isHighlightableMaterial = true;
+        //        this.type                    = 'HighlightableLineMaterial'
+
+        this.depthTest   = false;
+        this.depthWrite  = false;
+        this.fog         = false;
+        this.transparent = true;
+        this.linewidth   = 1;
+        this.oldColor    = this.color.clone();
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35;
+            const _r  = this.color.r;
+            const _g  = this.color.g;
+            const _b  = this.color.b;
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
+            this.color.setRGB( r, g, b );
+
+        } else {
+
+            this.color.copy( this.oldColor );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+
+class HighlightableMaterial extends MeshBasicMaterial {
+
+    constructor ( parameters ) {
+        super( parameters );
+        this.isHighlightableMaterial = true;
+        //        this.type                    = 'HighlightableMaterial'
+
+        this.depthTest   = false;
+        this.depthWrite  = false;
+        this.fog         = false;
+        this.side        = DoubleSide;
+        this.transparent = true;
+        this.oldColor    = this.color.clone();
+
+    }
+
+    highlight ( highlighted ) {
+
+        if ( highlighted ) {
+
+            const lum = 0.35;
+            const _r  = this.color.r;
+            const _g  = this.color.g;
+            const _b  = this.color.b;
+            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
+            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
+            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
+            this.color.setRGB( r, g, b );
+
+        } else {
+
+            this.color.copy( this.oldColor );
+
+        }
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { DoubleSide }        from 'three-full/sources/constants'
+//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
+//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }              from 'three-full/sources/objects/Mesh'
+
+class AbstractHitbox extends Mesh {
 
     constructor ( parameters = {} ) {
 
         const _parameters = {
             ...{
-                debug:     false,
-                planeSize: 50
-            },
-            ...parameters
+                geometry: new BufferGeometry(),
+                material: new MeshBasicMaterial( {
+                    visible:    false,
+                    depthTest:  false,
+                    depthWrite: false,
+                    fog:        false,
+                    side:       DoubleSide,
+                    color:      0x654321
+                    //                    opacity:     0.0,
+                    //                    transparent: true
+                } )
+            }, ...parameters
+        };
+
+        super( _parameters.geometry, _parameters.material );
+        this.isHitbox         = true;
+        this.type             = 'Hitbox';
+        this.matrixAutoUpdate = false;
+
+    }
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
+
+class OctahedricalHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                geometry: new OctahedronBufferGeometry( 1.2, 0 )
+            }, ...parameters
         };
 
         super( _parameters );
-        this.isGizmo          = true;
-        this.type             = 'AbstractGizmo';
-        this.matrixAutoUpdate = true;
-
-        this.debug = _parameters.debug;
-
-
-        //        this.handles                  = new Object3D()
-        //        this.handles.name             = 'Handles'
-        //        this.handles.matrixAutoUpdate = false
-        //
-        //        this.add( this.handles )
-
-        ///
-
-        const planeGeometry                  = new PlaneBufferGeometry( _parameters.planeSize, _parameters.planeSize, 2, 2 );
-        const planeMaterial                  = new MeshBasicMaterial( {
-            side:        DoubleSide,
-            visible:     this.debug,
-            transparent: true,
-            opacity:     0.33,
-            color:       0x123456
-        } );
-        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial );
-        this.intersectPlane.name             = 'IntersectPlane';
-        this.intersectPlane.matrixAutoUpdate = true;
-        this.intersectPlane.visible          = true;
-
-        this.add( this.intersectPlane );
-
-    }
-
-    _setupHandles ( handlesMap ) {
-
-        const parent = this;
-        //        const parent = this.handles
-
-        for ( let name in handlesMap ) {
-
-            const element = handlesMap[ name ];
-            if ( isNotArray( element ) ) {
-
-                element.name        = name;
-                element.renderOrder = Infinity;
-                element.updateMatrix();
-
-                parent.add( element );
-
-            } else {
-
-                for ( let i = element.length ; i-- ; ) {
-
-                    const object   = handlesMap[ name ][ i ][ 0 ];
-                    const position = handlesMap[ name ][ i ][ 1 ];
-                    const rotation = handlesMap[ name ][ i ][ 2 ];
-                    const scale    = handlesMap[ name ][ i ][ 3 ];
-                    const tag      = handlesMap[ name ][ i ][ 4 ];
-
-                    // name and tag properties are essential for picking and updating logic.
-                    object.name = name;
-                    object.tag  = tag;
-
-                    // avoid being hidden by other transparent objects
-                    object.renderOrder = Infinity;
-
-                    if ( position ) {
-                        object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
-                    }
-                    if ( rotation ) {
-                        object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] );
-                    }
-                    if ( scale ) {
-                        object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] );
-                    }
-
-                    object.updateMatrix();
-
-                    const tempGeometry = object.geometry.clone();
-                    tempGeometry.applyMatrix4( object.matrix );
-                    object.geometry = tempGeometry;
-
-                    object.position.set( 0, 0, 0 );
-                    object.rotation.set( 0, 0, 0 );
-                    object.scale.set( 1, 1, 1 );
-
-                    parent.add( object );
-
-                }
-
-            }
-
-        }
-
-    }
-
-    highlight ( axis ) {
-
-        // Reset highlight for all of them
-        for ( let key in this.handleGizmos ) {
-            this.handleGizmos[ key ].highlight( false );
-        }
-
-        // Highlight the picked (if exist)
-        const currentHandle = this.handleGizmos[ axis ];
-        if ( currentHandle ) {
-            currentHandle.highlight( true );
-        }
-
-    }
-
-    update ( cameraPosition, cameraDirection ) {
-
-        this.traverse( ( child ) => {
-
-            if ( !child.isHandle ) { return }
-
-            child.update( cameraDirection );
-
-        } );
-
-        this.updateIntersectPlane( cameraPosition );
-
-    }
-
-    updateIntersectPlane ( cameraPosition ) {
-
-        this.intersectPlane.lookAt( cameraPosition );
-        this.intersectPlane.updateMatrix();
+        this.isOctahedricalHitbox = true;
+        this.type                 = 'OctahedricalHitbox';
 
     }
 
@@ -5712,537 +5710,6 @@ class AbstractHandle extends Object3D {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-//import { DoubleSide }        from 'three-full/sources/constants'
-//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
-//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
-//import { Mesh }              from 'three-full/sources/objects/Mesh'
-
-class AbstractHitbox extends Mesh {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new BufferGeometry(),
-                material: new MeshBasicMaterial( {
-                    visible:    false,
-                    depthTest:  false,
-                    depthWrite: false,
-                    fog:        false,
-                    side:       DoubleSide,
-                    color:      0x654321
-                    //                    opacity:     0.0,
-                    //                    transparent: true
-                } )
-            }, ...parameters
-        };
-
-        super( _parameters.geometry, _parameters.material );
-        this.isHitbox         = true;
-        this.type             = 'Hitbox';
-        this.matrixAutoUpdate = false;
-
-    }
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
-
-class CylindricaHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const cylinderGeometry = new CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
-        cylinderGeometry.translate( 0, 0.5, 0 );
-        const _parameters = {
-            ...{
-                geometry: cylinderGeometry
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isCylindricaHitbox = true;
-        this.type               = 'CylindricaHitbox';
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
-
-class HighlightableLineMaterial extends LineBasicMaterial {
-
-    constructor ( parameters ) {
-        super( parameters );
-        this.isHighlightableMaterial = true;
-        //        this.type                    = 'HighlightableLineMaterial'
-
-        this.depthTest   = false;
-        this.depthWrite  = false;
-        this.fog         = false;
-        this.transparent = true;
-        this.linewidth   = 1;
-        this.oldColor    = this.color.clone();
-
-    }
-
-    highlight ( highlighted ) {
-
-        if ( highlighted ) {
-
-            const lum = 0.35;
-            const _r  = this.color.r;
-            const _g  = this.color.g;
-            const _b  = this.color.b;
-            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
-            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
-            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
-            this.color.setRGB( r, g, b );
-
-        } else {
-
-            this.color.copy( this.oldColor );
-
-        }
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-//import { DoubleSide }        from 'three-full/sources/constants'
-//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
-
-class HighlightableMaterial extends MeshBasicMaterial {
-
-    constructor ( parameters ) {
-        super( parameters );
-        this.isHighlightableMaterial = true;
-        //        this.type                    = 'HighlightableMaterial'
-
-        this.depthTest   = false;
-        this.depthWrite  = false;
-        this.fog         = false;
-        this.side        = DoubleSide;
-        this.transparent = true;
-        this.oldColor    = this.color.clone();
-
-    }
-
-    highlight ( highlighted ) {
-
-        if ( highlighted ) {
-
-            const lum = 0.35;
-            const _r  = this.color.r;
-            const _g  = this.color.g;
-            const _b  = this.color.b;
-            const r   = Math.min( Math.max( 0, _r + ( _r * lum ) ), 1.0 );
-            const g   = Math.min( Math.max( 0, _g + ( _g * lum ) ), 1.0 );
-            const b   = Math.min( Math.max( 0, _b + ( _b * lum ) ), 1.0 );
-            this.color.setRGB( r, g, b );
-
-        } else {
-
-            this.color.copy( this.oldColor );
-
-        }
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
-//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
-//import { Vector3 }                from 'three-full/sources/math/Vector3'
-
-class LineGeometry extends BufferGeometry {
-
-    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
-        super();
-
-        this.type = 'LineGeometry';
-        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-class TranslateHandle extends AbstractHandle {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                color:     0xffffff,
-                hitbox:    new CylindricaHitbox(),
-                direction: new Vector3( 0, 1, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isTranslateHandle = true;
-        this.type              = 'TranslateHandle';
-
-        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) );
-        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
-        const line            = new Line( lineGeometry, lineMaterial );
-        line.matrixAutoUpdate = false;
-        this.add( line );
-
-        const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false );
-        coneGeometry.translate( 0, 0.9, 0 );
-        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } );
-        const cone            = new Mesh( coneGeometry, coneMaterial );
-        cone.matrixAutoUpdate = false;
-        this.add( cone );
-
-        this.direction = _parameters.direction;
-
-    }
-
-    get direction () {
-
-        return this._direction
-
-    }
-
-    set direction ( value ) {
-
-        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
-
-        this._direction = value;
-
-        if ( value.y > 0.99999 ) {
-
-            this.quaternion.set( 0, 0, 0, 1 );
-
-        } else if ( value.y < -0.99999 ) {
-
-            this.quaternion.set( 1, 0, 0, 0 );
-
-        } else {
-
-            const axis    = new Vector3( value.z, 0, -value.x ).normalize();
-            const radians = Math.acos( value.y );
-
-            this.quaternion.setFromAxisAngle( axis, radians );
-
-        }
-
-    }
-
-    update ( cameraDirection ) {
-
-        super.update( cameraDirection );
-
-        const dotProduct = this._direction.dot( cameraDirection );
-        if ( dotProduct >= 0 ) {
-            this.flipDirection();
-        }
-
-        this.updateMatrix();
-        this.hitbox.updateMatrix();
-
-    }
-
-    setDirection ( direction ) {
-
-        this.direction = direction;
-        return this
-
-    }
-
-    flipDirection () {
-
-        this.direction = this._direction.negate();
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
-//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
-
-class LozengeHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        // Lozenge
-        const lozengePositions        = [
-            0.0, 0.0, 0.0,
-            0.85, 0.0, 0.0,
-            1.1, 1.1, 0.0,
-            0.0, 0.85, 0.0
-        ];
-        const lozengeIndexes          = [
-            0, 1, 2,
-            2, 3, 0
-        ];
-        const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 );
-        const lozengeBufferGeometry   = new BufferGeometry();
-        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
-        lozengeBufferGeometry.setIndex( lozengeIndexes );
-
-        const _parameters = {
-            ...{
-                geometry: lozengeBufferGeometry
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isPlanarHitbox = true;
-        this.type           = 'PlanarHitbox';
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-class LozengeHandle extends AbstractHandle {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                color:     0xffffff,
-                hitbox:    new LozengeHitbox(),
-                direction: new Vector3( 1, 1, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isPlaneHandle = true;
-        this.type          = 'PlaneHandle';
-
-        // Edge line
-        const lineBufferGeometry = new BufferGeometry();
-        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
-
-        const lineMaterial = new HighlightableLineMaterial( {
-            color: _parameters.color
-        } );
-
-        const line            = new Line( lineBufferGeometry, lineMaterial );
-        line.matrixAutoUpdate = false;
-        this.add( line );
-
-        // Lozenge
-        const lozengePositions      = [
-            0.1, 0.1, 0.0,
-            0.75, 0.1, 0.0,
-            1.0, 1.0, 0.0,
-            0.1, 0.75, 0.0
-        ];
-        const lozengeIndexes        = [
-            0, 1, 2,
-            2, 3, 0
-        ];
-        const lozengeBufferGeometry = new BufferGeometry();
-        lozengeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) );
-        lozengeBufferGeometry.setIndex( lozengeIndexes );
-
-        const lozengeMaterial    = new HighlightableMaterial( {
-            color:       _parameters.color,
-            transparent: true,
-            opacity:     0.35
-        } );
-        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial );
-        lozenge.matrixAutoUpdate = false;
-        this.add( lozenge );
-
-        this.direction  = _parameters.direction;
-        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 );
-        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 );
-        this.zDirection = new Vector3( 0, 0, _parameters.direction.z );
-        this.xAxis      = new Vector3( 1, 0, 0 );
-        this.yAxis      = new Vector3( 0, 1, 0 );
-        this.zAxis      = new Vector3( 0, 0, 1 );
-    }
-
-    get direction () {
-
-        return this._direction
-
-    }
-
-    set direction ( value ) {
-
-        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
-        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
-
-        this._direction = value;
-
-    }
-
-    update ( cameraDirection ) {
-
-        super.update( cameraDirection );
-
-        const xDot = this.xDirection.dot( cameraDirection );
-        const yDot = this.yDirection.dot( cameraDirection );
-        const zDot = this.zDirection.dot( cameraDirection );
-
-        this.quaternion.copy( this.baseQuaternion );
-
-        // XY Plane
-        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-
-        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-
-        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-
-        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-
-        }
-
-        // XZ Plane
-        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-
-        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-
-        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-
-        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-
-        }
-
-        // YZ Plane
-        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
-
-        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
-
-        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
-
-        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
-
-            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
-
-        }
-
-        this.updateMatrix();
-        this.hitbox.updateMatrix();
-
-    }
-
-    setDirection ( direction ) {
-
-        this.direction = direction;
-        return this
-
-    }
-
-    flipXAxis () {
-
-        const tempDirection = this._direction.clone();
-        tempDirection.x     = -tempDirection.x;
-
-        this.direction = tempDirection;
-
-    }
-
-    flipYAxis () {
-
-        const tempDirection = this._direction.clone();
-        tempDirection.y     = -tempDirection.y;
-
-        this.direction = tempDirection;
-
-    }
-
-    flipZAxis () {
-
-        const tempDirection = this._direction.clone();
-        tempDirection.z     = -tempDirection.z;
-
-        this.direction = tempDirection;
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
-
-class OctahedricalHitbox extends AbstractHitbox {
-
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                geometry: new OctahedronBufferGeometry( 1.2, 0 )
-            }, ...parameters
-        };
-
-        super( _parameters );
-        this.isOctahedricalHitbox = true;
-        this.type                 = 'OctahedricalHitbox';
-
-    }
-
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
 
 class OctahedricalHandle extends AbstractHandle {
 
@@ -6287,77 +5754,6 @@ class OctahedricalHandle extends AbstractHandle {
         this.hitbox.updateMatrix();
     }
 
-}
-
-/**
- * @author [Tristan Valcke]{@link https://github.com/Itee}
- * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
- */
-
-class TranslateGizmo extends AbstractGizmo {
-
-    constructor () {
-
-        super();
-        this.isTranslateGizmo = true;
-        this.type             = 'TranslateGizmo';
-
-        this.handleGizmos = {
-
-            X: new TranslateHandle( {
-                color:     0xaa0000,
-                direction: new Vector3( 1, 0, 0 )
-            } ),
-
-            Y: new TranslateHandle( {
-                color:     0x00aa00,
-                direction: new Vector3( 0, 1, 0 )
-            } ),
-
-            Z: new TranslateHandle( {
-                color:     0x0000aa,
-                direction: new Vector3( 0, 0, 1 )
-            } ),
-
-            XY: new LozengeHandle( {
-                color:     0xaaaa00,
-                direction: new Vector3( 1, 1, 0 )
-            } ).setScale( 0.33, 0.33, 1.0 ),
-
-            YZ: new LozengeHandle( {
-                color:     0x00aaaa,
-                direction: new Vector3( 0, 1, 1 )
-            } ).setScale( 0.33, 0.33, 1.0 )
-               .setRotationFromAxisAndAngle( new Vector3( 0, 1, 0 ), degreesToRadians( -90 ) ),
-
-            XZ: new LozengeHandle( {
-                color:     0xaa00aa,
-                direction: new Vector3( 1, 0, 1 )
-            } ).setScale( 0.33, 0.33, 1.0 )
-               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) ),
-
-            XYZ: new OctahedricalHandle( {
-                color: 0xaaaaaa
-            } ).setScale( 0.15, 0.15, 0.15 )
-
-        };
-
-        this._setupHandles( this.handleGizmos );
-//        this.init()
-
-    }
-
-    raycast ( raycaster, intersects ) {
-
-        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
-        if ( !isIntersected ) { return }
-
-        for ( let handle of this.children ) {
-            if(handle.name === this.intersectPlane.name) {continue}
-            handle.raycast( raycaster, intersects );
-        }
-
-    }
 }
 
 /**
@@ -6653,6 +6049,53 @@ class PlaneHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { Vector3 }                from 'three-full/sources/math/Vector3'
+
+class LineGeometry extends BufferGeometry {
+
+    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
+        super();
+
+        this.type = 'LineGeometry';
+        this.setAttribute( 'position', new Float32BufferAttribute( [ pointA.x, pointA.y, pointA.z, pointB.x, pointB.y, pointB.z ], 3 ) );
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
+
+class CylindricaHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        const cylinderGeometry = new CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
+        cylinderGeometry.translate( 0, 0.5, 0 );
+        const _parameters = {
+            ...{
+                geometry: cylinderGeometry
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isCylindricaHitbox = true;
+        this.type               = 'CylindricaHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 class ScaleHandle extends AbstractHandle {
 
@@ -6753,6 +6196,162 @@ class ScaleHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+//import { DoubleSide }          from 'three-full/sources/constants'
+//import { Object3D }            from 'three-full/sources/core/Object3D'
+//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
+//import { MeshBasicMaterial }   from 'three-full/sources/materials/MeshBasicMaterial'
+//import { Mesh }                from 'three-full/sources/objects/Mesh'
+
+class AbstractGizmo extends Object3D {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                debug:     false,
+                planeSize: 50
+            },
+            ...parameters
+        };
+
+        super( _parameters );
+        this.isGizmo          = true;
+        this.type             = 'AbstractGizmo';
+        this.matrixAutoUpdate = true;
+
+        this.debug = _parameters.debug;
+
+
+        //        this.handles                  = new Object3D()
+        //        this.handles.name             = 'Handles'
+        //        this.handles.matrixAutoUpdate = false
+        //
+        //        this.add( this.handles )
+
+        ///
+
+        const planeGeometry                  = new PlaneBufferGeometry( _parameters.planeSize, _parameters.planeSize, 2, 2 );
+        const planeMaterial                  = new MeshBasicMaterial( {
+            side:        DoubleSide,
+            visible:     this.debug,
+            transparent: true,
+            opacity:     0.33,
+            color:       0x123456
+        } );
+        this.intersectPlane                  = new Mesh( planeGeometry, planeMaterial );
+        this.intersectPlane.name             = 'IntersectPlane';
+        this.intersectPlane.matrixAutoUpdate = true;
+        this.intersectPlane.visible          = true;
+
+        this.add( this.intersectPlane );
+
+    }
+
+    _setupHandles ( handlesMap ) {
+
+        const parent = this;
+        //        const parent = this.handles
+
+        for ( let name in handlesMap ) {
+
+            const element = handlesMap[ name ];
+            if ( isNotArray( element ) ) {
+
+                element.name        = name;
+                element.renderOrder = Infinity;
+                element.updateMatrix();
+
+                parent.add( element );
+
+            } else {
+
+                for ( let i = element.length ; i-- ; ) {
+
+                    const object   = handlesMap[ name ][ i ][ 0 ];
+                    const position = handlesMap[ name ][ i ][ 1 ];
+                    const rotation = handlesMap[ name ][ i ][ 2 ];
+                    const scale    = handlesMap[ name ][ i ][ 3 ];
+                    const tag      = handlesMap[ name ][ i ][ 4 ];
+
+                    // name and tag properties are essential for picking and updating logic.
+                    object.name = name;
+                    object.tag  = tag;
+
+                    // avoid being hidden by other transparent objects
+                    object.renderOrder = Infinity;
+
+                    if ( position ) {
+                        object.position.set( position[ 0 ], position[ 1 ], position[ 2 ] );
+                    }
+                    if ( rotation ) {
+                        object.rotation.set( rotation[ 0 ], rotation[ 1 ], rotation[ 2 ] );
+                    }
+                    if ( scale ) {
+                        object.scale.set( scale[ 0 ], scale[ 1 ], scale[ 2 ] );
+                    }
+
+                    object.updateMatrix();
+
+                    const tempGeometry = object.geometry.clone();
+                    tempGeometry.applyMatrix4( object.matrix );
+                    object.geometry = tempGeometry;
+
+                    object.position.set( 0, 0, 0 );
+                    object.rotation.set( 0, 0, 0 );
+                    object.scale.set( 1, 1, 1 );
+
+                    parent.add( object );
+
+                }
+
+            }
+
+        }
+
+    }
+
+    highlight ( axis ) {
+
+        // Reset highlight for all of them
+        for ( let key in this.handleGizmos ) {
+            this.handleGizmos[ key ].highlight( false );
+        }
+
+        // Highlight the picked (if exist)
+        const currentHandle = this.handleGizmos[ axis ];
+        if ( currentHandle ) {
+            currentHandle.highlight( true );
+        }
+
+    }
+
+    update ( cameraPosition, cameraDirection ) {
+
+        this.traverse( ( child ) => {
+
+            if ( !child.isHandle ) { return }
+
+            child.update( cameraDirection );
+
+        } );
+
+        this.updateIntersectPlane( cameraPosition );
+
+    }
+
+    updateIntersectPlane ( cameraPosition ) {
+
+        this.intersectPlane.lookAt( cameraPosition );
+        this.intersectPlane.updateMatrix();
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
 
 class ScaleGizmo extends AbstractGizmo {
 
@@ -6803,7 +6402,7 @@ class ScaleGizmo extends AbstractGizmo {
         };
 
         this._setupHandles( this.handleGizmos );
-//        this.init()
+        //        this.init()
 
     }
 
@@ -6813,12 +6412,414 @@ class ScaleGizmo extends AbstractGizmo {
         if ( !isIntersected ) { return }
 
         for ( let handle of this.children ) {
-            if(handle.name === this.intersectPlane.name) {continue}
+            if ( handle.name === this.intersectPlane.name ) {continue}
             handle.raycast( raycaster, intersects );
         }
 
     }
 
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
+//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
+
+class LozengeHitbox extends AbstractHitbox {
+
+    constructor ( parameters = {} ) {
+
+        // Lozenge
+        const lozengePositions        = [
+            0.0, 0.0, 0.0,
+            0.85, 0.0, 0.0,
+            1.1, 1.1, 0.0,
+            0.0, 0.85, 0.0
+        ];
+        const lozengeIndexes          = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+        const positionBufferAttribute = new Float32BufferAttribute( lozengePositions, 3 );
+        const lozengeBufferGeometry   = new BufferGeometry();
+        lozengeBufferGeometry.setAttribute( 'position', positionBufferAttribute );
+        lozengeBufferGeometry.setIndex( lozengeIndexes );
+
+        const _parameters = {
+            ...{
+                geometry: lozengeBufferGeometry
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isPlanarHitbox = true;
+        this.type           = 'PlanarHitbox';
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class LozengeHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new LozengeHitbox(),
+                direction: new Vector3( 1, 1, 0 )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isPlaneHandle = true;
+        this.type          = 'PlaneHandle';
+
+        // Edge line
+        const lineBufferGeometry = new BufferGeometry();
+        lineBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( [ 0.1, 0.75, 0.0, 1.0, 1.0, 0.0, 0.75, 0.1, 0.0 ], 3 ) );
+
+        const lineMaterial = new HighlightableLineMaterial( {
+            color: _parameters.color
+        } );
+
+        const line            = new Line( lineBufferGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
+        this.add( line );
+
+        // Lozenge
+        const lozengePositions      = [
+            0.1, 0.1, 0.0,
+            0.75, 0.1, 0.0,
+            1.0, 1.0, 0.0,
+            0.1, 0.75, 0.0
+        ];
+        const lozengeIndexes        = [
+            0, 1, 2,
+            2, 3, 0
+        ];
+        const lozengeBufferGeometry = new BufferGeometry();
+        lozengeBufferGeometry.setAttribute( 'position', new Float32BufferAttribute( lozengePositions, 3 ) );
+        lozengeBufferGeometry.setIndex( lozengeIndexes );
+
+        const lozengeMaterial    = new HighlightableMaterial( {
+            color:       _parameters.color,
+            transparent: true,
+            opacity:     0.35
+        } );
+        const lozenge            = new Mesh( lozengeBufferGeometry, lozengeMaterial );
+        lozenge.matrixAutoUpdate = false;
+        this.add( lozenge );
+
+        this.direction  = _parameters.direction;
+        this.xDirection = new Vector3( _parameters.direction.x, 0, 0 );
+        this.yDirection = new Vector3( 0, _parameters.direction.y, 0 );
+        this.zDirection = new Vector3( 0, 0, _parameters.direction.z );
+        this.xAxis      = new Vector3( 1, 0, 0 );
+        this.yAxis      = new Vector3( 0, 1, 0 );
+        this.zAxis      = new Vector3( 0, 0, 1 );
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value;
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection );
+
+        const xDot = this.xDirection.dot( cameraDirection );
+        const yDot = this.yDirection.dot( cameraDirection );
+        const zDot = this.zDirection.dot( cameraDirection );
+
+        this.quaternion.copy( this.baseQuaternion );
+
+        // XY Plane
+        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+
+        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+
+        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+
+        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+
+        }
+
+        // XZ Plane
+        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+
+        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+
+        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+
+        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+
+        }
+
+        // YZ Plane
+        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 180 ) );
+
+        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 270 ) );
+
+        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 90 ) );
+
+        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
+
+            this.rotateOnAxis( this.zAxis, degreesToRadians( 0 ) );
+
+        }
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction;
+        return this
+
+    }
+
+    flipXAxis () {
+
+        const tempDirection = this._direction.clone();
+        tempDirection.x     = -tempDirection.x;
+
+        this.direction = tempDirection;
+
+    }
+
+    flipYAxis () {
+
+        const tempDirection = this._direction.clone();
+        tempDirection.y     = -tempDirection.y;
+
+        this.direction = tempDirection;
+
+    }
+
+    flipZAxis () {
+
+        const tempDirection = this._direction.clone();
+        tempDirection.z     = -tempDirection.z;
+
+        this.direction = tempDirection;
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class TranslateHandle extends AbstractHandle {
+
+    constructor ( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                color:     0xffffff,
+                hitbox:    new CylindricaHitbox(),
+                direction: new Vector3( 0, 1, 0 )
+            }, ...parameters
+        };
+
+        super( _parameters );
+        this.isTranslateHandle = true;
+        this.type              = 'TranslateHandle';
+
+        const lineGeometry    = new LineGeometry( new Vector3( 0, 0, 0 ), new Vector3( 0, 0.8, 0 ) );
+        const lineMaterial    = new HighlightableLineMaterial( { color: _parameters.color } );
+        const line            = new Line( lineGeometry, lineMaterial );
+        line.matrixAutoUpdate = false;
+        this.add( line );
+
+        const coneGeometry = new ConeBufferGeometry( 0.05, 0.2, 12, 1, false );
+        coneGeometry.translate( 0, 0.9, 0 );
+        const coneMaterial    = new HighlightableMaterial( { color: _parameters.color } );
+        const cone            = new Mesh( coneGeometry, coneMaterial );
+        cone.matrixAutoUpdate = false;
+        this.add( cone );
+
+        this.direction = _parameters.direction;
+
+    }
+
+    get direction () {
+
+        return this._direction
+
+    }
+
+    set direction ( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+        if ( !( value instanceof Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
+
+        this._direction = value;
+
+        if ( value.y > 0.99999 ) {
+
+            this.quaternion.set( 0, 0, 0, 1 );
+
+        } else if ( value.y < -0.99999 ) {
+
+            this.quaternion.set( 1, 0, 0, 0 );
+
+        } else {
+
+            const axis    = new Vector3( value.z, 0, -value.x ).normalize();
+            const radians = Math.acos( value.y );
+
+            this.quaternion.setFromAxisAngle( axis, radians );
+
+        }
+
+    }
+
+    update ( cameraDirection ) {
+
+        super.update( cameraDirection );
+
+        const dotProduct = this._direction.dot( cameraDirection );
+        if ( dotProduct >= 0 ) {
+            this.flipDirection();
+        }
+
+        this.updateMatrix();
+        this.hitbox.updateMatrix();
+
+    }
+
+    setDirection ( direction ) {
+
+        this.direction = direction;
+        return this
+
+    }
+
+    flipDirection () {
+
+        this.direction = this._direction.negate();
+
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+class TranslateGizmo extends AbstractGizmo {
+
+    constructor () {
+
+        super();
+        this.isTranslateGizmo = true;
+        this.type             = 'TranslateGizmo';
+
+        this.handleGizmos = {
+
+            X: new TranslateHandle( {
+                color:     0xaa0000,
+                direction: new Vector3( 1, 0, 0 )
+            } ),
+
+            Y: new TranslateHandle( {
+                color:     0x00aa00,
+                direction: new Vector3( 0, 1, 0 )
+            } ),
+
+            Z: new TranslateHandle( {
+                color:     0x0000aa,
+                direction: new Vector3( 0, 0, 1 )
+            } ),
+
+            XY: new LozengeHandle( {
+                color:     0xaaaa00,
+                direction: new Vector3( 1, 1, 0 )
+            } ).setScale( 0.33, 0.33, 1.0 ),
+
+            YZ: new LozengeHandle( {
+                color:     0x00aaaa,
+                direction: new Vector3( 0, 1, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 0, 1, 0 ), degreesToRadians( -90 ) ),
+
+            XZ: new LozengeHandle( {
+                color:     0xaa00aa,
+                direction: new Vector3( 1, 0, 1 )
+            } ).setScale( 0.33, 0.33, 1.0 )
+               .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) ),
+
+            XYZ: new OctahedricalHandle( {
+                color: 0xaaaaaa
+            } ).setScale( 0.15, 0.15, 0.15 )
+
+        };
+
+        this._setupHandles( this.handleGizmos );
+        //        this.init()
+
+    }
+
+    raycast ( raycaster, intersects ) {
+
+        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
+        if ( !isIntersected ) { return }
+
+        for ( let handle of this.children ) {
+            if ( handle.name === this.intersectPlane.name ) {continue}
+            handle.raycast( raycaster, intersects );
+        }
+
+    }
 }
 
 /**
@@ -7551,9 +7552,9 @@ class ClippingControls extends Object3D {
         if ( this._dragging === false ) {
 
             // Check mouseIn
-            const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] );
-//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
-//            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+            const intersect = this.intersectObjects( mouseEvent, [ this._currentGizmo ] );
+            //            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+            //            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
             if ( intersect ) {
 
                 const handle = intersect.object;
@@ -7721,9 +7722,9 @@ class ClippingControls extends Object3D {
         this.dispatchEvent( this._events.mouseUp );
 
         // Check mouseIn
-        const intersect = this.intersectObjects( mouseEvent, [this._currentGizmo] );
-//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
-//        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+        const intersect = this.intersectObjects( mouseEvent, [ this._currentGizmo ] );
+        //        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+        //        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
         if ( intersect ) {
 
             this._currentHandle = intersect.object;
@@ -10278,7 +10279,7 @@ class ObjectsManager extends TDataBaseManager {
 
         // Else fill geometries and materials for filtered objects
         let geometriesMap = undefined;
-        let materialsMap = undefined;
+        let materialsMap  = undefined;
 
         this._retrieveGeometriesOf( objectsArray, ( geometries ) => {
             geometriesMap = geometries;
@@ -10627,30 +10628,6 @@ class ObjectsManager extends TDataBaseManager {
  */
 class OrbitControlsHelper extends LineSegments {
 
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                radius:     2,
-                radials:    16,
-                circles:    2,
-                divisions:  64,
-                innerColor: new Color( 0x444444 ),
-                outerColor: new Color( 0x888888 )
-            }, ...parameters
-        };
-
-        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() );
-
-
-        this.matrixAutoUpdate = false;
-        //        this.control     = control
-        this._intervalId      = undefined;
-
-        //        this.impose()
-
-    }
-
     static _createInternalGeometry ( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
 
         const vertices = [];
@@ -10739,7 +10716,6 @@ class OrbitControlsHelper extends LineSegments {
         return geometry
 
     }
-
     static _createInternalMaterial () {
 
         const material       = new LineBasicMaterial( { vertexColors: VertexColors } );
@@ -10750,7 +10726,29 @@ class OrbitControlsHelper extends LineSegments {
         return material
 
     }
+    constructor ( parameters = {} ) {
 
+        const _parameters = {
+            ...{
+                radius:     2,
+                radials:    16,
+                circles:    2,
+                divisions:  64,
+                innerColor: new Color( 0x444444 ),
+                outerColor: new Color( 0x888888 )
+            }, ...parameters
+        };
+
+        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() );
+
+
+        this.matrixAutoUpdate = false;
+        //        this.control     = control
+        this._intervalId      = undefined;
+
+        //        this.impose()
+
+    }
     startOpacityAnimation () {
 
         // In case fade off is running, kill it an restore opacity to 1
@@ -10890,7 +10888,7 @@ class RotateGizmo extends AbstractGizmo {
         //        this.pickerGizmos.XYZ[ 0 ][ 0 ].visible = false // disable XYZ picker gizmo
 
         this._setupHandles( this.handleGizmos );
-//        this.init()
+        //        this.init()
 
     }
 
@@ -10900,7 +10898,7 @@ class RotateGizmo extends AbstractGizmo {
         if ( !isIntersected ) { return }
 
         for ( let handle of this.children ) {
-            if(handle.name === this.intersectPlane.name) {continue}
+            if ( handle.name === this.intersectPlane.name ) {continue}
             handle.raycast( raycaster, intersects );
         }
 
