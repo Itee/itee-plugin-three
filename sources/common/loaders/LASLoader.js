@@ -55,27 +55,6 @@ import {
 //import { Group }                 from 'three-full/sources/objects/Group'
 //import { Points }                from 'three-full/sources/objects/Points'
 
-class BitManager {
-
-    static getBit ( number, bitPosition ) {
-        return ( number & ( 1 << bitPosition ) ) === 0 ? 0 : 1
-    }
-
-    static setBit ( number, bitPosition ) {
-        return number | ( 1 << bitPosition )
-    }
-
-    static clearBit ( number, bitPosition ) {
-        const mask = ~( 1 << bitPosition )
-        return number & mask
-    }
-
-    static updateBit ( number, bitPosition, bitValue ) {
-        const bitValueNormalized = bitValue ? 1 : 0
-        const clearMask          = ~( 1 << bitPosition )
-        return ( number & clearMask ) | ( bitValueNormalized << bitPosition )
-    }
-}
 
 class GlobalEncodingBitField {
     constructor ( bytes ) {
