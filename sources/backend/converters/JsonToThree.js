@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'
+import { ObjectLoader }           from 'three-full'
+//import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'
 
 /**
  * This class allow to convert .json files into ThreeJs types

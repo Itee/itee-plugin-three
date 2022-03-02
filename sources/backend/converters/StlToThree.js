@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
+import { STLLoader }              from 'three-full'
+//import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
 
 /**
  * This class allow to convert .shp files into ThreeJs types

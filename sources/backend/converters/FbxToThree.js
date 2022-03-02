@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
+import { FBXLoader }              from 'three-full'
+//import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
 
 /**
  * This class allow to convert .fbx files into ThreeJs types
