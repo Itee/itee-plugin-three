@@ -298,10 +298,11 @@
 
 
 // #if IS_REMOVE_ON_FRONTEND_BUILD
-export { default } from './backend/MongoDBThreePlugin'
+export { registerPlugin } from './backend/MongoDBThreePlugin'
 // #endif
 
-// #if IS_REMOVE_ON_BACKEND_BUILD
 export * from './common/_common'
+
+// #if IS_REMOVE_ON_BACKEND_BUILD
 export * from './frontend/_frontend'
 // #endif
