@@ -4,3 +4,4 @@
  */
 
 export * from './BitArray'
+export * from './BitManager'

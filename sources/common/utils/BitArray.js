@@ -336,3 +336,5 @@ BitArray._OFF = 0
  }
  }
  */
+
+export { BitArray }

@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'
+import { ColladaLoader }          from 'three-full'
+//import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'
 
 /**
  * This class allow to convert .dae files into ThreeJs types

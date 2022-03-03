@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { OBJLoader2 }             from 'three-full/sources/loaders/OBJLoader2'
+import { OBJLoader2 }             from 'three-full'
+//import { OBJLoader2 }             from 'three-full/sources/loaders/OBJLoader2'
 
 /**
  * This class allow to convert .obj files into ThreeJs types

@@ -10,7 +10,8 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
+import { TDSLoader }              from 'three-full'
+//import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
 
 /**
  * This class allow to convert .3ds files into ThreeJs types
