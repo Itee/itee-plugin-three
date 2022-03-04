@@ -15,7 +15,7 @@
 
 const packageInfos    = require( '../package' )
 const path            = require( 'path' )
-const alias           = require( '@rollup/plugin-alias' )
+//const alias           = require( '@rollup/plugin-alias' )
 const commonjs        = require( '@rollup/plugin-commonjs' )
 const { nodeResolve } = require( '@rollup/plugin-node-resolve' )
 const terser          = require( 'rollup-plugin-terser' ).terser

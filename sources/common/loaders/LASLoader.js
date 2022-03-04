@@ -59,7 +59,7 @@ import {
 
 /////////////
 
-const NullCharRegex = new RegExp( '\0', 'g' )
+const NullCharRegex = new RegExp( '\0', 'g' ) // eslint-disable-line no-control-regex
 
 const PointClasses = toEnum( {
     Created:          0,
