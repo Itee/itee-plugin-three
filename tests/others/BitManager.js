@@ -3,10 +3,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const {
-          numberToInternalRepresentation,
-          byteToBits
-      } = require( 'itee-utils' )
+const { byteToBits } = require( 'itee-utils' )
 const { BitManager } = require( '../../builds/itee-plugin-three.cjs' )
 
 const a = 0
