@@ -1,3 +1,14 @@
+## [1.5.6](https://github.com/Itee/itee-plugin-three/compare/v1.5.5...v1.5.6) (2022-03-04)
+
+
+### Bug Fixes
+
+* **bitarray:** fix missing export statement ([24be86f](https://github.com/Itee/itee-plugin-three/commit/24be86f0c17d36b935e8ad8d8ba2bfcc3d02166b))
+* **eslintrule:** disable no-control-regex rule for NullCharRegex in LASLoader ([924fc02](https://github.com/Itee/itee-plugin-three/commit/924fc0253e34872afc313ac38412ba7978ccd658))
+* **gulpfile:** add missing file to ignore during lint tests files ([c6f667f](https://github.com/Itee/itee-plugin-three/commit/c6f667f0da4d3bc86f43dd4932eeeb6cffe2a7fc))
+* **package:** update itee-database to latest version ([dc601df](https://github.com/Itee/itee-plugin-three/commit/dc601df10929dbbbd2225a2d8e142691a8d9c6c8))
+* **plugin:** update plugin registration and fix missing common file in backend build ([17e5e68](https://github.com/Itee/itee-plugin-three/commit/17e5e685a4ed2df30590afe52cc59fa2a7ebba3e))
+
 ## [1.5.5](https://github.com/Itee/itee-plugin-three/compare/v1.5.4...v1.5.5) (2022-02-14)
 
 
