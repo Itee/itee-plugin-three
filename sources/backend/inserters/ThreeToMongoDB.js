@@ -12,14 +12,13 @@
 
 import { DefaultLogger }         from 'itee-core'
 import { TAbstractDataInserter } from 'itee-database'
+import { toArray }               from 'itee-utils'
 import {
-    isArray,
     isDefined,
     isEmptyArray,
     isNotDefined,
     isNull
 }                                from 'itee-validators'
-import { toArray } from 'itee-utils'
 
 /**
  * This class allow to insert ThreeJs stuff in MongoDB database.

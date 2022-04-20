@@ -248,61 +248,49 @@ class TApplication {
 //        this.renderer.setPixelRatio( window.devicePixelRatio )
 
     }
-    
-    _initEffects ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initEffects ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initLoaders ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initLoaders ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initExporters ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initExporters ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initDatabases ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initDatabases ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initRaycasters ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initRaycasters ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initWorkers ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initWorkers ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initAudios ( {
+    // eslint-disable-next-line no-empty-pattern
+    _initAudios ( {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initControls ( scene, {
+    // eslint-disable-next-line no-unused-vars, no-empty-pattern
+    _initControls ( scene, {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initEnvironments ( scene, {
+    // eslint-disable-next-line no-unused-vars, no-empty-pattern
+    _initEnvironments ( scene, {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initDataModels ( scene, {
+    // eslint-disable-next-line no-unused-vars, no-empty-pattern
+    _initDataModels ( scene, {} = {} ) {
 
-    }={ } ) {
-        
     }
-    _initTools ( scene, {
+    // eslint-disable-next-line no-unused-vars, no-empty-pattern
+    _initTools ( scene, {} = {} ) {
 
-    }={ } ) {
-        
     }
 
 
@@ -330,13 +318,15 @@ class TApplication {
         this._clock.stop()
 
     }
-    onBeforeRender( renderer, scene, camera, renderTarget ) {}
+    // eslint-disable-next-line no-unused-vars
+    onBeforeRender ( renderer, scene, camera, renderTarget ) {}
     render () {
 
         this.renderer.render( this.scene, this.camera )
 
     }
-    onAfterRender(renderer, scene, camera){}
+    // eslint-disable-next-line no-unused-vars
+    onAfterRender ( renderer, scene, camera ) {}
 }
 
 export { TApplication }
