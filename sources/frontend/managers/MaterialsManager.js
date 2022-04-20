@@ -70,20 +70,20 @@ class MaterialsManager extends TDataBaseManager {
 
         const _parameters = {
             ...{
-                basePath:         '/materials',
-                texturesPath:     '/textures',
-                texturesProvider: new TextureLoader(),
-                generateMipmap:   false,
-                autoFillTextures: true
+                basePath:                '/materials',
+                texturesPath:            '/textures',
+                texturesProviderOptions: {},
+                generateMipmap:          false,
+                autoFillTextures:        true
             }, ...parameters
         }
 
         super( _parameters )
 
         this.texturesPath     = _parameters.texturesPath
-        this.texturesProvider = _parameters.texturesProvider
         this.generateMipmap   = _parameters.generateMipmap
         this.autoFillTextures = _parameters.autoFillTextures
+        this.texturesProvider = new TextureLoader( _parameters.texturesProviderOptions )
 
     }
 
