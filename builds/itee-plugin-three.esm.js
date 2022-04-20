@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.6 - EsModule')
+console.log('Itee.Plugin.Three v1.6.0 - EsModule')
 import { DefaultLogger } from 'itee-core';
 import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
 import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
@@ -9375,20 +9375,20 @@ class MaterialsManager extends TDataBaseManager {
 
         const _parameters = {
             ...{
-                basePath:         '/materials',
-                texturesPath:     '/textures',
-                texturesProvider: new TextureLoader(),
-                generateMipmap:   false,
-                autoFillTextures: true
+                basePath:                '/materials',
+                texturesPath:            '/textures',
+                texturesProviderOptions: {},
+                generateMipmap:          false,
+                autoFillTextures:        true
             }, ...parameters
         };
 
         super( _parameters );
 
         this.texturesPath     = _parameters.texturesPath;
-        this.texturesProvider = _parameters.texturesProvider;
         this.generateMipmap   = _parameters.generateMipmap;
         this.autoFillTextures = _parameters.autoFillTextures;
+        this.texturesProvider = new TextureLoader( _parameters.texturesProviderOptions );
 
     }
 
@@ -10173,22 +10173,22 @@ class ObjectsManager extends TDataBaseManager {
 
         const _parameters = {
             ...{
-                basePath:           '/objects',
-                geometriesProvider: new GeometriesManager(),
-                materialsProvider:  new MaterialsManager(),
-                projectionSystem:   'zBack',
-                globalScale:        1,
-                autoFillObjects3D:  true
+                basePath:                  '/objects',
+                geometriesProviderOptions: {},
+                materialsProviderOptions:  {},
+                projectionSystem:          'zBack',
+                globalScale:               1,
+                autoFillObjects3D:         true
             }, ...parameters
         };
 
         super( _parameters );
 
-        this.geometriesProvider = _parameters.geometriesProvider;
-        this.materialsProvider  = _parameters.materialsProvider;
         this.projectionSystem   = _parameters.projectionSystem;
         this.globalScale        = _parameters.globalScale;
         this.autoFillObjects3D  = _parameters.autoFillObjects3D;
+        this.geometriesProvider = new GeometriesManager( _parameters.geometriesProviderOptions );
+        this.materialsProvider  = new MaterialsManager( _parameters.materialsProviderOptions );
 
     }
 

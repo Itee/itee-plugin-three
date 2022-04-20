@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.6 - Standalone')
+console.log('Itee.Plugin.Three v1.6.0 - Standalone')
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, iteeUtils, iteeValidators) {
@@ -9381,20 +9381,20 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        const _parameters = {
 	            ...{
-	                basePath:         '/materials',
-	                texturesPath:     '/textures',
-	                texturesProvider: new threeFull.TextureLoader(),
-	                generateMipmap:   false,
-	                autoFillTextures: true
+	                basePath:                '/materials',
+	                texturesPath:            '/textures',
+	                texturesProviderOptions: {},
+	                generateMipmap:          false,
+	                autoFillTextures:        true
 	            }, ...parameters
 	        };
 
 	        super( _parameters );
 
 	        this.texturesPath     = _parameters.texturesPath;
-	        this.texturesProvider = _parameters.texturesProvider;
 	        this.generateMipmap   = _parameters.generateMipmap;
 	        this.autoFillTextures = _parameters.autoFillTextures;
+	        this.texturesProvider = new threeFull.TextureLoader( _parameters.texturesProviderOptions );
 
 	    }
 
@@ -10179,22 +10179,22 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        const _parameters = {
 	            ...{
-	                basePath:           '/objects',
-	                geometriesProvider: new GeometriesManager(),
-	                materialsProvider:  new MaterialsManager(),
-	                projectionSystem:   'zBack',
-	                globalScale:        1,
-	                autoFillObjects3D:  true
+	                basePath:                  '/objects',
+	                geometriesProviderOptions: {},
+	                materialsProviderOptions:  {},
+	                projectionSystem:          'zBack',
+	                globalScale:               1,
+	                autoFillObjects3D:         true
 	            }, ...parameters
 	        };
 
 	        super( _parameters );
 
-	        this.geometriesProvider = _parameters.geometriesProvider;
-	        this.materialsProvider  = _parameters.materialsProvider;
 	        this.projectionSystem   = _parameters.projectionSystem;
 	        this.globalScale        = _parameters.globalScale;
 	        this.autoFillObjects3D  = _parameters.autoFillObjects3D;
+	        this.geometriesProvider = new GeometriesManager( _parameters.geometriesProviderOptions );
+	        this.materialsProvider  = new MaterialsManager( _parameters.materialsProviderOptions );
 
 	    }
 

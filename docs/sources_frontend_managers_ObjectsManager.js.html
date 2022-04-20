@@ -188,22 +188,22 @@ class ObjectsManager extends TDataBaseManager {
 
         const _parameters = {
             ...{
-                basePath:           '/objects',
-                geometriesProvider: new GeometriesManager(),
-                materialsProvider:  new MaterialsManager(),
-                projectionSystem:   'zBack',
-                globalScale:        1,
-                autoFillObjects3D:  true
+                basePath:                  '/objects',
+                geometriesProviderOptions: {},
+                materialsProviderOptions:  {},
+                projectionSystem:          'zBack',
+                globalScale:               1,
+                autoFillObjects3D:         true
             }, ...parameters
         }
 
         super( _parameters )
 
-        this.geometriesProvider = _parameters.geometriesProvider
-        this.materialsProvider  = _parameters.materialsProvider
         this.projectionSystem   = _parameters.projectionSystem
         this.globalScale        = _parameters.globalScale
         this.autoFillObjects3D  = _parameters.autoFillObjects3D
+        this.geometriesProvider = new GeometriesManager( _parameters.geometriesProviderOptions )
+        this.materialsProvider  = new MaterialsManager( _parameters.materialsProviderOptions )
 
     }
 
