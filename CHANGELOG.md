@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/Itee/itee-plugin-three/compare/v1.5.6...v1.6.0) (2022-04-20)
+
+
+### Bug Fixes
+
+* **global:** fix eslint errors ([4b78ef0](https://github.com/Itee/itee-plugin-three/commit/4b78ef015dcbcac9fbee1f7e5c06464271e74668))
+
+
+### Features
+
+* **materialmanager:** allow to pass texture provider options instead of instance ([cff7ccb](https://github.com/Itee/itee-plugin-three/commit/cff7ccbdddf20415873a7f9cc0aedb3265069af7))
+* **objectsmanager:** allow to pass geometrie and material provider options instead of instances ([a5b51cf](https://github.com/Itee/itee-plugin-three/commit/a5b51cfd79e9cb8914c14d3dbaff46d2f96554f5))
+* **tapplication:** add new class TApplication to facilitate three js application creation ([956712a](https://github.com/Itee/itee-plugin-three/commit/956712a86aa7c37446502ad775fcf829d98de59b))
+
 ## [1.5.6](https://github.com/Itee/itee-plugin-three/compare/v1.5.5...v1.5.6) (2022-03-04)
 
 

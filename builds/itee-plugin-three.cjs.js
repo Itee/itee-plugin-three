@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.5.6 - CommonJs')
+console.log('Itee.Plugin.Three v1.6.0 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -2350,25 +2350,6 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  */
 class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
-    // Todo: Use itee-utils
-    static _arrayify ( data ) {
-
-        let array = [];
-
-        if ( require$$0$3.isDefined( data ) ) {
-
-            if ( require$$0$3.isArray( data ) ) {
-                array = data;
-            } else {
-                array = [ data ];
-            }
-
-        }
-
-        return array
-
-    }
-
     // Utils
     static _toLog ( object ) {
 
@@ -2422,7 +2403,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      */
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
-        const dataToParse = ThreeToMongoDB._arrayify( data );
+        const dataToParse = iteeUtils.toArray( data );
         if ( require$$0$3.isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' );
             return
@@ -2519,7 +2500,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _parseObjects ( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` );
 
-        const _objects = ThreeToMongoDB._arrayify( objects );
+        const _objects = iteeUtils.toArray( objects );
         if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
@@ -2552,8 +2533,8 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         const objectType      = object.type;
         const objectName      = object.name;
         const objectGeometry  = object.geometry;
-        const objectChildren  = ThreeToMongoDB._arrayify( object.children );
-        const objectMaterials = ThreeToMongoDB._arrayify( object.material );
+        const objectChildren  = iteeUtils.toArray( object.children );
+        const objectMaterials = iteeUtils.toArray( object.material );
 
         // If it is a terminal object ( No children ) with an empty geometry
         if ( require$$0$3.isDefined( objectGeometry ) && require$$0$3.isEmptyArray( objectChildren ) ) {
@@ -2721,7 +2702,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _getOrCreateDocuments ( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` );
 
-        const _objects = ThreeToMongoDB._arrayify( objects );
+        const _objects = iteeUtils.toArray( objects );
         if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
@@ -2774,7 +2755,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _createDocuments ( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` );
 
-        const _datas = ThreeToMongoDB._arrayify( datas );
+        const _datas = iteeUtils.toArray( datas );
         if ( require$$0$3.isEmptyArray( _datas ) ) {
             return null
         }
@@ -2891,7 +2872,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` );
 
-        const _documents = ThreeToMongoDB._arrayify( documents );
+        const _documents = iteeUtils.toArray( documents );
         if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
@@ -2947,7 +2928,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _deleteDocuments ( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` );
 
-        const _documents = ThreeToMongoDB._arrayify( documents );
+        const _documents = iteeUtils.toArray( documents );
         if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
