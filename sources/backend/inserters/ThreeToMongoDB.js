@@ -19,6 +19,7 @@ import {
     isNotDefined,
     isNull
 }                                from 'itee-validators'
+import { toArray } from 'itee-utils'
 
 /**
  * This class allow to insert ThreeJs stuff in MongoDB database.
@@ -27,25 +28,6 @@ import {
  * @augments TAbstractDataInserter
  */
 class ThreeToMongoDB extends TAbstractDataInserter {
-
-    // Todo: Use itee-utils
-    static _arrayify ( data ) {
-
-        let array = []
-
-        if ( isDefined( data ) ) {
-
-            if ( isArray( data ) ) {
-                array = data
-            } else {
-                array = [ data ]
-            }
-
-        }
-
-        return array
-
-    }
 
     // Utils
     static _toLog ( object ) {
@@ -100,7 +82,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      */
     async _save ( data, parameters, onSuccess, onProgress, onError ) {
 
-        const dataToParse = ThreeToMongoDB._arrayify( data )
+        const dataToParse = toArray( data )
         if ( isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' )
             return
@@ -197,7 +179,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     async _parseObjects ( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` )
 
-        const _objects = ThreeToMongoDB._arrayify( objects )
+        const _objects = toArray( objects )
         if ( isEmptyArray( _objects ) ) {
             return null
         }
@@ -230,8 +212,8 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         const objectType      = object.type
         const objectName      = object.name
         const objectGeometry  = object.geometry
-        const objectChildren  = ThreeToMongoDB._arrayify( object.children )
-        const objectMaterials = ThreeToMongoDB._arrayify( object.material )
+        const objectChildren  = toArray( object.children )
+        const objectMaterials = toArray( object.material )
 
         // If it is a terminal object ( No children ) with an empty geometry
         if ( isDefined( objectGeometry ) && isEmptyArray( objectChildren ) ) {
@@ -399,7 +381,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     async _getOrCreateDocuments ( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` )
 
-        const _objects = ThreeToMongoDB._arrayify( objects )
+        const _objects = toArray( objects )
         if ( isEmptyArray( _objects ) ) {
             return null
         }
@@ -452,7 +434,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     async _createDocuments ( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` )
 
-        const _datas = ThreeToMongoDB._arrayify( datas )
+        const _datas = toArray( datas )
         if ( isEmptyArray( _datas ) ) {
             return null
         }
@@ -569,7 +551,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` )
 
-        const _documents = ThreeToMongoDB._arrayify( documents )
+        const _documents = toArray( documents )
         if ( isEmptyArray( _documents ) ) {
             return null
         }
@@ -625,7 +607,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
     async _deleteDocuments ( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` )
 
-        const _documents = ThreeToMongoDB._arrayify( documents )
+        const _documents = toArray( documents )
         if ( isEmptyArray( _documents ) ) {
             return null
         }
