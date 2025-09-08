@@ -1,4 +1,4 @@
-console.log('Itee.Plugin.Three v1.6.0 - CommonJs')
+console.log('Itee.Plugin.Three v1.6.1 - CommonJs')
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });

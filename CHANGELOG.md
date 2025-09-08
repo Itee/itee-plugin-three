@@ -1,3 +1,11 @@
+## [1.6.1](https://github.com/Itee/itee-plugin-three/compare/v1.6.0...v1.6.1) (2025-09-08)
+
+
+### Bug Fixes
+
+* **gulpfile:** fix bundling tasks ([3d56c53](https://github.com/Itee/itee-plugin-three/commit/3d56c537b38bccdee8876079196b908eb08318f0))
+* **npm:** apply npm audit fix ([541a749](https://github.com/Itee/itee-plugin-three/commit/541a74964cb3f23cf8a9baf6bc20049df5b399cf))
+
 # [1.6.0](https://github.com/Itee/itee-plugin-three/compare/v1.5.6...v1.6.0) (2022-04-20)
 
 
