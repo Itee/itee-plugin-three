@@ -28,7 +28,7 @@
     "url": "https://github.com/Itee/itee-plugin-three/issues"
   },
   "engines": {
-    "node": ">=8.16.0"
+    "node": ">=18"
   },
   "os": [
     "win32",
