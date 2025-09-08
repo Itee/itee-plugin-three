@@ -2,7 +2,7 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
- * @module Config-Rollup-Test
+ * @module configs/Rollup-Test
  * @description The file manage the rollup configuration for build tests
  */
 
@@ -14,34 +14,42 @@ const packageInfos = require( '../package' )
  * @generator
  * @return {Array.<json>} An array of rollup configuration
  */
-function CreateTestsRollupConfigs ( /*options*/ ) {
+function CreateUnitsRollupConfigs ( /*options*/ ) {
     'use strict'
 
     return [
+        // For node
         {
             input:     `tests/units/${packageInfos.name}.units.js`,
+            external:  [ 'chai' ],
             plugins:   [],
             treeshake: true,
             output:    {
                 indent: '\t',
-                format: 'iife',
+                format: 'cjs',
                 name:   'Itee.Units',
-                file:   `tests/builds/${packageInfos.name}.units.js`
+                file:   `tests/units/builds/${packageInfos.name}.units.cjs.js`
             }
         },
+        // For karma
         {
-            input:     `tests/benchmarks/${packageInfos.name}.benchs.js`,
+            input:     `tests/units/${packageInfos.name}.units.js`,
+            external:  [ 'chai', 'mocha' ],
             plugins:   [],
             treeshake: true,
             output:    {
-                indent: '\t',
-                format: 'iife',
-                name:   'Itee.Benchs',
-                file:   `tests/builds/${packageInfos.name}.benchs.js`
+                indent:  '\t',
+                format:  'iife',
+                name:    'Itee.Units',
+                globals: {
+                    'chai':  'chai',
+                    'mocha': 'mocha'
+                },
+                file: `tests/units/builds/${packageInfos.name}.units.iife.js`
             }
-        }
+        },
     ]
 
 }
 
-module.exports = CreateTestsRollupConfigs
+module.exports = CreateUnitsRollupConfigs

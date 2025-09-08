@@ -64,7 +64,7 @@ class TApplication {
     }
     
     _initGlobals ( {
-        isRaycastable                    = false,
+        isRaycastable = false,
         isDecimable= false
     }={ } ) {
         
@@ -94,16 +94,16 @@ class TApplication {
     }
     
     _initScenes ( {
-        autoUpdate=      true,
-        background=      null,
+        autoUpdate= true,
+        background= null,
         castShadow = false,
         children = [],
-        environment=      null,
-        fog=              null,
+        environment= null,
+        fog= null,
         frustumCulled = true,
         matrixAutoUpdate= false,
-        name=             'Scene',
-        overrideMaterial=      null,
+        name= 'Scene',
+        overrideMaterial= null,
         receiveShadow = false,
         renderOrder = 0,
         userData = {},
@@ -132,7 +132,7 @@ class TApplication {
     }
     
     _initCameras ( {
-        type=       'PerspectiveCamera',
+        type= 'PerspectiveCamera',
         options={
             aspect:     1,
             far:        100000000,
@@ -171,44 +171,44 @@ class TApplication {
     }
     
     _initRenderers ( {
-        canvas=                       undefined,
-        context=                      undefined,
-        alpha=                        undefined,
-        depth=                        undefined,
-        stencil=                      undefined,
-        antialias=                    true,
-        premultipliedAlpha=           undefined,
-        preserveDrawingBuffer=        undefined,
-        powerPreference=              undefined,
+        canvas= undefined,
+        context= undefined,
+        alpha= undefined,
+        depth= undefined,
+        stencil= undefined,
+        antialias= true,
+        premultipliedAlpha= undefined,
+        preserveDrawingBuffer= undefined,
+        powerPreference= undefined,
         failIfMajorPerformanceCaveat= undefined,
         // capabilities
-        precision=              'highp',
+        precision= 'highp',
         logarithmicDepthBuffer= true,
         // clearing
-        autoClear=        true,
-        autoClearColor=   true,
-        autoClearDepth=   true,
+        autoClear= true,
+        autoClearColor= true,
+        autoClearDepth= true,
         autoClearStencil= true,
         // scene graph
         sortObjects= true,
         // user-defined clipping
-        clippingPlanes=       [],
+        clippingPlanes= [],
         localClippingEnabled= true,
         // physically based shading
         outputEncoding= LinearEncoding,
         // physical lights
         physicallyCorrectLights= false,
         // tone mapping
-        toneMapping=           LinearToneMapping,
-        toneMappingExposure=   1.0,
+        toneMapping= LinearToneMapping,
+        toneMappingExposure= 1.0,
         toneMappingWhitePoint= 1.0,
         // morphs
         maxMorphTargets= 8,
         maxMorphNormals= 4,
         // shadowmap
-        shadowMap= null,    //WebGLShadowMap
+        shadowMap= null, //WebGLShadowMap
         // xr
-        xr=    null, // WebXRManager
+        xr= null, // WebXRManager
         //Extra
         clearColor= '#000000',
         clearAlpha= 1
