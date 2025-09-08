@@ -267,8 +267,17 @@ gulp.task( 'check-bundling-side-effect', async ( done ) => {
 
         const config = {
             input: temporaryFile,
+            external: [
+                'itee-client',
+                'itee-utils',
+                'itee-core',
+                'itee-validators',
+                'three-full'
+            ],
             plugins:   [
-                nodeResolve()
+                nodeResolve({
+                    preferBuiltins: true
+                })
                 //                commonJs()
             ],
             onwarn:    ( {
@@ -367,7 +376,13 @@ gulp.task( 'check-bundling-by-source-file-export', async ( done ) => {
 
         const config = {
             input:     sourceFile,
-            external:  [ '' ],
+            external:  [
+                'itee-client',
+                'itee-utils',
+                'itee-core',
+                'itee-validators',
+                'three-full'
+            ],
             plugins:   [
                 nodeResolve( {
                     preferBuiltins: true
