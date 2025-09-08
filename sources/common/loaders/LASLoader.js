@@ -108,22 +108,22 @@ class LASLoader {
 
         // Converter
         this.colorForPointClass = {
-            Created:          {
+            Created: {
                 r: 255,
                 g: 255,
                 b: 255
             },
-            Unclassified:     {
+            Unclassified: {
                 r: 60,
                 g: 60,
                 b: 60
             },
-            Ground:           {
+            Ground: {
                 r: 125,
                 g: 95,
                 b: 5
             },
-            LowVegetation:    {
+            LowVegetation: {
                 r: 153,
                 g: 212,
                 b: 36
@@ -133,32 +133,32 @@ class LASLoader {
                 g: 148,
                 b: 25
             },
-            HighVegetation:   {
+            HighVegetation: {
                 r: 27,
                 g: 77,
                 b: 13
             },
-            Building:         {
+            Building: {
                 r: 153,
                 g: 138,
                 b: 95
             },
-            LowPoint:         {
+            LowPoint: {
                 r: 200,
                 g: 200,
                 b: 200
             },
-            ModelKeyPoint:    {
+            ModelKeyPoint: {
                 r: 237,
                 g: 31,
                 b: 31
             },
-            Water:            {
+            Water: {
                 r: 31,
                 g: 186,
                 b: 237
             },
-            OverlapPoints:    {
+            OverlapPoints: {
                 r: 0,
                 g: 0,
                 b: 0
@@ -349,9 +349,9 @@ class LASLoader {
     _parseHeader_1_2 () {
 
         return {
-            FileSignature:                 this._reader.getString( 4 ),
-            FileSourceId:                  this._reader.getUint16(),
-            GlobalEncoding:                {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
                 GPSTimeType: this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
                 Reserved:    this._reader.skipBitOffsetOf( 15 )
             },
@@ -391,9 +391,9 @@ class LASLoader {
     _parseHeader_1_3 () {
 
         return {
-            FileSignature:                   this._reader.getString( 4 ),
-            FileSourceId:                    this._reader.getUint16(),
-            GlobalEncoding:                  {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
                 GPSTimeType:                                 this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
                 WaveformDataPacketsInternal:                 this._reader.getBit16(),
                 WaveformDataPacketsExternal:                 this._reader.getBit16(),
@@ -437,9 +437,9 @@ class LASLoader {
     _parseHeader_1_4 () {
 
         return {
-            FileSignature:                            this._reader.getString( 4 ),
-            FileSourceId:                             this._reader.getUint16(),
-            GlobalEncoding:                           {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
                 GPSTimeType:                                 this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
                 WaveformDataPacketsInternal:                 this._reader.getBit16(),
                 WaveformDataPacketsExternal:                 this._reader.getBit16(),
@@ -814,9 +814,9 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            ScanAngleRank:     this._reader.getInt8(),
-            UserData:          this._reader.getUint8(),
-            PointSourceId:     this._reader.getUint16()
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16()
         }
 
     }
@@ -838,10 +838,10 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            ScanAngleRank:     this._reader.getInt8(),
-            UserData:          this._reader.getUint8(),
-            PointSourceId:     this._reader.getUint16(),
-            GPSTime:           this._reader.getFloat64()
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64()
         }
 
     }
@@ -863,12 +863,12 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            ScanAngleRank:     this._reader.getInt8(),
-            UserData:          this._reader.getUint8(),
-            PointSourceId:     this._reader.getUint16(),
-            R:                 this._reader.getUint16(),
-            G:                 this._reader.getUint16(),
-            B:                 this._reader.getUint16()
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
         }
 
     }
@@ -890,13 +890,13 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            ScanAngleRank:     this._reader.getInt8(),
-            UserData:          this._reader.getUint8(),
-            PointSourceId:     this._reader.getUint16(),
-            GPSTime:           this._reader.getFloat64(),
-            R:                 this._reader.getUint16(),
-            G:                 this._reader.getUint16(),
-            B:                 this._reader.getUint16()
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
         }
 
     }
@@ -904,15 +904,15 @@ class LASLoader {
     _parsePointDataRecordFormat_4 () {
 
         return {
-            X:                           this._reader.getInt32(),
-            Y:                           this._reader.getInt32(),
-            Z:                           this._reader.getInt32(),
-            Intensity:                   this._reader.getUint16(),
-            ReturnNumber:                this._reader.getBits8( 3 ),
-            NumberOfReturns:             this._reader.getBits8( 3 ),
-            ScanDirectionFlag:           this._reader.getBit8(),
-            EdgeOfFlightLine:            this._reader.getBit8(),
-            Classification:              {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
                 Class:     this._reader.getBits8( 5 ),
                 Synthetic: this._reader.getBit8(),
                 KeyPoint:  this._reader.getBit8(),
@@ -936,15 +936,15 @@ class LASLoader {
     _parsePointDataRecordFormat_5 () {
 
         return {
-            X:                           this._reader.getInt32(),
-            Y:                           this._reader.getInt32(),
-            Z:                           this._reader.getInt32(),
-            Intensity:                   this._reader.getUint16(),
-            ReturnNumber:                this._reader.getBits8( 3 ),
-            NumberOfReturns:             this._reader.getBits8( 3 ),
-            ScanDirectionFlag:           this._reader.getBit8(),
-            EdgeOfFlightLine:            this._reader.getBit8(),
-            Classification:              {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
                 Class:     this._reader.getBits8( 5 ),
                 Synthetic: this._reader.getBit8(),
                 KeyPoint:  this._reader.getBit8(),
@@ -987,10 +987,10 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            UserData:            this._reader.getUint8(),
-            ScanAngle:           this._reader.getInt16(),
-            PointSourceId:       this._reader.getUint16(),
-            GPSTime:             this._reader.getFloat64()
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64()
         }
 
     }
@@ -1014,13 +1014,13 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            UserData:            this._reader.getUint8(),
-            ScanAngle:           this._reader.getInt16(),
-            PointSourceId:       this._reader.getUint16(),
-            GPSTime:             this._reader.getFloat64(),
-            R:                   this._reader.getUint16(),
-            G:                   this._reader.getUint16(),
-            B:                   this._reader.getUint16()
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
         }
 
     }
@@ -1044,14 +1044,14 @@ class LASLoader {
                 KeyPoint:  this._reader.getBit8(),
                 Withheld:  this._reader.getBit8()
             },
-            UserData:            this._reader.getUint8(),
-            ScanAngle:           this._reader.getInt16(),
-            PointSourceId:       this._reader.getUint16(),
-            GPSTime:             this._reader.getFloat64(),
-            R:                   this._reader.getUint16(),
-            G:                   this._reader.getUint16(),
-            B:                   this._reader.getUint16(),
-            NIR:                 this._reader.getUint16()
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16(),
+            NIR:           this._reader.getUint16()
         }
 
     }
@@ -1059,17 +1059,17 @@ class LASLoader {
     _parsePointDataRecordFormat_9 () {
 
         return {
-            X:                           this._reader.getInt32(),
-            Y:                           this._reader.getInt32(),
-            Z:                           this._reader.getInt32(),
-            Intensity:                   this._reader.getUint16(),
-            ReturnNumber:                this._reader.getBits16( 4 ),
-            NumberOfReturns:             this._reader.getBits16( 4 ),
-            ClassificationFlags:         this._reader.getBits16( 4 ),
-            ScannerChannel:              this._reader.getBits16( 2 ),
-            ScanDirectionFlag:           this._reader.getBit16(),
-            EdgeOfFlightLine:            this._reader.getBit16(),
-            Classification:              {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
                 Class:     this._reader.getBits8( 5 ),
                 Synthetic: this._reader.getBit8(),
                 KeyPoint:  this._reader.getBit8(),
@@ -1093,17 +1093,17 @@ class LASLoader {
     _parsePointDataRecordFormat_10 () {
 
         return {
-            X:                           this._reader.getInt32(),
-            Y:                           this._reader.getInt32(),
-            Z:                           this._reader.getInt32(),
-            Intensity:                   this._reader.getUint16(),
-            ReturnNumber:                this._reader.getBits16( 4 ),
-            NumberOfReturns:             this._reader.getBits16( 4 ),
-            ClassificationFlags:         this._reader.getBits16( 4 ),
-            ScannerChannel:              this._reader.getBits16( 2 ),
-            ScanDirectionFlag:           this._reader.getBit16(),
-            EdgeOfFlightLine:            this._reader.getBit16(),
-            Classification:              {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
                 Class:     this._reader.getBits8( 5 ),
                 Synthetic: this._reader.getBit8(),
                 KeyPoint:  this._reader.getBit8(),
