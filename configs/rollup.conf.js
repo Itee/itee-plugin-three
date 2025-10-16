@@ -130,13 +130,13 @@ function CreateRollupConfigs( options ) {
     'use strict'
 
     const {
-              name,
               input,
               output,
               formats,
               envs,
               treeshake
           }        = options
+    const name     = getPrettyPackageName()
     const fileName = path.basename( input, '.js' )
 
     const configs = []
