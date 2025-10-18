@@ -61,7 +61,7 @@
     "itee-database": "^8.2.2",
     "itee-mongodb": "^1.1.7",
     "itee-utils": "^5.4.4",
-    "itee-validators": "^5.3.9"
+    "itee-validators": "^5.6.0"
   },
   "peerDependencies": {
     "three-full": "^28.0.2"
