@@ -58,7 +58,7 @@
     "bson": "^4.6.1",
     "itee-client": "^8.2.1",
     "itee-core": "^1.4.0",
-    "itee-database": "^8.2.2",
+    "itee-database": "^8.3.0",
     "itee-mongodb": "^1.1.7",
     "itee-utils": "^5.6.0",
     "itee-validators": "^5.6.0"
