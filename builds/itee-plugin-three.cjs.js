@@ -1,8 +1,8 @@
 /**
- * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ┏┓ ┓      ┏┓            ┏┳ 
- * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃ ┣┓ ┃  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
- * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻•┗┛•┻      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
- *              ┛                                                
+ * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ━┓ ┏┓      ┏┓            ┏┳ 
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃  ┃ ┃┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻• ╹•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
+ *              ┛                                                 
  * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
  * @author  [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
