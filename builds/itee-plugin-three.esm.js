@@ -1,6 +1,15 @@
-console.log('Itee.Plugin.Three v1.6.1 - EsModule')
+/**
+ * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ┏┓ ┓      ┏┓ ┳┳┓   ┓  ┓  
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃ ┣┓ ┃  ━━  ┣ ┏┃┃┃┏┓┏┫┓┏┃┏┓
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻•┗┛•┻      ┗┛┛┛ ┗┗┛┗┻┗┻┗┗ 
+ *              ┛                                              
+ * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
+ * @author  [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * 
+ */
 import { DefaultLogger } from 'itee-core';
-import { Box3, DefaultLoadingManager, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, ImageLoader, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
+import { Box3, DefaultLoadingManager, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, ImageLoader, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
 import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { isDefined, isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isNotArray, isArray, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
@@ -847,7 +856,7 @@ class ASCLoader {
  *
  * @type {Object}
  */
-const DBFVersion = toEnum( {
+const DBFVersion = /*#__PURE__*/toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -872,7 +881,7 @@ const DBFVersion = toEnum( {
  *
  * @type {Object}
  */
-const DataType = toEnum( {
+const DataType = /*#__PURE__*/toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',
@@ -1639,9 +1648,9 @@ DBFLoader.YearOffset    = 1900;
 
 /////////////
 
-const NullCharRegex = new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
+const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
 
-const PointClasses = toEnum( {
+const PointClasses = /*#__PURE__*/toEnum( {
     Created:          0,
     Unclassified:     1,
     Ground:           2,
@@ -2971,7 +2980,7 @@ class LASLoader {
  *
  * @type {Object}
  */
-const ShapeType = toEnum( {
+const ShapeType = /*#__PURE__*/toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,
@@ -3824,12 +3833,12 @@ class BitManager {
  *
  */
 
-const FRONT = new Vector3( 0, 0, -1 );
-const BACK  = new Vector3( 0, 0, 1 );
-const UP    = new Vector3( 0, 1, 0 );
-const DOWN  = new Vector3( 0, -1, 0 );
-const RIGHT = new Vector3( 1, 0, 0 );
-const LEFT  = new Vector3( -1, 0, 0 );
+const FRONT = /*#__PURE__*/new Vector3( 0, 0, -1 );
+const BACK  = /*#__PURE__*/new Vector3( 0, 0, 1 );
+const UP    = /*#__PURE__*/new Vector3( 0, 1, 0 );
+const DOWN  = /*#__PURE__*/new Vector3( 0, -1, 0 );
+const RIGHT = /*#__PURE__*/new Vector3( 1, 0, 0 );
+const LEFT  = /*#__PURE__*/new Vector3( -1, 0, 0 );
 
 /**
  * Enum values to define the internal state of CameraControl
@@ -3845,7 +3854,7 @@ const LEFT  = new Vector3( -1, 0, 0 );
  * @constant
  * @private
  */
-const State = toEnum( {
+const State = /*#__PURE__*/toEnum( {
     None:     0,
     Rotating: 1,
     Panning:  2,
@@ -3865,7 +3874,7 @@ const State = toEnum( {
  * @constant
  * @public
  */
-const CameraControlMode = toEnum( {
+const CameraControlMode = /*#__PURE__*/toEnum( {
     FirstPerson: 1,
     Orbit:       2,
     Fly:         3,
@@ -7374,7 +7383,7 @@ class ClippingBox extends LineSegments {
 }
 
 // Controller
-const ClippingModes = toEnum( {
+const ClippingModes = /*#__PURE__*/toEnum( {
     None:      'None',
     Translate: 'Translate',
     Rotate:    'Rotate',
@@ -8557,7 +8566,7 @@ class CurvesManager extends TDataBaseManager {
  *
  */
 
-const ArrayType = toEnum( {
+const ArrayType = /*#__PURE__*/toEnum( {
     Int8Array:         0,
     Uint8Array:        1,
     Uint8ClampedArray: 2,
@@ -9352,7 +9361,7 @@ class TexturesManager extends TDataBaseManager {
  *
  */
 
-const DEFAULT_IMAGE = new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
+const DEFAULT_IMAGE = /*#__PURE__*/new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
 /**
  * @class

@@ -1,4 +1,13 @@
-console.log('Itee.Plugin.Three v1.6.1 - Standalone')
+/**
+ * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ┏┓ ┓      ┏┓      ┓  ┓      
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃ ┣┓ ┃  ━━  ┗┓╋┏┓┏┓┏┫┏┓┃┏┓┏┓┏┓
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻•┗┛•┻      ┗┛┗┗┻┛┗┗┻┗┻┗┗┛┛┗┗ 
+ *              ┛                                                 
+ * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
+ * @author  [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * 
+ */
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
 this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, iteeUtils, iteeValidators) {
@@ -853,7 +862,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 * @type {Object}
 	 */
-	const DBFVersion = iteeUtils.toEnum( {
+	const DBFVersion = /*#__PURE__*/iteeUtils.toEnum( {
 	    FoxPro:               0x30,
 	    FoxPro_Autoincrement: 0x31,
 
@@ -878,7 +887,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 * @type {Object}
 	 */
-	const DataType = iteeUtils.toEnum( {
+	const DataType = /*#__PURE__*/iteeUtils.toEnum( {
 	    Binary:        'B',
 	    Character:     'C',
 	    Date:          'D',
@@ -1645,9 +1654,9 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	/////////////
 
-	const NullCharRegex = new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
+	const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
 
-	const PointClasses = iteeUtils.toEnum( {
+	const PointClasses = /*#__PURE__*/iteeUtils.toEnum( {
 	    Created:          0,
 	    Unclassified:     1,
 	    Ground:           2,
@@ -2977,7 +2986,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 * @type {Object}
 	 */
-	const ShapeType = iteeUtils.toEnum( {
+	const ShapeType = /*#__PURE__*/iteeUtils.toEnum( {
 	    NullShape:   0,
 	    Point:       1,
 	    Polyline:    3,
@@ -3830,12 +3839,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
-	const FRONT = new threeFull.Vector3( 0, 0, -1 );
-	const BACK  = new threeFull.Vector3( 0, 0, 1 );
-	const UP    = new threeFull.Vector3( 0, 1, 0 );
-	const DOWN  = new threeFull.Vector3( 0, -1, 0 );
-	const RIGHT = new threeFull.Vector3( 1, 0, 0 );
-	const LEFT  = new threeFull.Vector3( -1, 0, 0 );
+	const FRONT = /*#__PURE__*/new threeFull.Vector3( 0, 0, -1 );
+	const BACK  = /*#__PURE__*/new threeFull.Vector3( 0, 0, 1 );
+	const UP    = /*#__PURE__*/new threeFull.Vector3( 0, 1, 0 );
+	const DOWN  = /*#__PURE__*/new threeFull.Vector3( 0, -1, 0 );
+	const RIGHT = /*#__PURE__*/new threeFull.Vector3( 1, 0, 0 );
+	const LEFT  = /*#__PURE__*/new threeFull.Vector3( -1, 0, 0 );
 
 	/**
 	 * Enum values to define the internal state of CameraControl
@@ -3851,7 +3860,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @constant
 	 * @private
 	 */
-	const State = iteeUtils.toEnum( {
+	const State = /*#__PURE__*/iteeUtils.toEnum( {
 	    None:     0,
 	    Rotating: 1,
 	    Panning:  2,
@@ -3871,7 +3880,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @constant
 	 * @public
 	 */
-	const CameraControlMode = iteeUtils.toEnum( {
+	const CameraControlMode = /*#__PURE__*/iteeUtils.toEnum( {
 	    FirstPerson: 1,
 	    Orbit:       2,
 	    Fly:         3,
@@ -7380,7 +7389,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	}
 
 	// Controller
-	const ClippingModes = iteeUtils.toEnum( {
+	const ClippingModes = /*#__PURE__*/iteeUtils.toEnum( {
 	    None:      'None',
 	    Translate: 'Translate',
 	    Rotate:    'Rotate',
@@ -8563,7 +8572,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
-	const ArrayType = iteeUtils.toEnum( {
+	const ArrayType = /*#__PURE__*/iteeUtils.toEnum( {
 	    Int8Array:         0,
 	    Uint8Array:        1,
 	    Uint8ClampedArray: 2,
@@ -9358,7 +9367,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
-	const DEFAULT_IMAGE = new threeFull.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
+	const DEFAULT_IMAGE = /*#__PURE__*/new threeFull.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
 	/**
 	 * @class

@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Itee-Plugin-Three Module: Types/Matrix4</title>
+	<title>Itee-Plugin-Three Module: configs/Rollup</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -100,7 +100,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Module: Types/Matrix4</h1>
+	<h1 class="page-title">Module: configs/Rollup</h1>
 <section>
 
 <header>
@@ -112,7 +112,8 @@
     <div class="container-overview">
     
         
-            <div class="description">Export the three js Matrix4 type for Mongoose.</div>
+            <div class="description">The file manage the rollup configuration for build the library using differents arguments. It allow to build with two type of environment (dev and prod), and differents output format.
+Use npm run help to display all available build options.</div>
         
 
         
@@ -164,8 +165,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="sources_backend_types_Matrix4.js.html">sources/backend/types/Matrix4.js</a>,
-				 <a href="sources_backend_types_Matrix4.js.html#sunlight-1-line-1">line 1</a>
+				<a href="configs_rollup.conf.js.html">configs/rollup.conf.js</a>,
+				 <a href="configs_rollup.conf.js.html#sunlight-1-line-1">line 1</a>
 			</li>
 		</ul>
 	</dd>
@@ -189,19 +190,18 @@
         <h3 class="subsection-title">Requires</h3>
 
         <ul>
-            <li><a href="https://github.com/Itee/itee-validators">itee-validators</a></li>
+            <li><a href="https://github.com/rollup/rollup-plugin-commonjs">rollup-plugin-commonjs</a></li>
         
-            <li><a href="https://github.com/mongodb/js-bson">bson</a></li>
+            <li><a href="https://nodejs.org/api/path.html">path</a></li>
+        
+            <li><a href="https://github.com/jetiny/rollup-plugin-re">rollup-plugin-re</a></li>
+        
+            <li><a href="https://github.com/rollup/rollup-plugin-node-resolve">rollup-plugin-node-resolve</a></li>
+        
+            <li><a href="https://github.com/TrySound/rollup-plugin-terser">rollup-plugin-terser</a></li>
         </ul>
     
 
-    
-        <h3 class="subsection-title">Classes</h3>
-
-        <dl>
-            <dt><a href="module-Types_Matrix4-Matrix4.html">Matrix4</a></dt>
-            <dd></dd>
-        </dl>
     
 
     
@@ -217,7 +217,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="~Matrix4Type"><span class="type-signature">&lt;inner> </span>Matrix4Type(Mongoose)</h4>
+    <h4 class="name" id="~CreateRollupConfigs"><span class="type-signature">&lt;generator, inner> </span>CreateRollupConfigs(options)</h4>
     
     
 </dt>
@@ -225,7 +225,7 @@
 
     
     <div class="description">
-        The type registering function.
+        Will create an appropriate configuration object for rollup, related to the given arguments.
     </div>
     
 
@@ -260,16 +260,10 @@
 
         <tr>
             
-                <td class="name"><code>Mongoose</code></td>
+                <td class="name"><code>options</code></td>
             
 
             <td class="type">
-            
-                
-<span class="param-type">Mongoose</span>
-
-
-
             
             </td>
 
@@ -277,7 +271,7 @@
 
             
 
-            <td class="description last">A mongoose instance where register the Matrix4 type</td>
+            <td class="description last"></td>
         </tr>
 
     
@@ -321,8 +315,8 @@
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="sources_backend_types_Matrix4.js.html">sources/backend/types/Matrix4.js</a>,
-				 <a href="sources_backend_types_Matrix4.js.html#sunlight-1-line-25">line 25</a>
+				<a href="configs_rollup.conf.js.html">configs/rollup.conf.js</a>,
+				 <a href="configs_rollup.conf.js.html#sunlight-1-line-129">line 129</a>
 			</li>
 		</ul>
 	</dd>
@@ -350,6 +344,10 @@
     <h5>Returns:</h5>
     
             
+<div class="param-desc">
+    An array of rollup configuration
+</div>
+
 
 
 <dl>
@@ -358,7 +356,7 @@
     </dt>
     <dd>
         
-<span class="param-type">Mongoose</span>
+<span class="param-type">Array.&lt;json></span>
 
 
 
