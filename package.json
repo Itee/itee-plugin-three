@@ -85,6 +85,8 @@
     "glob": "^7.2.0",
     "gulp": "^4.0.2",
     "gulp-eslint": "^6.0.0",
+    "ink-docstrap": "^1.3.2",
+    "jsdoc": "^4.0.5",
     "karma": "^4.4.1",
     "karma-benchmark": "^1.0.4",
     "karma-benchmarkjs-reporter": "^1.0.0",
