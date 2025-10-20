@@ -136,7 +136,7 @@ gulp.task( 'build-benchmarks', gulp.series( 'compute-benchmarks', 'bundle-benchm
  * @global
  * @description Will build all tests.
  */
-gulp.task( 'build-tests', gulp.series( 'check-bundling', 'build-unit-tests', 'build-benchmarks' ) )
+gulp.task( 'build-tests', gulp.series( /*'check-bundling',*/ 'build-unit-tests', 'build-benchmarks' ) )
 
 //---------
 

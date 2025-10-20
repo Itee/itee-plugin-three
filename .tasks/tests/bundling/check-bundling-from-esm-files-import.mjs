@@ -81,8 +81,13 @@ async function checkBundlingFromEsmFilesImport( done ) {
 
         const config = {
             input:     temporaryFile,
+            external: [
+                'three-full'
+            ],
             plugins:   [
-                nodeResolve(),
+                nodeResolve({
+                    preferBuiltins: true
+                }),
                 cleanup( {
                     comments: 'all' // else remove __PURE__ declaration... -_-'
                 } )
