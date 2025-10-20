@@ -41,7 +41,18 @@ const config = {
         `${ packageInfos.name }.js`
     ],
     'compute-benchmarks': [
-        `${ packageInfos.name }.js`
+        `${ packageInfos.name }.js`,
+        'BufferAttribute.js',
+        'Face3.js',
+        'Box2.js',
+        'Box3.js',
+        'Line3.js',
+        'Plane.js',
+        'Ray.js',
+        'Sphere.js',
+        'Spherical.js',
+        'Triangle.js',
+        'Fog.js',
     ],
     'builds':             {
         input:     join( __dirname, '../sources', `${ packageInfos.name }.js` ),
