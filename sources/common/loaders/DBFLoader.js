@@ -29,7 +29,7 @@ import {
  *
  * @type {Object}
  */
-const DBFVersion = toEnum( {
+const DBFVersion = /*#__PURE__*/toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -54,7 +54,7 @@ const DBFVersion = toEnum( {
  *
  * @type {Object}
  */
-const DataType = toEnum( {
+const DataType = /*#__PURE__*/toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',

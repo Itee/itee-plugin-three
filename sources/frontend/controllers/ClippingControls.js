@@ -144,7 +144,7 @@ class ClippingBox extends LineSegments {
 }
 
 // Controller
-const ClippingModes = toEnum( {
+const ClippingModes = /*#__PURE__*/toEnum( {
     None:      'None',
     Translate: 'Translate',
     Rotate:    'Rotate',

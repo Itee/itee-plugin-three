@@ -46,12 +46,12 @@ import {
     Vector3
 }                        from 'three-full'
 
-const FRONT = new Vector3( 0, 0, -1 )
-const BACK  = new Vector3( 0, 0, 1 )
-const UP    = new Vector3( 0, 1, 0 )
-const DOWN  = new Vector3( 0, -1, 0 )
-const RIGHT = new Vector3( 1, 0, 0 )
-const LEFT  = new Vector3( -1, 0, 0 )
+const FRONT = /*#__PURE__*/new Vector3( 0, 0, -1 )
+const BACK  = /*#__PURE__*/new Vector3( 0, 0, 1 )
+const UP    = /*#__PURE__*/new Vector3( 0, 1, 0 )
+const DOWN  = /*#__PURE__*/new Vector3( 0, -1, 0 )
+const RIGHT = /*#__PURE__*/new Vector3( 1, 0, 0 )
+const LEFT  = /*#__PURE__*/new Vector3( -1, 0, 0 )
 
 /**
  * Enum values to define the internal state of CameraControl
@@ -67,7 +67,7 @@ const LEFT  = new Vector3( -1, 0, 0 )
  * @constant
  * @private
  */
-const State = toEnum( {
+const State = /*#__PURE__*/toEnum( {
     None:     0,
     Rotating: 1,
     Panning:  2,
@@ -87,7 +87,7 @@ const State = toEnum( {
  * @constant
  * @public
  */
-const CameraControlMode = toEnum( {
+const CameraControlMode = /*#__PURE__*/toEnum( {
     FirstPerson: 1,
     Orbit:       2,
     Fly:         3,

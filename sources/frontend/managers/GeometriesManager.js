@@ -160,7 +160,7 @@ import {
     WireframeGeometry
 }                           from 'three-full'
 
-const ArrayType = toEnum( {
+const ArrayType = /*#__PURE__*/toEnum( {
     Int8Array:         0,
     Uint8Array:        1,
     Uint8ClampedArray: 2,
