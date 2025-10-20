@@ -1,8 +1,16 @@
-import { readFileSync } from 'fs'
+import { readFileSync }  from 'fs'
+import {
+    dirname,
+    join
+}                        from 'path'
+import { fileURLToPath } from 'url'
+
 
 const packageInfos = JSON.parse( readFileSync(
     new URL( '../package.json', import.meta.url )
 ) )
+const __filename   = fileURLToPath( import.meta.url )
+const __dirname    = dirname( __filename )
 
 const config = {
     'clean':              [
@@ -35,6 +43,14 @@ const config = {
     'compute-benchmarks': [
         `${ packageInfos.name }.js`
     ],
+    'builds':             {
+        input:     join( __dirname, '../sources', `${ packageInfos.name }.js` ),
+        output:    join( __dirname, '../builds' ),
+        formats:   [ 'esm', 'cjs', 'iife' ],
+        envs:      [ 'dev', 'prod' ],
+        sourcemap: true,
+        treeshake: true
+    }
 }
 
 function getGulpConfigForTask( taskName ) {
