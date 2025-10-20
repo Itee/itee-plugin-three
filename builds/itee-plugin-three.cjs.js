@@ -1,4 +1,13 @@
-console.log('Itee.Plugin.Three v1.6.1 - CommonJs')
+/**
+ * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ┏┓ ┓      ┏┓            ┏┳ 
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃ ┣┓ ┃  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻•┗┛•┻      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
+ *              ┛                                                
+ * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
+ * @author  [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * 
+ */
 'use strict';
 
 Object.defineProperty(exports, '__esModule', { value: true });
@@ -450,7 +459,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  *
  * @type {Object}
  */
-const DBFVersion = iteeUtils.toEnum( {
+const DBFVersion = /*#__PURE__*/iteeUtils.toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -475,7 +484,7 @@ const DBFVersion = iteeUtils.toEnum( {
  *
  * @type {Object}
  */
-const DataType = iteeUtils.toEnum( {
+const DataType = /*#__PURE__*/iteeUtils.toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',
@@ -1510,7 +1519,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  *
  * @type {Object}
  */
-const ShapeType = iteeUtils.toEnum( {
+const ShapeType = /*#__PURE__*/iteeUtils.toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,
@@ -15961,9 +15970,9 @@ class ASCLoader {
 
 /////////////
 
-const NullCharRegex = new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
+const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
 
-const PointClasses = iteeUtils.toEnum( {
+const PointClasses = /*#__PURE__*/iteeUtils.toEnum( {
     Created:          0,
     Unclassified:     1,
     Ground:           2,

@@ -40,7 +40,7 @@ import {
  *
  * @type {Object}
  */
-const ShapeType = toEnum( {
+const ShapeType = /*#__PURE__*/toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,

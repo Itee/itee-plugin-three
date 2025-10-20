@@ -32,8 +32,8 @@ const STATE   = {
     ZOOM:   1,
     PAN:    2
 }
-const xVector = new Vector3( 1, 0, 0 )
-const yVector = new Vector3( 0, 1, 0 )
+const xVector = /*#__PURE__*/new Vector3( 1, 0, 0 )
+const yVector = /*#__PURE__*/new Vector3( 0, 1, 0 )
 
 /**
  *

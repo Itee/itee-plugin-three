@@ -59,9 +59,9 @@ import {
 
 /////////////
 
-const NullCharRegex = new RegExp( '\0', 'g' ) // eslint-disable-line no-control-regex
+const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ) // eslint-disable-line no-control-regex
 
-const PointClasses = toEnum( {
+const PointClasses = /*#__PURE__*/toEnum( {
     Created:          0,
     Unclassified:     1,
     Ground:           2,
