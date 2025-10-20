@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "bson": "^4.6.1",
-    "itee-client": "^8.2.1",
+    "itee-client": "^8.3.0",
     "itee-core": "^1.4.0",
     "itee-database": "^8.3.0",
     "itee-mongodb": "^1.1.7",
