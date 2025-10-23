@@ -13,7 +13,7 @@ import { AbstractGizmo }      from './AbstractGizmo'
 
 class TranslateGizmo extends AbstractGizmo {
 
-    constructor () {
+    constructor() {
 
         super()
         this.isTranslateGizmo = true
@@ -64,7 +64,7 @@ class TranslateGizmo extends AbstractGizmo {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }

@@ -16,7 +16,7 @@ import {
 
 class AbstractHandle extends Object3D {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -39,13 +39,13 @@ class AbstractHandle extends Object3D {
 
     }
 
-    get color () {
+    get color() {
 
         return this.line.material.color.clone()
 
     }
 
-    set color ( value ) {
+    set color( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Color cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Color cannot be undefined ! Expect an instance of Color.' ) }
@@ -62,40 +62,40 @@ class AbstractHandle extends Object3D {
 
     }
 
-    get hitbox () {
+    get hitbox() {
         return this._hitbox
     }
 
-    set hitbox ( value ) {
+    set hitbox( value ) {
         this._hitbox = value
         this.add( value )
     }
 
-    setColor ( value ) {
+    setColor( value ) {
 
         this.color = value
         return this
 
     }
 
-    setHitbox ( value ) {
+    setHitbox( value ) {
         this.hitbox = value
         return this
     }
 
-    setScale ( x, y, z ) {
+    setScale( x, y, z ) {
 
         this.scale.set( x, y, z )
         return this
 
     }
 
-    setPosition ( x, y, z ) {
+    setPosition( x, y, z ) {
         this.position.set( x, y, z )
         return this
     }
 
-    highlight ( value ) {
+    highlight( value ) {
 
         for ( let childIndex = 0, numberOfChildren = this.children.length ; childIndex < numberOfChildren ; childIndex++ ) {
             const child = this.children[ childIndex ]
@@ -109,7 +109,7 @@ class AbstractHandle extends Object3D {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const intersections = raycaster.intersectObject( this._hitbox, false )
         if ( intersections.length > 0 ) {
@@ -121,7 +121,7 @@ class AbstractHandle extends Object3D {
 
     }
 
-    setRotationFromAxisAndAngle ( axis, angle ) {
+    setRotationFromAxisAndAngle( axis, angle ) {
 
         this.quaternion.setFromAxisAngle( axis, angle )
         this.baseQuaternion.copy( this.quaternion )
@@ -130,7 +130,7 @@ class AbstractHandle extends Object3D {
     }
 
     // eslint-disable-next-line no-unused-vars
-    update ( cameraDirection ) {}
+    update( cameraDirection ) {}
 
 }
 

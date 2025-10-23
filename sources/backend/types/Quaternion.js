@@ -21,7 +21,7 @@ import {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Quaternion type
  * @returns {Mongoose}
  */
-function QuaternionType ( Mongoose ) {
+function QuaternionType( Mongoose ) {
     'use strict'
 
     /**
@@ -39,7 +39,7 @@ function QuaternionType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Quaternion' )
 
@@ -61,7 +61,7 @@ function QuaternionType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
          * @returns {{x: Number, y: Number, z: Number, w: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
             if ( isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }

@@ -11,6 +11,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { ColladaLoader }          from 'three-full'
+
 //import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'
 
 /**
@@ -24,7 +25,7 @@ class ColladaToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
         } )
@@ -41,7 +42,7 @@ class ColladaToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

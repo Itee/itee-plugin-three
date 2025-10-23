@@ -10,7 +10,7 @@ import { AbstractHitbox }      from './AbstractHitbox'
 
 class TorusHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

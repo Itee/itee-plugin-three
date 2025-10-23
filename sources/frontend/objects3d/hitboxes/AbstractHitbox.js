@@ -16,7 +16,7 @@ import {
 
 class AbstractHitbox extends Mesh {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

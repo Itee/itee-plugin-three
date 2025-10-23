@@ -12,7 +12,7 @@ import { KeyframeTrack } from './KeyframeTrack'
 
 class ColorKeyframeTrack extends KeyframeTrack {
 
-    static schema ( Mongoose ) {
+    static schema( Mongoose ) {
 
         const Schema = Mongoose.Schema
 
@@ -25,7 +25,7 @@ class ColorKeyframeTrack extends KeyframeTrack {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model( Mongoose, Schema ) {
 
         //        const KeyframeTrackBaseModel = KeyframeTrack.getModelFrom( Mongoose )
         //        const model             = KeyframeTrackBaseModel.discriminator( this.name, Schema )

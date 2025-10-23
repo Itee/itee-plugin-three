@@ -13,7 +13,7 @@ import { Face3 } from './Face3'
 let _schema = undefined
 let _model  = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -24,7 +24,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Face3Schema = Face3.getSchemaFrom( Mongoose )
@@ -67,7 +67,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
     'use strict'
 
     if ( !_model ) {
@@ -78,7 +78,7 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
     'use strict'
 
     // We need to pre-declare the base model to be able to use correctly
@@ -89,7 +89,7 @@ function _createModel ( Mongoose ) {
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
     'use strict'
 
     if ( !_model ) {

@@ -65,7 +65,7 @@ class ASCLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+    constructor( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
         this.manager = manager
         this.logger  = logger
@@ -100,7 +100,7 @@ class ASCLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //        //this.logger.time("ASCLoader")
 
@@ -121,7 +121,7 @@ class ASCLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -142,7 +142,7 @@ class ASCLoader {
      * @param sampling
      * @private
      */
-    _parse ( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
+    _parse( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
 
         const self = this
 
@@ -264,7 +264,7 @@ class ASCLoader {
         // reader.readAsText(blob);
         seek()
 
-        function seek () {
+        function seek() {
 
             if ( offset >= blob.size ) { return }
 
@@ -280,7 +280,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLine ( line ) {
+    _parseLine( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
@@ -385,7 +385,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLines ( lines ) {
+    _parseLines( lines ) {
 
         const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean )
         const pointType = firstLine.length
@@ -429,7 +429,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZ ( lines ) {
+    _parseLinesAsXYZ( lines ) {
 
         let words = []
 
@@ -451,7 +451,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZI ( lines ) {
+    _parseLinesAsXYZI( lines ) {
 
         this._pointsHaveIntensity = true
         let words                 = []
@@ -476,7 +476,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGB ( lines ) {
+    _parseLinesAsXYZRGB( lines ) {
 
         this._pointsHaveColor = true
         let words             = []
@@ -503,7 +503,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZnXnYnZ ( lines ) {
+    _parseLinesAsXYZnXnYnZ( lines ) {
 
         let words = []
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -528,7 +528,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGB ( lines ) {
+    _parseLinesAsXYZIRGB( lines ) {
 
         this._pointsHaveIntensity = true
         this._pointsHaveColor     = true
@@ -556,7 +556,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZInXnYnZ ( lines ) {
+    _parseLinesAsXYZInXnYnZ( lines ) {
 
         let words = []
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -582,7 +582,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZRGBnXnYnZ( lines ) {
 
         this._pointsHaveColor   = true
         this._pointsHaveNormals = true
@@ -613,7 +613,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZIRGBnXnYnZ( lines ) {
 
         this._pointsHaveIntensity = true
         this._pointsHaveColor     = true
@@ -645,7 +645,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineB ( line ) {
+    _parseLineB( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
@@ -669,7 +669,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineC ( line ) {
+    _parseLineC( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean )
         const numberOfWords = values.length
@@ -692,7 +692,7 @@ class ASCLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -722,7 +722,7 @@ class ASCLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoint ( groupToFeed ) {
+    _createCloudPoint( groupToFeed ) {
 
         const SPLIT_LIMIT        = 1000000
         // var group = new Group();
@@ -790,7 +790,7 @@ class ASCLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length
         const geometry       = new BufferGeometry()

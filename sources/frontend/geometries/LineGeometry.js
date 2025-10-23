@@ -14,7 +14,7 @@ import {
 
 class LineGeometry extends BufferGeometry {
 
-    constructor ( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
+    constructor( pointA = new Vector3( 0, 0, 0 ), pointB = new Vector3( 1, 0, 0 ) ) {
         super()
 
         this.type = 'LineGeometry'

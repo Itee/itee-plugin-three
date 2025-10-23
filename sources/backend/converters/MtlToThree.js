@@ -11,6 +11,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { MTLLoader }              from 'three-full'
+
 //import { MTLLoader }              from 'three-full/sources/loaders/MTLLoader'
 
 /**
@@ -24,7 +25,7 @@ class MtlToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.String
         } )
@@ -41,7 +42,7 @@ class MtlToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

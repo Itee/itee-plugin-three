@@ -21,7 +21,7 @@ import {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Euler type
  * @returns {Mongoose}
  */
-function EulerType ( Mongoose ) {
+function EulerType( Mongoose ) {
     'use strict'
 
     /**
@@ -39,7 +39,7 @@ function EulerType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Euler' )
 
@@ -61,7 +61,7 @@ function EulerType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument order property is not a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'].
          * @returns {{x: Number, y: Number, z: Number, order: String}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
             if ( isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
@@ -77,7 +77,9 @@ function EulerType ( Mongoose ) {
 
             if ( !( 'order' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain order property` ) }
             if ( isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
-            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
+            if ( ![
+                'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'
+            ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
                 x:     value.x,

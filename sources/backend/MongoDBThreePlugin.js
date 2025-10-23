@@ -549,40 +549,42 @@ function registerPlugin( parameters ) {
                         MtlToThree:     new MtlToThree(),
                         ObjToThree:     new Obj2ToThree()
                     },
-                    rules: [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
+                    rules: [
+                        {
+                            on:  '.json',
+                            use: 'JsonToThree'
+                        }, {
+                            on:  '.dae',
+                            use: 'ColladaToThree'
+                        }, {
+                            on:  '.fbx',
+                            use: 'FbxToThree'
+                        }, {
+                            on:  '.stl',
+                            use: 'StlToThree'
+                        }, {
+                            on:  '.3ds',
+                            use: 'TdsToThree'
+                        }, {
+                            on:  '.shp',
+                            use: 'ShpToThree'
+                        }, {
+                            on:  '.dbf',
+                            use: 'DbfToThree'
+                        }, {
+                            on:  [ '.shp', '.dbf' ],
+                            use: [ 'ShpToThree', 'DbfToThree' ]
+                        }, {
+                            on:  '.mtl',
+                            use: 'MtlToThree'
+                        }, {
+                            on:  '.obj',
+                            use: 'ObjToThree'
+                        }, {
+                            on:  [ '.mtl', '.obj' ],
+                            use: [ 'MtlToThree', 'ObjToThree' ]
+                        }
+                    ],
                     inserter: ThreeToMongoDB
                 },
                 can: {
@@ -599,389 +601,389 @@ function registerPlugin( parameters ) {
 export { registerPlugin }
 
 /*
-export default ( parameters ) => {
-    return new TMongoDBPlugin( parameters )
-        .addType( ColorType )
-        .addType( EulerType )
-        .addType( Matrix3Type )
-        .addType( Matrix4Type )
-        .addType( QuaternionType )
-        .addType( Vector2Type )
-        .addType( Vector3Type )
-        .addType( Vector4Type )
-        //    .addSchema( KeyframeTrack )
-        //    .addSchema( BooleanKeyframeTrack )
-        //    .addSchema( ColorKeyframeTrack )
-        .addSchema( Audio )
-        .addSchema( AudioListener )
-        .addSchema( PositionalAudio )
-        .addSchema( ArrayCamera )
-        .addSchema( Camera )
-        .addSchema( CubeCamera )
-        .addSchema( OrthographicCamera )
-        .addSchema( PerspectiveCamera )
-        .addSchema( BufferAttribute )
-        .addSchema( BufferGeometry )
-        .addSchema( CurvePath )
-        .addSchema( Face3 )
-        .addSchema( Geometry )
-        .addSchema( Object3D )
-        .addSchema( Path )
-        .addSchema( Shape )
-        .addSchema( ArcCurve )
-        .addSchema( CatmullRomCurve3 )
-        .addSchema( CubicBezierCurve )
-        .addSchema( CubicBezierCurve3 )
-        .addSchema( Curve )
-        .addSchema( CurveExtras )
-        .addSchema( EllipseCurve )
-        .addSchema( LineCurve )
-        .addSchema( LineCurve3 )
-        .addSchema( NURBSCurve )
-        .addSchema( NURBSSurface )
-        .addSchema( QuadraticBezierCurve )
-        .addSchema( QuadraticBezierCurve3 )
-        .addSchema( SplineCurve )
-        .addSchema( BoxBufferGeometry )
-        .addSchema( BoxGeometry )
-        .addSchema( CircleBufferGeometry )
-        .addSchema( CircleGeometry )
-        .addSchema( ConeBufferGeometry )
-        .addSchema( ConeGeometry )
-        .addSchema( ConvexGeometry )
-        .addSchema( CylinderBufferGeometry )
-        .addSchema( CylinderGeometry )
-        .addSchema( DecalGeometry )
-        .addSchema( DodecahedronGeometry )
-        .addSchema( EdgesGeometry )
-        .addSchema( ExtrudeBufferGeometry )
-        .addSchema( ExtrudeGeometry )
-        .addSchema( IcosahedronBufferGeometry )
-        .addSchema( IcosahedronGeometry )
-        .addSchema( InstancedBufferGeometry )
-        .addSchema( LatheBufferGeometry )
-        .addSchema( LatheGeometry )
-        .addSchema( OctahedronBufferGeometry )
-        .addSchema( OctahedronGeometry )
-        .addSchema( ParametricBufferGeometry )
-        .addSchema( ParametricGeometry )
-        .addSchema( PlaneBufferGeometry )
-        .addSchema( PlaneGeometry )
-        .addSchema( PolyhedronBufferGeometry )
-        .addSchema( PolyhedronGeometry )
-        .addSchema( RingBufferGeometry )
-        .addSchema( RingGeometry )
-        .addSchema( ShapeBufferGeometry )
-        .addSchema( ShapeGeometry )
-        .addSchema( SphereBufferGeometry )
-        .addSchema( SphereGeometry )
-        .addSchema( TeapotBufferGeometry )
-        .addSchema( TetrahedronBufferGeometry )
-        .addSchema( TetrahedronGeometry )
-        .addSchema( TextBufferGeometry )
-        .addSchema( TextGeometry )
-        .addSchema( TorusBufferGeometry )
-        .addSchema( TorusGeometry )
-        .addSchema( TorusKnotBufferGeometry )
-        .addSchema( TorusKnotGeometry )
-        .addSchema( TubeBufferGeometry )
-        .addSchema( TubeGeometry )
-        .addSchema( WireframeGeometry )
-        .addSchema( ArrowHelper )
-        .addSchema( AxesHelper )
-        .addSchema( Box3Helper )
-        .addSchema( BoxHelper )
-        .addSchema( CameraHelper )
-        .addSchema( DirectionalLightHelper )
-        .addSchema( FaceNormalsHelper )
-        .addSchema( GridHelper )
-        .addSchema( HemisphereLightHelper )
-        .addSchema( PlaneHelper )
-        .addSchema( PointLightHelper )
-        .addSchema( PolarGridHelper )
-        .addSchema( RectAreaLightHelper )
-        .addSchema( SkeletonHelper )
-        .addSchema( SpotLightHelper )
-        .addSchema( VertexNormalsHelper )
-        .addSchema( AmbientLight )
-        .addSchema( DirectionalLight )
-        //    .addSchema( DirectionalLightShadow )
-        .addSchema( HemisphereLight )
-        .addSchema( Light )
-        //    .addSchema( LightShadow )
-        .addSchema( PointLight )
-        .addSchema( RectAreaLight )
-        .addSchema( SpotLight )
-        //    .addSchema( SpotLightShadow )
-        .addSchema( MeshPhongMaterial )
-        .addSchema( LineBasicMaterial )
-        .addSchema( LineDashedMaterial )
-        .addSchema( Material )
-        .addSchema( MeshBasicMaterial )
-        .addSchema( MeshDepthMaterial )
-        .addSchema( MeshLambertMaterial )
-        .addSchema( MeshNormalMaterial )
-        .addSchema( MeshPhysicalMaterial )
-        .addSchema( MeshStandardMaterial )
-        .addSchema( MeshToonMaterial )
-        .addSchema( PointsMaterial )
-        .addSchema( RawShaderMaterial )
-        .addSchema( ShaderMaterial )
-        .addSchema( ShadowMaterial )
-        .addSchema( SpriteMaterial )
-        .addSchema( Box2 )
-        .addSchema( Box3 )
-        //    .addSchema( ColorConverter )
-        //    .addSchema( Cylindrical )
-        //    .addSchema( Frustum )
-        //    .addSchema( Interpolant )
-        .addSchema( Line3 )
-        //    .addSchema( Lut )
-        //    .addSchema( Math )
-        .addSchema( Plane )
-        .addSchema( Ray )
-        .addSchema( Sphere )
-        .addSchema( Spherical )
-        .addSchema( Triangle )
-        .addSchema( Bone )
-        //    .addSchema( Car )
-        //    .addSchema( GPUParticleSystem )
-        .addSchema( Group )
-        //    .addSchema( Gyroscope )
-        .addSchema( ImmediateRenderObject )
-        .addSchema( LensFlare )
-        .addSchema( Line )
-        .addSchema( LineLoop )
-        .addSchema( LineSegments )
-        .addSchema( LOD )
-        //    .addSchema( MarchingCubes )
-        //    .addSchema( MD2Character )
-        //    .addSchema( MD2CharacterComplex )
-        .addSchema( Mesh )
-        //    .addSchema( MorphAnimMesh )
-        //    .addSchema( MorphBlendMesh )
-        //    .addSchema( Ocean )
-        .addSchema( Points )
-        //    .addSchema( Reflector )
-        //    .addSchema( ReflectorRTT )
-        //    .addSchema( Refractor )
-        //    .addSchema( RollerCoaster )
-        //    .addSchema( ShadowMesh )
-        .addSchema( Skeleton )
-        .addSchema( SkinnedMesh )
-        //    .addSchema( Sky )
-        .addSchema( Sprite )
-        //    .addSchema( UCSCharacter )
-        //    .addSchema( Water )
-        //    .addSchema( Water2 )
-        .addSchema( Fog )
-        //    .addSchema( FogExp2 )
-        .addSchema( Scene )
-        .addSchema( CanvasTexture )
-        .addSchema( CompressedTexture )
-        .addSchema( CubeTexture )
-        .addSchema( DataTexture )
-        .addSchema( DepthTexture )
-        .addSchema( Texture )
-        .addSchema( VideoTexture )
-        .addController( TObjects3DController )
-        .addDescriptor( {
-            route:      '/objects',
-            controller: {
-                name:    'TObjects3DController',
-                options: {
-                    schemaName: 'Objects3D'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TMongooseController )
-        .addDescriptor( {
-            route:      '/curves',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Curves'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/geometries',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Geometries'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/materials',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Materials'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/textures',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Textures'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TAbstractConverterManager )
-        .addDescriptor( {
-            route:      '/uploads',
-            controller: {
-                name:    'TAbstractConverterManager',
-                options: {
-                    useNext:    true,
-                    converters: {
-                        JsonToThree:    new JsonToThree(),
-                        ShpToThree:     new ShpToThree(),
-                        DbfToThree:     new DbfToThree(),
-                        FbxToThree:     new FbxToThree(),
-                        ColladaToThree: new ColladaToThree(),
-                        StlToThree:     new StlToThree(),
-                        TdsToThree:     new TdsToThree(),
-                        MtlToThree:     new MtlToThree(),
-                        ObjToThree:     new Obj2ToThree()
-                    },
-                    rules:      [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
-                    inserter:   ThreeToMongoDB
-                },
-                can:     {
-                    processFiles: {
-                        on:   'post',
-                        over: '/'
-                    }
-                }
-            }
-        } )
-}
-*/
+ export default ( parameters ) => {
+ return new TMongoDBPlugin( parameters )
+ .addType( ColorType )
+ .addType( EulerType )
+ .addType( Matrix3Type )
+ .addType( Matrix4Type )
+ .addType( QuaternionType )
+ .addType( Vector2Type )
+ .addType( Vector3Type )
+ .addType( Vector4Type )
+ //    .addSchema( KeyframeTrack )
+ //    .addSchema( BooleanKeyframeTrack )
+ //    .addSchema( ColorKeyframeTrack )
+ .addSchema( Audio )
+ .addSchema( AudioListener )
+ .addSchema( PositionalAudio )
+ .addSchema( ArrayCamera )
+ .addSchema( Camera )
+ .addSchema( CubeCamera )
+ .addSchema( OrthographicCamera )
+ .addSchema( PerspectiveCamera )
+ .addSchema( BufferAttribute )
+ .addSchema( BufferGeometry )
+ .addSchema( CurvePath )
+ .addSchema( Face3 )
+ .addSchema( Geometry )
+ .addSchema( Object3D )
+ .addSchema( Path )
+ .addSchema( Shape )
+ .addSchema( ArcCurve )
+ .addSchema( CatmullRomCurve3 )
+ .addSchema( CubicBezierCurve )
+ .addSchema( CubicBezierCurve3 )
+ .addSchema( Curve )
+ .addSchema( CurveExtras )
+ .addSchema( EllipseCurve )
+ .addSchema( LineCurve )
+ .addSchema( LineCurve3 )
+ .addSchema( NURBSCurve )
+ .addSchema( NURBSSurface )
+ .addSchema( QuadraticBezierCurve )
+ .addSchema( QuadraticBezierCurve3 )
+ .addSchema( SplineCurve )
+ .addSchema( BoxBufferGeometry )
+ .addSchema( BoxGeometry )
+ .addSchema( CircleBufferGeometry )
+ .addSchema( CircleGeometry )
+ .addSchema( ConeBufferGeometry )
+ .addSchema( ConeGeometry )
+ .addSchema( ConvexGeometry )
+ .addSchema( CylinderBufferGeometry )
+ .addSchema( CylinderGeometry )
+ .addSchema( DecalGeometry )
+ .addSchema( DodecahedronGeometry )
+ .addSchema( EdgesGeometry )
+ .addSchema( ExtrudeBufferGeometry )
+ .addSchema( ExtrudeGeometry )
+ .addSchema( IcosahedronBufferGeometry )
+ .addSchema( IcosahedronGeometry )
+ .addSchema( InstancedBufferGeometry )
+ .addSchema( LatheBufferGeometry )
+ .addSchema( LatheGeometry )
+ .addSchema( OctahedronBufferGeometry )
+ .addSchema( OctahedronGeometry )
+ .addSchema( ParametricBufferGeometry )
+ .addSchema( ParametricGeometry )
+ .addSchema( PlaneBufferGeometry )
+ .addSchema( PlaneGeometry )
+ .addSchema( PolyhedronBufferGeometry )
+ .addSchema( PolyhedronGeometry )
+ .addSchema( RingBufferGeometry )
+ .addSchema( RingGeometry )
+ .addSchema( ShapeBufferGeometry )
+ .addSchema( ShapeGeometry )
+ .addSchema( SphereBufferGeometry )
+ .addSchema( SphereGeometry )
+ .addSchema( TeapotBufferGeometry )
+ .addSchema( TetrahedronBufferGeometry )
+ .addSchema( TetrahedronGeometry )
+ .addSchema( TextBufferGeometry )
+ .addSchema( TextGeometry )
+ .addSchema( TorusBufferGeometry )
+ .addSchema( TorusGeometry )
+ .addSchema( TorusKnotBufferGeometry )
+ .addSchema( TorusKnotGeometry )
+ .addSchema( TubeBufferGeometry )
+ .addSchema( TubeGeometry )
+ .addSchema( WireframeGeometry )
+ .addSchema( ArrowHelper )
+ .addSchema( AxesHelper )
+ .addSchema( Box3Helper )
+ .addSchema( BoxHelper )
+ .addSchema( CameraHelper )
+ .addSchema( DirectionalLightHelper )
+ .addSchema( FaceNormalsHelper )
+ .addSchema( GridHelper )
+ .addSchema( HemisphereLightHelper )
+ .addSchema( PlaneHelper )
+ .addSchema( PointLightHelper )
+ .addSchema( PolarGridHelper )
+ .addSchema( RectAreaLightHelper )
+ .addSchema( SkeletonHelper )
+ .addSchema( SpotLightHelper )
+ .addSchema( VertexNormalsHelper )
+ .addSchema( AmbientLight )
+ .addSchema( DirectionalLight )
+ //    .addSchema( DirectionalLightShadow )
+ .addSchema( HemisphereLight )
+ .addSchema( Light )
+ //    .addSchema( LightShadow )
+ .addSchema( PointLight )
+ .addSchema( RectAreaLight )
+ .addSchema( SpotLight )
+ //    .addSchema( SpotLightShadow )
+ .addSchema( MeshPhongMaterial )
+ .addSchema( LineBasicMaterial )
+ .addSchema( LineDashedMaterial )
+ .addSchema( Material )
+ .addSchema( MeshBasicMaterial )
+ .addSchema( MeshDepthMaterial )
+ .addSchema( MeshLambertMaterial )
+ .addSchema( MeshNormalMaterial )
+ .addSchema( MeshPhysicalMaterial )
+ .addSchema( MeshStandardMaterial )
+ .addSchema( MeshToonMaterial )
+ .addSchema( PointsMaterial )
+ .addSchema( RawShaderMaterial )
+ .addSchema( ShaderMaterial )
+ .addSchema( ShadowMaterial )
+ .addSchema( SpriteMaterial )
+ .addSchema( Box2 )
+ .addSchema( Box3 )
+ //    .addSchema( ColorConverter )
+ //    .addSchema( Cylindrical )
+ //    .addSchema( Frustum )
+ //    .addSchema( Interpolant )
+ .addSchema( Line3 )
+ //    .addSchema( Lut )
+ //    .addSchema( Math )
+ .addSchema( Plane )
+ .addSchema( Ray )
+ .addSchema( Sphere )
+ .addSchema( Spherical )
+ .addSchema( Triangle )
+ .addSchema( Bone )
+ //    .addSchema( Car )
+ //    .addSchema( GPUParticleSystem )
+ .addSchema( Group )
+ //    .addSchema( Gyroscope )
+ .addSchema( ImmediateRenderObject )
+ .addSchema( LensFlare )
+ .addSchema( Line )
+ .addSchema( LineLoop )
+ .addSchema( LineSegments )
+ .addSchema( LOD )
+ //    .addSchema( MarchingCubes )
+ //    .addSchema( MD2Character )
+ //    .addSchema( MD2CharacterComplex )
+ .addSchema( Mesh )
+ //    .addSchema( MorphAnimMesh )
+ //    .addSchema( MorphBlendMesh )
+ //    .addSchema( Ocean )
+ .addSchema( Points )
+ //    .addSchema( Reflector )
+ //    .addSchema( ReflectorRTT )
+ //    .addSchema( Refractor )
+ //    .addSchema( RollerCoaster )
+ //    .addSchema( ShadowMesh )
+ .addSchema( Skeleton )
+ .addSchema( SkinnedMesh )
+ //    .addSchema( Sky )
+ .addSchema( Sprite )
+ //    .addSchema( UCSCharacter )
+ //    .addSchema( Water )
+ //    .addSchema( Water2 )
+ .addSchema( Fog )
+ //    .addSchema( FogExp2 )
+ .addSchema( Scene )
+ .addSchema( CanvasTexture )
+ .addSchema( CompressedTexture )
+ .addSchema( CubeTexture )
+ .addSchema( DataTexture )
+ .addSchema( DepthTexture )
+ .addSchema( Texture )
+ .addSchema( VideoTexture )
+ .addController( TObjects3DController )
+ .addDescriptor( {
+ route:      '/objects',
+ controller: {
+ name:    'TObjects3DController',
+ options: {
+ schemaName: 'Objects3D'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TMongooseController )
+ .addDescriptor( {
+ route:      '/curves',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Curves'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/geometries',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Geometries'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/materials',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Materials'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/textures',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Textures'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TAbstractConverterManager )
+ .addDescriptor( {
+ route:      '/uploads',
+ controller: {
+ name:    'TAbstractConverterManager',
+ options: {
+ useNext:    true,
+ converters: {
+ JsonToThree:    new JsonToThree(),
+ ShpToThree:     new ShpToThree(),
+ DbfToThree:     new DbfToThree(),
+ FbxToThree:     new FbxToThree(),
+ ColladaToThree: new ColladaToThree(),
+ StlToThree:     new StlToThree(),
+ TdsToThree:     new TdsToThree(),
+ MtlToThree:     new MtlToThree(),
+ ObjToThree:     new Obj2ToThree()
+ },
+ rules:      [ {
+ on:  '.json',
+ use: 'JsonToThree'
+ }, {
+ on:  '.dae',
+ use: 'ColladaToThree'
+ }, {
+ on:  '.fbx',
+ use: 'FbxToThree'
+ }, {
+ on:  '.stl',
+ use: 'StlToThree'
+ }, {
+ on:  '.3ds',
+ use: 'TdsToThree'
+ }, {
+ on:  '.shp',
+ use: 'ShpToThree'
+ }, {
+ on:  '.dbf',
+ use: 'DbfToThree'
+ }, {
+ on:  [ '.shp', '.dbf' ],
+ use: [ 'ShpToThree', 'DbfToThree' ]
+ }, {
+ on:  '.mtl',
+ use: 'MtlToThree'
+ }, {
+ on:  '.obj',
+ use: 'ObjToThree'
+ }, {
+ on:  [ '.mtl', '.obj' ],
+ use: [ 'MtlToThree', 'ObjToThree' ]
+ } ],
+ inserter:   ThreeToMongoDB
+ },
+ can:     {
+ processFiles: {
+ on:   'post',
+ over: '/'
+ }
+ }
+ }
+ } )
+ }
+ */

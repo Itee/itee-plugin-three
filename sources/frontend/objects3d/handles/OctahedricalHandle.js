@@ -20,7 +20,7 @@ import { AbstractHandle }            from './AbstractHandle'
 
 class OctahedricalHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -54,7 +54,7 @@ class OctahedricalHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
         this.updateMatrix()

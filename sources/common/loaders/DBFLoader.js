@@ -86,7 +86,7 @@ class DBFLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -102,41 +102,41 @@ class DBFLoader {
 
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value
         return this
     }
@@ -148,7 +148,7 @@ class DBFLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this
 
@@ -167,7 +167,7 @@ class DBFLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this.reader
             .setEndianess( Endianness.Big )
@@ -195,7 +195,7 @@ class DBFLoader {
      * @return {boolean}
      * @private
      */
-    _isValidVersion ( version ) {
+    _isValidVersion( version ) {
 
         return DBFVersion.includes( version )
 
@@ -207,7 +207,7 @@ class DBFLoader {
      * @return {{}}
      * @private
      */
-    _parseHeader ( version ) {
+    _parseHeader( version ) {
 
         let header = {}
 
@@ -257,7 +257,7 @@ class DBFLoader {
      * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
      * @private
      */
-    _parseHeaderV2 () {
+    _parseHeaderV2() {
 
         const numberOfRecords     = this.reader.getInt16()
         const year                = this.reader.getInt8() + DBFLoader.YearOffset
@@ -306,7 +306,7 @@ class DBFLoader {
      * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
      * @private
      */
-    _parseHeaderV2_5 () {
+    _parseHeaderV2_5() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset
         const month = this.reader.getInt8()
@@ -371,7 +371,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), fields: Array}}
      * @private
      */
-    _parseHeaderV3 () {
+    _parseHeaderV3() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset
         const month = this.reader.getInt8()
@@ -443,7 +443,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
      * @private
      */
-    _parseHeaderV4 () {
+    _parseHeaderV4() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset
         const month = this.reader.getInt8()
@@ -518,7 +518,7 @@ class DBFLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( version, header ) {
+    _parseDatas( version, header ) {
 
         const numberOfRecords = header.numberOfRecords
         const fields          = header.fields
@@ -638,7 +638,7 @@ class DBFLoader {
      *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
      * @private
      */
-    _parseFieldProperties () {
+    _parseFieldProperties() {
 
         const numberOfStandardProperties             = this.reader.getInt16()
         const startOfStandardPropertiesDescriptor    = this.reader.getInt16()
@@ -685,7 +685,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
      * @private
      */
-    _getStandardProperties () {
+    _getStandardProperties() {
 
         const generationalNumber = this.reader.getInt16()
         const tableFieldOffset   = this.reader.getInt16()
@@ -713,7 +713,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
      * @private
      */
-    _getCustomProperties () {
+    _getCustomProperties() {
 
         const generationalNumber = this.reader.getInt16()
         const tableFieldOffset   = this.reader.getInt16()
@@ -742,7 +742,7 @@ class DBFLoader {
      *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
      * @private
      */
-    _getReferentialIntegrityProperties () {
+    _getReferentialIntegrityProperties() {
 
         const databaseState                = this.reader.getInt8()
         const sequentialNumberRule         = this.reader.getInt16()

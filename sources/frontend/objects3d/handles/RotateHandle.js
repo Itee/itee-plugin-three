@@ -7,7 +7,7 @@ import { AbstractHandle } from './AbstractHandle'
 
 class RotateHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{}, ...parameters
@@ -19,7 +19,7 @@ class RotateHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
 

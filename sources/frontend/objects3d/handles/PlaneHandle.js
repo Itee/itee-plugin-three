@@ -22,7 +22,7 @@ import { AbstractHandle }            from './AbstractHandle'
 
 class PlaneHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -57,12 +57,12 @@ class PlaneHandle extends AbstractHandle {
 
         // Plane
         const planePositions = ( _parameters.centered ) ?
-            [
-                -0.5, -0.5, 0.0,
-                0.5, -0.5, 0.0,
-                0.5, 0.5, 0.0,
-                -0.5, 0.5, 0.0
-            ] : [
+                               [
+                                   -0.5, -0.5, 0.0,
+                                   0.5, -0.5, 0.0,
+                                   0.5, 0.5, 0.0,
+                                   -0.5, 0.5, 0.0
+                               ] : [
                 0.1, 0.1, 0.0,
                 1.0, 0.1, 0.0,
                 1.0, 1.0, 0.0,
@@ -103,13 +103,13 @@ class PlaneHandle extends AbstractHandle {
         }
     }
 
-    get direction () {
+    get direction() {
 
         return this._direction
 
     }
 
-    set direction ( value ) {
+    set direction( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -119,7 +119,7 @@ class PlaneHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
 
         super.update( cameraDirection )
 
@@ -231,26 +231,26 @@ class PlaneHandle extends AbstractHandle {
 
     }
 
-    setDirection ( direction ) {
+    setDirection( direction ) {
 
         this.direction = direction
         return this
 
     }
 
-    flipXDirection () {
+    flipXDirection() {
 
         this.xDirection.setX( -this.xDirection.x )
 
     }
 
-    flipYDirection () {
+    flipYDirection() {
 
         this.yDirection.setY( -this.yDirection.y )
 
     }
 
-    flipZDirection () {
+    flipZDirection() {
 
         this.zDirection.setZ( -this.zDirection.z )
 

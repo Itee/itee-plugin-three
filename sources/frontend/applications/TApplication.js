@@ -5,26 +5,18 @@
 
 import {
     Clock,
-    Vector3,
-    Scene,
-    PerspectiveCamera,
-    OrthographicCamera,
-    WebGLRenderer,
     LinearEncoding,
-    LinearToneMapping
+    LinearToneMapping,
+    OrthographicCamera,
+    PerspectiveCamera,
+    Scene,
+    Vector3,
+    WebGLRenderer
 } from 'three-full'
 
 class TApplication {
 
-    set container ( value ) {
-        if ( !value ) {
-            throw new Error( 'Three Application required a container' )
-        }
-
-        this._container = value
-    }
-
-    constructor ( {
+    constructor( {
         camera = {},
         controls = {},
         databases = {},
@@ -62,78 +54,84 @@ class TApplication {
         this.render()
 
     }
-    
-    _initGlobals ( {
+    set container( value ) {
+        if ( !value ) {
+            throw new Error( 'Three Application required a container' )
+        }
+
+        this._container = value
+    }
+    _initGlobals( {
         isRaycastable = false,
-        isDecimable= false
-    }={ } ) {
-        
-        this.isRaycastable                    =isRaycastable
-        this.isDecimable                    =isDecimable
+        isDecimable = false
+    } = {} ) {
+
+        this.isRaycastable = isRaycastable
+        this.isDecimable   = isDecimable
 
         this.objectWorldPosition  = new Vector3()
         this.cameraWorldPosition  = new Vector3()
         this.cameraWorldDirection = new Vector3()
         this.targetWorldPosition  = new Vector3()
-        
+
         this.rotAngle = 0.0
-        this._clock    = new Clock()
-        
-        this._isFetching                       = false
-        this._cache               = {
+        this._clock   = new Clock()
+
+        this._isFetching                      = false
+        this._cache                           = {
             geometry:     {},
             decimables:   [],
             raycastables: []
         }
         this._updateTimeout                   = 500
-        this._repopulateTimeoutId = undefined
+        this._repopulateTimeoutId             = undefined
         this._debounceRealtimeUpdateTimeoutId = null
         this._debounceUpdateTimeoutId         = null
         this._debounceAutoUpdateTimeoutId     = null
         this._debounceRaycastabilityId        = null
     }
-    
-    _initScenes ( {
-        autoUpdate= true,
-        background= null,
+
+    _initScenes( {
+        autoUpdate = true,
+        background = null,
         castShadow = false,
         children = [],
-        environment= null,
-        fog= null,
+        environment = null,
+        fog = null,
         frustumCulled = true,
-        matrixAutoUpdate= false,
-        name= 'Scene',
-        overrideMaterial= null,
+        matrixAutoUpdate = false,
+        name = 'Scene',
+        overrideMaterial = null,
         receiveShadow = false,
         renderOrder = 0,
         userData = {},
         visible = true,
-    }={ } ) {
+    } = {} ) {
 
-        this.scene = new Scene()
-        this.scene.autoUpdate = autoUpdate
-        this.scene.background = background
-        this.scene.castShadow = castShadow
-        this.scene.children = children
-        this.scene.environment = environment
-        this.scene.fog = fog
-        this.scene.frustumCulled = frustumCulled
+        this.scene                  = new Scene()
+        this.scene.autoUpdate       = autoUpdate
+        this.scene.background       = background
+        this.scene.castShadow       = castShadow
+        this.scene.children         = children
+        this.scene.environment      = environment
+        this.scene.fog              = fog
+        this.scene.frustumCulled    = frustumCulled
         this.scene.matrixAutoUpdate = matrixAutoUpdate
-        this.scene.name = name
+        this.scene.name             = name
         this.scene.overrideMaterial = overrideMaterial
-        this.scene.receiveShadow = receiveShadow
-        this.scene.renderOrder = renderOrder
-        this.scene.userData = userData
-        this.scene.visible = visible
+        this.scene.receiveShadow    = receiveShadow
+        this.scene.renderOrder      = renderOrder
+        this.scene.userData         = userData
+        this.scene.visible          = visible
 
         this.scene.onBeforeRender = this.onBeforeRender
-        this.scene.onAfterRender = this.onAfterRender
-        
+        this.scene.onAfterRender  = this.onAfterRender
+
     }
-    
-    _initCameras ( {
-        type= 'PerspectiveCamera',
-        options={
+
+    _initCameras( {
+        type = 'PerspectiveCamera',
+        options = {
             aspect:     1,
             far:        100000000,
             filmGauge:  35.0,
@@ -144,7 +142,7 @@ class TApplication {
             view:       null,
             zoom:       1,
         }
-    }={ } ) {
+    } = {} ) {
 
         // Factory
         if ( type === 'PerspectiveCamera' ) {
@@ -169,54 +167,54 @@ class TApplication {
         this.camera.updateProjectionMatrix()
 
     }
-    
-    _initRenderers ( {
-        canvas= undefined,
-        context= undefined,
-        alpha= undefined,
-        depth= undefined,
-        stencil= undefined,
-        antialias= true,
-        premultipliedAlpha= undefined,
-        preserveDrawingBuffer= undefined,
-        powerPreference= undefined,
-        failIfMajorPerformanceCaveat= undefined,
-        // capabilities
-        precision= 'highp',
-        logarithmicDepthBuffer= true,
-        // clearing
-        autoClear= true,
-        autoClearColor= true,
-        autoClearDepth= true,
-        autoClearStencil= true,
-        // scene graph
-        sortObjects= true,
-        // user-defined clipping
-        clippingPlanes= [],
-        localClippingEnabled= true,
-        // physically based shading
-        outputEncoding= LinearEncoding,
-        // physical lights
-        physicallyCorrectLights= false,
-        // tone mapping
-        toneMapping= LinearToneMapping,
-        toneMappingExposure= 1.0,
-        toneMappingWhitePoint= 1.0,
-        // morphs
-        maxMorphTargets= 8,
-        maxMorphNormals= 4,
-        // shadowmap
-        shadowMap= null, //WebGLShadowMap
-        // xr
-        xr= null, // WebXRManager
-        //Extra
-        clearColor= '#000000',
-        clearAlpha= 1
-    }={ } ) {
 
-        this.renderer = new WebGLRenderer( { 
+    _initRenderers( {
+        canvas = undefined,
+        context = undefined,
+        alpha = undefined,
+        depth = undefined,
+        stencil = undefined,
+        antialias = true,
+        premultipliedAlpha = undefined,
+        preserveDrawingBuffer = undefined,
+        powerPreference = undefined,
+        failIfMajorPerformanceCaveat = undefined,
+        // capabilities
+        precision = 'highp',
+        logarithmicDepthBuffer = true,
+        // clearing
+        autoClear = true,
+        autoClearColor = true,
+        autoClearDepth = true,
+        autoClearStencil = true,
+        // scene graph
+        sortObjects = true,
+        // user-defined clipping
+        clippingPlanes = [],
+        localClippingEnabled = true,
+        // physically based shading
+        outputEncoding = LinearEncoding,
+        // physical lights
+        physicallyCorrectLights = false,
+        // tone mapping
+        toneMapping = LinearToneMapping,
+        toneMappingExposure = 1.0,
+        toneMappingWhitePoint = 1.0,
+        // morphs
+        maxMorphTargets = 8,
+        maxMorphNormals = 4,
+        // shadowmap
+        shadowMap = null, //WebGLShadowMap
+        // xr
+        xr = null, // WebXRManager
+        //Extra
+        clearColor = '#000000',
+        clearAlpha = 1
+    } = {} ) {
+
+        this.renderer                         = new WebGLRenderer( {
             canvas,
-            context, 
+            context,
             alpha,
             depth,
             stencil,
@@ -226,76 +224,76 @@ class TApplication {
             powerPreference,
             failIfMajorPerformanceCaveat
         } )
-        this.renderer.precision = precision
-        this.renderer.logarithmicDepthBuffer = logarithmicDepthBuffer
-        this.renderer.autoClear = autoClear
-        this.renderer.autoClearColor = autoClearColor
-        this.renderer.autoClearDepth = autoClearDepth
-        this.renderer.autoClearStencil = autoClearStencil
-        this.renderer.sortObjects = sortObjects
-        this.renderer.clippingPlanes = clippingPlanes
-        this.renderer.localClippingEnabled = localClippingEnabled
-        this.renderer.outputEncoding = outputEncoding
+        this.renderer.precision               = precision
+        this.renderer.logarithmicDepthBuffer  = logarithmicDepthBuffer
+        this.renderer.autoClear               = autoClear
+        this.renderer.autoClearColor          = autoClearColor
+        this.renderer.autoClearDepth          = autoClearDepth
+        this.renderer.autoClearStencil        = autoClearStencil
+        this.renderer.sortObjects             = sortObjects
+        this.renderer.clippingPlanes          = clippingPlanes
+        this.renderer.localClippingEnabled    = localClippingEnabled
+        this.renderer.outputEncoding          = outputEncoding
         this.renderer.physicallyCorrectLights = physicallyCorrectLights
-        this.renderer.toneMapping = toneMapping
-        this.renderer.toneMappingExposure = toneMappingExposure
-        this.renderer.toneMappingWhitePoint = toneMappingWhitePoint
-        this.renderer.maxMorphTargets = maxMorphTargets
-        this.renderer.maxMorphNormals = maxMorphNormals
-        this.renderer.shadowMap = shadowMap
-        this.renderer.xr = xr
+        this.renderer.toneMapping             = toneMapping
+        this.renderer.toneMappingExposure     = toneMappingExposure
+        this.renderer.toneMappingWhitePoint   = toneMappingWhitePoint
+        this.renderer.maxMorphTargets         = maxMorphTargets
+        this.renderer.maxMorphNormals         = maxMorphNormals
+        this.renderer.shadowMap               = shadowMap
+        this.renderer.xr                      = xr
         this.renderer.setClearColor( clearColor, clearAlpha )
 //        this.renderer.setPixelRatio( window.devicePixelRatio )
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initEffects ( {} = {} ) {
+    _initEffects( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initLoaders ( {} = {} ) {
+    _initLoaders( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initExporters ( {} = {} ) {
+    _initExporters( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initDatabases ( {} = {} ) {
+    _initDatabases( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initRaycasters ( {} = {} ) {
+    _initRaycasters( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initWorkers ( {} = {} ) {
+    _initWorkers( {} = {} ) {
 
     }
     // eslint-disable-next-line no-empty-pattern
-    _initAudios ( {} = {} ) {
+    _initAudios( {} = {} ) {
 
     }
     // eslint-disable-next-line no-unused-vars, no-empty-pattern
-    _initControls ( scene, {} = {} ) {
+    _initControls( scene, {} = {} ) {
 
     }
     // eslint-disable-next-line no-unused-vars, no-empty-pattern
-    _initEnvironments ( scene, {} = {} ) {
+    _initEnvironments( scene, {} = {} ) {
 
     }
     // eslint-disable-next-line no-unused-vars, no-empty-pattern
-    _initDataModels ( scene, {} = {} ) {
+    _initDataModels( scene, {} = {} ) {
 
     }
     // eslint-disable-next-line no-unused-vars, no-empty-pattern
-    _initTools ( scene, {} = {} ) {
+    _initTools( scene, {} = {} ) {
 
     }
 
 
     // Rendering
-    startRenderLoop () {
+    startRenderLoop() {
 
         if ( this.frameId ) {
             return
@@ -305,13 +303,13 @@ class TApplication {
         this._clock.start()
 
     }
-    _renderLoop () {
+    _renderLoop() {
 
         this.frameId = requestAnimationFrame( this._renderLoop.bind( this ) )
         this.render()
 
     }
-    stopRenderLoop () {
+    stopRenderLoop() {
 
         cancelAnimationFrame( this.frameId )
         this.frameId = null
@@ -319,14 +317,14 @@ class TApplication {
 
     }
     // eslint-disable-next-line no-unused-vars
-    onBeforeRender ( renderer, scene, camera, renderTarget ) {}
-    render () {
+    onBeforeRender( renderer, scene, camera, renderTarget ) {}
+    render() {
 
         this.renderer.render( this.scene, this.camera )
 
     }
     // eslint-disable-next-line no-unused-vars
-    onAfterRender ( renderer, scene, camera ) {}
+    onAfterRender( renderer, scene, camera ) {}
 }
 
 export { TApplication }

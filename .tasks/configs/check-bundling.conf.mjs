@@ -1,16 +1,16 @@
+import glob from 'glob'
 import {
     basename,
     join,
     normalize
-}                             from 'path'
+}           from 'path'
 import {
     packageName,
     packageSourcesDirectory
-} from '../_utils.mjs'
-import glob                   from 'glob'
+}           from '../_utils.mjs'
 
 const filePathsToIgnore = [
-    `${packageName}.js`
+    `${ packageName }.js`
 ]
 
 const sourcesFiles = glob.sync( join( packageSourcesDirectory, '**' ) )

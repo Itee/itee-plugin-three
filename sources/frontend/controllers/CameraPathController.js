@@ -41,7 +41,7 @@ const yVector = /*#__PURE__*/new Vector3( 0, 1, 0 )
  * @param domElement
  * @constructor
  */
-function CameraPathController ( parameters = {} ) {
+function CameraPathController( parameters = {} ) {
 
     const _parameters = {
         ...{
@@ -110,7 +110,7 @@ function CameraPathController ( parameters = {} ) {
     }
 
     // Private methods
-    function moveForward () {
+    function moveForward() {
 
         self.currentPathPosition += self.cameraJump
         if ( self.currentPathPosition > 1 ) {
@@ -137,7 +137,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function moveBackward () {
+    function moveBackward() {
 
         self.currentPathPosition -= self.cameraJump
         if ( self.currentPathPosition < 0 ) {
@@ -164,7 +164,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function rotate ( event ) {
+    function rotate( event ) {
 
         //TLogger.log( 'handleMouseMoveRotate' )
 
@@ -182,7 +182,7 @@ function CameraPathController ( parameters = {} ) {
     }
 
     // Handlers
-    function onKeyDown ( event ) {
+    function onKeyDown( event ) {
 
         if ( self.enabled === false ) {
             return
@@ -230,7 +230,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onKeyUp ( event ) {
+    function onKeyUp( event ) {
 
         if ( self.enabled === false ) {
             return
@@ -246,7 +246,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onMouseDown ( event ) {
+    function onMouseDown( event ) {
 
         if ( self.enabled === false ) {
             return
@@ -270,7 +270,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onMouseMove ( event ) {
+    function onMouseMove( event ) {
 
         if ( self.enabled === false ) {
             return
@@ -294,7 +294,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onMouseUp ( event ) {
+    function onMouseUp( event ) {
 
         if ( self.enabled === false ) {
             return
@@ -308,7 +308,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onForward ( event ) {
+    function onForward( event ) {
 
         clearTimeout( self.timeoutId )
 
@@ -319,7 +319,7 @@ function CameraPathController ( parameters = {} ) {
 
     }
 
-    function onBackward ( event ) {
+    function onBackward( event ) {
 
         clearTimeout( self.timeoutId )
 
@@ -375,13 +375,13 @@ function CameraPathController ( parameters = {} ) {
 
 Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
 
-    get camera () {
+    get camera() {
 
         return this._camera
 
     },
 
-    set camera ( value ) {
+    set camera( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
@@ -391,7 +391,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
 
     },
 
-    setCamera ( value ) {
+    setCamera( value ) {
 
         this.camera = value
         return this
@@ -402,7 +402,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      *
      * @param path
      */
-    setPath ( path ) {
+    setPath( path ) {
 
         this.currentPath = path
         this.cameraJump  = 1 / path.getLength()
@@ -414,7 +414,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      * @param paths
      * @param nameOfFirstPathToFollow
      */
-    setPaths ( paths, nameOfFirstPathToFollow ) {
+    setPaths( paths, nameOfFirstPathToFollow ) {
 
         this.paths            = paths
         this.currentPathIndex = 0
@@ -504,7 +504,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      *
      * @param quat
      */
-    setMouseQuat ( quat ) {
+    setMouseQuat( quat ) {
 
         this.orientation.y = Math.asin( quat.y ) * 2
         this.orientation.x = 0
@@ -514,7 +514,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
     /**
      *
      */
-    getCurrentPathPosition () {
+    getCurrentPathPosition() {
 
         return this.currentPath.getPointAt( this.currentPathPosition )
 
@@ -524,7 +524,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      *
      * @return {undefined}
      */
-    getNextPathPosition () {
+    getNextPathPosition() {
 
         var nextPosition = undefined
 
@@ -542,7 +542,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      *
      * @return {number}
      */
-    getDistanceFromStart () {
+    getDistanceFromStart() {
 
         //Linear distance
         //		var firstPosition = this.currentPath.getPointAt( 0 )
@@ -559,7 +559,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
     /**
      *
      */
-    lookAtPath () {
+    lookAtPath() {
 
         // Set lookup point at the camera height
         var nextPosition = this.getNextPathPosition()
@@ -576,7 +576,7 @@ Object.assign( CameraPathController.prototype, EventDispatcher.prototype, {
      *
      * @param position
      */
-    goTo ( position ) {
+    goTo( position ) {
 
         //Todo: Should use 2D instead of 3D !
 

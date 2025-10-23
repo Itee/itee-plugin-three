@@ -13,7 +13,7 @@ import { AbstractHitbox } from './AbstractHitbox'
 
 class LozengeHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         // Lozenge
         const lozengePositions        = [

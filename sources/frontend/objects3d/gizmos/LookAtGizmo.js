@@ -13,7 +13,7 @@ class LookAtGizmo extends AbstractGizmo {
 
     //TYPE ENTITY ENUM COLOMNU
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -103,7 +103,7 @@ class LookAtGizmo extends AbstractGizmo {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }

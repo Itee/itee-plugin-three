@@ -25,7 +25,7 @@ import { AbstractHandle }            from './AbstractHandle'
 
 class TranslateHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -56,13 +56,13 @@ class TranslateHandle extends AbstractHandle {
 
     }
 
-    get direction () {
+    get direction() {
 
         return this._direction
 
     }
 
-    set direction ( value ) {
+    set direction( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -89,7 +89,7 @@ class TranslateHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
 
         super.update( cameraDirection )
 
@@ -103,14 +103,14 @@ class TranslateHandle extends AbstractHandle {
 
     }
 
-    setDirection ( direction ) {
+    setDirection( direction ) {
 
         this.direction = direction
         return this
 
     }
 
-    flipDirection () {
+    flipDirection() {
 
         this.direction = this._direction.negate()
 

@@ -47,7 +47,8 @@ import {
 }                           from 'three-full'
 import { TexturesManager }  from './TexturesManager'
 
-const DEFAULT_IMAGE = /*#__PURE__*/new ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )
+const DEFAULT_IMAGE = /*#__PURE__*/new ImageLoader().load(
+    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )
 
 /**
  * @class
@@ -66,7 +67,7 @@ class MaterialsManager extends TDataBaseManager {
      * @param texturesPath
      * @param texturesProvider
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -87,11 +88,11 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    get texturesPath () {
+    get texturesPath() {
         return this._texturesPath
     }
 
-    set texturesPath ( value ) {
+    set texturesPath( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
@@ -103,11 +104,11 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    get texturesProvider () {
+    get texturesProvider() {
         return this._texturesProvider
     }
 
-    set texturesProvider ( value ) {
+    set texturesProvider( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
@@ -117,11 +118,11 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    get generateMipmap () {
+    get generateMipmap() {
         return this._generateMipmap
     }
 
-    set generateMipmap ( value ) {
+    set generateMipmap( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
@@ -130,11 +131,11 @@ class MaterialsManager extends TDataBaseManager {
         this._generateMipmap = value
     }
 
-    get autoFillTextures () {
+    get autoFillTextures() {
         return this._autoFillTextures
     }
 
-    set autoFillTextures ( value ) {
+    set autoFillTextures( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -144,28 +145,28 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    setTexturesPath ( value ) {
+    setTexturesPath( value ) {
 
         this.texturesPath = value
         return this
 
     }
 
-    setTexturesProvider ( value ) {
+    setTexturesProvider( value ) {
 
         this.texturesProvider = value
         return this
 
     }
 
-    setGenerateMipmap ( value ) {
+    setGenerateMipmap( value ) {
 
         this.generateMipmap = value
         return this
 
     }
 
-    setAutoFillTextures ( value ) {
+    setAutoFillTextures( value ) {
 
         this.autoFillTextures = value
         return this
@@ -174,7 +175,7 @@ class MaterialsManager extends TDataBaseManager {
 
     //// Methods
 
-    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
         // Normalize to array
         const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
@@ -211,7 +212,7 @@ class MaterialsManager extends TDataBaseManager {
      * @param data
      * @return {undefined}
      */
-    convert ( data ) {
+    convert( data ) {
 
         if ( !data ) {
             throw new Error( 'MaterialsManager: Unable to convert null or undefined data !' )
@@ -554,7 +555,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    _fillBaseMaterialData ( material, data ) {
+    _fillBaseMaterialData( material, data ) {
 
         const _id = data._id
         if ( isDefined( _id ) && isString( _id ) ) {
@@ -733,7 +734,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    _setVector2 ( vec2 ) {
+    _setVector2( vec2 ) {
 
         const x = vec2.x
         const y = vec2.y
@@ -745,7 +746,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    _setColor ( color ) {
+    _setColor( color ) {
 
         const r = color.r
         const g = color.g
@@ -758,7 +759,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    fillTextures ( materials, onSuccess/*, onProgress, onError */ ) {
+    fillTextures( materials, onSuccess/*, onProgress, onError */ ) {
 
         const texturesMap = this._retrieveTexturesOf( materials )
 
@@ -779,7 +780,7 @@ class MaterialsManager extends TDataBaseManager {
 
     }
 
-    _retrieveTexturesOf ( materials ) {
+    _retrieveTexturesOf( materials ) {
 
         const availableTextures = [ 'map', 'lightMap', 'aoMap', 'emissiveMap', 'bumpMap', 'normalMap', 'displacementMap', 'specularMap', 'alphaMap', 'envMap' ]
         const texturesMap       = {}

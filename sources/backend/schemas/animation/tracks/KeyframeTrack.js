@@ -8,7 +8,7 @@ import { AbstractMongooseModel } from '../../AbstractMongooseModel'
 
 class KeyframeTrack extends AbstractMongooseModel {
 
-    static schema ( Mongoose ) {
+    static schema( Mongoose ) {
 
         return new Mongoose.Schema( {
             name:                 String,
@@ -27,7 +27,7 @@ class KeyframeTrack extends AbstractMongooseModel {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model( Mongoose, Schema ) {
 
         // We need to pre-declare the base model to be able to use
         // the discriminator 'type' correctly with the main type, instead of

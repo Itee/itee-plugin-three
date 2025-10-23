@@ -11,6 +11,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { STLLoader }              from 'three-full'
+
 //import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
 
 /**
@@ -24,7 +25,7 @@ class StlToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.JSON
         } )
@@ -41,7 +42,7 @@ class StlToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

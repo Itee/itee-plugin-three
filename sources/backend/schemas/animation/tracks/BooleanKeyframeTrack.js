@@ -13,7 +13,7 @@ import { KeyframeTrack }         from './KeyframeTrack'
 
 class BooleanKeyframeTrack extends AbstractMongooseModel {
 
-    static schema ( Mongoose ) {
+    static schema( Mongoose ) {
 
         const Schema = Mongoose.Schema
 
@@ -31,7 +31,7 @@ class BooleanKeyframeTrack extends AbstractMongooseModel {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model( Mongoose, Schema ) {
 
         return KeyframeTrack.getModelFrom( Mongoose )
                             .discriminator( this.name, Schema )

@@ -4,68 +4,7 @@ class BitArray {
 
     /* PRIVATE STATIC METHODS */
 
-    // Calculate the intersection of two bits
-    static _intersect ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the union of two bits
-    static _union ( bit1, bit2 ) {
-        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the difference of two bits
-    static _difference ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Get the longest or shortest (smallest) length of the two bit arrays
-    static _getLen ( bitArray1, bitArray2, smallest ) {
-        var l1 = bitArray1.getLength()
-        var l2 = bitArray2.getLength()
-
-        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
-    }
-
-    /* PUBLIC STATIC METHODS */
-    static getUnion ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true )
-        var result = new BitArray( len )
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
-        }
-        return result
-    }
-
-    static getIntersection ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true )
-        var result = new BitArray( len )
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
-        }
-        return result
-    }
-
-    static getDifference ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true )
-        var result = new BitArray( len )
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
-        }
-        return result
-    }
-
-    static shred ( number ) {
-        var bits = new Array()
-        var q    = number
-        do {
-            bits.push( q % 2 )
-            q = Math.floor( q / 2 )
-        } while ( q > 0 )
-        return new BitArray( bits.length, bits.reverse() )
-    }
-
-    constructor ( size, bits ) {
+    constructor( size, bits ) {
         // Private field - array for our bits
         this.m_bits = new Array()
 
@@ -89,25 +28,77 @@ class BitArray {
             }
         }
     }
+    // Calculate the intersection of two bits
+    static _intersect( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the union of two bits
+    static _union( bit1, bit2 ) {
+        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the difference of two bits
+    static _difference( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Get the longest or shortest (smallest) length of the two bit arrays
+    static _getLen( bitArray1, bitArray2, smallest ) {
+        var l1 = bitArray1.getLength()
+        var l2 = bitArray2.getLength()
 
-    getLength () {
+        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
+    }
+    /* PUBLIC STATIC METHODS */
+    static getUnion( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true )
+        var result = new BitArray( len )
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
+        }
+        return result
+    }
+    static getIntersection( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true )
+        var result = new BitArray( len )
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
+        }
+        return result
+    }
+    static getDifference( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true )
+        var result = new BitArray( len )
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) )
+        }
+        return result
+    }
+    static shred( number ) {
+        var bits = new Array()
+        var q    = number
+        do {
+            bits.push( q % 2 )
+            q = Math.floor( q / 2 )
+        } while ( q > 0 )
+        return new BitArray( bits.length, bits.reverse() )
+    }
+    getLength() {
         return this.m_bits.length
     }
 
-    getAt ( index ) {
+    getAt( index ) {
         if ( index < this.m_bits.length ) {
             return this.m_bits[ index ]
         }
         return null
     }
 
-    setAt ( index, value ) {
+    setAt( index, value ) {
         if ( index < this.m_bits.length ) {
             this.m_bits[ index ] = value ? BitArray._ON : BitArray._OFF
         }
     }
 
-    resize ( newSize ) {
+    resize( newSize ) {
         var tmp = new Array()
         for ( var i = 0 ; i < newSize ; i++ ) {
             if ( i < this.m_bits.length ) {
@@ -119,7 +110,7 @@ class BitArray {
         this.m_bits = tmp
     }
 
-    getCompliment () {
+    getCompliment() {
         var result = new BitArray( this.m_bits.length )
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             result.setAt( i, this.m_bits[ i ] ? BitArray._OFF : BitArray._ON )
@@ -127,7 +118,7 @@ class BitArray {
         return result
     }
 
-    toString () {
+    toString() {
         var s = new String()
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             s = s.concat( this.m_bits[ i ] === BitArray._ON ? '1' : '0' )
@@ -135,7 +126,7 @@ class BitArray {
         return s
     }
 
-    toNumber () {
+    toNumber() {
         var pow = 0
         var n   = 0
         for ( var i = this.m_bits.length - 1 ; i >= 0 ; i-- ) {

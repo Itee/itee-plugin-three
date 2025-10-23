@@ -13,7 +13,7 @@ import { AbstractHandle }        from './AbstractHandle'
 
 class ConeHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -68,7 +68,7 @@ class ConeHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
         this.updateMatrix()

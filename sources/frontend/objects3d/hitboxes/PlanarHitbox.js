@@ -13,15 +13,15 @@ import { AbstractHitbox } from './AbstractHitbox'
 
 class PlanarHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const planePositions = ( parameters.centered ) ?
-            [
-                -0.6, -0.6, 0.0,
-                0.6, -0.6, 0.0,
-                0.6, 0.6, 0.0,
-                -0.6, 0.6, 0.0
-            ] : [
+                               [
+                                   -0.6, -0.6, 0.0,
+                                   0.6, -0.6, 0.0,
+                                   0.6, 0.6, 0.0,
+                                   -0.6, 0.6, 0.0
+                               ] : [
                 0.0, 0.0, 0.0,
                 1.1, 0.0, 0.0,
                 1.1, 1.1, 0.0,

@@ -21,7 +21,7 @@ import {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Color type
  * @returns {Mongoose}
  */
-function ColorType ( Mongoose ) {
+function ColorType( Mongoose ) {
     'use strict'
 
     /**
@@ -40,7 +40,7 @@ function ColorType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Color' )
 
@@ -60,7 +60,7 @@ function ColorType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument b property is not a number.
          * @returns {{r: Number, b: Number, g: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
             if ( isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }

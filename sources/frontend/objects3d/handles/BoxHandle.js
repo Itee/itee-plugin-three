@@ -20,7 +20,7 @@ import { AbstractHandle }            from './AbstractHandle'
 
 class BoxHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -75,7 +75,7 @@ class BoxHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
         this.updateMatrix()

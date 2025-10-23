@@ -9,7 +9,7 @@ import { LineBasicMaterial } from 'three-full'
 
 class HighlightableLineMaterial extends LineBasicMaterial {
 
-    constructor ( parameters ) {
+    constructor( parameters ) {
         super( parameters )
         this.isHighlightableMaterial = true
         //        this.type                    = 'HighlightableLineMaterial'
@@ -23,7 +23,7 @@ class HighlightableLineMaterial extends LineBasicMaterial {
 
     }
 
-    highlight ( highlighted ) {
+    highlight( highlighted ) {
 
         if ( highlighted ) {
 

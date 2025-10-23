@@ -10,7 +10,7 @@
 
 let _schema = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -21,7 +21,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Schema = Mongoose.Schema

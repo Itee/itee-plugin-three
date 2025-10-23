@@ -27,7 +27,7 @@ import { AbstractHandle }            from './AbstractHandle'
 
 class LozengeHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -86,13 +86,13 @@ class LozengeHandle extends AbstractHandle {
         this.zAxis      = new Vector3( 0, 0, 1 )
     }
 
-    get direction () {
+    get direction() {
 
         return this._direction
 
     }
 
-    set direction ( value ) {
+    set direction( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -102,7 +102,7 @@ class LozengeHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
 
         super.update( cameraDirection )
 
@@ -174,14 +174,14 @@ class LozengeHandle extends AbstractHandle {
 
     }
 
-    setDirection ( direction ) {
+    setDirection( direction ) {
 
         this.direction = direction
         return this
 
     }
 
-    flipXAxis () {
+    flipXAxis() {
 
         const tempDirection = this._direction.clone()
         tempDirection.x     = -tempDirection.x
@@ -190,7 +190,7 @@ class LozengeHandle extends AbstractHandle {
 
     }
 
-    flipYAxis () {
+    flipYAxis() {
 
         const tempDirection = this._direction.clone()
         tempDirection.y     = -tempDirection.y
@@ -199,7 +199,7 @@ class LozengeHandle extends AbstractHandle {
 
     }
 
-    flipZAxis () {
+    flipZAxis() {
 
         const tempDirection = this._direction.clone()
         tempDirection.z     = -tempDirection.z

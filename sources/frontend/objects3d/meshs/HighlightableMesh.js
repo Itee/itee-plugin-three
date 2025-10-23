@@ -9,7 +9,7 @@ import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
 
 class HighlightableMesh extends Mesh {
 
-    constructor ( geometry, parameters = {} ) {
+    constructor( geometry, parameters = {} ) {
         super( geometry, new HighlightableMaterial( {
             color:       parameters.color,
             transparent: true,
@@ -21,7 +21,7 @@ class HighlightableMesh extends Mesh {
 
     }
 
-    highlight ( value ) {
+    highlight( value ) {
 
         this.material.highlight( value )
 

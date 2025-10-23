@@ -11,6 +11,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { OBJLoader }              from 'three-full'
+
 //import { OBJLoader }              from 'three-full/sources/loaders/OBJLoader'
 
 /**
@@ -24,7 +25,7 @@ class ObjToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.JSON
         } )
@@ -41,7 +42,7 @@ class ObjToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {
