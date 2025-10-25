@@ -35,7 +35,7 @@ var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
 
 class TObjects3DController extends iteeMongodb.TMongooseController {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
         super( parameters );
     }
 
@@ -57,7 +57,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readOneDocument ( type, query ) {
+    async _readOneDocument( type, query ) {
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         const model = await this._driver
@@ -79,7 +79,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query, projection ) {
+    async _readManyDocument( type, query, projection ) {
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         let models = await this._driver
@@ -101,7 +101,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions ) {
+    async _updateDocument( document, updateQuery, queryOptions ) {
 
         if ( require$$0$3.isNotDefined( document ) ) {
             return null
@@ -115,7 +115,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
         return result
     }
 
-    async getAllChildrenIds ( parentId, recursive = false ) {
+    async getAllChildrenIds( parentId, recursive = false ) {
 
         const result              = {
             children:   [],
@@ -175,7 +175,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     }
 
-    async _deleteOne ( id, response ) {
+    async _deleteOne( id, response ) {
 
         try {
 
@@ -217,7 +217,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     }
 
-    async _deleteDocuments ( type, documentIds ) {
+    async _deleteDocuments( type, documentIds ) {
         if ( require$$0$3.isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
@@ -241,7 +241,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         if ( require$$0$3.isNotDefined( document ) ) { return null }
 
         //        console.log( `Delete: ${ document.name } [${ document._id }]` )
@@ -257,7 +257,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     ///
 
-    async _removeParentReference ( document ) {
+    async _removeParentReference( document ) {
         const parentId = document.parent;
         if ( require$$0$3.isNotDefined( parentId ) ) { return null }
 
@@ -282,7 +282,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
 
         let removed = [];
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
@@ -299,7 +299,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
 
         // Remove children recursively
         const children        = await this._readManyDocument( 'Objects3D', { parent: document._id } );
@@ -330,7 +330,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         if ( require$$0$3.isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
@@ -350,7 +350,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         if ( require$$0$3.isNotDefined( materialsIds ) ) { return }
         if ( require$$0$3.isEmptyArray( materialsIds ) ) { return }
 
@@ -370,7 +370,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         if ( require$$0$3.isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
@@ -393,6 +393,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'
 
 /**
@@ -406,7 +407,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -423,7 +424,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -516,7 +517,7 @@ class DBFLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -532,41 +533,41 @@ class DBFLoader {
 
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value;
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value;
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value;
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value;
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value;
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value;
         return this
     }
@@ -578,7 +579,7 @@ class DBFLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this;
 
@@ -597,7 +598,7 @@ class DBFLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this.reader
             .setEndianess( iteeClient.Endianness.Big )
@@ -625,7 +626,7 @@ class DBFLoader {
      * @return {boolean}
      * @private
      */
-    _isValidVersion ( version ) {
+    _isValidVersion( version ) {
 
         return DBFVersion.includes( version )
 
@@ -637,7 +638,7 @@ class DBFLoader {
      * @return {{}}
      * @private
      */
-    _parseHeader ( version ) {
+    _parseHeader( version ) {
 
         let header = {};
 
@@ -687,7 +688,7 @@ class DBFLoader {
      * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
      * @private
      */
-    _parseHeaderV2 () {
+    _parseHeaderV2() {
 
         const numberOfRecords     = this.reader.getInt16();
         const year                = this.reader.getInt8() + DBFLoader.YearOffset;
@@ -736,7 +737,7 @@ class DBFLoader {
      * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
      * @private
      */
-    _parseHeaderV2_5 () {
+    _parseHeaderV2_5() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -801,7 +802,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), fields: Array}}
      * @private
      */
-    _parseHeaderV3 () {
+    _parseHeaderV3() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -873,7 +874,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
      * @private
      */
-    _parseHeaderV4 () {
+    _parseHeaderV4() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -948,7 +949,7 @@ class DBFLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( version, header ) {
+    _parseDatas( version, header ) {
 
         const numberOfRecords = header.numberOfRecords;
         const fields          = header.fields;
@@ -1068,7 +1069,7 @@ class DBFLoader {
      *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
      * @private
      */
-    _parseFieldProperties () {
+    _parseFieldProperties() {
 
         const numberOfStandardProperties             = this.reader.getInt16();
         const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
@@ -1115,7 +1116,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
      * @private
      */
-    _getStandardProperties () {
+    _getStandardProperties() {
 
         const generationalNumber = this.reader.getInt16();
         const tableFieldOffset   = this.reader.getInt16();
@@ -1143,7 +1144,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
      * @private
      */
-    _getCustomProperties () {
+    _getCustomProperties() {
 
         const generationalNumber = this.reader.getInt16();
         const tableFieldOffset   = this.reader.getInt16();
@@ -1172,7 +1173,7 @@ class DBFLoader {
      *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
      * @private
      */
-    _getReferentialIntegrityProperties () {
+    _getReferentialIntegrityProperties() {
 
         const databaseState                = this.reader.getInt8();
         const sequentialNumberRule         = this.reader.getInt16();
@@ -1232,7 +1233,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( { dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer } );
     }
 
@@ -1247,7 +1248,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1276,6 +1277,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
 
 /**
@@ -1289,7 +1291,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -1306,7 +1308,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1335,6 +1337,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'
 
 /**
@@ -1348,7 +1351,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -1365,7 +1368,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1394,6 +1397,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { MTLLoader }              from 'three-full/sources/loaders/MTLLoader'
 
 /**
@@ -1407,7 +1411,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.String
         } );
@@ -1424,7 +1428,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1452,6 +1456,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { OBJLoader2 }             from 'three-full/sources/loaders/OBJLoader2'
 
 /**
@@ -1465,7 +1470,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -1482,7 +1487,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1556,7 +1561,7 @@ class SHPLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -1579,67 +1584,67 @@ class SHPLoader {
 
     }
 
-    get globalOffset () {
+    get globalOffset() {
         return this._globalOffset
     }
 
-    set globalOffset ( value ) {
+    set globalOffset( value ) {
         this._globalOffset = value;
     }
 
-    get worldAxis () {
+    get worldAxis() {
         return this._worldAxis
     }
 
-    set worldAxis ( value ) {
+    set worldAxis( value ) {
         this._worldAxis = value;
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value;
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value;
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value;
     }
 
-    setGlobalOffset ( value ) {
+    setGlobalOffset( value ) {
         this.globalOffset = value;
         return this
     }
 
-    setWorldAxis ( value ) {
+    setWorldAxis( value ) {
         this.worldAxis = value;
         return this
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value;
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value;
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value;
         return this
     }
@@ -1651,7 +1656,7 @@ class SHPLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this;
 
@@ -1670,7 +1675,7 @@ class SHPLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this._reader
             .setEndianess( iteeClient.Endianness.Big )
@@ -1709,7 +1714,7 @@ class SHPLoader {
      * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
      * @private
      */
-    _parseHeader () {
+    _parseHeader() {
 
         const fileCode = this._reader.getInt32();
         this._reader.skipOffsetOf( 20 );
@@ -1753,7 +1758,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( header ) {
+    _parseDatas( header ) {
 
         this._reader.skipOffsetTo( 100 );
 
@@ -1868,7 +1873,7 @@ class SHPLoader {
      * @return {{recordNumber, contentLength}}
      * @private
      */
-    _parseRecordHeader () {
+    _parseRecordHeader() {
 
         this._reader.setEndianess( iteeClient.Endianness.Big );
 
@@ -1882,7 +1887,7 @@ class SHPLoader {
 
     }
 
-    _parseNull () {
+    _parseNull() {
 
         this._reader.getInt32();
         return null
@@ -1894,7 +1899,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePoint () {
+    _parsePoint() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -1917,7 +1922,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolyLine () {
+    _parsePolyLine() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -1963,7 +1968,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolygon () {
+    _parsePolygon() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2042,7 +2047,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPoint () {
+    _parseMultiPoint() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2078,7 +2083,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPatch () {
+    _parseMultiPatch() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2097,7 +2102,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _convertToObjects ( datas ) {
+    _convertToObjects( datas ) {
 
         let shapes = [];
 
@@ -2120,7 +2125,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectsFromArrays ( arrays ) {
+        function __createObjectsFromArrays( arrays ) {
 
             //Todo: need to fix parsePolygon to avoid too much array imbrication
 
@@ -2147,7 +2152,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectFromPoints ( points ) {
+        function __createObjectFromPoints( points ) {
 
             shapes.push( new threeFull.Shape( points ) );
 
@@ -2185,7 +2190,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -2202,7 +2207,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2231,6 +2236,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
 
 /**
@@ -2244,7 +2250,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -2261,7 +2267,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2290,6 +2296,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
 
 /**
@@ -2303,7 +2310,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -2320,7 +2327,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
      * @param {callback} onError A callback that will handle the parsing errors
      * @return {Object}
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2359,23 +2366,12 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  */
 class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
-    // Utils
-    static _toLog ( object ) {
-
-        return JSON.stringify( {
-            type: object.type || 'undefined',
-            name: object.name || 'undefined',
-            uuid: object.uuid || 'undefined',
-            id:   object._id || 'undefined'
-        } )
-
-    }
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
      * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -2398,6 +2394,17 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         // Update objects in database if existing in file
 
     }
+    // Utils
+    static _toLog( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
+
+    }
     /**
      * Main entry point to insert data into database; It apply merge strategy over data to insert.
      *
@@ -2410,7 +2417,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _save ( data, parameters, onSuccess, onProgress, onError ) {
+    async _save( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = iteeUtils.toArray( data );
         if ( require$$0$3.isEmptyArray( dataToParse ) ) {
@@ -2506,7 +2513,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Query|null>>|null}
      * @private
      */
-    async _parseObjects ( objects = [], parentId = null ) {
+    async _parseObjects( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` );
 
         const _objects = iteeUtils.toArray( objects );
@@ -2531,7 +2538,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Query|null>|null}
      * @private
      */
-    async _parseObject ( object, parentId = null ) {
+    async _parseObject( object, parentId = null ) {
         this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` );
 
         if ( require$$0$3.isNotDefined( object ) ) {
@@ -2708,7 +2715,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _getOrCreateDocuments ( objects = [] ) {
+    async _getOrCreateDocuments( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` );
 
         const _objects = iteeUtils.toArray( objects );
@@ -2734,7 +2741,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _getOrCreateDocument ( data ) {
+    async _getOrCreateDocument( data ) {
         this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( require$$0$3.isNotDefined( data ) ) {
@@ -2761,7 +2768,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _createDocuments ( datas = [] ) {
+    async _createDocuments( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` );
 
         const _datas = iteeUtils.toArray( datas );
@@ -2786,7 +2793,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _createDocument ( data ) {
+    async _createDocument( data ) {
         this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( require$$0$3.isNotDefined( data ) ) {
@@ -2818,7 +2825,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readDocuments ( type, query ) {
+    async _readDocuments( type, query ) {
         this.logger.debug( `_readDocuments(...)` );
 
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
@@ -2842,7 +2849,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readDocument ( type, query ) {
+    async _readDocument( type, query ) {
         this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` );
 
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
@@ -2878,7 +2885,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+    async _updateDocuments( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` );
 
         const _documents = iteeUtils.toArray( documents );
@@ -2905,7 +2912,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
+    async _updateDocument( document, updateQuery, queryOptions = { new: true } ) {
         this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` );
 
         if ( require$$0$3.isNotDefined( document ) ) {
@@ -2934,7 +2941,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _deleteDocuments ( documents = [] ) {
+    async _deleteDocuments( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` );
 
         const _documents = iteeUtils.toArray( documents );
@@ -2959,7 +2966,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         if ( require$$0$3.isNotDefined( document ) ) {
@@ -2987,7 +2994,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
         this.logger.debug( `_removeChildrenDocuments(...)` );
 
         let removed = [];
@@ -3005,7 +3012,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
         this.logger.debug( `_removeChildDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         // Remove children recursively
@@ -3030,7 +3037,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` );
 
         if ( require$$0$3.isNotDefined( geometryId ) ) { return }
@@ -3051,7 +3058,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         this.logger.debug( `_removeOrphanMaterialsWithIds(...)` );
 
         const removed = [];
@@ -3070,7 +3077,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         this.logger.debug( `_removeOrphanMaterialWithId(${ materialId })` );
 
         const referencingObjects = await this._readDocuments( 'Objects3D', { material: materialId } );
@@ -3135,7 +3142,7 @@ function getAugmentedNamespace(n) {
  * @description Todo...
  */
 
-function Object3D$I () {}
+function Object3D$I() {}
 
 Object3D$I.getSchemaFrom   = Mongoose => {
 
@@ -3194,7 +3201,7 @@ Object3D$I._createSchema   = Mongoose => {
             type: Mixed,
             set:  value => {
 
-                function RemoveRecursivelyDotInKeyOf ( properties ) {
+                function RemoveRecursivelyDotInKeyOf( properties ) {
                     let result = {};
 
                     for ( let property in properties ) {
@@ -3276,7 +3283,7 @@ const { Object3D: Object3D$H } = require$$0$2;
 let _schema$2e = undefined;
 let _model$23  = undefined;
 
-function getSchemaFrom$2e ( Mongoose ) {
+function getSchemaFrom$2e( Mongoose ) {
 
     if ( !_schema$2e ) {
         _createSchema$2e( Mongoose );
@@ -3286,7 +3293,7 @@ function getSchemaFrom$2e ( Mongoose ) {
 
 }
 
-function _createSchema$2e ( Mongoose ) {
+function _createSchema$2e( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3294,7 +3301,7 @@ function _createSchema$2e ( Mongoose ) {
 
 }
 
-function getModelFrom$23 ( Mongoose ) {
+function getModelFrom$23( Mongoose ) {
 
     if ( !_model$23 ) {
         _createModel$23( Mongoose );
@@ -3304,14 +3311,14 @@ function getModelFrom$23 ( Mongoose ) {
 
 }
 
-function _createModel$23 ( Mongoose ) {
+function _createModel$23( Mongoose ) {
 
     const Object3DBaseModel = Object3D$H.getModelFrom( Mongoose );
     _model$23                  = Object3DBaseModel.discriminator( 'Audio', getSchemaFrom$2e( Mongoose ) );
 
 }
 
-function registerModelTo$23 ( Mongoose ) {
+function registerModelTo$23( Mongoose ) {
 
     if ( !_model$23 ) {
         _createModel$23( Mongoose );
@@ -3344,7 +3351,7 @@ const { Object3D: Object3D$G } = require$$0$2;
 let _schema$2d = undefined;
 let _model$22  = undefined;
 
-function getSchemaFrom$2d ( Mongoose ) {
+function getSchemaFrom$2d( Mongoose ) {
 
     if ( !_schema$2d ) {
         _createSchema$2d( Mongoose );
@@ -3354,7 +3361,7 @@ function getSchemaFrom$2d ( Mongoose ) {
 
 }
 
-function _createSchema$2d ( Mongoose ) {
+function _createSchema$2d( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3362,7 +3369,7 @@ function _createSchema$2d ( Mongoose ) {
 
 }
 
-function getModelFrom$22 ( Mongoose ) {
+function getModelFrom$22( Mongoose ) {
 
     if ( !_model$22 ) {
         _createModel$22( Mongoose );
@@ -3372,14 +3379,14 @@ function getModelFrom$22 ( Mongoose ) {
 
 }
 
-function _createModel$22 ( Mongoose ) {
+function _createModel$22( Mongoose ) {
 
     const Object3DBaseModel = Object3D$G.getModelFrom( Mongoose );
     _model$22                  = Object3DBaseModel.discriminator( 'AudioListener', getSchemaFrom$2d( Mongoose ) );
 
 }
 
-function registerModelTo$22 ( Mongoose ) {
+function registerModelTo$22( Mongoose ) {
 
     if ( !_model$22 ) {
         _createModel$22( Mongoose );
@@ -3411,7 +3418,7 @@ const { Object3D: Object3D$F } = require$$0$2;
 let _schema$2c = undefined;
 let _model$21  = undefined;
 
-function getSchemaFrom$2c ( Mongoose ) {
+function getSchemaFrom$2c( Mongoose ) {
 
     if ( !_schema$2c ) {
         _createSchema$2c( Mongoose );
@@ -3421,7 +3428,7 @@ function getSchemaFrom$2c ( Mongoose ) {
 
 }
 
-function _createSchema$2c ( Mongoose ) {
+function _createSchema$2c( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3429,7 +3436,7 @@ function _createSchema$2c ( Mongoose ) {
 
 }
 
-function getModelFrom$21 ( Mongoose ) {
+function getModelFrom$21( Mongoose ) {
 
     if ( !_model$21 ) {
         _createModel$21( Mongoose );
@@ -3439,14 +3446,14 @@ function getModelFrom$21 ( Mongoose ) {
 
 }
 
-function _createModel$21 ( Mongoose ) {
+function _createModel$21( Mongoose ) {
 
     const Object3DBaseModel = Object3D$F.getModelFrom( Mongoose );
     _model$21                  = Object3DBaseModel.discriminator( 'PositionalAudio', getSchemaFrom$2c( Mongoose ) );
 
 }
 
-function registerModelTo$21 ( Mongoose ) {
+function registerModelTo$21( Mongoose ) {
 
     if ( !_model$21 ) {
         _createModel$21( Mongoose );
@@ -3478,7 +3485,7 @@ const { Object3D: Object3D$E } = require$$0$2;
 let _schema$2b = undefined;
 let _model$20  = undefined;
 
-function getSchemaFrom$2b ( Mongoose ) {
+function getSchemaFrom$2b( Mongoose ) {
 
     if ( !_schema$2b ) {
         _createSchema$2b( Mongoose );
@@ -3488,7 +3495,7 @@ function getSchemaFrom$2b ( Mongoose ) {
 
 }
 
-function _createSchema$2b ( Mongoose ) {
+function _createSchema$2b( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3496,7 +3503,7 @@ function _createSchema$2b ( Mongoose ) {
 
 }
 
-function getModelFrom$20 ( Mongoose ) {
+function getModelFrom$20( Mongoose ) {
 
     if ( !_model$20 ) {
         _createModel$20( Mongoose );
@@ -3506,14 +3513,14 @@ function getModelFrom$20 ( Mongoose ) {
 
 }
 
-function _createModel$20 ( Mongoose ) {
+function _createModel$20( Mongoose ) {
 
     const Object3DBaseModel = Object3D$E.getModelFrom( Mongoose );
     _model$20                  = Object3DBaseModel.discriminator( 'ArrayCamera', getSchemaFrom$2b( Mongoose ) );
 
 }
 
-function registerModelTo$20 ( Mongoose ) {
+function registerModelTo$20( Mongoose ) {
 
     if ( !_model$20 ) {
         _createModel$20( Mongoose );
@@ -3545,7 +3552,7 @@ const { Object3D: Object3D$D } = require$$0$2;
 let _schema$2a = undefined;
 let _model$1$  = undefined;
 
-function getSchemaFrom$2a ( Mongoose ) {
+function getSchemaFrom$2a( Mongoose ) {
 
     if ( !_schema$2a ) {
         _createSchema$2a( Mongoose );
@@ -3555,7 +3562,7 @@ function getSchemaFrom$2a ( Mongoose ) {
 
 }
 
-function _createSchema$2a ( Mongoose ) {
+function _createSchema$2a( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3563,7 +3570,7 @@ function _createSchema$2a ( Mongoose ) {
 
 }
 
-function getModelFrom$1$ ( Mongoose ) {
+function getModelFrom$1$( Mongoose ) {
 
     if ( !_model$1$ ) {
         _createModel$1$( Mongoose );
@@ -3573,14 +3580,14 @@ function getModelFrom$1$ ( Mongoose ) {
 
 }
 
-function _createModel$1$ ( Mongoose ) {
+function _createModel$1$( Mongoose ) {
 
     const Object3DBaseModel = Object3D$D.getModelFrom( Mongoose );
     _model$1$                  = Object3DBaseModel.discriminator( 'Camera', getSchemaFrom$2a( Mongoose ) );
 
 }
 
-function registerModelTo$1$ ( Mongoose ) {
+function registerModelTo$1$( Mongoose ) {
 
     if ( !_model$1$ ) {
         _createModel$1$( Mongoose );
@@ -3612,7 +3619,7 @@ const { Object3D: Object3D$C } = require$$0$2;
 let _schema$29 = undefined;
 let _model$1_  = undefined;
 
-function getSchemaFrom$29 ( Mongoose ) {
+function getSchemaFrom$29( Mongoose ) {
 
     if ( !_schema$29 ) {
         _createSchema$29( Mongoose );
@@ -3622,7 +3629,7 @@ function getSchemaFrom$29 ( Mongoose ) {
 
 }
 
-function _createSchema$29 ( Mongoose ) {
+function _createSchema$29( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3630,7 +3637,7 @@ function _createSchema$29 ( Mongoose ) {
 
 }
 
-function getModelFrom$1_ ( Mongoose ) {
+function getModelFrom$1_( Mongoose ) {
 
     if ( !_model$1_ ) {
         _createModel$1_( Mongoose );
@@ -3640,14 +3647,14 @@ function getModelFrom$1_ ( Mongoose ) {
 
 }
 
-function _createModel$1_ ( Mongoose ) {
+function _createModel$1_( Mongoose ) {
 
     const Object3DBaseModel = Object3D$C.getModelFrom( Mongoose );
     _model$1_                  = Object3DBaseModel.discriminator( 'CubeCamera', getSchemaFrom$29( Mongoose ) );
 
 }
 
-function registerModelTo$1_ ( Mongoose ) {
+function registerModelTo$1_( Mongoose ) {
 
     if ( !_model$1_ ) {
         _createModel$1_( Mongoose );
@@ -3679,7 +3686,7 @@ const { Object3D: Object3D$B } = require$$0$2;
 let _schema$28 = undefined;
 let _model$1Z  = undefined;
 
-function getSchemaFrom$28 ( Mongoose ) {
+function getSchemaFrom$28( Mongoose ) {
 
     if ( !_schema$28 ) {
         _createSchema$28( Mongoose );
@@ -3689,7 +3696,7 @@ function getSchemaFrom$28 ( Mongoose ) {
 
 }
 
-function _createSchema$28 ( Mongoose ) {
+function _createSchema$28( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3697,7 +3704,7 @@ function _createSchema$28 ( Mongoose ) {
 
 }
 
-function getModelFrom$1Z ( Mongoose ) {
+function getModelFrom$1Z( Mongoose ) {
 
     if ( !_model$1Z ) {
         _createModel$1Z( Mongoose );
@@ -3707,14 +3714,14 @@ function getModelFrom$1Z ( Mongoose ) {
 
 }
 
-function _createModel$1Z ( Mongoose ) {
+function _createModel$1Z( Mongoose ) {
 
     const Object3DBaseModel = Object3D$B.getModelFrom( Mongoose );
     _model$1Z                  = Object3DBaseModel.discriminator( 'OrthographicCamera', getSchemaFrom$28( Mongoose ) );
 
 }
 
-function registerModelTo$1Z ( Mongoose ) {
+function registerModelTo$1Z( Mongoose ) {
 
     if ( !_model$1Z ) {
         _createModel$1Z( Mongoose );
@@ -3746,7 +3753,7 @@ const { Object3D: Object3D$A } = require$$0$2;
 let _schema$27 = undefined;
 let _model$1Y  = undefined;
 
-function getSchemaFrom$27 ( Mongoose ) {
+function getSchemaFrom$27( Mongoose ) {
 
     if ( !_schema$27 ) {
         _createSchema$27( Mongoose );
@@ -3756,7 +3763,7 @@ function getSchemaFrom$27 ( Mongoose ) {
 
 }
 
-function _createSchema$27 ( Mongoose ) {
+function _createSchema$27( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -3764,7 +3771,7 @@ function _createSchema$27 ( Mongoose ) {
 
 }
 
-function getModelFrom$1Y ( Mongoose ) {
+function getModelFrom$1Y( Mongoose ) {
 
     if ( !_model$1Y ) {
         _createModel$1Y( Mongoose );
@@ -3774,14 +3781,14 @@ function getModelFrom$1Y ( Mongoose ) {
 
 }
 
-function _createModel$1Y ( Mongoose ) {
+function _createModel$1Y( Mongoose ) {
 
     const Object3DBaseModel = Object3D$A.getModelFrom( Mongoose );
     _model$1Y                  = Object3DBaseModel.discriminator( 'PerspectiveCamera', getSchemaFrom$27( Mongoose ) );
 
 }
 
-function registerModelTo$1Y ( Mongoose ) {
+function registerModelTo$1Y( Mongoose ) {
 
     if ( !_model$1Y ) {
         _createModel$1Y( Mongoose );
@@ -3824,7 +3831,7 @@ const {
 
 let _schema$26 = undefined;
 
-function getSchemaFrom$26 ( Mongoose ) {
+function getSchemaFrom$26( Mongoose ) {
 
     if ( !_schema$26 ) {
         _createSchema$26( Mongoose );
@@ -3834,7 +3841,7 @@ function getSchemaFrom$26 ( Mongoose ) {
 
 }
 
-function _createSchema$26 ( Mongoose ) {
+function _createSchema$26( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -4016,7 +4023,7 @@ var BufferAttribute_1 = {
 let _schema$25 = undefined;
 let _model$1X  = undefined;
 
-function getSchemaFrom$25 ( Mongoose ) {
+function getSchemaFrom$25( Mongoose ) {
 
     if ( !_schema$25 ) {
         _createSchema$25( Mongoose );
@@ -4026,7 +4033,7 @@ function getSchemaFrom$25 ( Mongoose ) {
 
 }
 
-function _createSchema$25 ( Mongoose ) {
+function _createSchema$25( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4063,7 +4070,7 @@ function _createSchema$25 ( Mongoose ) {
 
 }
 
-function getModelFrom$1X ( Mongoose ) {
+function getModelFrom$1X( Mongoose ) {
 
     if ( !_model$1X ) {
         _createModel$1X( Mongoose );
@@ -4073,7 +4080,7 @@ function getModelFrom$1X ( Mongoose ) {
 
 }
 
-function _createModel$1X ( Mongoose ) {
+function _createModel$1X( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
@@ -4083,7 +4090,7 @@ function _createModel$1X ( Mongoose ) {
 
 }
 
-function registerModelTo$1X ( Mongoose ) {
+function registerModelTo$1X( Mongoose ) {
 
     if ( !_model$1X ) {
         _createModel$1X( Mongoose );
@@ -4119,7 +4126,7 @@ var Curve$g = {};
 let _schema$24 = undefined;
 let _model$1W  = undefined;
 
-function getSchemaFrom$24 ( Mongoose ) {
+function getSchemaFrom$24( Mongoose ) {
 
     if ( !_schema$24 ) {
         _createSchema$24( Mongoose );
@@ -4129,7 +4136,7 @@ function getSchemaFrom$24 ( Mongoose ) {
 
 }
 
-function _createSchema$24 ( Mongoose ) {
+function _createSchema$24( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -4146,7 +4153,7 @@ function _createSchema$24 ( Mongoose ) {
 
 }
 
-function getModelFrom$1W ( Mongoose ) {
+function getModelFrom$1W( Mongoose ) {
 
     if ( !_model$1W ) {
         _createModel$1W( Mongoose );
@@ -4156,7 +4163,7 @@ function getModelFrom$1W ( Mongoose ) {
 
 }
 
-function _createModel$1W ( Mongoose ) {
+function _createModel$1W( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
@@ -4166,7 +4173,7 @@ function _createModel$1W ( Mongoose ) {
 
 }
 
-function registerModelTo$1W ( Mongoose ) {
+function registerModelTo$1W( Mongoose ) {
 
     if ( !_model$1W ) {
         _createModel$1W( Mongoose );
@@ -4199,7 +4206,7 @@ const { Curve: Curve$f } = Curve$g;
 let _schema$23 = undefined;
 let _model$1V  = undefined;
 
-function getSchemaFrom$23 ( Mongoose ) {
+function getSchemaFrom$23( Mongoose ) {
 
     if ( !_schema$23 ) {
         _createSchema$23( Mongoose );
@@ -4209,7 +4216,7 @@ function getSchemaFrom$23 ( Mongoose ) {
 
 }
 
-function _createSchema$23 ( Mongoose ) {
+function _createSchema$23( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -4234,7 +4241,7 @@ function _createSchema$23 ( Mongoose ) {
 
 }
 
-function getModelFrom$1V ( Mongoose ) {
+function getModelFrom$1V( Mongoose ) {
 
     if ( !_model$1V ) {
         _createModel$1V( Mongoose );
@@ -4244,14 +4251,14 @@ function getModelFrom$1V ( Mongoose ) {
 
 }
 
-function _createModel$1V ( Mongoose ) {
+function _createModel$1V( Mongoose ) {
 
     const CurveBaseModel = Curve$f.getModelFrom( Mongoose );
     _model$1V               = CurveBaseModel.discriminator( 'CurvePath', getSchemaFrom$23( Mongoose ) );
 
 }
 
-function registerModelTo$1V ( Mongoose ) {
+function registerModelTo$1V( Mongoose ) {
 
     if ( !_model$1V ) {
         _createModel$1V( Mongoose );
@@ -4277,7 +4284,7 @@ var CurvePath_1 = {
 
 let _schema$22 = undefined;
 
-function getSchemaFrom$22 ( Mongoose ) {
+function getSchemaFrom$22( Mongoose ) {
 
     if ( !_schema$22 ) {
         _createSchema$22( Mongoose );
@@ -4287,7 +4294,7 @@ function getSchemaFrom$22 ( Mongoose ) {
 
 }
 
-function _createSchema$22 ( Mongoose ) {
+function _createSchema$22( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4330,7 +4337,7 @@ var Face3_1 = {
 let _schema$21 = undefined;
 let _model$1U  = undefined;
 
-function getSchemaFrom$21 ( Mongoose ) {
+function getSchemaFrom$21( Mongoose ) {
 
     if ( !_schema$21 ) {
         _createSchema$21( Mongoose );
@@ -4340,7 +4347,7 @@ function getSchemaFrom$21 ( Mongoose ) {
 
 }
 
-function _createSchema$21 ( Mongoose ) {
+function _createSchema$21( Mongoose ) {
 
     const Face3Schema = Face3_1.getSchemaFrom( Mongoose );
     const Schema      = Mongoose.Schema;
@@ -4382,7 +4389,7 @@ function _createSchema$21 ( Mongoose ) {
 
 }
 
-function getModelFrom$1U ( Mongoose ) {
+function getModelFrom$1U( Mongoose ) {
 
     if ( !_model$1U ) {
         _createModel$1U( Mongoose );
@@ -4392,7 +4399,7 @@ function getModelFrom$1U ( Mongoose ) {
 
 }
 
-function _createModel$1U ( Mongoose ) {
+function _createModel$1U( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
@@ -4402,7 +4409,7 @@ function _createModel$1U ( Mongoose ) {
 
 }
 
-function registerModelTo$1U ( Mongoose ) {
+function registerModelTo$1U( Mongoose ) {
 
     if ( !_model$1U ) {
         _createModel$1U( Mongoose );
@@ -4439,7 +4446,7 @@ const { Curve: Curve$e } = Curve$g;
 let _schema$20 = undefined;
 let _model$1T  = undefined;
 
-function getSchemaFrom$20 ( Mongoose ) {
+function getSchemaFrom$20( Mongoose ) {
 
     if ( !_schema$20 ) {
         _createSchema$20( Mongoose );
@@ -4449,7 +4456,7 @@ function getSchemaFrom$20 ( Mongoose ) {
 
 }
 
-function _createSchema$20 ( Mongoose ) {
+function _createSchema$20( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4484,7 +4491,7 @@ function _createSchema$20 ( Mongoose ) {
 
 }
 
-function getModelFrom$1T ( Mongoose ) {
+function getModelFrom$1T( Mongoose ) {
 
     if ( !_model$1T ) {
         _createModel$1T( Mongoose );
@@ -4494,14 +4501,14 @@ function getModelFrom$1T ( Mongoose ) {
 
 }
 
-function _createModel$1T ( Mongoose ) {
+function _createModel$1T( Mongoose ) {
 
     const CurveBaseModel = Curve$e.getModelFrom( Mongoose );
     _model$1T               = CurveBaseModel.discriminator( 'Path', getSchemaFrom$20( Mongoose ) );
 
 }
 
-function registerModelTo$1T ( Mongoose ) {
+function registerModelTo$1T( Mongoose ) {
 
     if ( !_model$1T ) {
         _createModel$1T( Mongoose );
@@ -4533,7 +4540,7 @@ const { Curve: Curve$d } = Curve$g;
 let _schema$1$ = undefined;
 let _model$1S  = undefined;
 
-function getSchemaFrom$1$ ( Mongoose ) {
+function getSchemaFrom$1$( Mongoose ) {
 
     if ( !_schema$1$ ) {
         _createSchema$1$( Mongoose );
@@ -4543,7 +4550,7 @@ function getSchemaFrom$1$ ( Mongoose ) {
 
 }
 
-function _createSchema$1$ ( Mongoose ) {
+function _createSchema$1$( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4597,7 +4604,7 @@ function _createSchema$1$ ( Mongoose ) {
 
 }
 
-function getModelFrom$1S ( Mongoose ) {
+function getModelFrom$1S( Mongoose ) {
 
     if ( !_model$1S ) {
         _createModel$1S( Mongoose );
@@ -4607,14 +4614,14 @@ function getModelFrom$1S ( Mongoose ) {
 
 }
 
-function _createModel$1S ( Mongoose ) {
+function _createModel$1S( Mongoose ) {
 
     const CurveBaseModel = Curve$d.getModelFrom( Mongoose );
     _model$1S               = CurveBaseModel.discriminator( 'Shape', getSchemaFrom$1$( Mongoose ) );
 
 }
 
-function registerModelTo$1S ( Mongoose ) {
+function registerModelTo$1S( Mongoose ) {
 
     if ( !_model$1S ) {
         _createModel$1S( Mongoose );
@@ -4646,7 +4653,7 @@ const { Curve: Curve$c } = Curve$g;
 let _schema$1_ = undefined;
 let _model$1R  = undefined;
 
-function getSchemaFrom$1_ ( Mongoose ) {
+function getSchemaFrom$1_( Mongoose ) {
 
     if ( !_schema$1_ ) {
         _createSchema$1_( Mongoose );
@@ -4656,7 +4663,7 @@ function getSchemaFrom$1_ ( Mongoose ) {
 
 }
 
-function _createSchema$1_ ( Mongoose ) {
+function _createSchema$1_( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -4674,7 +4681,7 @@ function _createSchema$1_ ( Mongoose ) {
 
 }
 
-function getModelFrom$1R ( Mongoose ) {
+function getModelFrom$1R( Mongoose ) {
 
     if ( !_model$1R ) {
         _createModel$1R( Mongoose );
@@ -4684,14 +4691,14 @@ function getModelFrom$1R ( Mongoose ) {
 
 }
 
-function _createModel$1R ( Mongoose ) {
+function _createModel$1R( Mongoose ) {
 
     const CurveBaseModel = Curve$c.getModelFrom( Mongoose );
     _model$1R               = CurveBaseModel.discriminator( 'ArcCurve', getSchemaFrom$1_( Mongoose ) );
 
 }
 
-function registerModelTo$1R ( Mongoose ) {
+function registerModelTo$1R( Mongoose ) {
 
     if ( !_model$1R ) {
         _createModel$1R( Mongoose );
@@ -4723,7 +4730,7 @@ const { Curve: Curve$b } = Curve$g;
 let _schema$1Z = undefined;
 let _model$1Q  = undefined;
 
-function getSchemaFrom$1Z ( Mongoose ) {
+function getSchemaFrom$1Z( Mongoose ) {
 
     if ( !_schema$1Z ) {
         _createSchema$1Z( Mongoose );
@@ -4733,7 +4740,7 @@ function getSchemaFrom$1Z ( Mongoose ) {
 
 }
 
-function _createSchema$1Z ( Mongoose ) {
+function _createSchema$1Z( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4748,7 +4755,7 @@ function _createSchema$1Z ( Mongoose ) {
 
 }
 
-function getModelFrom$1Q ( Mongoose ) {
+function getModelFrom$1Q( Mongoose ) {
 
     if ( !_model$1Q ) {
         _createModel$1Q( Mongoose );
@@ -4758,14 +4765,14 @@ function getModelFrom$1Q ( Mongoose ) {
 
 }
 
-function _createModel$1Q ( Mongoose ) {
+function _createModel$1Q( Mongoose ) {
 
     const CurveBaseModel = Curve$b.getModelFrom( Mongoose );
     _model$1Q               = CurveBaseModel.discriminator( 'CatmullRomCurve3', getSchemaFrom$1Z( Mongoose ) );
 
 }
 
-function registerModelTo$1Q ( Mongoose ) {
+function registerModelTo$1Q( Mongoose ) {
 
     if ( !_model$1Q ) {
         _createModel$1Q( Mongoose );
@@ -4797,7 +4804,7 @@ const { Curve: Curve$a } = Curve$g;
 let _schema$1Y = undefined;
 let _model$1P  = undefined;
 
-function getSchemaFrom$1Y ( Mongoose ) {
+function getSchemaFrom$1Y( Mongoose ) {
 
     if ( !_schema$1Y ) {
         _createSchema$1Y( Mongoose );
@@ -4807,7 +4814,7 @@ function getSchemaFrom$1Y ( Mongoose ) {
 
 }
 
-function _createSchema$1Y ( Mongoose ) {
+function _createSchema$1Y( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4822,7 +4829,7 @@ function _createSchema$1Y ( Mongoose ) {
 
 }
 
-function getModelFrom$1P ( Mongoose ) {
+function getModelFrom$1P( Mongoose ) {
 
     if ( !_model$1P ) {
         _createModel$1P( Mongoose );
@@ -4832,14 +4839,14 @@ function getModelFrom$1P ( Mongoose ) {
 
 }
 
-function _createModel$1P ( Mongoose ) {
+function _createModel$1P( Mongoose ) {
 
     const CurveBaseModel = Curve$a.getModelFrom( Mongoose );
     _model$1P               = CurveBaseModel.discriminator( 'CubicBezierCurve', getSchemaFrom$1Y( Mongoose ) );
 
 }
 
-function registerModelTo$1P ( Mongoose ) {
+function registerModelTo$1P( Mongoose ) {
 
     if ( !_model$1P ) {
         _createModel$1P( Mongoose );
@@ -4871,7 +4878,7 @@ const { Curve: Curve$9 } = Curve$g;
 let _schema$1X = undefined;
 let _model$1O  = undefined;
 
-function getSchemaFrom$1X ( Mongoose ) {
+function getSchemaFrom$1X( Mongoose ) {
 
     if ( !_schema$1X ) {
         _createSchema$1X( Mongoose );
@@ -4881,7 +4888,7 @@ function getSchemaFrom$1X ( Mongoose ) {
 
 }
 
-function _createSchema$1X ( Mongoose ) {
+function _createSchema$1X( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -4896,7 +4903,7 @@ function _createSchema$1X ( Mongoose ) {
 
 }
 
-function getModelFrom$1O ( Mongoose ) {
+function getModelFrom$1O( Mongoose ) {
 
     if ( !_model$1O ) {
         _createModel$1O( Mongoose );
@@ -4906,14 +4913,14 @@ function getModelFrom$1O ( Mongoose ) {
 
 }
 
-function _createModel$1O ( Mongoose ) {
+function _createModel$1O( Mongoose ) {
 
     const CurveBaseModel = Curve$9.getModelFrom( Mongoose );
     _model$1O               = CurveBaseModel.discriminator( 'CubicBezierCurve3', getSchemaFrom$1X( Mongoose ) );
 
 }
 
-function registerModelTo$1O ( Mongoose ) {
+function registerModelTo$1O( Mongoose ) {
 
     if ( !_model$1O ) {
         _createModel$1O( Mongoose );
@@ -4945,7 +4952,7 @@ const { Curve: Curve$8 } = Curve$g;
 let _schema$1W = undefined;
 let _model$1N  = undefined;
 
-function getSchemaFrom$1W ( Mongoose ) {
+function getSchemaFrom$1W( Mongoose ) {
 
     if ( !_schema$1W ) {
         _createSchema$1W( Mongoose );
@@ -4955,7 +4962,7 @@ function getSchemaFrom$1W ( Mongoose ) {
 
 }
 
-function _createSchema$1W ( Mongoose ) {
+function _createSchema$1W( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -4963,7 +4970,7 @@ function _createSchema$1W ( Mongoose ) {
 
 }
 
-function getModelFrom$1N ( Mongoose ) {
+function getModelFrom$1N( Mongoose ) {
 
     if ( !_model$1N ) {
         _createModel$1N( Mongoose );
@@ -4973,14 +4980,14 @@ function getModelFrom$1N ( Mongoose ) {
 
 }
 
-function _createModel$1N ( Mongoose ) {
+function _createModel$1N( Mongoose ) {
 
     const CurveBaseModel = Curve$8.getModelFrom( Mongoose );
     _model$1N               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom$1W( Mongoose ) );
 
 }
 
-function registerModelTo$1N ( Mongoose ) {
+function registerModelTo$1N( Mongoose ) {
 
     if ( !_model$1N ) {
         _createModel$1N( Mongoose );
@@ -5012,7 +5019,7 @@ const { Curve: Curve$7 } = Curve$g;
 let _schema$1V = undefined;
 let _model$1M  = undefined;
 
-function getSchemaFrom$1V ( Mongoose ) {
+function getSchemaFrom$1V( Mongoose ) {
 
     if ( !_schema$1V ) {
         _createSchema$1V( Mongoose );
@@ -5022,7 +5029,7 @@ function getSchemaFrom$1V ( Mongoose ) {
 
 }
 
-function _createSchema$1V ( Mongoose ) {
+function _createSchema$1V( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5039,7 +5046,7 @@ function _createSchema$1V ( Mongoose ) {
 
 }
 
-function getModelFrom$1M ( Mongoose ) {
+function getModelFrom$1M( Mongoose ) {
 
     if ( !_model$1M ) {
         _createModel$1M( Mongoose );
@@ -5049,14 +5056,14 @@ function getModelFrom$1M ( Mongoose ) {
 
 }
 
-function _createModel$1M ( Mongoose ) {
+function _createModel$1M( Mongoose ) {
 
     const CurveBaseModel = Curve$7.getModelFrom( Mongoose );
     _model$1M               = CurveBaseModel.discriminator( 'EllipseCurve', getSchemaFrom$1V( Mongoose ) );
 
 }
 
-function registerModelTo$1M ( Mongoose ) {
+function registerModelTo$1M( Mongoose ) {
 
     if ( !_model$1M ) {
         _createModel$1M( Mongoose );
@@ -5088,7 +5095,7 @@ const { Curve: Curve$6 } = Curve$g;
 let _schema$1U = undefined;
 let _model$1L  = undefined;
 
-function getSchemaFrom$1U ( Mongoose ) {
+function getSchemaFrom$1U( Mongoose ) {
 
     if ( !_schema$1U ) {
         _createSchema$1U( Mongoose );
@@ -5098,7 +5105,7 @@ function getSchemaFrom$1U ( Mongoose ) {
 
 }
 
-function _createSchema$1U ( Mongoose ) {
+function _createSchema$1U( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -5111,7 +5118,7 @@ function _createSchema$1U ( Mongoose ) {
 
 }
 
-function getModelFrom$1L ( Mongoose ) {
+function getModelFrom$1L( Mongoose ) {
 
     if ( !_model$1L ) {
         _createModel$1L( Mongoose );
@@ -5121,14 +5128,14 @@ function getModelFrom$1L ( Mongoose ) {
 
 }
 
-function _createModel$1L ( Mongoose ) {
+function _createModel$1L( Mongoose ) {
 
     const CurveBaseModel = Curve$6.getModelFrom( Mongoose );
     _model$1L               = CurveBaseModel.discriminator( 'LineCurve', getSchemaFrom$1U( Mongoose ) );
 
 }
 
-function registerModelTo$1L ( Mongoose ) {
+function registerModelTo$1L( Mongoose ) {
 
     if ( !_model$1L ) {
         _createModel$1L( Mongoose );
@@ -5160,7 +5167,7 @@ const { Curve: Curve$5 } = Curve$g;
 let _schema$1T = undefined;
 let _model$1K  = undefined;
 
-function getSchemaFrom$1T ( Mongoose ) {
+function getSchemaFrom$1T( Mongoose ) {
 
     if ( !_schema$1T ) {
         _createSchema$1T( Mongoose );
@@ -5170,7 +5177,7 @@ function getSchemaFrom$1T ( Mongoose ) {
 
 }
 
-function _createSchema$1T ( Mongoose ) {
+function _createSchema$1T( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -5183,7 +5190,7 @@ function _createSchema$1T ( Mongoose ) {
 
 }
 
-function getModelFrom$1K ( Mongoose ) {
+function getModelFrom$1K( Mongoose ) {
 
     if ( !_model$1K ) {
         _createModel$1K( Mongoose );
@@ -5193,14 +5200,14 @@ function getModelFrom$1K ( Mongoose ) {
 
 }
 
-function _createModel$1K ( Mongoose ) {
+function _createModel$1K( Mongoose ) {
 
     const CurveBaseModel = Curve$5.getModelFrom( Mongoose );
     _model$1K               = CurveBaseModel.discriminator( 'LineCurve3', getSchemaFrom$1T( Mongoose ) );
 
 }
 
-function registerModelTo$1K ( Mongoose ) {
+function registerModelTo$1K( Mongoose ) {
 
     if ( !_model$1K ) {
         _createModel$1K( Mongoose );
@@ -5232,7 +5239,7 @@ const { Curve: Curve$4 } = Curve$g;
 let _schema$1S = undefined;
 let _model$1J  = undefined;
 
-function getSchemaFrom$1S ( Mongoose ) {
+function getSchemaFrom$1S( Mongoose ) {
 
     if ( !_schema$1S ) {
         _createSchema$1S( Mongoose );
@@ -5242,7 +5249,7 @@ function getSchemaFrom$1S ( Mongoose ) {
 
 }
 
-function _createSchema$1S ( Mongoose ) {
+function _createSchema$1S( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5250,7 +5257,7 @@ function _createSchema$1S ( Mongoose ) {
 
 }
 
-function getModelFrom$1J ( Mongoose ) {
+function getModelFrom$1J( Mongoose ) {
 
     if ( !_model$1J ) {
         _createModel$1J( Mongoose );
@@ -5260,14 +5267,14 @@ function getModelFrom$1J ( Mongoose ) {
 
 }
 
-function _createModel$1J ( Mongoose ) {
+function _createModel$1J( Mongoose ) {
 
     const CurveBaseModel = Curve$4.getModelFrom( Mongoose );
     _model$1J               = CurveBaseModel.discriminator( 'NURBSCurve', getSchemaFrom$1S( Mongoose ) );
 
 }
 
-function registerModelTo$1J ( Mongoose ) {
+function registerModelTo$1J( Mongoose ) {
 
     if ( !_model$1J ) {
         _createModel$1J( Mongoose );
@@ -5299,7 +5306,7 @@ const { Curve: Curve$3 } = Curve$g;
 let _schema$1R = undefined;
 let _model$1I  = undefined;
 
-function getSchemaFrom$1R ( Mongoose ) {
+function getSchemaFrom$1R( Mongoose ) {
 
     if ( !_schema$1R ) {
         _createSchema$1R( Mongoose );
@@ -5309,7 +5316,7 @@ function getSchemaFrom$1R ( Mongoose ) {
 
 }
 
-function _createSchema$1R ( Mongoose ) {
+function _createSchema$1R( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5317,7 +5324,7 @@ function _createSchema$1R ( Mongoose ) {
 
 }
 
-function getModelFrom$1I ( Mongoose ) {
+function getModelFrom$1I( Mongoose ) {
 
     if ( !_model$1I ) {
         _createModel$1I( Mongoose );
@@ -5327,14 +5334,14 @@ function getModelFrom$1I ( Mongoose ) {
 
 }
 
-function _createModel$1I ( Mongoose ) {
+function _createModel$1I( Mongoose ) {
 
     const CurveBaseModel = Curve$3.getModelFrom( Mongoose );
     _model$1I               = CurveBaseModel.discriminator( 'NURBSSurface', getSchemaFrom$1R( Mongoose ) );
 
 }
 
-function registerModelTo$1I ( Mongoose ) {
+function registerModelTo$1I( Mongoose ) {
 
     if ( !_model$1I ) {
         _createModel$1I( Mongoose );
@@ -5366,7 +5373,7 @@ const { Curve: Curve$2 } = Curve$g;
 let _schema$1Q = undefined;
 let _model$1H  = undefined;
 
-function getSchemaFrom$1Q ( Mongoose ) {
+function getSchemaFrom$1Q( Mongoose ) {
 
     if ( !_schema$1Q ) {
         _createSchema$1Q( Mongoose );
@@ -5376,7 +5383,7 @@ function getSchemaFrom$1Q ( Mongoose ) {
 
 }
 
-function _createSchema$1Q ( Mongoose ) {
+function _createSchema$1Q( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -5390,7 +5397,7 @@ function _createSchema$1Q ( Mongoose ) {
 
 }
 
-function getModelFrom$1H ( Mongoose ) {
+function getModelFrom$1H( Mongoose ) {
 
     if ( !_model$1H ) {
         _createModel$1H( Mongoose );
@@ -5400,14 +5407,14 @@ function getModelFrom$1H ( Mongoose ) {
 
 }
 
-function _createModel$1H ( Mongoose ) {
+function _createModel$1H( Mongoose ) {
 
     const CurveBaseModel = Curve$2.getModelFrom( Mongoose );
     _model$1H               = CurveBaseModel.discriminator( 'QuadraticBezierCurve', getSchemaFrom$1Q( Mongoose ) );
 
 }
 
-function registerModelTo$1H ( Mongoose ) {
+function registerModelTo$1H( Mongoose ) {
 
     if ( !_model$1H ) {
         _createModel$1H( Mongoose );
@@ -5439,7 +5446,7 @@ const { Curve: Curve$1 } = Curve$g;
 let _schema$1P = undefined;
 let _model$1G  = undefined;
 
-function getSchemaFrom$1P ( Mongoose ) {
+function getSchemaFrom$1P( Mongoose ) {
 
     if ( !_schema$1P ) {
         _createSchema$1P( Mongoose );
@@ -5449,7 +5456,7 @@ function getSchemaFrom$1P ( Mongoose ) {
 
 }
 
-function _createSchema$1P ( Mongoose ) {
+function _createSchema$1P( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -5463,7 +5470,7 @@ function _createSchema$1P ( Mongoose ) {
 
 }
 
-function getModelFrom$1G ( Mongoose ) {
+function getModelFrom$1G( Mongoose ) {
 
     if ( !_model$1G ) {
         _createModel$1G( Mongoose );
@@ -5473,14 +5480,14 @@ function getModelFrom$1G ( Mongoose ) {
 
 }
 
-function _createModel$1G ( Mongoose ) {
+function _createModel$1G( Mongoose ) {
 
     const CurveBaseModel = Curve$1.getModelFrom( Mongoose );
     _model$1G               = CurveBaseModel.discriminator( 'QuadraticBezierCurve3', getSchemaFrom$1P( Mongoose ) );
 
 }
 
-function registerModelTo$1G ( Mongoose ) {
+function registerModelTo$1G( Mongoose ) {
 
     if ( !_model$1G ) {
         _createModel$1G( Mongoose );
@@ -5512,7 +5519,7 @@ const { Curve } = Curve$g;
 let _schema$1O = undefined;
 let _model$1F  = undefined;
 
-function getSchemaFrom$1O ( Mongoose ) {
+function getSchemaFrom$1O( Mongoose ) {
 
     if ( !_schema$1O ) {
         _createSchema$1O( Mongoose );
@@ -5522,7 +5529,7 @@ function getSchemaFrom$1O ( Mongoose ) {
 
 }
 
-function _createSchema$1O ( Mongoose ) {
+function _createSchema$1O( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -5534,7 +5541,7 @@ function _createSchema$1O ( Mongoose ) {
 
 }
 
-function getModelFrom$1F ( Mongoose ) {
+function getModelFrom$1F( Mongoose ) {
 
     if ( !_model$1F ) {
         _createModel$1F( Mongoose );
@@ -5544,14 +5551,14 @@ function getModelFrom$1F ( Mongoose ) {
 
 }
 
-function _createModel$1F ( Mongoose ) {
+function _createModel$1F( Mongoose ) {
 
     const CurveBaseModel = Curve.getModelFrom( Mongoose );
     _model$1F               = CurveBaseModel.discriminator( 'SplineCurve', getSchemaFrom$1O( Mongoose ) );
 
 }
 
-function registerModelTo$1F ( Mongoose ) {
+function registerModelTo$1F( Mongoose ) {
 
     if ( !_model$1F ) {
         _createModel$1F( Mongoose );
@@ -5585,7 +5592,7 @@ const { BufferGeometry: BufferGeometry$k } = require$$0$1;
 let _schema$1N = undefined;
 let _model$1E  = undefined;
 
-function getSchemaFrom$1N ( Mongoose ) {
+function getSchemaFrom$1N( Mongoose ) {
 
     if ( !_schema$1N ) {
         _createSchema$1N( Mongoose );
@@ -5595,7 +5602,7 @@ function getSchemaFrom$1N ( Mongoose ) {
 
 }
 
-function _createSchema$1N ( Mongoose ) {
+function _createSchema$1N( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5603,7 +5610,7 @@ function _createSchema$1N ( Mongoose ) {
 
 }
 
-function getModelFrom$1E ( Mongoose ) {
+function getModelFrom$1E( Mongoose ) {
 
     if ( !_model$1E ) {
         _createModel$1E( Mongoose );
@@ -5613,14 +5620,14 @@ function getModelFrom$1E ( Mongoose ) {
 
 }
 
-function _createModel$1E ( Mongoose ) {
+function _createModel$1E( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
     _model$1E                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom$1N( Mongoose ) );
 
 }
 
-function registerModelTo$1E ( Mongoose ) {
+function registerModelTo$1E( Mongoose ) {
 
     if ( !_model$1E ) {
         _createModel$1E( Mongoose );
@@ -5654,7 +5661,7 @@ const { Geometry: Geometry$n } = require$$0;
 let _schema$1M = undefined;
 let _model$1D  = undefined;
 
-function getSchemaFrom$1M ( Mongoose ) {
+function getSchemaFrom$1M( Mongoose ) {
 
     if ( !_schema$1M ) {
         _createSchema$1M( Mongoose );
@@ -5664,7 +5671,7 @@ function getSchemaFrom$1M ( Mongoose ) {
 
 }
 
-function _createSchema$1M ( Mongoose ) {
+function _createSchema$1M( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5672,7 +5679,7 @@ function _createSchema$1M ( Mongoose ) {
 
 }
 
-function getModelFrom$1D ( Mongoose ) {
+function getModelFrom$1D( Mongoose ) {
 
     if ( !_model$1D ) {
         _createModel$1D( Mongoose );
@@ -5682,14 +5689,14 @@ function getModelFrom$1D ( Mongoose ) {
 
 }
 
-function _createModel$1D ( Mongoose ) {
+function _createModel$1D( Mongoose ) {
 
     const GeometryBaseModel = Geometry$n.getModelFrom( Mongoose );
     _model$1D                  = GeometryBaseModel.discriminator( 'BoxGeometry', getSchemaFrom$1M( Mongoose ) );
 
 }
 
-function registerModelTo$1D ( Mongoose ) {
+function registerModelTo$1D( Mongoose ) {
 
     if ( !_model$1D ) {
         _createModel$1D( Mongoose );
@@ -5721,7 +5728,7 @@ const { BufferGeometry: BufferGeometry$j } = require$$0$1;
 let _schema$1L = undefined;
 let _model$1C  = undefined;
 
-function getSchemaFrom$1L ( Mongoose ) {
+function getSchemaFrom$1L( Mongoose ) {
 
     if ( !_schema$1L ) {
         _createSchema$1L( Mongoose );
@@ -5731,7 +5738,7 @@ function getSchemaFrom$1L ( Mongoose ) {
 
 }
 
-function _createSchema$1L ( Mongoose ) {
+function _createSchema$1L( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5739,7 +5746,7 @@ function _createSchema$1L ( Mongoose ) {
 
 }
 
-function getModelFrom$1C ( Mongoose ) {
+function getModelFrom$1C( Mongoose ) {
 
     if ( !_model$1C ) {
         _createModel$1C( Mongoose );
@@ -5749,14 +5756,14 @@ function getModelFrom$1C ( Mongoose ) {
 
 }
 
-function _createModel$1C ( Mongoose ) {
+function _createModel$1C( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
     _model$1C                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom$1L( Mongoose ) );
 
 }
 
-function registerModelTo$1C ( Mongoose ) {
+function registerModelTo$1C( Mongoose ) {
 
     if ( !_model$1C ) {
         _createModel$1C( Mongoose );
@@ -5788,7 +5795,7 @@ const { Geometry: Geometry$m } = require$$0;
 let _schema$1K = undefined;
 let _model$1B  = undefined;
 
-function getSchemaFrom$1K ( Mongoose ) {
+function getSchemaFrom$1K( Mongoose ) {
 
     if ( !_schema$1K ) {
         _createSchema$1K( Mongoose );
@@ -5798,7 +5805,7 @@ function getSchemaFrom$1K ( Mongoose ) {
 
 }
 
-function _createSchema$1K ( Mongoose ) {
+function _createSchema$1K( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5806,7 +5813,7 @@ function _createSchema$1K ( Mongoose ) {
 
 }
 
-function getModelFrom$1B ( Mongoose ) {
+function getModelFrom$1B( Mongoose ) {
 
     if ( !_model$1B ) {
         _createModel$1B( Mongoose );
@@ -5816,14 +5823,14 @@ function getModelFrom$1B ( Mongoose ) {
 
 }
 
-function _createModel$1B ( Mongoose ) {
+function _createModel$1B( Mongoose ) {
 
     const GeometryBaseModel = Geometry$m.getModelFrom( Mongoose );
     _model$1B                  = GeometryBaseModel.discriminator( 'CircleGeometry', getSchemaFrom$1K( Mongoose ) );
 
 }
 
-function registerModelTo$1B ( Mongoose ) {
+function registerModelTo$1B( Mongoose ) {
 
     if ( !_model$1B ) {
         _createModel$1B( Mongoose );
@@ -5855,7 +5862,7 @@ const { BufferGeometry: BufferGeometry$i } = require$$0$1;
 let _schema$1J = undefined;
 let _model$1A  = undefined;
 
-function getSchemaFrom$1J ( Mongoose ) {
+function getSchemaFrom$1J( Mongoose ) {
 
     if ( !_schema$1J ) {
         _createSchema$1J( Mongoose );
@@ -5865,7 +5872,7 @@ function getSchemaFrom$1J ( Mongoose ) {
 
 }
 
-function _createSchema$1J ( Mongoose ) {
+function _createSchema$1J( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5873,7 +5880,7 @@ function _createSchema$1J ( Mongoose ) {
 
 }
 
-function getModelFrom$1A ( Mongoose ) {
+function getModelFrom$1A( Mongoose ) {
 
     if ( !_model$1A ) {
         _createModel$1A( Mongoose );
@@ -5883,14 +5890,14 @@ function getModelFrom$1A ( Mongoose ) {
 
 }
 
-function _createModel$1A ( Mongoose ) {
+function _createModel$1A( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
     _model$1A                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom$1J( Mongoose ) );
 
 }
 
-function registerModelTo$1A ( Mongoose ) {
+function registerModelTo$1A( Mongoose ) {
 
     if ( !_model$1A ) {
         _createModel$1A( Mongoose );
@@ -5922,7 +5929,7 @@ const { Geometry: Geometry$l } = require$$0;
 let _schema$1I = undefined;
 let _model$1z  = undefined;
 
-function getSchemaFrom$1I ( Mongoose ) {
+function getSchemaFrom$1I( Mongoose ) {
 
     if ( !_schema$1I ) {
         _createSchema$1I( Mongoose );
@@ -5932,7 +5939,7 @@ function getSchemaFrom$1I ( Mongoose ) {
 
 }
 
-function _createSchema$1I ( Mongoose ) {
+function _createSchema$1I( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -5940,7 +5947,7 @@ function _createSchema$1I ( Mongoose ) {
 
 }
 
-function getModelFrom$1z ( Mongoose ) {
+function getModelFrom$1z( Mongoose ) {
 
     if ( !_model$1z ) {
         _createModel$1z( Mongoose );
@@ -5950,14 +5957,14 @@ function getModelFrom$1z ( Mongoose ) {
 
 }
 
-function _createModel$1z ( Mongoose ) {
+function _createModel$1z( Mongoose ) {
 
     const GeometryBaseModel = Geometry$l.getModelFrom( Mongoose );
     _model$1z                  = GeometryBaseModel.discriminator( 'ConeGeometry', getSchemaFrom$1I( Mongoose ) );
 
 }
 
-function registerModelTo$1z ( Mongoose ) {
+function registerModelTo$1z( Mongoose ) {
 
     if ( !_model$1z ) {
         _createModel$1z( Mongoose );
@@ -5989,7 +5996,7 @@ const { Geometry: Geometry$k } = require$$0;
 let _schema$1H = undefined;
 let _model$1y  = undefined;
 
-function getSchemaFrom$1H ( Mongoose ) {
+function getSchemaFrom$1H( Mongoose ) {
 
     if ( !_schema$1H ) {
         _createSchema$1H( Mongoose );
@@ -5999,7 +6006,7 @@ function getSchemaFrom$1H ( Mongoose ) {
 
 }
 
-function _createSchema$1H ( Mongoose ) {
+function _createSchema$1H( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6007,7 +6014,7 @@ function _createSchema$1H ( Mongoose ) {
 
 }
 
-function getModelFrom$1y ( Mongoose ) {
+function getModelFrom$1y( Mongoose ) {
 
     if ( !_model$1y ) {
         _createModel$1y( Mongoose );
@@ -6017,14 +6024,14 @@ function getModelFrom$1y ( Mongoose ) {
 
 }
 
-function _createModel$1y ( Mongoose ) {
+function _createModel$1y( Mongoose ) {
 
     const GeometryBaseModel = Geometry$k.getModelFrom( Mongoose );
     _model$1y                  = GeometryBaseModel.discriminator( 'ConvexGeometry', getSchemaFrom$1H( Mongoose ) );
 
 }
 
-function registerModelTo$1y ( Mongoose ) {
+function registerModelTo$1y( Mongoose ) {
 
     if ( !_model$1y ) {
         _createModel$1y( Mongoose );
@@ -6056,7 +6063,7 @@ const { BufferGeometry: BufferGeometry$h } = require$$0$1;
 let _schema$1G = undefined;
 let _model$1x  = undefined;
 
-function getSchemaFrom$1G ( Mongoose ) {
+function getSchemaFrom$1G( Mongoose ) {
 
     if ( !_schema$1G ) {
         _createSchema$1G( Mongoose );
@@ -6066,7 +6073,7 @@ function getSchemaFrom$1G ( Mongoose ) {
 
 }
 
-function _createSchema$1G ( Mongoose ) {
+function _createSchema$1G( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6074,7 +6081,7 @@ function _createSchema$1G ( Mongoose ) {
 
 }
 
-function getModelFrom$1x ( Mongoose ) {
+function getModelFrom$1x( Mongoose ) {
 
     if ( !_model$1x ) {
         _createModel$1x( Mongoose );
@@ -6084,14 +6091,14 @@ function getModelFrom$1x ( Mongoose ) {
 
 }
 
-function _createModel$1x ( Mongoose ) {
+function _createModel$1x( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
     _model$1x                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom$1G( Mongoose ) );
 
 }
 
-function registerModelTo$1x ( Mongoose ) {
+function registerModelTo$1x( Mongoose ) {
 
     if ( !_model$1x ) {
         _createModel$1x( Mongoose );
@@ -6123,7 +6130,7 @@ const { Geometry: Geometry$j } = require$$0;
 let _schema$1F = undefined;
 let _model$1w  = undefined;
 
-function getSchemaFrom$1F ( Mongoose ) {
+function getSchemaFrom$1F( Mongoose ) {
 
     if ( !_schema$1F ) {
         _createSchema$1F( Mongoose );
@@ -6133,7 +6140,7 @@ function getSchemaFrom$1F ( Mongoose ) {
 
 }
 
-function _createSchema$1F ( Mongoose ) {
+function _createSchema$1F( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6141,7 +6148,7 @@ function _createSchema$1F ( Mongoose ) {
 
 }
 
-function getModelFrom$1w ( Mongoose ) {
+function getModelFrom$1w( Mongoose ) {
 
     if ( !_model$1w ) {
         _createModel$1w( Mongoose );
@@ -6151,14 +6158,14 @@ function getModelFrom$1w ( Mongoose ) {
 
 }
 
-function _createModel$1w ( Mongoose ) {
+function _createModel$1w( Mongoose ) {
 
     const GeometryBaseModel = Geometry$j.getModelFrom( Mongoose );
     _model$1w                  = GeometryBaseModel.discriminator( 'CylinderGeometry', getSchemaFrom$1F( Mongoose ) );
 
 }
 
-function registerModelTo$1w ( Mongoose ) {
+function registerModelTo$1w( Mongoose ) {
 
     if ( !_model$1w ) {
         _createModel$1w( Mongoose );
@@ -6190,7 +6197,7 @@ const { Geometry: Geometry$i } = require$$0;
 let _schema$1E = undefined;
 let _model$1v  = undefined;
 
-function getSchemaFrom$1E ( Mongoose ) {
+function getSchemaFrom$1E( Mongoose ) {
 
     if ( !_schema$1E ) {
         _createSchema$1E( Mongoose );
@@ -6200,7 +6207,7 @@ function getSchemaFrom$1E ( Mongoose ) {
 
 }
 
-function _createSchema$1E ( Mongoose ) {
+function _createSchema$1E( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6208,7 +6215,7 @@ function _createSchema$1E ( Mongoose ) {
 
 }
 
-function getModelFrom$1v ( Mongoose ) {
+function getModelFrom$1v( Mongoose ) {
 
     if ( !_model$1v ) {
         _createModel$1v( Mongoose );
@@ -6218,14 +6225,14 @@ function getModelFrom$1v ( Mongoose ) {
 
 }
 
-function _createModel$1v ( Mongoose ) {
+function _createModel$1v( Mongoose ) {
 
     const GeometryBaseModel = Geometry$i.getModelFrom( Mongoose );
     _model$1v                  = GeometryBaseModel.discriminator( 'DecalGeometry', getSchemaFrom$1E( Mongoose ) );
 
 }
 
-function registerModelTo$1v ( Mongoose ) {
+function registerModelTo$1v( Mongoose ) {
 
     if ( !_model$1v ) {
         _createModel$1v( Mongoose );
@@ -6257,7 +6264,7 @@ const { Geometry: Geometry$h } = require$$0;
 let _schema$1D = undefined;
 let _model$1u  = undefined;
 
-function getSchemaFrom$1D ( Mongoose ) {
+function getSchemaFrom$1D( Mongoose ) {
 
     if ( !_schema$1D ) {
         _createSchema$1D( Mongoose );
@@ -6267,7 +6274,7 @@ function getSchemaFrom$1D ( Mongoose ) {
 
 }
 
-function _createSchema$1D ( Mongoose ) {
+function _createSchema$1D( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6275,7 +6282,7 @@ function _createSchema$1D ( Mongoose ) {
 
 }
 
-function getModelFrom$1u ( Mongoose ) {
+function getModelFrom$1u( Mongoose ) {
 
     if ( !_model$1u ) {
         _createModel$1u( Mongoose );
@@ -6285,14 +6292,14 @@ function getModelFrom$1u ( Mongoose ) {
 
 }
 
-function _createModel$1u ( Mongoose ) {
+function _createModel$1u( Mongoose ) {
 
     const GeometryBaseModel = Geometry$h.getModelFrom( Mongoose );
     _model$1u                  = GeometryBaseModel.discriminator( 'DodecahedronGeometry', getSchemaFrom$1D( Mongoose ) );
 
 }
 
-function registerModelTo$1u ( Mongoose ) {
+function registerModelTo$1u( Mongoose ) {
 
     if ( !_model$1u ) {
         _createModel$1u( Mongoose );
@@ -6324,7 +6331,7 @@ const { Geometry: Geometry$g } = require$$0;
 let _schema$1C = undefined;
 let _model$1t  = undefined;
 
-function getSchemaFrom$1C ( Mongoose ) {
+function getSchemaFrom$1C( Mongoose ) {
 
     if ( !_schema$1C ) {
         _createSchema$1C( Mongoose );
@@ -6334,7 +6341,7 @@ function getSchemaFrom$1C ( Mongoose ) {
 
 }
 
-function _createSchema$1C ( Mongoose ) {
+function _createSchema$1C( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6342,7 +6349,7 @@ function _createSchema$1C ( Mongoose ) {
 
 }
 
-function getModelFrom$1t ( Mongoose ) {
+function getModelFrom$1t( Mongoose ) {
 
     if ( !_model$1t ) {
         _createModel$1t( Mongoose );
@@ -6352,14 +6359,14 @@ function getModelFrom$1t ( Mongoose ) {
 
 }
 
-function _createModel$1t ( Mongoose ) {
+function _createModel$1t( Mongoose ) {
 
     const GeometryBaseModel = Geometry$g.getModelFrom( Mongoose );
     _model$1t                  = GeometryBaseModel.discriminator( 'EdgesGeometry', getSchemaFrom$1C( Mongoose ) );
 
 }
 
-function registerModelTo$1t ( Mongoose ) {
+function registerModelTo$1t( Mongoose ) {
 
     if ( !_model$1t ) {
         _createModel$1t( Mongoose );
@@ -6391,7 +6398,7 @@ const { BufferGeometry: BufferGeometry$g } = require$$0$1;
 let _schema$1B = undefined;
 let _model$1s  = undefined;
 
-function getSchemaFrom$1B ( Mongoose ) {
+function getSchemaFrom$1B( Mongoose ) {
 
     if ( !_schema$1B ) {
         _createSchema$1B( Mongoose );
@@ -6401,7 +6408,7 @@ function getSchemaFrom$1B ( Mongoose ) {
 
 }
 
-function _createSchema$1B ( Mongoose ) {
+function _createSchema$1B( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6409,7 +6416,7 @@ function _createSchema$1B ( Mongoose ) {
 
 }
 
-function getModelFrom$1s ( Mongoose ) {
+function getModelFrom$1s( Mongoose ) {
 
     if ( !_model$1s ) {
         _createModel$1s( Mongoose );
@@ -6419,14 +6426,14 @@ function getModelFrom$1s ( Mongoose ) {
 
 }
 
-function _createModel$1s ( Mongoose ) {
+function _createModel$1s( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
     _model$1s                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom$1B( Mongoose ) );
 
 }
 
-function registerModelTo$1s ( Mongoose ) {
+function registerModelTo$1s( Mongoose ) {
 
     if ( !_model$1s ) {
         _createModel$1s( Mongoose );
@@ -6458,7 +6465,7 @@ const { Geometry: Geometry$f } = require$$0;
 let _schema$1A = undefined;
 let _model$1r  = undefined;
 
-function getSchemaFrom$1A ( Mongoose ) {
+function getSchemaFrom$1A( Mongoose ) {
 
     if ( !_schema$1A ) {
         _createSchema$1A( Mongoose );
@@ -6468,7 +6475,7 @@ function getSchemaFrom$1A ( Mongoose ) {
 
 }
 
-function _createSchema$1A ( Mongoose ) {
+function _createSchema$1A( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6476,7 +6483,7 @@ function _createSchema$1A ( Mongoose ) {
 
 }
 
-function getModelFrom$1r ( Mongoose ) {
+function getModelFrom$1r( Mongoose ) {
 
     if ( !_model$1r ) {
         _createModel$1r( Mongoose );
@@ -6486,14 +6493,14 @@ function getModelFrom$1r ( Mongoose ) {
 
 }
 
-function _createModel$1r ( Mongoose ) {
+function _createModel$1r( Mongoose ) {
 
     const GeometryBaseModel = Geometry$f.getModelFrom( Mongoose );
     _model$1r                  = GeometryBaseModel.discriminator( 'ExtrudeGeometry', getSchemaFrom$1A( Mongoose ) );
 
 }
 
-function registerModelTo$1r ( Mongoose ) {
+function registerModelTo$1r( Mongoose ) {
 
     if ( !_model$1r ) {
         _createModel$1r( Mongoose );
@@ -6525,7 +6532,7 @@ const { BufferGeometry: BufferGeometry$f } = require$$0$1;
 let _schema$1z = undefined;
 let _model$1q  = undefined;
 
-function getSchemaFrom$1z ( Mongoose ) {
+function getSchemaFrom$1z( Mongoose ) {
 
     if ( !_schema$1z ) {
         _createSchema$1z( Mongoose );
@@ -6535,7 +6542,7 @@ function getSchemaFrom$1z ( Mongoose ) {
 
 }
 
-function _createSchema$1z ( Mongoose ) {
+function _createSchema$1z( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6543,7 +6550,7 @@ function _createSchema$1z ( Mongoose ) {
 
 }
 
-function getModelFrom$1q ( Mongoose ) {
+function getModelFrom$1q( Mongoose ) {
 
     if ( !_model$1q ) {
         _createModel$1q( Mongoose );
@@ -6553,14 +6560,14 @@ function getModelFrom$1q ( Mongoose ) {
 
 }
 
-function _createModel$1q ( Mongoose ) {
+function _createModel$1q( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
     _model$1q                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom$1z( Mongoose ) );
 
 }
 
-function registerModelTo$1q ( Mongoose ) {
+function registerModelTo$1q( Mongoose ) {
 
     if ( !_model$1q ) {
         _createModel$1q( Mongoose );
@@ -6592,7 +6599,7 @@ const { Geometry: Geometry$e } = require$$0;
 let _schema$1y = undefined;
 let _model$1p  = undefined;
 
-function getSchemaFrom$1y ( Mongoose ) {
+function getSchemaFrom$1y( Mongoose ) {
 
     if ( !_schema$1y ) {
         _createSchema$1y( Mongoose );
@@ -6602,7 +6609,7 @@ function getSchemaFrom$1y ( Mongoose ) {
 
 }
 
-function _createSchema$1y ( Mongoose ) {
+function _createSchema$1y( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6610,7 +6617,7 @@ function _createSchema$1y ( Mongoose ) {
 
 }
 
-function getModelFrom$1p ( Mongoose ) {
+function getModelFrom$1p( Mongoose ) {
 
     if ( !_model$1p ) {
         _createModel$1p( Mongoose );
@@ -6620,14 +6627,14 @@ function getModelFrom$1p ( Mongoose ) {
 
 }
 
-function _createModel$1p ( Mongoose ) {
+function _createModel$1p( Mongoose ) {
 
     const GeometryBaseModel = Geometry$e.getModelFrom( Mongoose );
     _model$1p                  = GeometryBaseModel.discriminator( 'IcosahedronGeometry', getSchemaFrom$1y( Mongoose ) );
 
 }
 
-function registerModelTo$1p ( Mongoose ) {
+function registerModelTo$1p( Mongoose ) {
 
     if ( !_model$1p ) {
         _createModel$1p( Mongoose );
@@ -6659,7 +6666,7 @@ const { BufferGeometry: BufferGeometry$e } = require$$0$1;
 let _schema$1x = undefined;
 let _model$1o  = undefined;
 
-function getSchemaFrom$1x ( Mongoose ) {
+function getSchemaFrom$1x( Mongoose ) {
 
     if ( !_schema$1x ) {
         _createSchema$1x( Mongoose );
@@ -6669,7 +6676,7 @@ function getSchemaFrom$1x ( Mongoose ) {
 
 }
 
-function _createSchema$1x ( Mongoose ) {
+function _createSchema$1x( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6677,7 +6684,7 @@ function _createSchema$1x ( Mongoose ) {
 
 }
 
-function getModelFrom$1o ( Mongoose ) {
+function getModelFrom$1o( Mongoose ) {
 
     if ( !_model$1o ) {
         _createModel$1o( Mongoose );
@@ -6687,14 +6694,14 @@ function getModelFrom$1o ( Mongoose ) {
 
 }
 
-function _createModel$1o ( Mongoose ) {
+function _createModel$1o( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
     _model$1o                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom$1x( Mongoose ) );
 
 }
 
-function registerModelTo$1o ( Mongoose ) {
+function registerModelTo$1o( Mongoose ) {
 
     if ( !_model$1o ) {
         _createModel$1o( Mongoose );
@@ -6726,7 +6733,7 @@ const { BufferGeometry: BufferGeometry$d } = require$$0$1;
 let _schema$1w = undefined;
 let _model$1n  = undefined;
 
-function getSchemaFrom$1w ( Mongoose ) {
+function getSchemaFrom$1w( Mongoose ) {
 
     if ( !_schema$1w ) {
         _createSchema$1w( Mongoose );
@@ -6736,7 +6743,7 @@ function getSchemaFrom$1w ( Mongoose ) {
 
 }
 
-function _createSchema$1w ( Mongoose ) {
+function _createSchema$1w( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6744,7 +6751,7 @@ function _createSchema$1w ( Mongoose ) {
 
 }
 
-function getModelFrom$1n ( Mongoose ) {
+function getModelFrom$1n( Mongoose ) {
 
     if ( !_model$1n ) {
         _createModel$1n( Mongoose );
@@ -6754,14 +6761,14 @@ function getModelFrom$1n ( Mongoose ) {
 
 }
 
-function _createModel$1n ( Mongoose ) {
+function _createModel$1n( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
     _model$1n                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom$1w( Mongoose ) );
 
 }
 
-function registerModelTo$1n ( Mongoose ) {
+function registerModelTo$1n( Mongoose ) {
 
     if ( !_model$1n ) {
         _createModel$1n( Mongoose );
@@ -6793,7 +6800,7 @@ const { Geometry: Geometry$d } = require$$0;
 let _schema$1v = undefined;
 let _model$1m  = undefined;
 
-function getSchemaFrom$1v ( Mongoose ) {
+function getSchemaFrom$1v( Mongoose ) {
 
     if ( !_schema$1v ) {
         _createSchema$1v( Mongoose );
@@ -6803,7 +6810,7 @@ function getSchemaFrom$1v ( Mongoose ) {
 
 }
 
-function _createSchema$1v ( Mongoose ) {
+function _createSchema$1v( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6811,7 +6818,7 @@ function _createSchema$1v ( Mongoose ) {
 
 }
 
-function getModelFrom$1m ( Mongoose ) {
+function getModelFrom$1m( Mongoose ) {
 
     if ( !_model$1m ) {
         _createModel$1m( Mongoose );
@@ -6821,14 +6828,14 @@ function getModelFrom$1m ( Mongoose ) {
 
 }
 
-function _createModel$1m ( Mongoose ) {
+function _createModel$1m( Mongoose ) {
 
     const GeometryBaseModel = Geometry$d.getModelFrom( Mongoose );
     _model$1m                  = GeometryBaseModel.discriminator( 'LatheGeometry', getSchemaFrom$1v( Mongoose ) );
 
 }
 
-function registerModelTo$1m ( Mongoose ) {
+function registerModelTo$1m( Mongoose ) {
 
     if ( !_model$1m ) {
         _createModel$1m( Mongoose );
@@ -6860,7 +6867,7 @@ const { BufferGeometry: BufferGeometry$c } = require$$0$1;
 let _schema$1u = undefined;
 let _model$1l  = undefined;
 
-function getSchemaFrom$1u ( Mongoose ) {
+function getSchemaFrom$1u( Mongoose ) {
 
     if ( !_schema$1u ) {
         _createSchema$1u( Mongoose );
@@ -6870,7 +6877,7 @@ function getSchemaFrom$1u ( Mongoose ) {
 
 }
 
-function _createSchema$1u ( Mongoose ) {
+function _createSchema$1u( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6878,7 +6885,7 @@ function _createSchema$1u ( Mongoose ) {
 
 }
 
-function getModelFrom$1l ( Mongoose ) {
+function getModelFrom$1l( Mongoose ) {
 
     if ( !_model$1l ) {
         _createModel$1l( Mongoose );
@@ -6888,14 +6895,14 @@ function getModelFrom$1l ( Mongoose ) {
 
 }
 
-function _createModel$1l ( Mongoose ) {
+function _createModel$1l( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
     _model$1l                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom$1u( Mongoose ) );
 
 }
 
-function registerModelTo$1l ( Mongoose ) {
+function registerModelTo$1l( Mongoose ) {
 
     if ( !_model$1l ) {
         _createModel$1l( Mongoose );
@@ -6927,7 +6934,7 @@ const { Geometry: Geometry$c } = require$$0;
 let _schema$1t = undefined;
 let _model$1k  = undefined;
 
-function getSchemaFrom$1t ( Mongoose ) {
+function getSchemaFrom$1t( Mongoose ) {
 
     if ( !_schema$1t ) {
         _createSchema$1t( Mongoose );
@@ -6937,7 +6944,7 @@ function getSchemaFrom$1t ( Mongoose ) {
 
 }
 
-function _createSchema$1t ( Mongoose ) {
+function _createSchema$1t( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -6945,7 +6952,7 @@ function _createSchema$1t ( Mongoose ) {
 
 }
 
-function getModelFrom$1k ( Mongoose ) {
+function getModelFrom$1k( Mongoose ) {
 
     if ( !_model$1k ) {
         _createModel$1k( Mongoose );
@@ -6955,14 +6962,14 @@ function getModelFrom$1k ( Mongoose ) {
 
 }
 
-function _createModel$1k ( Mongoose ) {
+function _createModel$1k( Mongoose ) {
 
     const GeometryBaseModel = Geometry$c.getModelFrom( Mongoose );
     _model$1k                  = GeometryBaseModel.discriminator( 'OctahedronGeometry', getSchemaFrom$1t( Mongoose ) );
 
 }
 
-function registerModelTo$1k ( Mongoose ) {
+function registerModelTo$1k( Mongoose ) {
 
     if ( !_model$1k ) {
         _createModel$1k( Mongoose );
@@ -6994,7 +7001,7 @@ const { BufferGeometry: BufferGeometry$b } = require$$0$1;
 let _schema$1s = undefined;
 let _model$1j  = undefined;
 
-function getSchemaFrom$1s ( Mongoose ) {
+function getSchemaFrom$1s( Mongoose ) {
 
     if ( !_schema$1s ) {
         _createSchema$1s( Mongoose );
@@ -7004,7 +7011,7 @@ function getSchemaFrom$1s ( Mongoose ) {
 
 }
 
-function _createSchema$1s ( Mongoose ) {
+function _createSchema$1s( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7012,7 +7019,7 @@ function _createSchema$1s ( Mongoose ) {
 
 }
 
-function getModelFrom$1j ( Mongoose ) {
+function getModelFrom$1j( Mongoose ) {
 
     if ( !_model$1j ) {
         _createModel$1j( Mongoose );
@@ -7022,14 +7029,14 @@ function getModelFrom$1j ( Mongoose ) {
 
 }
 
-function _createModel$1j ( Mongoose ) {
+function _createModel$1j( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$b.getModelFrom( Mongoose );
     _model$1j                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom$1s( Mongoose ) );
 
 }
 
-function registerModelTo$1j ( Mongoose ) {
+function registerModelTo$1j( Mongoose ) {
 
     if ( !_model$1j ) {
         _createModel$1j( Mongoose );
@@ -7061,7 +7068,7 @@ const { Geometry: Geometry$b } = require$$0;
 let _schema$1r = undefined;
 let _model$1i  = undefined;
 
-function getSchemaFrom$1r ( Mongoose ) {
+function getSchemaFrom$1r( Mongoose ) {
 
     if ( !_schema$1r ) {
         _createSchema$1r( Mongoose );
@@ -7071,7 +7078,7 @@ function getSchemaFrom$1r ( Mongoose ) {
 
 }
 
-function _createSchema$1r ( Mongoose ) {
+function _createSchema$1r( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7079,7 +7086,7 @@ function _createSchema$1r ( Mongoose ) {
 
 }
 
-function getModelFrom$1i ( Mongoose ) {
+function getModelFrom$1i( Mongoose ) {
 
     if ( !_model$1i ) {
         _createModel$1i( Mongoose );
@@ -7089,14 +7096,14 @@ function getModelFrom$1i ( Mongoose ) {
 
 }
 
-function _createModel$1i ( Mongoose ) {
+function _createModel$1i( Mongoose ) {
 
     const GeometryBaseModel = Geometry$b.getModelFrom( Mongoose );
     _model$1i                  = GeometryBaseModel.discriminator( 'ParametricGeometry', getSchemaFrom$1r( Mongoose ) );
 
 }
 
-function registerModelTo$1i ( Mongoose ) {
+function registerModelTo$1i( Mongoose ) {
 
     if ( !_model$1i ) {
         _createModel$1i( Mongoose );
@@ -7128,7 +7135,7 @@ const { BufferGeometry: BufferGeometry$a } = require$$0$1;
 let _schema$1q = undefined;
 let _model$1h  = undefined;
 
-function getSchemaFrom$1q ( Mongoose ) {
+function getSchemaFrom$1q( Mongoose ) {
 
     if ( !_schema$1q ) {
         _createSchema$1q( Mongoose );
@@ -7138,7 +7145,7 @@ function getSchemaFrom$1q ( Mongoose ) {
 
 }
 
-function _createSchema$1q ( Mongoose ) {
+function _createSchema$1q( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7146,7 +7153,7 @@ function _createSchema$1q ( Mongoose ) {
 
 }
 
-function getModelFrom$1h ( Mongoose ) {
+function getModelFrom$1h( Mongoose ) {
 
     if ( !_model$1h ) {
         _createModel$1h( Mongoose );
@@ -7156,14 +7163,14 @@ function getModelFrom$1h ( Mongoose ) {
 
 }
 
-function _createModel$1h ( Mongoose ) {
+function _createModel$1h( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
     _model$1h                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom$1q( Mongoose ) );
 
 }
 
-function registerModelTo$1h ( Mongoose ) {
+function registerModelTo$1h( Mongoose ) {
 
     if ( !_model$1h ) {
         _createModel$1h( Mongoose );
@@ -7195,7 +7202,7 @@ const { Geometry: Geometry$a } = require$$0;
 let _schema$1p = undefined;
 let _model$1g  = undefined;
 
-function getSchemaFrom$1p ( Mongoose ) {
+function getSchemaFrom$1p( Mongoose ) {
 
     if ( !_schema$1p ) {
         _createSchema$1p( Mongoose );
@@ -7205,7 +7212,7 @@ function getSchemaFrom$1p ( Mongoose ) {
 
 }
 
-function _createSchema$1p ( Mongoose ) {
+function _createSchema$1p( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7213,7 +7220,7 @@ function _createSchema$1p ( Mongoose ) {
 
 }
 
-function getModelFrom$1g ( Mongoose ) {
+function getModelFrom$1g( Mongoose ) {
 
     if ( !_model$1g ) {
         _createModel$1g( Mongoose );
@@ -7223,14 +7230,14 @@ function getModelFrom$1g ( Mongoose ) {
 
 }
 
-function _createModel$1g ( Mongoose ) {
+function _createModel$1g( Mongoose ) {
 
     const GeometryBaseModel = Geometry$a.getModelFrom( Mongoose );
     _model$1g                  = GeometryBaseModel.discriminator( 'PlaneGeometry', getSchemaFrom$1p( Mongoose ) );
 
 }
 
-function registerModelTo$1g ( Mongoose ) {
+function registerModelTo$1g( Mongoose ) {
 
     if ( !_model$1g ) {
         _createModel$1g( Mongoose );
@@ -7262,7 +7269,7 @@ const { BufferGeometry: BufferGeometry$9 } = require$$0$1;
 let _schema$1o = undefined;
 let _model$1f  = undefined;
 
-function getSchemaFrom$1o ( Mongoose ) {
+function getSchemaFrom$1o( Mongoose ) {
 
     if ( !_schema$1o ) {
         _createSchema$1o( Mongoose );
@@ -7272,7 +7279,7 @@ function getSchemaFrom$1o ( Mongoose ) {
 
 }
 
-function _createSchema$1o ( Mongoose ) {
+function _createSchema$1o( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7280,7 +7287,7 @@ function _createSchema$1o ( Mongoose ) {
 
 }
 
-function getModelFrom$1f ( Mongoose ) {
+function getModelFrom$1f( Mongoose ) {
 
     if ( !_model$1f ) {
         _createModel$1f( Mongoose );
@@ -7290,14 +7297,14 @@ function getModelFrom$1f ( Mongoose ) {
 
 }
 
-function _createModel$1f ( Mongoose ) {
+function _createModel$1f( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
     _model$1f                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom$1o( Mongoose ) );
 
 }
 
-function registerModelTo$1f ( Mongoose ) {
+function registerModelTo$1f( Mongoose ) {
 
     if ( !_model$1f ) {
         _createModel$1f( Mongoose );
@@ -7329,7 +7336,7 @@ const { Geometry: Geometry$9 } = require$$0;
 let _schema$1n = undefined;
 let _model$1e  = undefined;
 
-function getSchemaFrom$1n ( Mongoose ) {
+function getSchemaFrom$1n( Mongoose ) {
 
     if ( !_schema$1n ) {
         _createSchema$1n( Mongoose );
@@ -7339,7 +7346,7 @@ function getSchemaFrom$1n ( Mongoose ) {
 
 }
 
-function _createSchema$1n ( Mongoose ) {
+function _createSchema$1n( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7347,7 +7354,7 @@ function _createSchema$1n ( Mongoose ) {
 
 }
 
-function getModelFrom$1e ( Mongoose ) {
+function getModelFrom$1e( Mongoose ) {
 
     if ( !_model$1e ) {
         _createModel$1e( Mongoose );
@@ -7357,14 +7364,14 @@ function getModelFrom$1e ( Mongoose ) {
 
 }
 
-function _createModel$1e ( Mongoose ) {
+function _createModel$1e( Mongoose ) {
 
     const GeometryBaseModel = Geometry$9.getModelFrom( Mongoose );
     _model$1e                  = GeometryBaseModel.discriminator( 'PolyhedronGeometry', getSchemaFrom$1n( Mongoose ) );
 
 }
 
-function registerModelTo$1e ( Mongoose ) {
+function registerModelTo$1e( Mongoose ) {
 
     if ( !_model$1e ) {
         _createModel$1e( Mongoose );
@@ -7396,7 +7403,7 @@ const { BufferGeometry: BufferGeometry$8 } = require$$0$1;
 let _schema$1m = undefined;
 let _model$1d  = undefined;
 
-function getSchemaFrom$1m ( Mongoose ) {
+function getSchemaFrom$1m( Mongoose ) {
 
     if ( !_schema$1m ) {
         _createSchema$1m( Mongoose );
@@ -7406,7 +7413,7 @@ function getSchemaFrom$1m ( Mongoose ) {
 
 }
 
-function _createSchema$1m ( Mongoose ) {
+function _createSchema$1m( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7414,7 +7421,7 @@ function _createSchema$1m ( Mongoose ) {
 
 }
 
-function getModelFrom$1d ( Mongoose ) {
+function getModelFrom$1d( Mongoose ) {
 
     if ( !_model$1d ) {
         _createModel$1d( Mongoose );
@@ -7424,14 +7431,14 @@ function getModelFrom$1d ( Mongoose ) {
 
 }
 
-function _createModel$1d ( Mongoose ) {
+function _createModel$1d( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
     _model$1d                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom$1m( Mongoose ) );
 
 }
 
-function registerModelTo$1d ( Mongoose ) {
+function registerModelTo$1d( Mongoose ) {
 
     if ( !_model$1d ) {
         _createModel$1d( Mongoose );
@@ -7463,7 +7470,7 @@ const { Geometry: Geometry$8 } = require$$0;
 let _schema$1l = undefined;
 let _model$1c  = undefined;
 
-function getSchemaFrom$1l ( Mongoose ) {
+function getSchemaFrom$1l( Mongoose ) {
 
     if ( !_schema$1l ) {
         _createSchema$1l( Mongoose );
@@ -7473,7 +7480,7 @@ function getSchemaFrom$1l ( Mongoose ) {
 
 }
 
-function _createSchema$1l ( Mongoose ) {
+function _createSchema$1l( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7481,7 +7488,7 @@ function _createSchema$1l ( Mongoose ) {
 
 }
 
-function getModelFrom$1c ( Mongoose ) {
+function getModelFrom$1c( Mongoose ) {
 
     if ( !_model$1c ) {
         _createModel$1c( Mongoose );
@@ -7491,14 +7498,14 @@ function getModelFrom$1c ( Mongoose ) {
 
 }
 
-function _createModel$1c ( Mongoose ) {
+function _createModel$1c( Mongoose ) {
 
     const GeometryBaseModel = Geometry$8.getModelFrom( Mongoose );
     _model$1c                  = GeometryBaseModel.discriminator( 'RingGeometry', getSchemaFrom$1l( Mongoose ) );
 
 }
 
-function registerModelTo$1c ( Mongoose ) {
+function registerModelTo$1c( Mongoose ) {
 
     if ( !_model$1c ) {
         _createModel$1c( Mongoose );
@@ -7530,7 +7537,7 @@ const { BufferGeometry: BufferGeometry$7 } = require$$0$1;
 let _schema$1k = undefined;
 let _model$1b  = undefined;
 
-function getSchemaFrom$1k ( Mongoose ) {
+function getSchemaFrom$1k( Mongoose ) {
 
     if ( !_schema$1k ) {
         _createSchema$1k( Mongoose );
@@ -7540,7 +7547,7 @@ function getSchemaFrom$1k ( Mongoose ) {
 
 }
 
-function _createSchema$1k ( Mongoose ) {
+function _createSchema$1k( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -7602,7 +7609,7 @@ function _createSchema$1k ( Mongoose ) {
 
 }
 
-function getModelFrom$1b ( Mongoose ) {
+function getModelFrom$1b( Mongoose ) {
 
     if ( !_model$1b ) {
         _createModel$1b( Mongoose );
@@ -7612,14 +7619,14 @@ function getModelFrom$1b ( Mongoose ) {
 
 }
 
-function _createModel$1b ( Mongoose ) {
+function _createModel$1b( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
     _model$1b                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom$1k( Mongoose ) );
 
 }
 
-function registerModelTo$1b ( Mongoose ) {
+function registerModelTo$1b( Mongoose ) {
 
     if ( !_model$1b ) {
         _createModel$1b( Mongoose );
@@ -7651,7 +7658,7 @@ const { Geometry: Geometry$7 } = require$$0;
 let _schema$1j = undefined;
 let _model$1a  = undefined;
 
-function getSchemaFrom$1j ( Mongoose ) {
+function getSchemaFrom$1j( Mongoose ) {
 
     if ( !_schema$1j ) {
         _createSchema$1j( Mongoose );
@@ -7661,7 +7668,7 @@ function getSchemaFrom$1j ( Mongoose ) {
 
 }
 
-function _createSchema$1j ( Mongoose ) {
+function _createSchema$1j( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7669,7 +7676,7 @@ function _createSchema$1j ( Mongoose ) {
 
 }
 
-function getModelFrom$1a ( Mongoose ) {
+function getModelFrom$1a( Mongoose ) {
 
     if ( !_model$1a ) {
         _createModel$1a( Mongoose );
@@ -7679,14 +7686,14 @@ function getModelFrom$1a ( Mongoose ) {
 
 }
 
-function _createModel$1a ( Mongoose ) {
+function _createModel$1a( Mongoose ) {
 
     const GeometryBaseModel = Geometry$7.getModelFrom( Mongoose );
     _model$1a                  = GeometryBaseModel.discriminator( 'ShapeGeometry', getSchemaFrom$1j( Mongoose ) );
 
 }
 
-function registerModelTo$1a ( Mongoose ) {
+function registerModelTo$1a( Mongoose ) {
 
     if ( !_model$1a ) {
         _createModel$1a( Mongoose );
@@ -7718,7 +7725,7 @@ const { BufferGeometry: BufferGeometry$6 } = require$$0$1;
 let _schema$1i = undefined;
 let _model$19  = undefined;
 
-function getSchemaFrom$1i ( Mongoose ) {
+function getSchemaFrom$1i( Mongoose ) {
 
     if ( !_schema$1i ) {
         _createSchema$1i( Mongoose );
@@ -7728,7 +7735,7 @@ function getSchemaFrom$1i ( Mongoose ) {
 
 }
 
-function _createSchema$1i ( Mongoose ) {
+function _createSchema$1i( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7736,7 +7743,7 @@ function _createSchema$1i ( Mongoose ) {
 
 }
 
-function getModelFrom$19 ( Mongoose ) {
+function getModelFrom$19( Mongoose ) {
 
     if ( !_model$19 ) {
         _createModel$19( Mongoose );
@@ -7746,14 +7753,14 @@ function getModelFrom$19 ( Mongoose ) {
 
 }
 
-function _createModel$19 ( Mongoose ) {
+function _createModel$19( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
     _model$19                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom$1i( Mongoose ) );
 
 }
 
-function registerModelTo$19 ( Mongoose ) {
+function registerModelTo$19( Mongoose ) {
 
     if ( !_model$19 ) {
         _createModel$19( Mongoose );
@@ -7785,7 +7792,7 @@ const { Geometry: Geometry$6 } = require$$0;
 let _schema$1h = undefined;
 let _model$18  = undefined;
 
-function getSchemaFrom$1h ( Mongoose ) {
+function getSchemaFrom$1h( Mongoose ) {
 
     if ( !_schema$1h ) {
         _createSchema$1h( Mongoose );
@@ -7795,7 +7802,7 @@ function getSchemaFrom$1h ( Mongoose ) {
 
 }
 
-function _createSchema$1h ( Mongoose ) {
+function _createSchema$1h( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7803,7 +7810,7 @@ function _createSchema$1h ( Mongoose ) {
 
 }
 
-function getModelFrom$18 ( Mongoose ) {
+function getModelFrom$18( Mongoose ) {
 
     if ( !_model$18 ) {
         _createModel$18( Mongoose );
@@ -7813,14 +7820,14 @@ function getModelFrom$18 ( Mongoose ) {
 
 }
 
-function _createModel$18 ( Mongoose ) {
+function _createModel$18( Mongoose ) {
 
     const GeometryBaseModel = Geometry$6.getModelFrom( Mongoose );
     _model$18                  = GeometryBaseModel.discriminator( 'SphereGeometry', getSchemaFrom$1h( Mongoose ) );
 
 }
 
-function registerModelTo$18 ( Mongoose ) {
+function registerModelTo$18( Mongoose ) {
 
     if ( !_model$18 ) {
         _createModel$18( Mongoose );
@@ -7852,7 +7859,7 @@ const { BufferGeometry: BufferGeometry$5 } = require$$0$1;
 let _schema$1g = undefined;
 let _model$17  = undefined;
 
-function getSchemaFrom$1g ( Mongoose ) {
+function getSchemaFrom$1g( Mongoose ) {
 
     if ( !_schema$1g ) {
         _createSchema$1g( Mongoose );
@@ -7862,7 +7869,7 @@ function getSchemaFrom$1g ( Mongoose ) {
 
 }
 
-function _createSchema$1g ( Mongoose ) {
+function _createSchema$1g( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7870,7 +7877,7 @@ function _createSchema$1g ( Mongoose ) {
 
 }
 
-function getModelFrom$17 ( Mongoose ) {
+function getModelFrom$17( Mongoose ) {
 
     if ( !_model$17 ) {
         _createModel$17( Mongoose );
@@ -7880,14 +7887,14 @@ function getModelFrom$17 ( Mongoose ) {
 
 }
 
-function _createModel$17 ( Mongoose ) {
+function _createModel$17( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
     _model$17                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom$1g( Mongoose ) );
 
 }
 
-function registerModelTo$17 ( Mongoose ) {
+function registerModelTo$17( Mongoose ) {
 
     if ( !_model$17 ) {
         _createModel$17( Mongoose );
@@ -7919,7 +7926,7 @@ const { BufferGeometry: BufferGeometry$4 } = require$$0$1;
 let _schema$1f = undefined;
 let _model$16  = undefined;
 
-function getSchemaFrom$1f ( Mongoose ) {
+function getSchemaFrom$1f( Mongoose ) {
 
     if ( !_schema$1f ) {
         _createSchema$1f( Mongoose );
@@ -7929,7 +7936,7 @@ function getSchemaFrom$1f ( Mongoose ) {
 
 }
 
-function _createSchema$1f ( Mongoose ) {
+function _createSchema$1f( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -7937,7 +7944,7 @@ function _createSchema$1f ( Mongoose ) {
 
 }
 
-function getModelFrom$16 ( Mongoose ) {
+function getModelFrom$16( Mongoose ) {
 
     if ( !_model$16 ) {
         _createModel$16( Mongoose );
@@ -7947,14 +7954,14 @@ function getModelFrom$16 ( Mongoose ) {
 
 }
 
-function _createModel$16 ( Mongoose ) {
+function _createModel$16( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
     _model$16                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom$1f( Mongoose ) );
 
 }
 
-function registerModelTo$16 ( Mongoose ) {
+function registerModelTo$16( Mongoose ) {
 
     if ( !_model$16 ) {
         _createModel$16( Mongoose );
@@ -7986,7 +7993,7 @@ const { Geometry: Geometry$5 } = require$$0;
 let _schema$1e = undefined;
 let _model$15  = undefined;
 
-function getSchemaFrom$1e ( Mongoose ) {
+function getSchemaFrom$1e( Mongoose ) {
 
     if ( !_schema$1e ) {
         _createSchema$1e( Mongoose );
@@ -7996,7 +8003,7 @@ function getSchemaFrom$1e ( Mongoose ) {
 
 }
 
-function _createSchema$1e ( Mongoose ) {
+function _createSchema$1e( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8004,7 +8011,7 @@ function _createSchema$1e ( Mongoose ) {
 
 }
 
-function getModelFrom$15 ( Mongoose ) {
+function getModelFrom$15( Mongoose ) {
 
     if ( !_model$15 ) {
         _createModel$15( Mongoose );
@@ -8014,14 +8021,14 @@ function getModelFrom$15 ( Mongoose ) {
 
 }
 
-function _createModel$15 ( Mongoose ) {
+function _createModel$15( Mongoose ) {
 
     const GeometryBaseModel = Geometry$5.getModelFrom( Mongoose );
     _model$15                  = GeometryBaseModel.discriminator( 'TetrahedronGeometry', getSchemaFrom$1e( Mongoose ) );
 
 }
 
-function registerModelTo$15 ( Mongoose ) {
+function registerModelTo$15( Mongoose ) {
 
     if ( !_model$15 ) {
         _createModel$15( Mongoose );
@@ -8053,7 +8060,7 @@ const { BufferGeometry: BufferGeometry$3 } = require$$0$1;
 let _schema$1d = undefined;
 let _model$14  = undefined;
 
-function getSchemaFrom$1d ( Mongoose ) {
+function getSchemaFrom$1d( Mongoose ) {
 
     if ( !_schema$1d ) {
         _createSchema$1d( Mongoose );
@@ -8063,7 +8070,7 @@ function getSchemaFrom$1d ( Mongoose ) {
 
 }
 
-function _createSchema$1d ( Mongoose ) {
+function _createSchema$1d( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8071,7 +8078,7 @@ function _createSchema$1d ( Mongoose ) {
 
 }
 
-function getModelFrom$14 ( Mongoose ) {
+function getModelFrom$14( Mongoose ) {
 
     if ( !_model$14 ) {
         _createModel$14( Mongoose );
@@ -8081,14 +8088,14 @@ function getModelFrom$14 ( Mongoose ) {
 
 }
 
-function _createModel$14 ( Mongoose ) {
+function _createModel$14( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
     _model$14                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom$1d( Mongoose ) );
 
 }
 
-function registerModelTo$14 ( Mongoose ) {
+function registerModelTo$14( Mongoose ) {
 
     if ( !_model$14 ) {
         _createModel$14( Mongoose );
@@ -8120,7 +8127,7 @@ const { Geometry: Geometry$4 } = require$$0;
 let _schema$1c = undefined;
 let _model$13  = undefined;
 
-function getSchemaFrom$1c ( Mongoose ) {
+function getSchemaFrom$1c( Mongoose ) {
 
     if ( !_schema$1c ) {
         _createSchema$1c( Mongoose );
@@ -8130,7 +8137,7 @@ function getSchemaFrom$1c ( Mongoose ) {
 
 }
 
-function _createSchema$1c ( Mongoose ) {
+function _createSchema$1c( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8138,7 +8145,7 @@ function _createSchema$1c ( Mongoose ) {
 
 }
 
-function getModelFrom$13 ( Mongoose ) {
+function getModelFrom$13( Mongoose ) {
 
     if ( !_model$13 ) {
         _createModel$13( Mongoose );
@@ -8148,14 +8155,14 @@ function getModelFrom$13 ( Mongoose ) {
 
 }
 
-function _createModel$13 ( Mongoose ) {
+function _createModel$13( Mongoose ) {
 
     const GeometryBaseModel = Geometry$4.getModelFrom( Mongoose );
     _model$13                  = GeometryBaseModel.discriminator( 'TextGeometry', getSchemaFrom$1c( Mongoose ) );
 
 }
 
-function registerModelTo$13 ( Mongoose ) {
+function registerModelTo$13( Mongoose ) {
 
     if ( !_model$13 ) {
         _createModel$13( Mongoose );
@@ -8187,7 +8194,7 @@ const { BufferGeometry: BufferGeometry$2 } = require$$0$1;
 let _schema$1b = undefined;
 let _model$12  = undefined;
 
-function getSchemaFrom$1b ( Mongoose ) {
+function getSchemaFrom$1b( Mongoose ) {
 
     if ( !_schema$1b ) {
         _createSchema$1b( Mongoose );
@@ -8197,7 +8204,7 @@ function getSchemaFrom$1b ( Mongoose ) {
 
 }
 
-function _createSchema$1b ( Mongoose ) {
+function _createSchema$1b( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8205,7 +8212,7 @@ function _createSchema$1b ( Mongoose ) {
 
 }
 
-function getModelFrom$12 ( Mongoose ) {
+function getModelFrom$12( Mongoose ) {
 
     if ( !_model$12 ) {
         _createModel$12( Mongoose );
@@ -8215,14 +8222,14 @@ function getModelFrom$12 ( Mongoose ) {
 
 }
 
-function _createModel$12 ( Mongoose ) {
+function _createModel$12( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
     _model$12                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom$1b( Mongoose ) );
 
 }
 
-function registerModelTo$12 ( Mongoose ) {
+function registerModelTo$12( Mongoose ) {
 
     if ( !_model$12 ) {
         _createModel$12( Mongoose );
@@ -8254,7 +8261,7 @@ const { Geometry: Geometry$3 } = require$$0;
 let _schema$1a = undefined;
 let _model$11  = undefined;
 
-function getSchemaFrom$1a ( Mongoose ) {
+function getSchemaFrom$1a( Mongoose ) {
 
     if ( !_schema$1a ) {
         _createSchema$1a( Mongoose );
@@ -8264,7 +8271,7 @@ function getSchemaFrom$1a ( Mongoose ) {
 
 }
 
-function _createSchema$1a ( Mongoose ) {
+function _createSchema$1a( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8272,7 +8279,7 @@ function _createSchema$1a ( Mongoose ) {
 
 }
 
-function getModelFrom$11 ( Mongoose ) {
+function getModelFrom$11( Mongoose ) {
 
     if ( !_model$11 ) {
         _createModel$11( Mongoose );
@@ -8282,14 +8289,14 @@ function getModelFrom$11 ( Mongoose ) {
 
 }
 
-function _createModel$11 ( Mongoose ) {
+function _createModel$11( Mongoose ) {
 
     const GeometryBaseModel = Geometry$3.getModelFrom( Mongoose );
     _model$11                  = GeometryBaseModel.discriminator( 'TorusGeometry', getSchemaFrom$1a( Mongoose ) );
 
 }
 
-function registerModelTo$11 ( Mongoose ) {
+function registerModelTo$11( Mongoose ) {
 
     if ( !_model$11 ) {
         _createModel$11( Mongoose );
@@ -8321,7 +8328,7 @@ const { BufferGeometry: BufferGeometry$1 } = require$$0$1;
 let _schema$19 = undefined;
 let _model$10  = undefined;
 
-function getSchemaFrom$19 ( Mongoose ) {
+function getSchemaFrom$19( Mongoose ) {
 
     if ( !_schema$19 ) {
         _createSchema$19( Mongoose );
@@ -8331,7 +8338,7 @@ function getSchemaFrom$19 ( Mongoose ) {
 
 }
 
-function _createSchema$19 ( Mongoose ) {
+function _createSchema$19( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8339,7 +8346,7 @@ function _createSchema$19 ( Mongoose ) {
 
 }
 
-function getModelFrom$10 ( Mongoose ) {
+function getModelFrom$10( Mongoose ) {
 
     if ( !_model$10 ) {
         _createModel$10( Mongoose );
@@ -8349,14 +8356,14 @@ function getModelFrom$10 ( Mongoose ) {
 
 }
 
-function _createModel$10 ( Mongoose ) {
+function _createModel$10( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry$1.getModelFrom( Mongoose );
     _model$10                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom$19( Mongoose ) );
 
 }
 
-function registerModelTo$10 ( Mongoose ) {
+function registerModelTo$10( Mongoose ) {
 
     if ( !_model$10 ) {
         _createModel$10( Mongoose );
@@ -8388,7 +8395,7 @@ const { Geometry: Geometry$2 } = require$$0;
 let _schema$18 = undefined;
 let _model$$  = undefined;
 
-function getSchemaFrom$18 ( Mongoose ) {
+function getSchemaFrom$18( Mongoose ) {
 
     if ( !_schema$18 ) {
         _createSchema$18( Mongoose );
@@ -8398,7 +8405,7 @@ function getSchemaFrom$18 ( Mongoose ) {
 
 }
 
-function _createSchema$18 ( Mongoose ) {
+function _createSchema$18( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8406,7 +8413,7 @@ function _createSchema$18 ( Mongoose ) {
 
 }
 
-function getModelFrom$$ ( Mongoose ) {
+function getModelFrom$$( Mongoose ) {
 
     if ( !_model$$ ) {
         _createModel$$( Mongoose );
@@ -8416,14 +8423,14 @@ function getModelFrom$$ ( Mongoose ) {
 
 }
 
-function _createModel$$ ( Mongoose ) {
+function _createModel$$( Mongoose ) {
 
     const GeometryBaseModel = Geometry$2.getModelFrom( Mongoose );
     _model$$                  = GeometryBaseModel.discriminator( 'TorusKnotGeometry', getSchemaFrom$18( Mongoose ) );
 
 }
 
-function registerModelTo$$ ( Mongoose ) {
+function registerModelTo$$( Mongoose ) {
 
     if ( !_model$$ ) {
         _createModel$$( Mongoose );
@@ -8455,7 +8462,7 @@ const { BufferGeometry } = require$$0$1;
 let _schema$17 = undefined;
 let _model$_  = undefined;
 
-function getSchemaFrom$17 ( Mongoose ) {
+function getSchemaFrom$17( Mongoose ) {
 
     if ( !_schema$17 ) {
         _createSchema$17( Mongoose );
@@ -8465,7 +8472,7 @@ function getSchemaFrom$17 ( Mongoose ) {
 
 }
 
-function _createSchema$17 ( Mongoose ) {
+function _createSchema$17( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8473,7 +8480,7 @@ function _createSchema$17 ( Mongoose ) {
 
 }
 
-function getModelFrom$_ ( Mongoose ) {
+function getModelFrom$_( Mongoose ) {
 
     if ( !_model$_ ) {
         _createModel$_( Mongoose );
@@ -8483,14 +8490,14 @@ function getModelFrom$_ ( Mongoose ) {
 
 }
 
-function _createModel$_ ( Mongoose ) {
+function _createModel$_( Mongoose ) {
 
     const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
     _model$_                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom$17( Mongoose ) );
 
 }
 
-function registerModelTo$_ ( Mongoose ) {
+function registerModelTo$_( Mongoose ) {
 
     if ( !_model$_ ) {
         _createModel$_( Mongoose );
@@ -8522,7 +8529,7 @@ const { Geometry: Geometry$1 } = require$$0;
 let _schema$16 = undefined;
 let _model$Z  = undefined;
 
-function getSchemaFrom$16 ( Mongoose ) {
+function getSchemaFrom$16( Mongoose ) {
 
     if ( !_schema$16 ) {
         _createSchema$16( Mongoose );
@@ -8532,7 +8539,7 @@ function getSchemaFrom$16 ( Mongoose ) {
 
 }
 
-function _createSchema$16 ( Mongoose ) {
+function _createSchema$16( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8540,7 +8547,7 @@ function _createSchema$16 ( Mongoose ) {
 
 }
 
-function getModelFrom$Z ( Mongoose ) {
+function getModelFrom$Z( Mongoose ) {
 
     if ( !_model$Z ) {
         _createModel$Z( Mongoose );
@@ -8550,14 +8557,14 @@ function getModelFrom$Z ( Mongoose ) {
 
 }
 
-function _createModel$Z ( Mongoose ) {
+function _createModel$Z( Mongoose ) {
 
     const GeometryBaseModel = Geometry$1.getModelFrom( Mongoose );
     _model$Z                  = GeometryBaseModel.discriminator( 'TubeGeometry', getSchemaFrom$16( Mongoose ) );
 
 }
 
-function registerModelTo$Z ( Mongoose ) {
+function registerModelTo$Z( Mongoose ) {
 
     if ( !_model$Z ) {
         _createModel$Z( Mongoose );
@@ -8589,7 +8596,7 @@ const { Geometry } = require$$0;
 let _schema$15 = undefined;
 let _model$Y  = undefined;
 
-function getSchemaFrom$15 ( Mongoose ) {
+function getSchemaFrom$15( Mongoose ) {
 
     if ( !_schema$15 ) {
         _createSchema$15( Mongoose );
@@ -8599,7 +8606,7 @@ function getSchemaFrom$15 ( Mongoose ) {
 
 }
 
-function _createSchema$15 ( Mongoose ) {
+function _createSchema$15( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8607,7 +8614,7 @@ function _createSchema$15 ( Mongoose ) {
 
 }
 
-function getModelFrom$Y ( Mongoose ) {
+function getModelFrom$Y( Mongoose ) {
 
     if ( !_model$Y ) {
         _createModel$Y( Mongoose );
@@ -8617,14 +8624,14 @@ function getModelFrom$Y ( Mongoose ) {
 
 }
 
-function _createModel$Y ( Mongoose ) {
+function _createModel$Y( Mongoose ) {
 
     const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
     _model$Y                  = GeometryBaseModel.discriminator( 'WireframeGeometry', getSchemaFrom$15( Mongoose ) );
 
 }
 
-function registerModelTo$Y ( Mongoose ) {
+function registerModelTo$Y( Mongoose ) {
 
     if ( !_model$Y ) {
         _createModel$Y( Mongoose );
@@ -8656,7 +8663,7 @@ const { Object3D: Object3D$z } = require$$0$2;
 let _schema$14 = undefined;
 let _model$X  = undefined;
 
-function getSchemaFrom$14 ( Mongoose ) {
+function getSchemaFrom$14( Mongoose ) {
 
     if ( !_schema$14 ) {
         _createSchema$14( Mongoose );
@@ -8666,7 +8673,7 @@ function getSchemaFrom$14 ( Mongoose ) {
 
 }
 
-function _createSchema$14 ( Mongoose ) {
+function _createSchema$14( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8674,7 +8681,7 @@ function _createSchema$14 ( Mongoose ) {
 
 }
 
-function getModelFrom$X ( Mongoose ) {
+function getModelFrom$X( Mongoose ) {
 
     if ( !_model$X ) {
         _createModel$X( Mongoose );
@@ -8684,14 +8691,14 @@ function getModelFrom$X ( Mongoose ) {
 
 }
 
-function _createModel$X ( Mongoose ) {
+function _createModel$X( Mongoose ) {
 
     const Object3DBaseModel = Object3D$z.getModelFrom( Mongoose );
     _model$X                  = Object3DBaseModel.discriminator( 'ArrowHelper', getSchemaFrom$14( Mongoose ) );
 
 }
 
-function registerModelTo$X ( Mongoose ) {
+function registerModelTo$X( Mongoose ) {
 
     if ( !_model$X ) {
         _createModel$X( Mongoose );
@@ -8723,7 +8730,7 @@ const { Object3D: Object3D$y } = require$$0$2;
 let _schema$13 = undefined;
 let _model$W  = undefined;
 
-function getSchemaFrom$13 ( Mongoose ) {
+function getSchemaFrom$13( Mongoose ) {
 
     if ( !_schema$13 ) {
         _createSchema$13( Mongoose );
@@ -8733,7 +8740,7 @@ function getSchemaFrom$13 ( Mongoose ) {
 
 }
 
-function _createSchema$13 ( Mongoose ) {
+function _createSchema$13( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8741,7 +8748,7 @@ function _createSchema$13 ( Mongoose ) {
 
 }
 
-function getModelFrom$W ( Mongoose ) {
+function getModelFrom$W( Mongoose ) {
 
     if ( !_model$W ) {
         _createModel$W( Mongoose );
@@ -8751,14 +8758,14 @@ function getModelFrom$W ( Mongoose ) {
 
 }
 
-function _createModel$W ( Mongoose ) {
+function _createModel$W( Mongoose ) {
 
     const Object3DBaseModel = Object3D$y.getModelFrom( Mongoose );
     _model$W                  = Object3DBaseModel.discriminator( 'AxesHelper', getSchemaFrom$13( Mongoose ) );
 
 }
 
-function registerModelTo$W ( Mongoose ) {
+function registerModelTo$W( Mongoose ) {
 
     if ( !_model$W ) {
         _createModel$W( Mongoose );
@@ -8790,7 +8797,7 @@ const { Object3D: Object3D$x } = require$$0$2;
 let _schema$12 = undefined;
 let _model$V  = undefined;
 
-function getSchemaFrom$12 ( Mongoose ) {
+function getSchemaFrom$12( Mongoose ) {
 
     if ( !_schema$12 ) {
         _createSchema$12( Mongoose );
@@ -8800,7 +8807,7 @@ function getSchemaFrom$12 ( Mongoose ) {
 
 }
 
-function _createSchema$12 ( Mongoose ) {
+function _createSchema$12( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8808,7 +8815,7 @@ function _createSchema$12 ( Mongoose ) {
 
 }
 
-function getModelFrom$V ( Mongoose ) {
+function getModelFrom$V( Mongoose ) {
 
     if ( !_model$V ) {
         _createModel$V( Mongoose );
@@ -8818,14 +8825,14 @@ function getModelFrom$V ( Mongoose ) {
 
 }
 
-function _createModel$V ( Mongoose ) {
+function _createModel$V( Mongoose ) {
 
     const Object3DBaseModel = Object3D$x.getModelFrom( Mongoose );
     _model$V                  = Object3DBaseModel.discriminator( 'Box3Helper', getSchemaFrom$12( Mongoose ) );
 
 }
 
-function registerModelTo$V ( Mongoose ) {
+function registerModelTo$V( Mongoose ) {
 
     if ( !_model$V ) {
         _createModel$V( Mongoose );
@@ -8857,7 +8864,7 @@ const { Object3D: Object3D$w } = require$$0$2;
 let _schema$11 = undefined;
 let _model$U  = undefined;
 
-function getSchemaFrom$11 ( Mongoose ) {
+function getSchemaFrom$11( Mongoose ) {
 
     if ( !_schema$11 ) {
         _createSchema$11( Mongoose );
@@ -8867,7 +8874,7 @@ function getSchemaFrom$11 ( Mongoose ) {
 
 }
 
-function _createSchema$11 ( Mongoose ) {
+function _createSchema$11( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8875,7 +8882,7 @@ function _createSchema$11 ( Mongoose ) {
 
 }
 
-function getModelFrom$U ( Mongoose ) {
+function getModelFrom$U( Mongoose ) {
 
     if ( !_model$U ) {
         _createModel$U( Mongoose );
@@ -8885,14 +8892,14 @@ function getModelFrom$U ( Mongoose ) {
 
 }
 
-function _createModel$U ( Mongoose ) {
+function _createModel$U( Mongoose ) {
 
     const Object3DBaseModel = Object3D$w.getModelFrom( Mongoose );
     _model$U                  = Object3DBaseModel.discriminator( 'BoxHelper', getSchemaFrom$11( Mongoose ) );
 
 }
 
-function registerModelTo$U ( Mongoose ) {
+function registerModelTo$U( Mongoose ) {
 
     if ( !_model$U ) {
         _createModel$U( Mongoose );
@@ -8924,7 +8931,7 @@ const { Object3D: Object3D$v } = require$$0$2;
 let _schema$10 = undefined;
 let _model$T  = undefined;
 
-function getSchemaFrom$10 ( Mongoose ) {
+function getSchemaFrom$10( Mongoose ) {
 
     if ( !_schema$10 ) {
         _createSchema$10( Mongoose );
@@ -8934,7 +8941,7 @@ function getSchemaFrom$10 ( Mongoose ) {
 
 }
 
-function _createSchema$10 ( Mongoose ) {
+function _createSchema$10( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -8942,7 +8949,7 @@ function _createSchema$10 ( Mongoose ) {
 
 }
 
-function getModelFrom$T ( Mongoose ) {
+function getModelFrom$T( Mongoose ) {
 
     if ( !_model$T ) {
         _createModel$T( Mongoose );
@@ -8952,14 +8959,14 @@ function getModelFrom$T ( Mongoose ) {
 
 }
 
-function _createModel$T ( Mongoose ) {
+function _createModel$T( Mongoose ) {
 
     const Object3DBaseModel = Object3D$v.getModelFrom( Mongoose );
     _model$T                  = Object3DBaseModel.discriminator( 'CameraHelper', getSchemaFrom$10( Mongoose ) );
 
 }
 
-function registerModelTo$T ( Mongoose ) {
+function registerModelTo$T( Mongoose ) {
 
     if ( !_model$T ) {
         _createModel$T( Mongoose );
@@ -8991,7 +8998,7 @@ const { Object3D: Object3D$u } = require$$0$2;
 let _schema$$ = undefined;
 let _model$S  = undefined;
 
-function getSchemaFrom$$ ( Mongoose ) {
+function getSchemaFrom$$( Mongoose ) {
 
     if ( !_schema$$ ) {
         _createSchema$$( Mongoose );
@@ -9001,7 +9008,7 @@ function getSchemaFrom$$ ( Mongoose ) {
 
 }
 
-function _createSchema$$ ( Mongoose ) {
+function _createSchema$$( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9009,7 +9016,7 @@ function _createSchema$$ ( Mongoose ) {
 
 }
 
-function getModelFrom$S ( Mongoose ) {
+function getModelFrom$S( Mongoose ) {
 
     if ( !_model$S ) {
         _createModel$S( Mongoose );
@@ -9019,14 +9026,14 @@ function getModelFrom$S ( Mongoose ) {
 
 }
 
-function _createModel$S ( Mongoose ) {
+function _createModel$S( Mongoose ) {
 
     const Object3DBaseModel = Object3D$u.getModelFrom( Mongoose );
     _model$S                  = Object3DBaseModel.discriminator( 'DirectionalLightHelper', getSchemaFrom$$( Mongoose ) );
 
 }
 
-function registerModelTo$S ( Mongoose ) {
+function registerModelTo$S( Mongoose ) {
 
     if ( !_model$S ) {
         _createModel$S( Mongoose );
@@ -9058,7 +9065,7 @@ const { Object3D: Object3D$t } = require$$0$2;
 let _schema$_ = undefined;
 let _model$R  = undefined;
 
-function getSchemaFrom$_ ( Mongoose ) {
+function getSchemaFrom$_( Mongoose ) {
 
     if ( !_schema$_ ) {
         _createSchema$_( Mongoose );
@@ -9068,7 +9075,7 @@ function getSchemaFrom$_ ( Mongoose ) {
 
 }
 
-function _createSchema$_ ( Mongoose ) {
+function _createSchema$_( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9076,7 +9083,7 @@ function _createSchema$_ ( Mongoose ) {
 
 }
 
-function getModelFrom$R ( Mongoose ) {
+function getModelFrom$R( Mongoose ) {
 
     if ( !_model$R ) {
         _createModel$R( Mongoose );
@@ -9086,14 +9093,14 @@ function getModelFrom$R ( Mongoose ) {
 
 }
 
-function _createModel$R ( Mongoose ) {
+function _createModel$R( Mongoose ) {
 
     const Object3DBaseModel = Object3D$t.getModelFrom( Mongoose );
     _model$R                  = Object3DBaseModel.discriminator( 'FaceNormalsHelper', getSchemaFrom$_( Mongoose ) );
 
 }
 
-function registerModelTo$R ( Mongoose ) {
+function registerModelTo$R( Mongoose ) {
 
     if ( !_model$R ) {
         _createModel$R( Mongoose );
@@ -9125,7 +9132,7 @@ const { Object3D: Object3D$s } = require$$0$2;
 let _schema$Z = undefined;
 let _model$Q  = undefined;
 
-function getSchemaFrom$Z ( Mongoose ) {
+function getSchemaFrom$Z( Mongoose ) {
 
     if ( !_schema$Z ) {
         _createSchema$Z( Mongoose );
@@ -9135,7 +9142,7 @@ function getSchemaFrom$Z ( Mongoose ) {
 
 }
 
-function _createSchema$Z ( Mongoose ) {
+function _createSchema$Z( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9143,7 +9150,7 @@ function _createSchema$Z ( Mongoose ) {
 
 }
 
-function getModelFrom$Q ( Mongoose ) {
+function getModelFrom$Q( Mongoose ) {
 
     if ( !_model$Q ) {
         _createModel$Q( Mongoose );
@@ -9153,14 +9160,14 @@ function getModelFrom$Q ( Mongoose ) {
 
 }
 
-function _createModel$Q ( Mongoose ) {
+function _createModel$Q( Mongoose ) {
 
     const Object3DBaseModel = Object3D$s.getModelFrom( Mongoose );
     _model$Q                  = Object3DBaseModel.discriminator( 'GridHelper', getSchemaFrom$Z( Mongoose ) );
 
 }
 
-function registerModelTo$Q ( Mongoose ) {
+function registerModelTo$Q( Mongoose ) {
 
     if ( !_model$Q ) {
         _createModel$Q( Mongoose );
@@ -9192,7 +9199,7 @@ const { Object3D: Object3D$r } = require$$0$2;
 let _schema$Y = undefined;
 let _model$P  = undefined;
 
-function getSchemaFrom$Y ( Mongoose ) {
+function getSchemaFrom$Y( Mongoose ) {
 
     if ( !_schema$Y ) {
         _createSchema$Y( Mongoose );
@@ -9202,7 +9209,7 @@ function getSchemaFrom$Y ( Mongoose ) {
 
 }
 
-function _createSchema$Y ( Mongoose ) {
+function _createSchema$Y( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9210,7 +9217,7 @@ function _createSchema$Y ( Mongoose ) {
 
 }
 
-function getModelFrom$P ( Mongoose ) {
+function getModelFrom$P( Mongoose ) {
 
     if ( !_model$P ) {
         _createModel$P( Mongoose );
@@ -9220,14 +9227,14 @@ function getModelFrom$P ( Mongoose ) {
 
 }
 
-function _createModel$P ( Mongoose ) {
+function _createModel$P( Mongoose ) {
 
     const Object3DBaseModel = Object3D$r.getModelFrom( Mongoose );
     _model$P                  = Object3DBaseModel.discriminator( 'HemisphereLightHelper', getSchemaFrom$Y( Mongoose ) );
 
 }
 
-function registerModelTo$P ( Mongoose ) {
+function registerModelTo$P( Mongoose ) {
 
     if ( !_model$P ) {
         _createModel$P( Mongoose );
@@ -9259,7 +9266,7 @@ const { Object3D: Object3D$q } = require$$0$2;
 let _schema$X = undefined;
 let _model$O  = undefined;
 
-function getSchemaFrom$X ( Mongoose ) {
+function getSchemaFrom$X( Mongoose ) {
 
     if ( !_schema$X ) {
         _createSchema$X( Mongoose );
@@ -9269,7 +9276,7 @@ function getSchemaFrom$X ( Mongoose ) {
 
 }
 
-function _createSchema$X ( Mongoose ) {
+function _createSchema$X( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9277,7 +9284,7 @@ function _createSchema$X ( Mongoose ) {
 
 }
 
-function getModelFrom$O ( Mongoose ) {
+function getModelFrom$O( Mongoose ) {
 
     if ( !_model$O ) {
         _createModel$O( Mongoose );
@@ -9287,14 +9294,14 @@ function getModelFrom$O ( Mongoose ) {
 
 }
 
-function _createModel$O ( Mongoose ) {
+function _createModel$O( Mongoose ) {
 
     const Object3DBaseModel = Object3D$q.getModelFrom( Mongoose );
     _model$O                  = Object3DBaseModel.discriminator( 'PlaneHelper', getSchemaFrom$X( Mongoose ) );
 
 }
 
-function registerModelTo$O ( Mongoose ) {
+function registerModelTo$O( Mongoose ) {
 
     if ( !_model$O ) {
         _createModel$O( Mongoose );
@@ -9326,7 +9333,7 @@ const { Object3D: Object3D$p } = require$$0$2;
 let _schema$W = undefined;
 let _model$N  = undefined;
 
-function getSchemaFrom$W ( Mongoose ) {
+function getSchemaFrom$W( Mongoose ) {
 
     if ( !_schema$W ) {
         _createSchema$W( Mongoose );
@@ -9336,7 +9343,7 @@ function getSchemaFrom$W ( Mongoose ) {
 
 }
 
-function _createSchema$W ( Mongoose ) {
+function _createSchema$W( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9344,7 +9351,7 @@ function _createSchema$W ( Mongoose ) {
 
 }
 
-function getModelFrom$N ( Mongoose ) {
+function getModelFrom$N( Mongoose ) {
 
     if ( !_model$N ) {
         _createModel$N( Mongoose );
@@ -9354,14 +9361,14 @@ function getModelFrom$N ( Mongoose ) {
 
 }
 
-function _createModel$N ( Mongoose ) {
+function _createModel$N( Mongoose ) {
 
     const Object3DBaseModel = Object3D$p.getModelFrom( Mongoose );
     _model$N                  = Object3DBaseModel.discriminator( 'PointLightHelper', getSchemaFrom$W( Mongoose ) );
 
 }
 
-function registerModelTo$N ( Mongoose ) {
+function registerModelTo$N( Mongoose ) {
 
     if ( !_model$N ) {
         _createModel$N( Mongoose );
@@ -9393,7 +9400,7 @@ const { Object3D: Object3D$o } = require$$0$2;
 let _schema$V = undefined;
 let _model$M  = undefined;
 
-function getSchemaFrom$V ( Mongoose ) {
+function getSchemaFrom$V( Mongoose ) {
 
     if ( !_schema$V ) {
         _createSchema$V( Mongoose );
@@ -9403,7 +9410,7 @@ function getSchemaFrom$V ( Mongoose ) {
 
 }
 
-function _createSchema$V ( Mongoose ) {
+function _createSchema$V( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9411,7 +9418,7 @@ function _createSchema$V ( Mongoose ) {
 
 }
 
-function getModelFrom$M ( Mongoose ) {
+function getModelFrom$M( Mongoose ) {
 
     if ( !_model$M ) {
         _createModel$M( Mongoose );
@@ -9421,14 +9428,14 @@ function getModelFrom$M ( Mongoose ) {
 
 }
 
-function _createModel$M ( Mongoose ) {
+function _createModel$M( Mongoose ) {
 
     const Object3DBaseModel = Object3D$o.getModelFrom( Mongoose );
     _model$M                  = Object3DBaseModel.discriminator( 'PolarGridHelper', getSchemaFrom$V( Mongoose ) );
 
 }
 
-function registerModelTo$M ( Mongoose ) {
+function registerModelTo$M( Mongoose ) {
 
     if ( !_model$M ) {
         _createModel$M( Mongoose );
@@ -9460,7 +9467,7 @@ const { Object3D: Object3D$n } = require$$0$2;
 let _schema$U = undefined;
 let _model$L  = undefined;
 
-function getSchemaFrom$U ( Mongoose ) {
+function getSchemaFrom$U( Mongoose ) {
 
     if ( !_schema$U ) {
         _createSchema$U( Mongoose );
@@ -9470,7 +9477,7 @@ function getSchemaFrom$U ( Mongoose ) {
 
 }
 
-function _createSchema$U ( Mongoose ) {
+function _createSchema$U( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9478,7 +9485,7 @@ function _createSchema$U ( Mongoose ) {
 
 }
 
-function getModelFrom$L ( Mongoose ) {
+function getModelFrom$L( Mongoose ) {
 
     if ( !_model$L ) {
         _createModel$L( Mongoose );
@@ -9488,14 +9495,14 @@ function getModelFrom$L ( Mongoose ) {
 
 }
 
-function _createModel$L ( Mongoose ) {
+function _createModel$L( Mongoose ) {
 
     const Object3DBaseModel = Object3D$n.getModelFrom( Mongoose );
     _model$L                  = Object3DBaseModel.discriminator( 'RectAreaLightHelper', getSchemaFrom$U( Mongoose ) );
 
 }
 
-function registerModelTo$L ( Mongoose ) {
+function registerModelTo$L( Mongoose ) {
 
     if ( !_model$L ) {
         _createModel$L( Mongoose );
@@ -9527,7 +9534,7 @@ const { Object3D: Object3D$m } = require$$0$2;
 let _schema$T = undefined;
 let _model$K  = undefined;
 
-function getSchemaFrom$T ( Mongoose ) {
+function getSchemaFrom$T( Mongoose ) {
 
     if ( !_schema$T ) {
         _createSchema$T( Mongoose );
@@ -9537,7 +9544,7 @@ function getSchemaFrom$T ( Mongoose ) {
 
 }
 
-function _createSchema$T ( Mongoose ) {
+function _createSchema$T( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9545,7 +9552,7 @@ function _createSchema$T ( Mongoose ) {
 
 }
 
-function getModelFrom$K ( Mongoose ) {
+function getModelFrom$K( Mongoose ) {
 
     if ( !_model$K ) {
         _createModel$K( Mongoose );
@@ -9555,14 +9562,14 @@ function getModelFrom$K ( Mongoose ) {
 
 }
 
-function _createModel$K ( Mongoose ) {
+function _createModel$K( Mongoose ) {
 
     const Object3DBaseModel = Object3D$m.getModelFrom( Mongoose );
     _model$K                  = Object3DBaseModel.discriminator( 'SkeletonHelper', getSchemaFrom$T( Mongoose ) );
 
 }
 
-function registerModelTo$K ( Mongoose ) {
+function registerModelTo$K( Mongoose ) {
 
     if ( !_model$K ) {
         _createModel$K( Mongoose );
@@ -9594,7 +9601,7 @@ const { Object3D: Object3D$l } = require$$0$2;
 let _schema$S = undefined;
 let _model$J  = undefined;
 
-function getSchemaFrom$S ( Mongoose ) {
+function getSchemaFrom$S( Mongoose ) {
 
     if ( !_schema$S ) {
         _createSchema$S( Mongoose );
@@ -9604,7 +9611,7 @@ function getSchemaFrom$S ( Mongoose ) {
 
 }
 
-function _createSchema$S ( Mongoose ) {
+function _createSchema$S( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9612,7 +9619,7 @@ function _createSchema$S ( Mongoose ) {
 
 }
 
-function getModelFrom$J ( Mongoose ) {
+function getModelFrom$J( Mongoose ) {
 
     if ( !_model$J ) {
         _createModel$J( Mongoose );
@@ -9622,14 +9629,14 @@ function getModelFrom$J ( Mongoose ) {
 
 }
 
-function _createModel$J ( Mongoose ) {
+function _createModel$J( Mongoose ) {
 
     const Object3DBaseModel = Object3D$l.getModelFrom( Mongoose );
     _model$J                  = Object3DBaseModel.discriminator( 'SpotLightHelper', getSchemaFrom$S( Mongoose ) );
 
 }
 
-function registerModelTo$J ( Mongoose ) {
+function registerModelTo$J( Mongoose ) {
 
     if ( !_model$J ) {
         _createModel$J( Mongoose );
@@ -9661,7 +9668,7 @@ const { Object3D: Object3D$k } = require$$0$2;
 let _schema$R = undefined;
 let _model$I  = undefined;
 
-function getSchemaFrom$R ( Mongoose ) {
+function getSchemaFrom$R( Mongoose ) {
 
     if ( !_schema$R ) {
         _createSchema$R( Mongoose );
@@ -9671,7 +9678,7 @@ function getSchemaFrom$R ( Mongoose ) {
 
 }
 
-function _createSchema$R ( Mongoose ) {
+function _createSchema$R( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9679,7 +9686,7 @@ function _createSchema$R ( Mongoose ) {
 
 }
 
-function getModelFrom$I ( Mongoose ) {
+function getModelFrom$I( Mongoose ) {
 
     if ( !_model$I ) {
         _createModel$I( Mongoose );
@@ -9689,14 +9696,14 @@ function getModelFrom$I ( Mongoose ) {
 
 }
 
-function _createModel$I ( Mongoose ) {
+function _createModel$I( Mongoose ) {
 
     const Object3DBaseModel = Object3D$k.getModelFrom( Mongoose );
     _model$I                  = Object3DBaseModel.discriminator( 'VertexNormalsHelper', getSchemaFrom$R( Mongoose ) );
 
 }
 
-function registerModelTo$I ( Mongoose ) {
+function registerModelTo$I( Mongoose ) {
 
     if ( !_model$I ) {
         _createModel$I( Mongoose );
@@ -9728,7 +9735,7 @@ const { Object3D: Object3D$j } = require$$0$2;
 let _schema$Q = undefined;
 let _model$H  = undefined;
 
-function getSchemaFrom$Q ( Mongoose ) {
+function getSchemaFrom$Q( Mongoose ) {
 
     if ( !_schema$Q ) {
         _createSchema$Q( Mongoose );
@@ -9738,7 +9745,7 @@ function getSchemaFrom$Q ( Mongoose ) {
 
 }
 
-function _createSchema$Q ( Mongoose ) {
+function _createSchema$Q( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9746,7 +9753,7 @@ function _createSchema$Q ( Mongoose ) {
 
 }
 
-function getModelFrom$H ( Mongoose ) {
+function getModelFrom$H( Mongoose ) {
 
     if ( !_model$H ) {
         _createModel$H( Mongoose );
@@ -9756,14 +9763,14 @@ function getModelFrom$H ( Mongoose ) {
 
 }
 
-function _createModel$H ( Mongoose ) {
+function _createModel$H( Mongoose ) {
 
     const Object3DBaseModel = Object3D$j.getModelFrom( Mongoose );
     _model$H                  = Object3DBaseModel.discriminator( 'AmbientLight', getSchemaFrom$Q( Mongoose ) );
 
 }
 
-function registerModelTo$H ( Mongoose ) {
+function registerModelTo$H( Mongoose ) {
 
     if ( !_model$H ) {
         _createModel$H( Mongoose );
@@ -9795,7 +9802,7 @@ const { Object3D: Object3D$i } = require$$0$2;
 let _schema$P = undefined;
 let _model$G  = undefined;
 
-function getSchemaFrom$P ( Mongoose ) {
+function getSchemaFrom$P( Mongoose ) {
 
     if ( !_schema$P ) {
         _createSchema$P( Mongoose );
@@ -9805,7 +9812,7 @@ function getSchemaFrom$P ( Mongoose ) {
 
 }
 
-function _createSchema$P ( Mongoose ) {
+function _createSchema$P( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9813,7 +9820,7 @@ function _createSchema$P ( Mongoose ) {
 
 }
 
-function getModelFrom$G ( Mongoose ) {
+function getModelFrom$G( Mongoose ) {
 
     if ( !_model$G ) {
         _createModel$G( Mongoose );
@@ -9823,14 +9830,14 @@ function getModelFrom$G ( Mongoose ) {
 
 }
 
-function _createModel$G ( Mongoose ) {
+function _createModel$G( Mongoose ) {
 
     const Object3DBaseModel = Object3D$i.getModelFrom( Mongoose );
     _model$G                  = Object3DBaseModel.discriminator( 'DirectionalLight', getSchemaFrom$P( Mongoose ) );
 
 }
 
-function registerModelTo$G ( Mongoose ) {
+function registerModelTo$G( Mongoose ) {
 
     if ( !_model$G ) {
         _createModel$G( Mongoose );
@@ -9862,7 +9869,7 @@ const { Object3D: Object3D$h } = require$$0$2;
 let _schema$O = undefined;
 let _model$F  = undefined;
 
-function getSchemaFrom$O ( Mongoose ) {
+function getSchemaFrom$O( Mongoose ) {
 
     if ( !_schema$O ) {
         _createSchema$O( Mongoose );
@@ -9872,7 +9879,7 @@ function getSchemaFrom$O ( Mongoose ) {
 
 }
 
-function _createSchema$O ( Mongoose ) {
+function _createSchema$O( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9880,7 +9887,7 @@ function _createSchema$O ( Mongoose ) {
 
 }
 
-function getModelFrom$F ( Mongoose ) {
+function getModelFrom$F( Mongoose ) {
 
     if ( !_model$F ) {
         _createModel$F( Mongoose );
@@ -9890,14 +9897,14 @@ function getModelFrom$F ( Mongoose ) {
 
 }
 
-function _createModel$F ( Mongoose ) {
+function _createModel$F( Mongoose ) {
 
     const Object3DBaseModel = Object3D$h.getModelFrom( Mongoose );
     _model$F                  = Object3DBaseModel.discriminator( 'HemisphereLight', getSchemaFrom$O( Mongoose ) );
 
 }
 
-function registerModelTo$F ( Mongoose ) {
+function registerModelTo$F( Mongoose ) {
 
     if ( !_model$F ) {
         _createModel$F( Mongoose );
@@ -9929,7 +9936,7 @@ const { Object3D: Object3D$g } = require$$0$2;
 let _schema$N = undefined;
 let _model$E  = undefined;
 
-function getSchemaFrom$N ( Mongoose ) {
+function getSchemaFrom$N( Mongoose ) {
 
     if ( !_schema$N ) {
         _createSchema$N( Mongoose );
@@ -9939,7 +9946,7 @@ function getSchemaFrom$N ( Mongoose ) {
 
 }
 
-function _createSchema$N ( Mongoose ) {
+function _createSchema$N( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -9947,7 +9954,7 @@ function _createSchema$N ( Mongoose ) {
 
 }
 
-function getModelFrom$E ( Mongoose ) {
+function getModelFrom$E( Mongoose ) {
 
     if ( !_model$E ) {
         _createModel$E( Mongoose );
@@ -9957,14 +9964,14 @@ function getModelFrom$E ( Mongoose ) {
 
 }
 
-function _createModel$E ( Mongoose ) {
+function _createModel$E( Mongoose ) {
 
     const Object3DBaseModel = Object3D$g.getModelFrom( Mongoose );
     _model$E                  = Object3DBaseModel.discriminator( 'Light', getSchemaFrom$N( Mongoose ) );
 
 }
 
-function registerModelTo$E ( Mongoose ) {
+function registerModelTo$E( Mongoose ) {
 
     if ( !_model$E ) {
         _createModel$E( Mongoose );
@@ -9996,7 +10003,7 @@ const { Object3D: Object3D$f } = require$$0$2;
 let _schema$M = undefined;
 let _model$D  = undefined;
 
-function getSchemaFrom$M ( Mongoose ) {
+function getSchemaFrom$M( Mongoose ) {
 
     if ( !_schema$M ) {
         _createSchema$M( Mongoose );
@@ -10006,7 +10013,7 @@ function getSchemaFrom$M ( Mongoose ) {
 
 }
 
-function _createSchema$M ( Mongoose ) {
+function _createSchema$M( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -10014,7 +10021,7 @@ function _createSchema$M ( Mongoose ) {
 
 }
 
-function getModelFrom$D ( Mongoose ) {
+function getModelFrom$D( Mongoose ) {
 
     if ( !_model$D ) {
         _createModel$D( Mongoose );
@@ -10024,14 +10031,14 @@ function getModelFrom$D ( Mongoose ) {
 
 }
 
-function _createModel$D ( Mongoose ) {
+function _createModel$D( Mongoose ) {
 
     const Object3DBaseModel = Object3D$f.getModelFrom( Mongoose );
     _model$D                  = Object3DBaseModel.discriminator( 'PointLight', getSchemaFrom$M( Mongoose ) );
 
 }
 
-function registerModelTo$D ( Mongoose ) {
+function registerModelTo$D( Mongoose ) {
 
     if ( !_model$D ) {
         _createModel$D( Mongoose );
@@ -10063,7 +10070,7 @@ const { Object3D: Object3D$e } = require$$0$2;
 let _schema$L = undefined;
 let _model$C  = undefined;
 
-function getSchemaFrom$L ( Mongoose ) {
+function getSchemaFrom$L( Mongoose ) {
 
     if ( !_schema$L ) {
         _createSchema$L( Mongoose );
@@ -10073,7 +10080,7 @@ function getSchemaFrom$L ( Mongoose ) {
 
 }
 
-function _createSchema$L ( Mongoose ) {
+function _createSchema$L( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -10081,7 +10088,7 @@ function _createSchema$L ( Mongoose ) {
 
 }
 
-function getModelFrom$C ( Mongoose ) {
+function getModelFrom$C( Mongoose ) {
 
     if ( !_model$C ) {
         _createModel$C( Mongoose );
@@ -10091,14 +10098,14 @@ function getModelFrom$C ( Mongoose ) {
 
 }
 
-function _createModel$C ( Mongoose ) {
+function _createModel$C( Mongoose ) {
 
     const Object3DBaseModel = Object3D$e.getModelFrom( Mongoose );
     _model$C                  = Object3DBaseModel.discriminator( 'RectAreaLight', getSchemaFrom$L( Mongoose ) );
 
 }
 
-function registerModelTo$C ( Mongoose ) {
+function registerModelTo$C( Mongoose ) {
 
     if ( !_model$C ) {
         _createModel$C( Mongoose );
@@ -10130,7 +10137,7 @@ const { Object3D: Object3D$d } = require$$0$2;
 let _schema$K = undefined;
 let _model$B  = undefined;
 
-function getSchemaFrom$K ( Mongoose ) {
+function getSchemaFrom$K( Mongoose ) {
 
     if ( !_schema$K ) {
         _createSchema$K( Mongoose );
@@ -10140,7 +10147,7 @@ function getSchemaFrom$K ( Mongoose ) {
 
 }
 
-function _createSchema$K ( Mongoose ) {
+function _createSchema$K( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -10148,7 +10155,7 @@ function _createSchema$K ( Mongoose ) {
 
 }
 
-function getModelFrom$B ( Mongoose ) {
+function getModelFrom$B( Mongoose ) {
 
     if ( !_model$B ) {
         _createModel$B( Mongoose );
@@ -10158,14 +10165,14 @@ function getModelFrom$B ( Mongoose ) {
 
 }
 
-function _createModel$B ( Mongoose ) {
+function _createModel$B( Mongoose ) {
 
     const Object3DBaseModel = Object3D$d.getModelFrom( Mongoose );
     _model$B                  = Object3DBaseModel.discriminator( 'SpotLight', getSchemaFrom$K( Mongoose ) );
 
 }
 
-function registerModelTo$B ( Mongoose ) {
+function registerModelTo$B( Mongoose ) {
 
     if ( !_model$B ) {
         _createModel$B( Mongoose );
@@ -10195,7 +10202,7 @@ var Material$f = {};
 let _schema$J = undefined;
 let _model$A  = undefined;
 
-function getSchemaFrom$J ( Mongoose ) {
+function getSchemaFrom$J( Mongoose ) {
 
     if ( !_schema$J ) {
         _createSchema$J( Mongoose );
@@ -10205,7 +10212,7 @@ function getSchemaFrom$J ( Mongoose ) {
 
 }
 
-function _createSchema$J ( Mongoose ) {
+function _createSchema$J( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10254,7 +10261,7 @@ function _createSchema$J ( Mongoose ) {
 
 }
 
-function getModelFrom$A ( Mongoose ) {
+function getModelFrom$A( Mongoose ) {
 
     if ( !_model$A ) {
         _createModel$A( Mongoose );
@@ -10264,7 +10271,7 @@ function getModelFrom$A ( Mongoose ) {
 
 }
 
-function _createModel$A ( Mongoose ) {
+function _createModel$A( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
@@ -10274,7 +10281,7 @@ function _createModel$A ( Mongoose ) {
 
 }
 
-function registerModelTo$A ( Mongoose ) {
+function registerModelTo$A( Mongoose ) {
 
     if ( !_model$A ) {
         _createModel$A( Mongoose );
@@ -10306,7 +10313,7 @@ const { Material: Material$e } = Material$f;
 let _schema$I = undefined;
 let _model$z  = undefined;
 
-function getSchemaFrom$I ( Mongoose ) {
+function getSchemaFrom$I( Mongoose ) {
 
     if ( !_schema$I ) {
         _createSchema$I( Mongoose );
@@ -10316,7 +10323,7 @@ function getSchemaFrom$I ( Mongoose ) {
 
 }
 
-function _createSchema$I ( Mongoose ) {
+function _createSchema$I( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10332,7 +10339,7 @@ function _createSchema$I ( Mongoose ) {
 
 }
 
-function getModelFrom$z ( Mongoose ) {
+function getModelFrom$z( Mongoose ) {
 
     if ( !_model$z ) {
         _createModel$z( Mongoose );
@@ -10342,14 +10349,14 @@ function getModelFrom$z ( Mongoose ) {
 
 }
 
-function _createModel$z ( Mongoose ) {
+function _createModel$z( Mongoose ) {
 
     const MaterialBaseModel = Material$e.getModelFrom( Mongoose );
     _model$z                  = MaterialBaseModel.discriminator( 'LineBasicMaterial', getSchemaFrom$I( Mongoose ) );
 
 }
 
-function registerModelTo$z ( Mongoose ) {
+function registerModelTo$z( Mongoose ) {
 
     if ( !_model$z ) {
         _createModel$z( Mongoose );
@@ -10381,7 +10388,7 @@ const { Material: Material$d } = Material$f;
 let _schema$H = undefined;
 let _model$y  = undefined;
 
-function getSchemaFrom$H ( Mongoose ) {
+function getSchemaFrom$H( Mongoose ) {
 
     if ( !_schema$H ) {
         _createSchema$H( Mongoose );
@@ -10391,7 +10398,7 @@ function getSchemaFrom$H ( Mongoose ) {
 
 }
 
-function _createSchema$H ( Mongoose ) {
+function _createSchema$H( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10413,7 +10420,7 @@ function _createSchema$H ( Mongoose ) {
 
 }
 
-function getModelFrom$y ( Mongoose ) {
+function getModelFrom$y( Mongoose ) {
 
     if ( !_model$y ) {
         _createModel$y( Mongoose );
@@ -10423,14 +10430,14 @@ function getModelFrom$y ( Mongoose ) {
 
 }
 
-function _createModel$y ( Mongoose ) {
+function _createModel$y( Mongoose ) {
 
     const MaterialBaseModel = Material$d.getModelFrom( Mongoose );
     _model$y                  = MaterialBaseModel.discriminator( 'LineDashedMaterial', getSchemaFrom$H( Mongoose ) );
 
 }
 
-function registerModelTo$y ( Mongoose ) {
+function registerModelTo$y( Mongoose ) {
 
     if ( !_model$y ) {
         _createModel$y( Mongoose );
@@ -10462,7 +10469,7 @@ const { Material: Material$c } = Material$f;
 let _schema$G = undefined;
 let _model$x  = undefined;
 
-function getSchemaFrom$G ( Mongoose ) {
+function getSchemaFrom$G( Mongoose ) {
 
     if ( !_schema$G ) {
         _createSchema$G( Mongoose );
@@ -10472,7 +10479,7 @@ function getSchemaFrom$G ( Mongoose ) {
 
 }
 
-function _createSchema$G ( Mongoose ) {
+function _createSchema$G( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10503,7 +10510,7 @@ function _createSchema$G ( Mongoose ) {
 
 }
 
-function getModelFrom$x ( Mongoose ) {
+function getModelFrom$x( Mongoose ) {
 
     if ( !_model$x ) {
         _createModel$x( Mongoose );
@@ -10513,14 +10520,14 @@ function getModelFrom$x ( Mongoose ) {
 
 }
 
-function _createModel$x ( Mongoose ) {
+function _createModel$x( Mongoose ) {
 
     const MaterialBaseModel = Material$c.getModelFrom( Mongoose );
     _model$x                  = MaterialBaseModel.discriminator( 'MeshBasicMaterial', getSchemaFrom$G( Mongoose ) );
 
 }
 
-function registerModelTo$x ( Mongoose ) {
+function registerModelTo$x( Mongoose ) {
 
     if ( !_model$x ) {
         _createModel$x( Mongoose );
@@ -10552,7 +10559,7 @@ const { Material: Material$b } = Material$f;
 let _schema$F = undefined;
 let _model$w  = undefined;
 
-function getSchemaFrom$F ( Mongoose ) {
+function getSchemaFrom$F( Mongoose ) {
 
     if ( !_schema$F ) {
         _createSchema$F( Mongoose );
@@ -10562,7 +10569,7 @@ function getSchemaFrom$F ( Mongoose ) {
 
 }
 
-function _createSchema$F ( Mongoose ) {
+function _createSchema$F( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10585,7 +10592,7 @@ function _createSchema$F ( Mongoose ) {
 
 }
 
-function getModelFrom$w ( Mongoose ) {
+function getModelFrom$w( Mongoose ) {
 
     if ( !_model$w ) {
         _createModel$w( Mongoose );
@@ -10595,14 +10602,14 @@ function getModelFrom$w ( Mongoose ) {
 
 }
 
-function _createModel$w ( Mongoose ) {
+function _createModel$w( Mongoose ) {
 
     const MaterialBaseModel = Material$b.getModelFrom( Mongoose );
     _model$w                  = MaterialBaseModel.discriminator( 'MeshDepthMaterial', getSchemaFrom$F( Mongoose ) );
 
 }
 
-function registerModelTo$w ( Mongoose ) {
+function registerModelTo$w( Mongoose ) {
 
     if ( !_model$w ) {
         _createModel$w( Mongoose );
@@ -10634,7 +10641,7 @@ const { Material: Material$a } = Material$f;
 let _schema$E = undefined;
 let _model$v  = undefined;
 
-function getSchemaFrom$E ( Mongoose ) {
+function getSchemaFrom$E( Mongoose ) {
 
     if ( !_schema$E ) {
         _createSchema$E( Mongoose );
@@ -10644,7 +10651,7 @@ function getSchemaFrom$E ( Mongoose ) {
 
 }
 
-function _createSchema$E ( Mongoose ) {
+function _createSchema$E( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -10678,7 +10685,7 @@ function _createSchema$E ( Mongoose ) {
 
 }
 
-function getModelFrom$v ( Mongoose ) {
+function getModelFrom$v( Mongoose ) {
 
     if ( !_model$v ) {
         _createModel$v( Mongoose );
@@ -10688,14 +10695,14 @@ function getModelFrom$v ( Mongoose ) {
 
 }
 
-function _createModel$v ( Mongoose ) {
+function _createModel$v( Mongoose ) {
 
     const MaterialBaseModel = Material$a.getModelFrom( Mongoose );
     _model$v                  = MaterialBaseModel.discriminator( 'MeshLambertMaterial', getSchemaFrom$E( Mongoose ) );
 
 }
 
-function registerModelTo$v ( Mongoose ) {
+function registerModelTo$v( Mongoose ) {
 
     if ( !_model$v ) {
         _createModel$v( Mongoose );
@@ -10727,7 +10734,7 @@ const { Material: Material$9 } = Material$f;
 let _schema$D = undefined;
 let _model$u  = undefined;
 
-function getSchemaFrom$D ( Mongoose ) {
+function getSchemaFrom$D( Mongoose ) {
 
     if ( !_schema$D ) {
         _createSchema$D( Mongoose );
@@ -10737,7 +10744,7 @@ function getSchemaFrom$D ( Mongoose ) {
 
 }
 
-function _createSchema$D ( Mongoose ) {
+function _createSchema$D( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -10763,7 +10770,7 @@ function _createSchema$D ( Mongoose ) {
 
 }
 
-function getModelFrom$u ( Mongoose ) {
+function getModelFrom$u( Mongoose ) {
 
     if ( !_model$u ) {
         _createModel$u( Mongoose );
@@ -10773,14 +10780,14 @@ function getModelFrom$u ( Mongoose ) {
 
 }
 
-function _createModel$u ( Mongoose ) {
+function _createModel$u( Mongoose ) {
 
     const MaterialBaseModel = Material$9.getModelFrom( Mongoose );
     _model$u                  = MaterialBaseModel.discriminator( 'MeshNormalMaterial', getSchemaFrom$D( Mongoose ) );
 
 }
 
-function registerModelTo$u ( Mongoose ) {
+function registerModelTo$u( Mongoose ) {
 
     if ( !_model$u ) {
         _createModel$u( Mongoose );
@@ -10812,7 +10819,7 @@ const { Material: Material$8 } = Material$f;
 let _schema$C = undefined;
 let _model$t  = undefined;
 
-function getSchemaFrom$C ( Mongoose ) {
+function getSchemaFrom$C( Mongoose ) {
 
     if ( !_schema$C ) {
         _createSchema$C( Mongoose );
@@ -10822,7 +10829,7 @@ function getSchemaFrom$C ( Mongoose ) {
 
 }
 
-function _createSchema$C ( Mongoose ) {
+function _createSchema$C( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -10866,7 +10873,7 @@ function _createSchema$C ( Mongoose ) {
 
 }
 
-function getModelFrom$t ( Mongoose ) {
+function getModelFrom$t( Mongoose ) {
 
     if ( !_model$t ) {
         _createModel$t( Mongoose );
@@ -10876,14 +10883,14 @@ function getModelFrom$t ( Mongoose ) {
 
 }
 
-function _createModel$t ( Mongoose ) {
+function _createModel$t( Mongoose ) {
 
     const MaterialBaseModel = Material$8.getModelFrom( Mongoose );
     _model$t                  = MaterialBaseModel.discriminator( 'MeshPhongMaterial', getSchemaFrom$C( Mongoose ) );
 
 }
 
-function registerModelTo$t ( Mongoose ) {
+function registerModelTo$t( Mongoose ) {
 
     if ( !_model$t ) {
         _createModel$t( Mongoose );
@@ -10915,7 +10922,7 @@ const { Material: Material$7 } = Material$f;
 let _schema$B = undefined;
 let _model$s  = undefined;
 
-function getSchemaFrom$B ( Mongoose ) {
+function getSchemaFrom$B( Mongoose ) {
 
     if ( !_schema$B ) {
         _createSchema$B( Mongoose );
@@ -10925,7 +10932,7 @@ function getSchemaFrom$B ( Mongoose ) {
 
 }
 
-function _createSchema$B ( Mongoose ) {
+function _createSchema$B( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -10937,7 +10944,7 @@ function _createSchema$B ( Mongoose ) {
 
 }
 
-function getModelFrom$s ( Mongoose ) {
+function getModelFrom$s( Mongoose ) {
 
     if ( !_model$s ) {
         _createModel$s( Mongoose );
@@ -10947,14 +10954,14 @@ function getModelFrom$s ( Mongoose ) {
 
 }
 
-function _createModel$s ( Mongoose ) {
+function _createModel$s( Mongoose ) {
 
     const MaterialBaseModel = Material$7.getModelFrom( Mongoose );
     _model$s                  = MaterialBaseModel.discriminator( 'MeshPhysicalMaterial', getSchemaFrom$B( Mongoose ) );
 
 }
 
-function registerModelTo$s ( Mongoose ) {
+function registerModelTo$s( Mongoose ) {
 
     if ( !_model$s ) {
         _createModel$s( Mongoose );
@@ -10986,7 +10993,7 @@ const { Material: Material$6 } = Material$f;
 let _schema$A = undefined;
 let _model$r  = undefined;
 
-function getSchemaFrom$A ( Mongoose ) {
+function getSchemaFrom$A( Mongoose ) {
 
     if ( !_schema$A ) {
         _createSchema$A( Mongoose );
@@ -10996,7 +11003,7 @@ function getSchemaFrom$A ( Mongoose ) {
 
 }
 
-function _createSchema$A ( Mongoose ) {
+function _createSchema$A( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11040,7 +11047,7 @@ function _createSchema$A ( Mongoose ) {
 
 }
 
-function getModelFrom$r ( Mongoose ) {
+function getModelFrom$r( Mongoose ) {
 
     if ( !_model$r ) {
         _createModel$r( Mongoose );
@@ -11050,14 +11057,14 @@ function getModelFrom$r ( Mongoose ) {
 
 }
 
-function _createModel$r ( Mongoose ) {
+function _createModel$r( Mongoose ) {
 
     const MaterialBaseModel = Material$6.getModelFrom( Mongoose );
     _model$r                  = MaterialBaseModel.discriminator( 'MeshStandardMaterial', getSchemaFrom$A( Mongoose ) );
 
 }
 
-function registerModelTo$r ( Mongoose ) {
+function registerModelTo$r( Mongoose ) {
 
     if ( !_model$r ) {
         _createModel$r( Mongoose );
@@ -11089,7 +11096,7 @@ const { Material: Material$5 } = Material$f;
 let _schema$z = undefined;
 let _model$q  = undefined;
 
-function getSchemaFrom$z ( Mongoose ) {
+function getSchemaFrom$z( Mongoose ) {
 
     if ( !_schema$z ) {
         _createSchema$z( Mongoose );
@@ -11099,7 +11106,7 @@ function getSchemaFrom$z ( Mongoose ) {
 
 }
 
-function _createSchema$z ( Mongoose ) {
+function _createSchema$z( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11147,7 +11154,7 @@ function _createSchema$z ( Mongoose ) {
 
 }
 
-function getModelFrom$q ( Mongoose ) {
+function getModelFrom$q( Mongoose ) {
 
     if ( !_model$q ) {
         _createModel$q( Mongoose );
@@ -11157,14 +11164,14 @@ function getModelFrom$q ( Mongoose ) {
 
 }
 
-function _createModel$q ( Mongoose ) {
+function _createModel$q( Mongoose ) {
 
     const MaterialBaseModel = Material$5.getModelFrom( Mongoose );
     _model$q                  = MaterialBaseModel.discriminator( 'MeshToonMaterial', getSchemaFrom$z( Mongoose ) );
 
 }
 
-function registerModelTo$q ( Mongoose ) {
+function registerModelTo$q( Mongoose ) {
 
     if ( !_model$q ) {
         _createModel$q( Mongoose );
@@ -11196,7 +11203,7 @@ const { Material: Material$4 } = Material$f;
 let _schema$y = undefined;
 let _model$p  = undefined;
 
-function getSchemaFrom$y ( Mongoose ) {
+function getSchemaFrom$y( Mongoose ) {
 
     if ( !_schema$y ) {
         _createSchema$y( Mongoose );
@@ -11206,7 +11213,7 @@ function getSchemaFrom$y ( Mongoose ) {
 
 }
 
-function _createSchema$y ( Mongoose ) {
+function _createSchema$y( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -11223,7 +11230,7 @@ function _createSchema$y ( Mongoose ) {
 
 }
 
-function getModelFrom$p ( Mongoose ) {
+function getModelFrom$p( Mongoose ) {
 
     if ( !_model$p ) {
         _createModel$p( Mongoose );
@@ -11233,14 +11240,14 @@ function getModelFrom$p ( Mongoose ) {
 
 }
 
-function _createModel$p ( Mongoose ) {
+function _createModel$p( Mongoose ) {
 
     const MaterialBaseModel = Material$4.getModelFrom( Mongoose );
     _model$p                  = MaterialBaseModel.discriminator( 'PointsMaterial', getSchemaFrom$y( Mongoose ) );
 
 }
 
-function registerModelTo$p ( Mongoose ) {
+function registerModelTo$p( Mongoose ) {
 
     if ( !_model$p ) {
         _createModel$p( Mongoose );
@@ -11272,7 +11279,7 @@ const { Material: Material$3 } = Material$f;
 let _schema$x = undefined;
 let _model$o  = undefined;
 
-function getSchemaFrom$x ( Mongoose ) {
+function getSchemaFrom$x( Mongoose ) {
 
     if ( !_schema$x ) {
         _createSchema$x( Mongoose );
@@ -11282,7 +11289,7 @@ function getSchemaFrom$x ( Mongoose ) {
 
 }
 
-function _createSchema$x ( Mongoose ) {
+function _createSchema$x( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -11313,7 +11320,7 @@ function _createSchema$x ( Mongoose ) {
 
 }
 
-function getModelFrom$o ( Mongoose ) {
+function getModelFrom$o( Mongoose ) {
 
     if ( !_model$o ) {
         _createModel$o( Mongoose );
@@ -11323,14 +11330,14 @@ function getModelFrom$o ( Mongoose ) {
 
 }
 
-function _createModel$o ( Mongoose ) {
+function _createModel$o( Mongoose ) {
 
     const MaterialBaseModel = Material$3.getModelFrom( Mongoose );
     _model$o                  = MaterialBaseModel.discriminator( 'RawShaderMaterial', getSchemaFrom$x( Mongoose ) );
 
 }
 
-function registerModelTo$o ( Mongoose ) {
+function registerModelTo$o( Mongoose ) {
 
     if ( !_model$o ) {
         _createModel$o( Mongoose );
@@ -11362,7 +11369,7 @@ const { Material: Material$2 } = Material$f;
 let _schema$w = undefined;
 let _model$n  = undefined;
 
-function getSchemaFrom$w ( Mongoose ) {
+function getSchemaFrom$w( Mongoose ) {
 
     if ( !_schema$w ) {
         _createSchema$w( Mongoose );
@@ -11372,7 +11379,7 @@ function getSchemaFrom$w ( Mongoose ) {
 
 }
 
-function _createSchema$w ( Mongoose ) {
+function _createSchema$w( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -11400,7 +11407,7 @@ function _createSchema$w ( Mongoose ) {
 
 }
 
-function getModelFrom$n ( Mongoose ) {
+function getModelFrom$n( Mongoose ) {
 
     if ( !_model$n ) {
         _createModel$n( Mongoose );
@@ -11410,14 +11417,14 @@ function getModelFrom$n ( Mongoose ) {
 
 }
 
-function _createModel$n ( Mongoose ) {
+function _createModel$n( Mongoose ) {
 
     const MaterialBaseModel = Material$2.getModelFrom( Mongoose );
     _model$n                  = MaterialBaseModel.discriminator( 'ShaderMaterial', getSchemaFrom$w( Mongoose ) );
 
 }
 
-function registerModelTo$n ( Mongoose ) {
+function registerModelTo$n( Mongoose ) {
 
     if ( !_model$n ) {
         _createModel$n( Mongoose );
@@ -11449,7 +11456,7 @@ const { Material: Material$1 } = Material$f;
 let _schema$v = undefined;
 let _model$m  = undefined;
 
-function getSchemaFrom$v ( Mongoose ) {
+function getSchemaFrom$v( Mongoose ) {
 
     if ( !_schema$v ) {
         _createSchema$v( Mongoose );
@@ -11459,7 +11466,7 @@ function getSchemaFrom$v ( Mongoose ) {
 
 }
 
-function _createSchema$v ( Mongoose ) {
+function _createSchema$v( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -11474,7 +11481,7 @@ function _createSchema$v ( Mongoose ) {
 
 }
 
-function getModelFrom$m ( Mongoose ) {
+function getModelFrom$m( Mongoose ) {
 
     if ( !_model$m ) {
         _createModel$m( Mongoose );
@@ -11484,14 +11491,14 @@ function getModelFrom$m ( Mongoose ) {
 
 }
 
-function _createModel$m ( Mongoose ) {
+function _createModel$m( Mongoose ) {
 
     const MaterialBaseModel = Material$1.getModelFrom( Mongoose );
     _model$m                  = MaterialBaseModel.discriminator( 'ShadowMaterial', getSchemaFrom$v( Mongoose ) );
 
 }
 
-function registerModelTo$m ( Mongoose ) {
+function registerModelTo$m( Mongoose ) {
 
     if ( !_model$m ) {
         _createModel$m( Mongoose );
@@ -11523,7 +11530,7 @@ const { Material } = Material$f;
 let _schema$u = undefined;
 let _model$l  = undefined;
 
-function getSchemaFrom$u ( Mongoose ) {
+function getSchemaFrom$u( Mongoose ) {
 
     if ( !_schema$u ) {
         _createSchema$u( Mongoose );
@@ -11533,7 +11540,7 @@ function getSchemaFrom$u ( Mongoose ) {
 
 }
 
-function _createSchema$u ( Mongoose ) {
+function _createSchema$u( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -11550,7 +11557,7 @@ function _createSchema$u ( Mongoose ) {
 
 }
 
-function getModelFrom$l ( Mongoose ) {
+function getModelFrom$l( Mongoose ) {
 
     if ( !_model$l ) {
         _createModel$l( Mongoose );
@@ -11560,14 +11567,14 @@ function getModelFrom$l ( Mongoose ) {
 
 }
 
-function _createModel$l ( Mongoose ) {
+function _createModel$l( Mongoose ) {
 
     const MaterialBaseModel = Material.getModelFrom( Mongoose );
     _model$l                  = MaterialBaseModel.discriminator( 'SpriteMaterial', getSchemaFrom$u( Mongoose ) );
 
 }
 
-function registerModelTo$l ( Mongoose ) {
+function registerModelTo$l( Mongoose ) {
 
     if ( !_model$l ) {
         _createModel$l( Mongoose );
@@ -11594,7 +11601,7 @@ var SpriteMaterial_1 = {
 
 let _schema$t = undefined;
 
-function getSchemaFrom$t ( Mongoose ) {
+function getSchemaFrom$t( Mongoose ) {
 
     if ( !_schema$t ) {
         _createSchema$t( Mongoose );
@@ -11604,7 +11611,7 @@ function getSchemaFrom$t ( Mongoose ) {
 
 }
 
-function _createSchema$t ( Mongoose ) {
+function _createSchema$t( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11637,7 +11644,7 @@ var Box2_1 = {
 
 let _schema$s = undefined;
 
-function getSchemaFrom$s ( Mongoose ) {
+function getSchemaFrom$s( Mongoose ) {
 
     if ( !_schema$s ) {
         _createSchema$s( Mongoose );
@@ -11647,7 +11654,7 @@ function getSchemaFrom$s ( Mongoose ) {
 
 }
 
-function _createSchema$s ( Mongoose ) {
+function _createSchema$s( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11680,7 +11687,7 @@ var Box3_1 = {
 
 let _schema$r = undefined;
 
-function getSchemaFrom$r ( Mongoose ) {
+function getSchemaFrom$r( Mongoose ) {
 
     if ( !_schema$r ) {
         _createSchema$r( Mongoose );
@@ -11690,7 +11697,7 @@ function getSchemaFrom$r ( Mongoose ) {
 
 }
 
-function _createSchema$r ( Mongoose ) {
+function _createSchema$r( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11723,7 +11730,7 @@ var Line3_1 = {
 
 let _schema$q = undefined;
 
-function getSchemaFrom$q ( Mongoose ) {
+function getSchemaFrom$q( Mongoose ) {
 
     if ( !_schema$q ) {
         _createSchema$q( Mongoose );
@@ -11733,7 +11740,7 @@ function getSchemaFrom$q ( Mongoose ) {
 
 }
 
-function _createSchema$q ( Mongoose ) {
+function _createSchema$q( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11766,7 +11773,7 @@ var Plane_1 = {
 
 let _schema$p = undefined;
 
-function getSchemaFrom$p ( Mongoose ) {
+function getSchemaFrom$p( Mongoose ) {
 
     if ( !_schema$p ) {
         _createSchema$p( Mongoose );
@@ -11776,7 +11783,7 @@ function getSchemaFrom$p ( Mongoose ) {
 
 }
 
-function _createSchema$p ( Mongoose ) {
+function _createSchema$p( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11809,7 +11816,7 @@ var Ray_1 = {
 
 let _schema$o = undefined;
 
-function getSchemaFrom$o ( Mongoose ) {
+function getSchemaFrom$o( Mongoose ) {
 
     if ( !_schema$o ) {
         _createSchema$o( Mongoose );
@@ -11819,7 +11826,7 @@ function getSchemaFrom$o ( Mongoose ) {
 
 }
 
-function _createSchema$o ( Mongoose ) {
+function _createSchema$o( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11852,7 +11859,7 @@ var Sphere_1 = {
 
 let _schema$n = undefined;
 
-function getSchemaFrom$n ( Mongoose ) {
+function getSchemaFrom$n( Mongoose ) {
 
     if ( !_schema$n ) {
         _createSchema$n( Mongoose );
@@ -11862,7 +11869,7 @@ function getSchemaFrom$n ( Mongoose ) {
 
 }
 
-function _createSchema$n ( Mongoose ) {
+function _createSchema$n( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -11894,7 +11901,7 @@ var Spherical_1 = {
 
 let _schema$m = undefined;
 
-function getSchemaFrom$m ( Mongoose ) {
+function getSchemaFrom$m( Mongoose ) {
 
     if ( !_schema$m ) {
         _createSchema$m( Mongoose );
@@ -11904,7 +11911,7 @@ function getSchemaFrom$m ( Mongoose ) {
 
 }
 
-function _createSchema$m ( Mongoose ) {
+function _createSchema$m( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
@@ -11943,7 +11950,7 @@ const { Object3D: Object3D$c } = require$$0$2;
 let _schema$l = undefined;
 let _model$k  = undefined;
 
-function getSchemaFrom$l ( Mongoose ) {
+function getSchemaFrom$l( Mongoose ) {
 
     if ( !_schema$l ) {
         _createSchema$l( Mongoose );
@@ -11953,7 +11960,7 @@ function getSchemaFrom$l ( Mongoose ) {
 
 }
 
-function _createSchema$l ( Mongoose ) {
+function _createSchema$l( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -11961,7 +11968,7 @@ function _createSchema$l ( Mongoose ) {
 
 }
 
-function getModelFrom$k ( Mongoose ) {
+function getModelFrom$k( Mongoose ) {
 
     if ( !_model$k ) {
         _createModel$k( Mongoose );
@@ -11971,14 +11978,14 @@ function getModelFrom$k ( Mongoose ) {
 
 }
 
-function _createModel$k ( Mongoose ) {
+function _createModel$k( Mongoose ) {
 
     const Object3DBaseModel = Object3D$c.getModelFrom( Mongoose );
     _model$k                  = Object3DBaseModel.discriminator( 'Bone', getSchemaFrom$l( Mongoose ) );
 
 }
 
-function registerModelTo$k ( Mongoose ) {
+function registerModelTo$k( Mongoose ) {
 
     if ( !_model$k ) {
         _createModel$k( Mongoose );
@@ -12008,7 +12015,7 @@ var Bone_1 = {
 let _schema$k = undefined;
 let _model$j  = undefined;
 
-function getSchemaFrom$k ( Mongoose ) {
+function getSchemaFrom$k( Mongoose ) {
 
     if ( !_schema$k ) {
         _createSchema$k( Mongoose );
@@ -12018,7 +12025,7 @@ function getSchemaFrom$k ( Mongoose ) {
 
 }
 
-function _createSchema$k ( Mongoose ) {
+function _createSchema$k( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -12026,7 +12033,7 @@ function _createSchema$k ( Mongoose ) {
 
 }
 
-function getModelFrom$j ( Mongoose ) {
+function getModelFrom$j( Mongoose ) {
 
     if ( !_model$j ) {
         _createModel$j( Mongoose );
@@ -12036,14 +12043,14 @@ function getModelFrom$j ( Mongoose ) {
 
 }
 
-function _createModel$j ( Mongoose ) {
+function _createModel$j( Mongoose ) {
 
     const Object3DBaseModel = Object3D$I.getModelFrom( Mongoose );
     _model$j                  = Object3DBaseModel.discriminator( 'Group', getSchemaFrom$k( Mongoose ) );
 
 }
 
-function registerModelTo$j ( Mongoose ) {
+function registerModelTo$j( Mongoose ) {
 
     if ( !_model$j ) {
         _createModel$j( Mongoose );
@@ -12075,7 +12082,7 @@ const { Object3D: Object3D$b } = require$$0$2;
 let _schema$j = undefined;
 let _model$i  = undefined;
 
-function getSchemaFrom$j ( Mongoose ) {
+function getSchemaFrom$j( Mongoose ) {
 
     if ( !_schema$j ) {
         _createSchema$j( Mongoose );
@@ -12085,7 +12092,7 @@ function getSchemaFrom$j ( Mongoose ) {
 
 }
 
-function _createSchema$j ( Mongoose ) {
+function _createSchema$j( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -12093,7 +12100,7 @@ function _createSchema$j ( Mongoose ) {
 
 }
 
-function getModelFrom$i ( Mongoose ) {
+function getModelFrom$i( Mongoose ) {
 
     if ( !_model$i ) {
         _createModel$i( Mongoose );
@@ -12103,14 +12110,14 @@ function getModelFrom$i ( Mongoose ) {
 
 }
 
-function _createModel$i ( Mongoose ) {
+function _createModel$i( Mongoose ) {
 
     const Object3DBaseModel = Object3D$b.getModelFrom( Mongoose );
     _model$i                  = Object3DBaseModel.discriminator( 'ImmediateRenderObject', getSchemaFrom$j( Mongoose ) );
 
 }
 
-function registerModelTo$i ( Mongoose ) {
+function registerModelTo$i( Mongoose ) {
 
     if ( !_model$i ) {
         _createModel$i( Mongoose );
@@ -12142,7 +12149,7 @@ const { Object3D: Object3D$a } = require$$0$2;
 let _schema$i = undefined;
 let _model$h  = undefined;
 
-function getSchemaFrom$i ( Mongoose ) {
+function getSchemaFrom$i( Mongoose ) {
 
     if ( !_schema$i ) {
         _createSchema$i( Mongoose );
@@ -12152,7 +12159,7 @@ function getSchemaFrom$i ( Mongoose ) {
 
 }
 
-function _createSchema$i ( Mongoose ) {
+function _createSchema$i( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12161,25 +12168,27 @@ function _createSchema$i ( Mongoose ) {
     const Vector3  = Types.Vector3;
 
     _schema$i = new Schema( {
-        lensFlares: [ {
-            texture:  ObjectId,
-            size:     Number,
-            distance: Number,
-            x:        Number,
-            y:        Number,
-            z:        Number,
-            scale:    Number,
-            rotation: Number,
-            opacity:  Number,
-            color:    Color,
-            blending: Number
-        } ],
+        lensFlares: [
+            {
+                texture:  ObjectId,
+                size:     Number,
+                distance: Number,
+                x:        Number,
+                y:        Number,
+                z:        Number,
+                scale:    Number,
+                rotation: Number,
+                opacity:  Number,
+                color:    Color,
+                blending: Number
+            }
+        ],
         positionScreen: Vector3
     } );
 
 }
 
-function getModelFrom$h ( Mongoose ) {
+function getModelFrom$h( Mongoose ) {
 
     if ( !_model$h ) {
         _createModel$h( Mongoose );
@@ -12189,14 +12198,14 @@ function getModelFrom$h ( Mongoose ) {
 
 }
 
-function _createModel$h ( Mongoose ) {
+function _createModel$h( Mongoose ) {
 
     const Object3DBaseModel = Object3D$a.getModelFrom( Mongoose );
     _model$h                  = Object3DBaseModel.discriminator( 'LensFlare', getSchemaFrom$i( Mongoose ) );
 
 }
 
-function registerModelTo$h ( Mongoose ) {
+function registerModelTo$h( Mongoose ) {
 
     if ( !_model$h ) {
         _createModel$h( Mongoose );
@@ -12228,7 +12237,7 @@ const { Object3D: Object3D$9 } = require$$0$2;
 let _schema$h = undefined;
 let _model$g  = undefined;
 
-function getSchemaFrom$h ( Mongoose ) {
+function getSchemaFrom$h( Mongoose ) {
 
     if ( !_schema$h ) {
         _createSchema$h( Mongoose );
@@ -12238,7 +12247,7 @@ function getSchemaFrom$h ( Mongoose ) {
 
 }
 
-function _createSchema$h ( Mongoose ) {
+function _createSchema$h( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12249,16 +12258,18 @@ function _createSchema$h ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'LineBasicMaterial'
+            }
+        ],
         drawMode: Number
     } );
 
 }
 
-function getModelFrom$g ( Mongoose ) {
+function getModelFrom$g( Mongoose ) {
 
     if ( !_model$g ) {
         _createModel$g( Mongoose );
@@ -12268,14 +12279,14 @@ function getModelFrom$g ( Mongoose ) {
 
 }
 
-function _createModel$g ( Mongoose ) {
+function _createModel$g( Mongoose ) {
 
     const Object3DBaseModel = Object3D$9.getModelFrom( Mongoose );
     _model$g                  = Object3DBaseModel.discriminator( 'Line', getSchemaFrom$h( Mongoose ) );
 
 }
 
-function registerModelTo$g ( Mongoose ) {
+function registerModelTo$g( Mongoose ) {
 
     if ( !_model$g ) {
         _createModel$g( Mongoose );
@@ -12307,7 +12318,7 @@ const { Object3D: Object3D$8 } = require$$0$2;
 let _schema$g = undefined;
 let _model$f  = undefined;
 
-function getSchemaFrom$g ( Mongoose ) {
+function getSchemaFrom$g( Mongoose ) {
 
     if ( !_schema$g ) {
         _createSchema$g( Mongoose );
@@ -12317,7 +12328,7 @@ function getSchemaFrom$g ( Mongoose ) {
 
 }
 
-function _createSchema$g ( Mongoose ) {
+function _createSchema$g( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12328,16 +12339,18 @@ function _createSchema$g ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'LineBasicMaterial'
+            }
+        ],
         drawMode: Number
     } );
 
 }
 
-function getModelFrom$f ( Mongoose ) {
+function getModelFrom$f( Mongoose ) {
 
     if ( !_model$f ) {
         _createModel$f( Mongoose );
@@ -12347,14 +12360,14 @@ function getModelFrom$f ( Mongoose ) {
 
 }
 
-function _createModel$f ( Mongoose ) {
+function _createModel$f( Mongoose ) {
 
     const Object3DBaseModel = Object3D$8.getModelFrom( Mongoose );
     _model$f                  = Object3DBaseModel.discriminator( 'LineLoop', getSchemaFrom$g( Mongoose ) );
 
 }
 
-function registerModelTo$f ( Mongoose ) {
+function registerModelTo$f( Mongoose ) {
 
     if ( !_model$f ) {
         _createModel$f( Mongoose );
@@ -12386,7 +12399,7 @@ const { Object3D: Object3D$7 } = require$$0$2;
 let _schema$f = undefined;
 let _model$e  = undefined;
 
-function getSchemaFrom$f ( Mongoose ) {
+function getSchemaFrom$f( Mongoose ) {
 
     if ( !_schema$f ) {
         _createSchema$f( Mongoose );
@@ -12396,7 +12409,7 @@ function getSchemaFrom$f ( Mongoose ) {
 
 }
 
-function _createSchema$f ( Mongoose ) {
+function _createSchema$f( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12407,16 +12420,18 @@ function _createSchema$f ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'LineBasicMaterial'
+            }
+        ],
         drawMode: Number
     } );
 
 }
 
-function getModelFrom$e ( Mongoose ) {
+function getModelFrom$e( Mongoose ) {
 
     if ( !_model$e ) {
         _createModel$e( Mongoose );
@@ -12426,14 +12441,14 @@ function getModelFrom$e ( Mongoose ) {
 
 }
 
-function _createModel$e ( Mongoose ) {
+function _createModel$e( Mongoose ) {
 
     const Object3DBaseModel = Object3D$7.getModelFrom( Mongoose );
     _model$e                  = Object3DBaseModel.discriminator( 'LineSegments', getSchemaFrom$f( Mongoose ) );
 
 }
 
-function registerModelTo$e ( Mongoose ) {
+function registerModelTo$e( Mongoose ) {
 
     if ( !_model$e ) {
         _createModel$e( Mongoose );
@@ -12465,7 +12480,7 @@ const { Object3D: Object3D$6 } = require$$0$2;
 let _schema$e = undefined;
 let _model$d  = undefined;
 
-function getSchemaFrom$e ( Mongoose ) {
+function getSchemaFrom$e( Mongoose ) {
 
     if ( !_schema$e ) {
         _createSchema$e( Mongoose );
@@ -12475,7 +12490,7 @@ function getSchemaFrom$e ( Mongoose ) {
 
 }
 
-function _createSchema$e ( Mongoose ) {
+function _createSchema$e( Mongoose ) {
 
     const Schema = Mongoose.Schema;
     const Types  = Schema.Types;
@@ -12487,7 +12502,7 @@ function _createSchema$e ( Mongoose ) {
 
 }
 
-function getModelFrom$d ( Mongoose ) {
+function getModelFrom$d( Mongoose ) {
 
     if ( !_model$d ) {
         _createModel$d( Mongoose );
@@ -12497,14 +12512,14 @@ function getModelFrom$d ( Mongoose ) {
 
 }
 
-function _createModel$d ( Mongoose ) {
+function _createModel$d( Mongoose ) {
 
     const Object3DBaseModel = Object3D$6.getModelFrom( Mongoose );
     _model$d                  = Object3DBaseModel.discriminator( 'LOD', getSchemaFrom$e( Mongoose ) );
 
 }
 
-function registerModelTo$d ( Mongoose ) {
+function registerModelTo$d( Mongoose ) {
 
     if ( !_model$d ) {
         _createModel$d( Mongoose );
@@ -12536,7 +12551,7 @@ const { Object3D: Object3D$5 } = require$$0$2;
 let _schema$d = undefined;
 let _model$c  = undefined;
 
-function getSchemaFrom$d ( Mongoose ) {
+function getSchemaFrom$d( Mongoose ) {
 
     if ( !_schema$d ) {
         _createSchema$d( Mongoose );
@@ -12546,7 +12561,7 @@ function getSchemaFrom$d ( Mongoose ) {
 
 }
 
-function _createSchema$d ( Mongoose ) {
+function _createSchema$d( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12557,16 +12572,18 @@ function _createSchema$d ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'Material'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'Material'
+            }
+        ],
         drawMode: Number
     } );
 
 }
 
-function getModelFrom$c ( Mongoose ) {
+function getModelFrom$c( Mongoose ) {
 
     if ( !_model$c ) {
         _createModel$c( Mongoose );
@@ -12576,14 +12593,14 @@ function getModelFrom$c ( Mongoose ) {
 
 }
 
-function _createModel$c ( Mongoose ) {
+function _createModel$c( Mongoose ) {
 
     const Object3DBaseModel = Object3D$5.getModelFrom( Mongoose );
     _model$c                  = Object3DBaseModel.discriminator( 'Mesh', getSchemaFrom$d( Mongoose ) );
 
 }
 
-function registerModelTo$c ( Mongoose ) {
+function registerModelTo$c( Mongoose ) {
 
     if ( !_model$c ) {
         _createModel$c( Mongoose );
@@ -12615,7 +12632,7 @@ const { Object3D: Object3D$4 } = require$$0$2;
 let _schema$c = undefined;
 let _model$b  = undefined;
 
-function getSchemaFrom$c ( Mongoose ) {
+function getSchemaFrom$c( Mongoose ) {
 
     if ( !_schema$c ) {
         _createSchema$c( Mongoose );
@@ -12625,7 +12642,7 @@ function getSchemaFrom$c ( Mongoose ) {
 
 }
 
-function _createSchema$c ( Mongoose ) {
+function _createSchema$c( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12636,16 +12653,18 @@ function _createSchema$c ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'PointsMaterial'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'PointsMaterial'
+            }
+        ],
         drawMode: Number
     } );
 
 }
 
-function getModelFrom$b ( Mongoose ) {
+function getModelFrom$b( Mongoose ) {
 
     if ( !_model$b ) {
         _createModel$b( Mongoose );
@@ -12655,14 +12674,14 @@ function getModelFrom$b ( Mongoose ) {
 
 }
 
-function _createModel$b ( Mongoose ) {
+function _createModel$b( Mongoose ) {
 
     const Object3DBaseModel = Object3D$4.getModelFrom( Mongoose );
     _model$b                  = Object3DBaseModel.discriminator( 'Points', getSchemaFrom$c( Mongoose ) );
 
 }
 
-function registerModelTo$b ( Mongoose ) {
+function registerModelTo$b( Mongoose ) {
 
     if ( !_model$b ) {
         _createModel$b( Mongoose );
@@ -12694,7 +12713,7 @@ const { Object3D: Object3D$3 } = require$$0$2;
 let _schema$b = undefined;
 let _model$a  = undefined;
 
-function getSchemaFrom$b ( Mongoose ) {
+function getSchemaFrom$b( Mongoose ) {
 
     if ( !_schema$b ) {
         _createSchema$b( Mongoose );
@@ -12704,7 +12723,7 @@ function getSchemaFrom$b ( Mongoose ) {
 
 }
 
-function _createSchema$b ( Mongoose ) {
+function _createSchema$b( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12717,7 +12736,7 @@ function _createSchema$b ( Mongoose ) {
 
 }
 
-function getModelFrom$a ( Mongoose ) {
+function getModelFrom$a( Mongoose ) {
 
     if ( !_model$a ) {
         _createModel$a( Mongoose );
@@ -12727,14 +12746,14 @@ function getModelFrom$a ( Mongoose ) {
 
 }
 
-function _createModel$a ( Mongoose ) {
+function _createModel$a( Mongoose ) {
 
     const Object3DBaseModel = Object3D$3.getModelFrom( Mongoose );
     _model$a                  = Object3DBaseModel.discriminator( 'Skeleton', getSchemaFrom$b( Mongoose ) );
 
 }
 
-function registerModelTo$a ( Mongoose ) {
+function registerModelTo$a( Mongoose ) {
 
     if ( !_model$a ) {
         _createModel$a( Mongoose );
@@ -12766,7 +12785,7 @@ const { Object3D: Object3D$2 } = require$$0$2;
 let _schema$a = undefined;
 let _model$9  = undefined;
 
-function getSchemaFrom$a ( Mongoose ) {
+function getSchemaFrom$a( Mongoose ) {
 
     if ( !_schema$a ) {
         _createSchema$a( Mongoose );
@@ -12776,7 +12795,7 @@ function getSchemaFrom$a ( Mongoose ) {
 
 }
 
-function _createSchema$a ( Mongoose ) {
+function _createSchema$a( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -12788,10 +12807,12 @@ function _createSchema$a ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'Material'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'Material'
+            }
+        ],
         drawMode: Number,
 
         // SkinnedMesh
@@ -12803,7 +12824,7 @@ function _createSchema$a ( Mongoose ) {
 
 }
 
-function getModelFrom$9 ( Mongoose ) {
+function getModelFrom$9( Mongoose ) {
 
     if ( !_model$9 ) {
         _createModel$9( Mongoose );
@@ -12813,14 +12834,14 @@ function getModelFrom$9 ( Mongoose ) {
 
 }
 
-function _createModel$9 ( Mongoose ) {
+function _createModel$9( Mongoose ) {
 
     const Object3DBaseModel = Object3D$2.getModelFrom( Mongoose );
     _model$9                  = Object3DBaseModel.discriminator( 'SkinnedMesh', getSchemaFrom$a( Mongoose ) );
 
 }
 
-function registerModelTo$9 ( Mongoose ) {
+function registerModelTo$9( Mongoose ) {
 
     if ( !_model$9 ) {
         _createModel$9( Mongoose );
@@ -12852,7 +12873,7 @@ const { Object3D: Object3D$1 } = require$$0$2;
 let _schema$9 = undefined;
 let _model$8  = undefined;
 
-function getSchemaFrom$9 ( Mongoose ) {
+function getSchemaFrom$9( Mongoose ) {
 
     if ( !_schema$9 ) {
         _createSchema$9( Mongoose );
@@ -12862,22 +12883,24 @@ function getSchemaFrom$9 ( Mongoose ) {
 
 }
 
-function _createSchema$9 ( Mongoose ) {
+function _createSchema$9( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
     const ObjectId = Types.ObjectId;
 
     _schema$9 = new Schema( {
-        material: [ {
-            type: ObjectId,
-            ref:  'SpriteMaterial'
-        } ]
+        material: [
+            {
+                type: ObjectId,
+                ref:  'SpriteMaterial'
+            }
+        ]
     } );
 
 }
 
-function getModelFrom$8 ( Mongoose ) {
+function getModelFrom$8( Mongoose ) {
 
     if ( !_model$8 ) {
         _createModel$8( Mongoose );
@@ -12887,14 +12910,14 @@ function getModelFrom$8 ( Mongoose ) {
 
 }
 
-function _createModel$8 ( Mongoose ) {
+function _createModel$8( Mongoose ) {
 
     const Object3DBaseModel = Object3D$1.getModelFrom( Mongoose );
     _model$8                  = Object3DBaseModel.discriminator( 'Sprite', getSchemaFrom$9( Mongoose ) );
 
 }
 
-function registerModelTo$8 ( Mongoose ) {
+function registerModelTo$8( Mongoose ) {
 
     if ( !_model$8 ) {
         _createModel$8( Mongoose );
@@ -12925,7 +12948,7 @@ var Fog$1 = {};
 
 let _schema$8 = undefined;
 
-function getSchemaFrom$8 ( Mongoose ) {
+function getSchemaFrom$8( Mongoose ) {
 
     if ( !_schema$8 ) {
         _createSchema$8( Mongoose );
@@ -12935,7 +12958,7 @@ function getSchemaFrom$8 ( Mongoose ) {
 
 }
 
-function _createSchema$8 ( Mongoose ) {
+function _createSchema$8( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -12983,7 +13006,7 @@ const { Fog }      = Fog$1;
 let _schema$7 = undefined;
 let _model$7  = undefined;
 
-function getSchemaFrom$7 ( Mongoose ) {
+function getSchemaFrom$7( Mongoose ) {
 
     if ( !_schema$7 ) {
         _createSchema$7( Mongoose );
@@ -12993,7 +13016,7 @@ function getSchemaFrom$7 ( Mongoose ) {
 
 }
 
-function _createSchema$7 ( Mongoose ) {
+function _createSchema$7( Mongoose ) {
 
     const FogSchema = Fog.getSchemaFrom( Mongoose );
     const Schema    = Mongoose.Schema;
@@ -13009,7 +13032,7 @@ function _createSchema$7 ( Mongoose ) {
 
 }
 
-function getModelFrom$7 ( Mongoose ) {
+function getModelFrom$7( Mongoose ) {
 
     if ( !_model$7 ) {
         _createModel$7( Mongoose );
@@ -13019,14 +13042,14 @@ function getModelFrom$7 ( Mongoose ) {
 
 }
 
-function _createModel$7 ( Mongoose ) {
+function _createModel$7( Mongoose ) {
 
     const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
     _model$7                  = Object3DBaseModel.discriminator( 'Scene', getSchemaFrom$7( Mongoose ) );
 
 }
 
-function registerModelTo$7 ( Mongoose ) {
+function registerModelTo$7( Mongoose ) {
 
     if ( !_model$7 ) {
         _createModel$7( Mongoose );
@@ -13055,7 +13078,7 @@ var Texture$6 = {};
 let _schema$6 = undefined;
 let _model$6  = undefined;
 
-function getSchemaFrom$6 ( Mongoose ) {
+function getSchemaFrom$6( Mongoose ) {
 
     if ( !_schema$6 ) {
         _createSchema$6( Mongoose );
@@ -13065,7 +13088,7 @@ function getSchemaFrom$6 ( Mongoose ) {
 
 }
 
-function _createSchema$6 ( Mongoose ) {
+function _createSchema$6( Mongoose ) {
 
     const Schema   = Mongoose.Schema;
     const Types    = Schema.Types;
@@ -13105,7 +13128,7 @@ function _createSchema$6 ( Mongoose ) {
 
 }
 
-function getModelFrom$6 ( Mongoose ) {
+function getModelFrom$6( Mongoose ) {
 
     if ( !_model$6 ) {
         _createModel$6( Mongoose );
@@ -13115,7 +13138,7 @@ function getModelFrom$6 ( Mongoose ) {
 
 }
 
-function _createModel$6 ( Mongoose ) {
+function _createModel$6( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
@@ -13125,7 +13148,7 @@ function _createModel$6 ( Mongoose ) {
 
 }
 
-function registerModelTo$6 ( Mongoose ) {
+function registerModelTo$6( Mongoose ) {
 
     if ( !_model$6 ) {
         _createModel$6( Mongoose );
@@ -13157,7 +13180,7 @@ const { Texture: Texture$5 } = Texture$6;
 let _schema$5 = undefined;
 let _model$5  = undefined;
 
-function getSchemaFrom$5 ( Mongoose ) {
+function getSchemaFrom$5( Mongoose ) {
 
     if ( !_schema$5 ) {
         _createSchema$5( Mongoose );
@@ -13167,7 +13190,7 @@ function getSchemaFrom$5 ( Mongoose ) {
 
 }
 
-function _createSchema$5 ( Mongoose ) {
+function _createSchema$5( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13177,7 +13200,7 @@ function _createSchema$5 ( Mongoose ) {
 
 }
 
-function getModelFrom$5 ( Mongoose ) {
+function getModelFrom$5( Mongoose ) {
 
     if ( !_model$5 ) {
         _createModel$5( Mongoose );
@@ -13187,14 +13210,14 @@ function getModelFrom$5 ( Mongoose ) {
 
 }
 
-function _createModel$5 ( Mongoose ) {
+function _createModel$5( Mongoose ) {
 
     const TextureBaseModel = Texture$5.getModelFrom( Mongoose );
     _model$5                 = TextureBaseModel.discriminator( 'CanvasTexture', getSchemaFrom$5( Mongoose ) );
 
 }
 
-function registerModelTo$5 ( Mongoose ) {
+function registerModelTo$5( Mongoose ) {
 
     if ( !_model$5 ) {
         _createModel$5( Mongoose );
@@ -13226,7 +13249,7 @@ const { Texture: Texture$4 } = Texture$6;
 let _schema$4 = undefined;
 let _model$4  = undefined;
 
-function getSchemaFrom$4 ( Mongoose ) {
+function getSchemaFrom$4( Mongoose ) {
 
     if ( !_schema$4 ) {
         _createSchema$4( Mongoose );
@@ -13236,7 +13259,7 @@ function getSchemaFrom$4 ( Mongoose ) {
 
 }
 
-function _createSchema$4 ( Mongoose ) {
+function _createSchema$4( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13244,7 +13267,7 @@ function _createSchema$4 ( Mongoose ) {
 
 }
 
-function getModelFrom$4 ( Mongoose ) {
+function getModelFrom$4( Mongoose ) {
 
     if ( !_model$4 ) {
         _createModel$4( Mongoose );
@@ -13254,14 +13277,14 @@ function getModelFrom$4 ( Mongoose ) {
 
 }
 
-function _createModel$4 ( Mongoose ) {
+function _createModel$4( Mongoose ) {
 
     const TextureBaseModel = Texture$4.getModelFrom( Mongoose );
     _model$4                 = TextureBaseModel.discriminator( 'CompressedTexture', getSchemaFrom$4( Mongoose ) );
 
 }
 
-function registerModelTo$4 ( Mongoose ) {
+function registerModelTo$4( Mongoose ) {
 
     if ( !_model$4 ) {
         _createModel$4( Mongoose );
@@ -13293,7 +13316,7 @@ const { Texture: Texture$3 } = Texture$6;
 let _schema$3 = undefined;
 let _model$3  = undefined;
 
-function getSchemaFrom$3 ( Mongoose ) {
+function getSchemaFrom$3( Mongoose ) {
 
     if ( !_schema$3 ) {
         _createSchema$3( Mongoose );
@@ -13303,7 +13326,7 @@ function getSchemaFrom$3 ( Mongoose ) {
 
 }
 
-function _createSchema$3 ( Mongoose ) {
+function _createSchema$3( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13311,7 +13334,7 @@ function _createSchema$3 ( Mongoose ) {
 
 }
 
-function getModelFrom$3 ( Mongoose ) {
+function getModelFrom$3( Mongoose ) {
 
     if ( !_model$3 ) {
         _createModel$3( Mongoose );
@@ -13321,14 +13344,14 @@ function getModelFrom$3 ( Mongoose ) {
 
 }
 
-function _createModel$3 ( Mongoose ) {
+function _createModel$3( Mongoose ) {
 
     const TextureBaseModel = Texture$3.getModelFrom( Mongoose );
     _model$3                 = TextureBaseModel.discriminator( 'CubeTexture', getSchemaFrom$3( Mongoose ) );
 
 }
 
-function registerModelTo$3 ( Mongoose ) {
+function registerModelTo$3( Mongoose ) {
 
     if ( !_model$3 ) {
         _createModel$3( Mongoose );
@@ -13360,7 +13383,7 @@ const { Texture: Texture$2 } = Texture$6;
 let _schema$2 = undefined;
 let _model$2  = undefined;
 
-function getSchemaFrom$2 ( Mongoose ) {
+function getSchemaFrom$2( Mongoose ) {
 
     if ( !_schema$2 ) {
         _createSchema$2( Mongoose );
@@ -13370,7 +13393,7 @@ function getSchemaFrom$2 ( Mongoose ) {
 
 }
 
-function _createSchema$2 ( Mongoose ) {
+function _createSchema$2( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13378,7 +13401,7 @@ function _createSchema$2 ( Mongoose ) {
 
 }
 
-function getModelFrom$2 ( Mongoose ) {
+function getModelFrom$2( Mongoose ) {
 
     if ( !_model$2 ) {
         _createModel$2( Mongoose );
@@ -13388,14 +13411,14 @@ function getModelFrom$2 ( Mongoose ) {
 
 }
 
-function _createModel$2 ( Mongoose ) {
+function _createModel$2( Mongoose ) {
 
     const TextureBaseModel = Texture$2.getModelFrom( Mongoose );
     _model$2                 = TextureBaseModel.discriminator( 'DataTexture', getSchemaFrom$2( Mongoose ) );
 
 }
 
-function registerModelTo$2 ( Mongoose ) {
+function registerModelTo$2( Mongoose ) {
 
     if ( !_model$2 ) {
         _createModel$2( Mongoose );
@@ -13427,7 +13450,7 @@ const { Texture: Texture$1 } = Texture$6;
 let _schema$1 = undefined;
 let _model$1  = undefined;
 
-function getSchemaFrom$1 ( Mongoose ) {
+function getSchemaFrom$1( Mongoose ) {
 
     if ( !_schema$1 ) {
         _createSchema$1( Mongoose );
@@ -13437,7 +13460,7 @@ function getSchemaFrom$1 ( Mongoose ) {
 
 }
 
-function _createSchema$1 ( Mongoose ) {
+function _createSchema$1( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13445,7 +13468,7 @@ function _createSchema$1 ( Mongoose ) {
 
 }
 
-function getModelFrom$1 ( Mongoose ) {
+function getModelFrom$1( Mongoose ) {
 
     if ( !_model$1 ) {
         _createModel$1( Mongoose );
@@ -13455,14 +13478,14 @@ function getModelFrom$1 ( Mongoose ) {
 
 }
 
-function _createModel$1 ( Mongoose ) {
+function _createModel$1( Mongoose ) {
 
     const TextureBaseModel = Texture$1.getModelFrom( Mongoose );
     _model$1                 = TextureBaseModel.discriminator( 'DepthTexture', getSchemaFrom$1( Mongoose ) );
 
 }
 
-function registerModelTo$1 ( Mongoose ) {
+function registerModelTo$1( Mongoose ) {
 
     if ( !_model$1 ) {
         _createModel$1( Mongoose );
@@ -13494,7 +13517,7 @@ const { Texture } = Texture$6;
 let _schema = undefined;
 let _model  = undefined;
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
 
     if ( !_schema ) {
         _createSchema( Mongoose );
@@ -13504,7 +13527,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
@@ -13512,7 +13535,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
 
     if ( !_model ) {
         _createModel( Mongoose );
@@ -13522,14 +13545,14 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
 
     const TextureBaseModel = Texture.getModelFrom( Mongoose );
     _model                 = TextureBaseModel.discriminator( 'VideoTexture', getSchemaFrom( Mongoose ) );
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
 
     if ( !_model ) {
         _createModel( Mongoose );
@@ -13562,7 +13585,7 @@ var VideoTexture_1 = {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Color type
  * @returns {Mongoose}
  */
-function ColorType ( Mongoose ) {
+function ColorType( Mongoose ) {
 
     /**
      * The Color type definition class
@@ -13580,7 +13603,7 @@ function ColorType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Color' );
 
@@ -13600,7 +13623,7 @@ function ColorType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument b property is not a number.
          * @returns {{r: Number, b: Number, g: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }
@@ -13654,7 +13677,7 @@ function ColorType ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Euler type
  * @returns {Mongoose}
  */
-function EulerType ( Mongoose ) {
+function EulerType( Mongoose ) {
 
     /**
      * The Euler type definition class
@@ -13671,7 +13694,7 @@ function EulerType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Euler' );
 
@@ -13693,7 +13716,7 @@ function EulerType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument order property is not a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'].
          * @returns {{x: Number, y: Number, z: Number, order: String}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
@@ -13709,7 +13732,9 @@ function EulerType ( Mongoose ) {
 
             if ( !( 'order' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain order property` ) }
             if ( require$$0$3.isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
-            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
+            if ( ![
+                'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'
+            ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
                 x:     value.x,
@@ -13753,7 +13778,7 @@ function EulerType ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix3 type
  * @returns {Mongoose}
  */
-function Matrix3Type ( Mongoose ) {
+function Matrix3Type( Mongoose ) {
 
     /**
      * The Matrix3 type definition class
@@ -13770,7 +13795,7 @@ function Matrix3Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Matrix3' );
 
@@ -13786,7 +13811,7 @@ function Matrix3Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
          * @returns {Array.<Number>} The validated array of length 9
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotArray( value ) && !value.isMatrix3 ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is not an array or Matrix3 instance` ) }
@@ -13856,7 +13881,7 @@ function Matrix3Type ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix4 type
  * @returns {Mongoose}
  */
-function Matrix4Type ( Mongoose ) {
+function Matrix4Type( Mongoose ) {
 
     /**
      * The Matrix4 type definition class
@@ -13873,7 +13898,7 @@ function Matrix4Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Matrix4' );
 
@@ -13889,7 +13914,7 @@ function Matrix4Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
          * @returns {Array.<Number>} The validated array of length 9
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }
@@ -13959,7 +13984,7 @@ function Matrix4Type ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Quaternion type
  * @returns {Mongoose}
  */
-function QuaternionType ( Mongoose ) {
+function QuaternionType( Mongoose ) {
 
     /**
      * The Quaternion type definition class
@@ -13976,7 +14001,7 @@ function QuaternionType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Quaternion' );
 
@@ -13998,7 +14023,7 @@ function QuaternionType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
          * @returns {{x: Number, y: Number, z: Number, w: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }
@@ -14057,7 +14082,7 @@ function QuaternionType ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector2 type
  * @returns {Mongoose}
  */
-function Vector2Type ( Mongoose ) {
+function Vector2Type( Mongoose ) {
 
     /**
      * The Vector2 type definition class
@@ -14074,7 +14099,7 @@ function Vector2Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector2' );
 
@@ -14092,7 +14117,7 @@ function Vector2Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
          * @returns {{x: Number, y: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }
@@ -14143,7 +14168,7 @@ function Vector2Type ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector3 type
  * @returns {Mongoose}
  */
-function Vector3Type ( Mongoose ) {
+function Vector3Type( Mongoose ) {
 
     /**
      * The Vector3 type definition class
@@ -14160,7 +14185,7 @@ function Vector3Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector3' );
 
@@ -14180,7 +14205,7 @@ function Vector3Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
          * @returns {{x: Number, y: Number, z: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector3 ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is not a object or Vector3 instance` ) }
@@ -14235,7 +14260,7 @@ function Vector3Type ( Mongoose ) {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector4 type
  * @returns {Mongoose}
  */
-function Vector4Type ( Mongoose ) {
+function Vector4Type( Mongoose ) {
 
     /**
      * The Vector4 type definition class
@@ -14252,7 +14277,7 @@ function Vector4Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector4' );
 
@@ -14274,7 +14299,7 @@ function Vector4Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
          * @returns {{x: Number, y: Number, z: Number, w: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector4 ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is not a object or Vector4 instance` ) }
@@ -14669,40 +14694,42 @@ function registerPlugin( parameters ) {
                         MtlToThree:     new MtlToThree(),
                         ObjToThree:     new Obj2ToThree()
                     },
-                    rules: [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
+                    rules: [
+                        {
+                            on:  '.json',
+                            use: 'JsonToThree'
+                        }, {
+                            on:  '.dae',
+                            use: 'ColladaToThree'
+                        }, {
+                            on:  '.fbx',
+                            use: 'FbxToThree'
+                        }, {
+                            on:  '.stl',
+                            use: 'StlToThree'
+                        }, {
+                            on:  '.3ds',
+                            use: 'TdsToThree'
+                        }, {
+                            on:  '.shp',
+                            use: 'ShpToThree'
+                        }, {
+                            on:  '.dbf',
+                            use: 'DbfToThree'
+                        }, {
+                            on:  [ '.shp', '.dbf' ],
+                            use: [ 'ShpToThree', 'DbfToThree' ]
+                        }, {
+                            on:  '.mtl',
+                            use: 'MtlToThree'
+                        }, {
+                            on:  '.obj',
+                            use: 'ObjToThree'
+                        }, {
+                            on:  [ '.mtl', '.obj' ],
+                            use: [ 'MtlToThree', 'ObjToThree' ]
+                        }
+                    ],
                     inserter: ThreeToMongoDB
                 },
                 can: {
@@ -14717,392 +14744,392 @@ function registerPlugin( parameters ) {
 }
 
 /*
-export default ( parameters ) => {
-    return new TMongoDBPlugin( parameters )
-        .addType( ColorType )
-        .addType( EulerType )
-        .addType( Matrix3Type )
-        .addType( Matrix4Type )
-        .addType( QuaternionType )
-        .addType( Vector2Type )
-        .addType( Vector3Type )
-        .addType( Vector4Type )
-        //    .addSchema( KeyframeTrack )
-        //    .addSchema( BooleanKeyframeTrack )
-        //    .addSchema( ColorKeyframeTrack )
-        .addSchema( Audio )
-        .addSchema( AudioListener )
-        .addSchema( PositionalAudio )
-        .addSchema( ArrayCamera )
-        .addSchema( Camera )
-        .addSchema( CubeCamera )
-        .addSchema( OrthographicCamera )
-        .addSchema( PerspectiveCamera )
-        .addSchema( BufferAttribute )
-        .addSchema( BufferGeometry )
-        .addSchema( CurvePath )
-        .addSchema( Face3 )
-        .addSchema( Geometry )
-        .addSchema( Object3D )
-        .addSchema( Path )
-        .addSchema( Shape )
-        .addSchema( ArcCurve )
-        .addSchema( CatmullRomCurve3 )
-        .addSchema( CubicBezierCurve )
-        .addSchema( CubicBezierCurve3 )
-        .addSchema( Curve )
-        .addSchema( CurveExtras )
-        .addSchema( EllipseCurve )
-        .addSchema( LineCurve )
-        .addSchema( LineCurve3 )
-        .addSchema( NURBSCurve )
-        .addSchema( NURBSSurface )
-        .addSchema( QuadraticBezierCurve )
-        .addSchema( QuadraticBezierCurve3 )
-        .addSchema( SplineCurve )
-        .addSchema( BoxBufferGeometry )
-        .addSchema( BoxGeometry )
-        .addSchema( CircleBufferGeometry )
-        .addSchema( CircleGeometry )
-        .addSchema( ConeBufferGeometry )
-        .addSchema( ConeGeometry )
-        .addSchema( ConvexGeometry )
-        .addSchema( CylinderBufferGeometry )
-        .addSchema( CylinderGeometry )
-        .addSchema( DecalGeometry )
-        .addSchema( DodecahedronGeometry )
-        .addSchema( EdgesGeometry )
-        .addSchema( ExtrudeBufferGeometry )
-        .addSchema( ExtrudeGeometry )
-        .addSchema( IcosahedronBufferGeometry )
-        .addSchema( IcosahedronGeometry )
-        .addSchema( InstancedBufferGeometry )
-        .addSchema( LatheBufferGeometry )
-        .addSchema( LatheGeometry )
-        .addSchema( OctahedronBufferGeometry )
-        .addSchema( OctahedronGeometry )
-        .addSchema( ParametricBufferGeometry )
-        .addSchema( ParametricGeometry )
-        .addSchema( PlaneBufferGeometry )
-        .addSchema( PlaneGeometry )
-        .addSchema( PolyhedronBufferGeometry )
-        .addSchema( PolyhedronGeometry )
-        .addSchema( RingBufferGeometry )
-        .addSchema( RingGeometry )
-        .addSchema( ShapeBufferGeometry )
-        .addSchema( ShapeGeometry )
-        .addSchema( SphereBufferGeometry )
-        .addSchema( SphereGeometry )
-        .addSchema( TeapotBufferGeometry )
-        .addSchema( TetrahedronBufferGeometry )
-        .addSchema( TetrahedronGeometry )
-        .addSchema( TextBufferGeometry )
-        .addSchema( TextGeometry )
-        .addSchema( TorusBufferGeometry )
-        .addSchema( TorusGeometry )
-        .addSchema( TorusKnotBufferGeometry )
-        .addSchema( TorusKnotGeometry )
-        .addSchema( TubeBufferGeometry )
-        .addSchema( TubeGeometry )
-        .addSchema( WireframeGeometry )
-        .addSchema( ArrowHelper )
-        .addSchema( AxesHelper )
-        .addSchema( Box3Helper )
-        .addSchema( BoxHelper )
-        .addSchema( CameraHelper )
-        .addSchema( DirectionalLightHelper )
-        .addSchema( FaceNormalsHelper )
-        .addSchema( GridHelper )
-        .addSchema( HemisphereLightHelper )
-        .addSchema( PlaneHelper )
-        .addSchema( PointLightHelper )
-        .addSchema( PolarGridHelper )
-        .addSchema( RectAreaLightHelper )
-        .addSchema( SkeletonHelper )
-        .addSchema( SpotLightHelper )
-        .addSchema( VertexNormalsHelper )
-        .addSchema( AmbientLight )
-        .addSchema( DirectionalLight )
-        //    .addSchema( DirectionalLightShadow )
-        .addSchema( HemisphereLight )
-        .addSchema( Light )
-        //    .addSchema( LightShadow )
-        .addSchema( PointLight )
-        .addSchema( RectAreaLight )
-        .addSchema( SpotLight )
-        //    .addSchema( SpotLightShadow )
-        .addSchema( MeshPhongMaterial )
-        .addSchema( LineBasicMaterial )
-        .addSchema( LineDashedMaterial )
-        .addSchema( Material )
-        .addSchema( MeshBasicMaterial )
-        .addSchema( MeshDepthMaterial )
-        .addSchema( MeshLambertMaterial )
-        .addSchema( MeshNormalMaterial )
-        .addSchema( MeshPhysicalMaterial )
-        .addSchema( MeshStandardMaterial )
-        .addSchema( MeshToonMaterial )
-        .addSchema( PointsMaterial )
-        .addSchema( RawShaderMaterial )
-        .addSchema( ShaderMaterial )
-        .addSchema( ShadowMaterial )
-        .addSchema( SpriteMaterial )
-        .addSchema( Box2 )
-        .addSchema( Box3 )
-        //    .addSchema( ColorConverter )
-        //    .addSchema( Cylindrical )
-        //    .addSchema( Frustum )
-        //    .addSchema( Interpolant )
-        .addSchema( Line3 )
-        //    .addSchema( Lut )
-        //    .addSchema( Math )
-        .addSchema( Plane )
-        .addSchema( Ray )
-        .addSchema( Sphere )
-        .addSchema( Spherical )
-        .addSchema( Triangle )
-        .addSchema( Bone )
-        //    .addSchema( Car )
-        //    .addSchema( GPUParticleSystem )
-        .addSchema( Group )
-        //    .addSchema( Gyroscope )
-        .addSchema( ImmediateRenderObject )
-        .addSchema( LensFlare )
-        .addSchema( Line )
-        .addSchema( LineLoop )
-        .addSchema( LineSegments )
-        .addSchema( LOD )
-        //    .addSchema( MarchingCubes )
-        //    .addSchema( MD2Character )
-        //    .addSchema( MD2CharacterComplex )
-        .addSchema( Mesh )
-        //    .addSchema( MorphAnimMesh )
-        //    .addSchema( MorphBlendMesh )
-        //    .addSchema( Ocean )
-        .addSchema( Points )
-        //    .addSchema( Reflector )
-        //    .addSchema( ReflectorRTT )
-        //    .addSchema( Refractor )
-        //    .addSchema( RollerCoaster )
-        //    .addSchema( ShadowMesh )
-        .addSchema( Skeleton )
-        .addSchema( SkinnedMesh )
-        //    .addSchema( Sky )
-        .addSchema( Sprite )
-        //    .addSchema( UCSCharacter )
-        //    .addSchema( Water )
-        //    .addSchema( Water2 )
-        .addSchema( Fog )
-        //    .addSchema( FogExp2 )
-        .addSchema( Scene )
-        .addSchema( CanvasTexture )
-        .addSchema( CompressedTexture )
-        .addSchema( CubeTexture )
-        .addSchema( DataTexture )
-        .addSchema( DepthTexture )
-        .addSchema( Texture )
-        .addSchema( VideoTexture )
-        .addController( TObjects3DController )
-        .addDescriptor( {
-            route:      '/objects',
-            controller: {
-                name:    'TObjects3DController',
-                options: {
-                    schemaName: 'Objects3D'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TMongooseController )
-        .addDescriptor( {
-            route:      '/curves',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Curves'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/geometries',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Geometries'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/materials',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Materials'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/textures',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Textures'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TAbstractConverterManager )
-        .addDescriptor( {
-            route:      '/uploads',
-            controller: {
-                name:    'TAbstractConverterManager',
-                options: {
-                    useNext:    true,
-                    converters: {
-                        JsonToThree:    new JsonToThree(),
-                        ShpToThree:     new ShpToThree(),
-                        DbfToThree:     new DbfToThree(),
-                        FbxToThree:     new FbxToThree(),
-                        ColladaToThree: new ColladaToThree(),
-                        StlToThree:     new StlToThree(),
-                        TdsToThree:     new TdsToThree(),
-                        MtlToThree:     new MtlToThree(),
-                        ObjToThree:     new Obj2ToThree()
-                    },
-                    rules:      [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
-                    inserter:   ThreeToMongoDB
-                },
-                can:     {
-                    processFiles: {
-                        on:   'post',
-                        over: '/'
-                    }
-                }
-            }
-        } )
-}
-*/
+ export default ( parameters ) => {
+ return new TMongoDBPlugin( parameters )
+ .addType( ColorType )
+ .addType( EulerType )
+ .addType( Matrix3Type )
+ .addType( Matrix4Type )
+ .addType( QuaternionType )
+ .addType( Vector2Type )
+ .addType( Vector3Type )
+ .addType( Vector4Type )
+ //    .addSchema( KeyframeTrack )
+ //    .addSchema( BooleanKeyframeTrack )
+ //    .addSchema( ColorKeyframeTrack )
+ .addSchema( Audio )
+ .addSchema( AudioListener )
+ .addSchema( PositionalAudio )
+ .addSchema( ArrayCamera )
+ .addSchema( Camera )
+ .addSchema( CubeCamera )
+ .addSchema( OrthographicCamera )
+ .addSchema( PerspectiveCamera )
+ .addSchema( BufferAttribute )
+ .addSchema( BufferGeometry )
+ .addSchema( CurvePath )
+ .addSchema( Face3 )
+ .addSchema( Geometry )
+ .addSchema( Object3D )
+ .addSchema( Path )
+ .addSchema( Shape )
+ .addSchema( ArcCurve )
+ .addSchema( CatmullRomCurve3 )
+ .addSchema( CubicBezierCurve )
+ .addSchema( CubicBezierCurve3 )
+ .addSchema( Curve )
+ .addSchema( CurveExtras )
+ .addSchema( EllipseCurve )
+ .addSchema( LineCurve )
+ .addSchema( LineCurve3 )
+ .addSchema( NURBSCurve )
+ .addSchema( NURBSSurface )
+ .addSchema( QuadraticBezierCurve )
+ .addSchema( QuadraticBezierCurve3 )
+ .addSchema( SplineCurve )
+ .addSchema( BoxBufferGeometry )
+ .addSchema( BoxGeometry )
+ .addSchema( CircleBufferGeometry )
+ .addSchema( CircleGeometry )
+ .addSchema( ConeBufferGeometry )
+ .addSchema( ConeGeometry )
+ .addSchema( ConvexGeometry )
+ .addSchema( CylinderBufferGeometry )
+ .addSchema( CylinderGeometry )
+ .addSchema( DecalGeometry )
+ .addSchema( DodecahedronGeometry )
+ .addSchema( EdgesGeometry )
+ .addSchema( ExtrudeBufferGeometry )
+ .addSchema( ExtrudeGeometry )
+ .addSchema( IcosahedronBufferGeometry )
+ .addSchema( IcosahedronGeometry )
+ .addSchema( InstancedBufferGeometry )
+ .addSchema( LatheBufferGeometry )
+ .addSchema( LatheGeometry )
+ .addSchema( OctahedronBufferGeometry )
+ .addSchema( OctahedronGeometry )
+ .addSchema( ParametricBufferGeometry )
+ .addSchema( ParametricGeometry )
+ .addSchema( PlaneBufferGeometry )
+ .addSchema( PlaneGeometry )
+ .addSchema( PolyhedronBufferGeometry )
+ .addSchema( PolyhedronGeometry )
+ .addSchema( RingBufferGeometry )
+ .addSchema( RingGeometry )
+ .addSchema( ShapeBufferGeometry )
+ .addSchema( ShapeGeometry )
+ .addSchema( SphereBufferGeometry )
+ .addSchema( SphereGeometry )
+ .addSchema( TeapotBufferGeometry )
+ .addSchema( TetrahedronBufferGeometry )
+ .addSchema( TetrahedronGeometry )
+ .addSchema( TextBufferGeometry )
+ .addSchema( TextGeometry )
+ .addSchema( TorusBufferGeometry )
+ .addSchema( TorusGeometry )
+ .addSchema( TorusKnotBufferGeometry )
+ .addSchema( TorusKnotGeometry )
+ .addSchema( TubeBufferGeometry )
+ .addSchema( TubeGeometry )
+ .addSchema( WireframeGeometry )
+ .addSchema( ArrowHelper )
+ .addSchema( AxesHelper )
+ .addSchema( Box3Helper )
+ .addSchema( BoxHelper )
+ .addSchema( CameraHelper )
+ .addSchema( DirectionalLightHelper )
+ .addSchema( FaceNormalsHelper )
+ .addSchema( GridHelper )
+ .addSchema( HemisphereLightHelper )
+ .addSchema( PlaneHelper )
+ .addSchema( PointLightHelper )
+ .addSchema( PolarGridHelper )
+ .addSchema( RectAreaLightHelper )
+ .addSchema( SkeletonHelper )
+ .addSchema( SpotLightHelper )
+ .addSchema( VertexNormalsHelper )
+ .addSchema( AmbientLight )
+ .addSchema( DirectionalLight )
+ //    .addSchema( DirectionalLightShadow )
+ .addSchema( HemisphereLight )
+ .addSchema( Light )
+ //    .addSchema( LightShadow )
+ .addSchema( PointLight )
+ .addSchema( RectAreaLight )
+ .addSchema( SpotLight )
+ //    .addSchema( SpotLightShadow )
+ .addSchema( MeshPhongMaterial )
+ .addSchema( LineBasicMaterial )
+ .addSchema( LineDashedMaterial )
+ .addSchema( Material )
+ .addSchema( MeshBasicMaterial )
+ .addSchema( MeshDepthMaterial )
+ .addSchema( MeshLambertMaterial )
+ .addSchema( MeshNormalMaterial )
+ .addSchema( MeshPhysicalMaterial )
+ .addSchema( MeshStandardMaterial )
+ .addSchema( MeshToonMaterial )
+ .addSchema( PointsMaterial )
+ .addSchema( RawShaderMaterial )
+ .addSchema( ShaderMaterial )
+ .addSchema( ShadowMaterial )
+ .addSchema( SpriteMaterial )
+ .addSchema( Box2 )
+ .addSchema( Box3 )
+ //    .addSchema( ColorConverter )
+ //    .addSchema( Cylindrical )
+ //    .addSchema( Frustum )
+ //    .addSchema( Interpolant )
+ .addSchema( Line3 )
+ //    .addSchema( Lut )
+ //    .addSchema( Math )
+ .addSchema( Plane )
+ .addSchema( Ray )
+ .addSchema( Sphere )
+ .addSchema( Spherical )
+ .addSchema( Triangle )
+ .addSchema( Bone )
+ //    .addSchema( Car )
+ //    .addSchema( GPUParticleSystem )
+ .addSchema( Group )
+ //    .addSchema( Gyroscope )
+ .addSchema( ImmediateRenderObject )
+ .addSchema( LensFlare )
+ .addSchema( Line )
+ .addSchema( LineLoop )
+ .addSchema( LineSegments )
+ .addSchema( LOD )
+ //    .addSchema( MarchingCubes )
+ //    .addSchema( MD2Character )
+ //    .addSchema( MD2CharacterComplex )
+ .addSchema( Mesh )
+ //    .addSchema( MorphAnimMesh )
+ //    .addSchema( MorphBlendMesh )
+ //    .addSchema( Ocean )
+ .addSchema( Points )
+ //    .addSchema( Reflector )
+ //    .addSchema( ReflectorRTT )
+ //    .addSchema( Refractor )
+ //    .addSchema( RollerCoaster )
+ //    .addSchema( ShadowMesh )
+ .addSchema( Skeleton )
+ .addSchema( SkinnedMesh )
+ //    .addSchema( Sky )
+ .addSchema( Sprite )
+ //    .addSchema( UCSCharacter )
+ //    .addSchema( Water )
+ //    .addSchema( Water2 )
+ .addSchema( Fog )
+ //    .addSchema( FogExp2 )
+ .addSchema( Scene )
+ .addSchema( CanvasTexture )
+ .addSchema( CompressedTexture )
+ .addSchema( CubeTexture )
+ .addSchema( DataTexture )
+ .addSchema( DepthTexture )
+ .addSchema( Texture )
+ .addSchema( VideoTexture )
+ .addController( TObjects3DController )
+ .addDescriptor( {
+ route:      '/objects',
+ controller: {
+ name:    'TObjects3DController',
+ options: {
+ schemaName: 'Objects3D'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TMongooseController )
+ .addDescriptor( {
+ route:      '/curves',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Curves'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/geometries',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Geometries'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/materials',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Materials'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/textures',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Textures'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TAbstractConverterManager )
+ .addDescriptor( {
+ route:      '/uploads',
+ controller: {
+ name:    'TAbstractConverterManager',
+ options: {
+ useNext:    true,
+ converters: {
+ JsonToThree:    new JsonToThree(),
+ ShpToThree:     new ShpToThree(),
+ DbfToThree:     new DbfToThree(),
+ FbxToThree:     new FbxToThree(),
+ ColladaToThree: new ColladaToThree(),
+ StlToThree:     new StlToThree(),
+ TdsToThree:     new TdsToThree(),
+ MtlToThree:     new MtlToThree(),
+ ObjToThree:     new Obj2ToThree()
+ },
+ rules:      [ {
+ on:  '.json',
+ use: 'JsonToThree'
+ }, {
+ on:  '.dae',
+ use: 'ColladaToThree'
+ }, {
+ on:  '.fbx',
+ use: 'FbxToThree'
+ }, {
+ on:  '.stl',
+ use: 'StlToThree'
+ }, {
+ on:  '.3ds',
+ use: 'TdsToThree'
+ }, {
+ on:  '.shp',
+ use: 'ShpToThree'
+ }, {
+ on:  '.dbf',
+ use: 'DbfToThree'
+ }, {
+ on:  [ '.shp', '.dbf' ],
+ use: [ 'ShpToThree', 'DbfToThree' ]
+ }, {
+ on:  '.mtl',
+ use: 'MtlToThree'
+ }, {
+ on:  '.obj',
+ use: 'ObjToThree'
+ }, {
+ on:  [ '.mtl', '.obj' ],
+ use: [ 'MtlToThree', 'ObjToThree' ]
+ } ],
+ inserter:   ThreeToMongoDB
+ },
+ can:     {
+ processFiles: {
+ on:   'post',
+ over: '/'
+ }
+ }
+ }
+ } )
+ }
+ */
 
 /**
  * @module Loader/ASCLoader
@@ -15148,7 +15175,7 @@ class ASCLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
@@ -15183,7 +15210,7 @@ class ASCLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //        //this.logger.time("ASCLoader")
 
@@ -15204,7 +15231,7 @@ class ASCLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -15225,7 +15252,7 @@ class ASCLoader {
      * @param sampling
      * @private
      */
-    _parse ( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
+    _parse( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
 
         const self = this;
 
@@ -15347,7 +15374,7 @@ class ASCLoader {
         // reader.readAsText(blob);
         seek();
 
-        function seek () {
+        function seek() {
 
             if ( offset >= blob.size ) { return }
 
@@ -15363,7 +15390,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLine ( line ) {
+    _parseLine( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15468,7 +15495,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLines ( lines ) {
+    _parseLines( lines ) {
 
         const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean );
         const pointType = firstLine.length;
@@ -15512,7 +15539,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZ ( lines ) {
+    _parseLinesAsXYZ( lines ) {
 
         let words = [];
 
@@ -15534,7 +15561,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZI ( lines ) {
+    _parseLinesAsXYZI( lines ) {
 
         this._pointsHaveIntensity = true;
         let words                 = [];
@@ -15559,7 +15586,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGB ( lines ) {
+    _parseLinesAsXYZRGB( lines ) {
 
         this._pointsHaveColor = true;
         let words             = [];
@@ -15586,7 +15613,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZnXnYnZ ( lines ) {
+    _parseLinesAsXYZnXnYnZ( lines ) {
 
         let words = [];
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -15611,7 +15638,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGB ( lines ) {
+    _parseLinesAsXYZIRGB( lines ) {
 
         this._pointsHaveIntensity = true;
         this._pointsHaveColor     = true;
@@ -15639,7 +15666,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZInXnYnZ ( lines ) {
+    _parseLinesAsXYZInXnYnZ( lines ) {
 
         let words = [];
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -15665,7 +15692,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZRGBnXnYnZ( lines ) {
 
         this._pointsHaveColor   = true;
         this._pointsHaveNormals = true;
@@ -15696,7 +15723,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZIRGBnXnYnZ( lines ) {
 
         this._pointsHaveIntensity = true;
         this._pointsHaveColor     = true;
@@ -15728,7 +15755,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineB ( line ) {
+    _parseLineB( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15752,7 +15779,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineC ( line ) {
+    _parseLineC( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15775,7 +15802,7 @@ class ASCLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -15805,7 +15832,7 @@ class ASCLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoint ( groupToFeed ) {
+    _createCloudPoint( groupToFeed ) {
 
         const SPLIT_LIMIT        = 1000000;
         // var group = new Group();
@@ -15873,7 +15900,7 @@ class ASCLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length;
         const geometry       = new threeFull.BufferGeometry();
@@ -15999,7 +16026,7 @@ class LASLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
@@ -16086,7 +16113,7 @@ class LASLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //this.logger.time("LASLoader")
 
@@ -16105,7 +16132,7 @@ class LASLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -16123,7 +16150,7 @@ class LASLoader {
      * @param onProgress
      * @param onError
      */
-    parse ( arraybuffer, onLoad, onProgress, onError ) {
+    parse( arraybuffer, onLoad, onProgress, onError ) {
 
         try {
 
@@ -16160,7 +16187,7 @@ class LASLoader {
 
     // Header
 
-    _parseHeader ( lasVersion ) {
+    _parseHeader( lasVersion ) {
 
         switch ( lasVersion ) {
             case '1.0':
@@ -16180,7 +16207,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_0 () {
+    _parseHeader_1_0() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -16218,7 +16245,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_1 () {
+    _parseHeader_1_1() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -16257,7 +16284,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_2 () {
+    _parseHeader_1_2() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16299,7 +16326,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_3 () {
+    _parseHeader_1_3() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16345,7 +16372,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_4 () {
+    _parseHeader_1_4() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16398,7 +16425,7 @@ class LASLoader {
 
     // VariableLengthRecord
 
-    _parseVariableLengthRecords ( header ) {
+    _parseVariableLengthRecords( header ) {
 
         const fullVersion            = `${ header.VersionMajor }.${ header.VersionMinor }`;
         const variablesLengthRecords = [];
@@ -16428,7 +16455,7 @@ class LASLoader {
 
     }
 
-    _parseVariableLengthRecordHeader () {
+    _parseVariableLengthRecordHeader() {
 
         return {
             Reserved:                this._reader.getUint16(),
@@ -16439,7 +16466,7 @@ class LASLoader {
         }
 
     }
-    _parseVariableLengthRecordContent ( userId, recordId, recordLength ) {
+    _parseVariableLengthRecordContent( userId, recordId, recordLength ) {
 
         switch ( userId ) {
             case 'LASF_Projection':
@@ -16453,7 +16480,7 @@ class LASLoader {
 
     }
 
-    _parseProjectionRecord ( recordId, recordLength ) {
+    _parseProjectionRecord( recordId, recordLength ) {
 
         switch ( recordId ) {
             case 2111:
@@ -16475,20 +16502,20 @@ class LASLoader {
     }
 
     // Todo
-    _parseOGCMathTransformWKT () {
+    _parseOGCMathTransformWKT() {
 
         return undefined
 
     }
 
     // Todo
-    _parseOGCCoordinateTransformWKT () {
+    _parseOGCCoordinateTransformWKT() {
 
         return undefined
 
     }
 
-    _parseGeoKeyDirectoryTag () {
+    _parseGeoKeyDirectoryTag() {
 
         const geoKey = {
             wKeyDirectoryVersion: this._reader.getUint16(),
@@ -16511,7 +16538,7 @@ class LASLoader {
 
     }
 
-    _parseGeoDoubleParamsTag ( recordLength ) {
+    _parseGeoDoubleParamsTag( recordLength ) {
 
         const numberOfEntries = recordLength / iteeClient.Byte.Height;
         const params          = [];
@@ -16524,13 +16551,13 @@ class LASLoader {
 
     }
 
-    _parseGeoASCIIParamsTag ( recordLength ) {
+    _parseGeoASCIIParamsTag( recordLength ) {
 
         return this._reader.getString( recordLength ).replace( NullCharRegex, '' )
 
     }
 
-    _parseSpecRecord ( recordId ) {
+    _parseSpecRecord( recordId ) {
 
         if ( recordId < 100 ) {
 
@@ -16568,7 +16595,7 @@ class LASLoader {
 
     }
 
-    _parseClassificationLookupRecord () {
+    _parseClassificationLookupRecord() {
 
         const records = [];
 
@@ -16583,7 +16610,7 @@ class LASLoader {
 
     }
 
-    _parseHeaderLookupForFlightLinesRecord () {
+    _parseHeaderLookupForFlightLinesRecord() {
 
         return {
             FileMarkerNumber: this._reader.getUint8(),
@@ -16592,47 +16619,47 @@ class LASLoader {
 
     }
 
-    _parseHistogramRecord () {
+    _parseHistogramRecord() {
 
         return undefined
 
     }
 
-    _parseTextAreaDescriptionRecord () {
-
-        return undefined
-
-    }
-
-    // Todo
-    _parseExtraBytesRecord () {
+    _parseTextAreaDescriptionRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseSupersededRecord () {
+    _parseExtraBytesRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformPacketDesciptor () {
+    _parseSupersededRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformDataPacket () {
+    _parseWaveformPacketDesciptor() {
 
         return undefined
 
     }
 
-    _parseCustomRecord ( recordLength ) {
+    // Todo
+    _parseWaveformDataPacket() {
+
+        return undefined
+
+    }
+
+    _parseCustomRecord( recordLength ) {
 
         const record = new Uint8Array( recordLength );
 
@@ -16646,7 +16673,7 @@ class LASLoader {
 
     // PointDataRecords
 
-    _parsePointDataRecords ( header, onProgress ) {
+    _parsePointDataRecords( header, onProgress ) {
 
         const offsetToPointData = header.OffsetToPointData;
         if ( this._reader.offset !== offsetToPointData ) {
@@ -16676,7 +16703,7 @@ class LASLoader {
 
     }
 
-    _getPointDataRecordFormat ( format ) {
+    _getPointDataRecordFormat( format ) {
 
         switch ( format ) {
             case 0:
@@ -16708,7 +16735,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_0 () {
+    _parsePointDataRecordFormat_0() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16732,7 +16759,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_1 () {
+    _parsePointDataRecordFormat_1() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16757,7 +16784,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_2 () {
+    _parsePointDataRecordFormat_2() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16784,7 +16811,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_3 () {
+    _parsePointDataRecordFormat_3() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16812,7 +16839,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_4 () {
+    _parsePointDataRecordFormat_4() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16844,7 +16871,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_5 () {
+    _parsePointDataRecordFormat_5() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16879,7 +16906,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_6 () {
+    _parsePointDataRecordFormat_6() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16906,7 +16933,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_7 () {
+    _parsePointDataRecordFormat_7() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16936,7 +16963,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_8 () {
+    _parsePointDataRecordFormat_8() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16967,7 +16994,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_9 () {
+    _parsePointDataRecordFormat_9() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -17001,7 +17028,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_10 () {
+    _parsePointDataRecordFormat_10() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -17039,7 +17066,7 @@ class LASLoader {
 
     }
 
-    convert ( lasDatas, onLoad, onProgress, onError ) {
+    convert( lasDatas, onLoad, onProgress, onError ) {
 
         try {
 
@@ -17074,7 +17101,7 @@ class LASLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -17104,7 +17131,7 @@ class LASLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoints ( groupToFeed, lasDatas, onProgress ) {
+    _createCloudPoints( groupToFeed, lasDatas, onProgress ) {
 
         const classPointReverseMap = {
             0:  'Created',
@@ -17228,7 +17255,7 @@ class LASLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length;
         const geometry       = new threeFull.BufferGeometry();
@@ -17290,68 +17317,7 @@ class BitArray {
 
     /* PRIVATE STATIC METHODS */
 
-    // Calculate the intersection of two bits
-    static _intersect ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the union of two bits
-    static _union ( bit1, bit2 ) {
-        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the difference of two bits
-    static _difference ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Get the longest or shortest (smallest) length of the two bit arrays
-    static _getLen ( bitArray1, bitArray2, smallest ) {
-        var l1 = bitArray1.getLength();
-        var l2 = bitArray2.getLength();
-
-        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
-    }
-
-    /* PUBLIC STATIC METHODS */
-    static getUnion ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static getIntersection ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static getDifference ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static shred ( number ) {
-        var bits = new Array();
-        var q    = number;
-        do {
-            bits.push( q % 2 );
-            q = Math.floor( q / 2 );
-        } while ( q > 0 )
-        return new BitArray( bits.length, bits.reverse() )
-    }
-
-    constructor ( size, bits ) {
+    constructor( size, bits ) {
         // Private field - array for our bits
         this.m_bits = new Array();
 
@@ -17375,25 +17341,77 @@ class BitArray {
             }
         }
     }
+    // Calculate the intersection of two bits
+    static _intersect( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the union of two bits
+    static _union( bit1, bit2 ) {
+        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the difference of two bits
+    static _difference( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Get the longest or shortest (smallest) length of the two bit arrays
+    static _getLen( bitArray1, bitArray2, smallest ) {
+        var l1 = bitArray1.getLength();
+        var l2 = bitArray2.getLength();
 
-    getLength () {
+        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
+    }
+    /* PUBLIC STATIC METHODS */
+    static getUnion( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static getIntersection( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static getDifference( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static shred( number ) {
+        var bits = new Array();
+        var q    = number;
+        do {
+            bits.push( q % 2 );
+            q = Math.floor( q / 2 );
+        } while ( q > 0 )
+        return new BitArray( bits.length, bits.reverse() )
+    }
+    getLength() {
         return this.m_bits.length
     }
 
-    getAt ( index ) {
+    getAt( index ) {
         if ( index < this.m_bits.length ) {
             return this.m_bits[ index ]
         }
         return null
     }
 
-    setAt ( index, value ) {
+    setAt( index, value ) {
         if ( index < this.m_bits.length ) {
             this.m_bits[ index ] = value ? BitArray._ON : BitArray._OFF;
         }
     }
 
-    resize ( newSize ) {
+    resize( newSize ) {
         var tmp = new Array();
         for ( var i = 0 ; i < newSize ; i++ ) {
             if ( i < this.m_bits.length ) {
@@ -17405,7 +17423,7 @@ class BitArray {
         this.m_bits = tmp;
     }
 
-    getCompliment () {
+    getCompliment() {
         var result = new BitArray( this.m_bits.length );
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             result.setAt( i, this.m_bits[ i ] ? BitArray._OFF : BitArray._ON );
@@ -17413,7 +17431,7 @@ class BitArray {
         return result
     }
 
-    toString () {
+    toString() {
         var s = new String();
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             s = s.concat( this.m_bits[ i ] === BitArray._ON ? '1' : '0' );
@@ -17421,7 +17439,7 @@ class BitArray {
         return s
     }
 
-    toNumber () {
+    toNumber() {
         var pow = 0;
         var n   = 0;
         for ( var i = this.m_bits.length - 1 ; i >= 0 ; i-- ) {
@@ -17444,26 +17462,26 @@ BitArray._OFF = 0;
 
 class BitManager {
 
-    static getBit ( bitField, bitPosition ) {
+    static getBit( bitField, bitPosition ) {
         return ( bitField & ( 1 << bitPosition ) ) === 0 ? 0 : 1
     }
 
-    static setBit ( bitField, bitPosition ) {
+    static setBit( bitField, bitPosition ) {
         return bitField | ( 1 << bitPosition )
     }
 
-    static clearBit ( bitField, bitPosition ) {
+    static clearBit( bitField, bitPosition ) {
         const mask = ~( 1 << bitPosition );
         return bitField & mask
     }
 
-    static updateBit ( bitField, bitPosition, bitValue ) {
+    static updateBit( bitField, bitPosition, bitValue ) {
         const bitValueNormalized = bitValue ? 1 : 0;
         const clearMask          = ~( 1 << bitPosition );
         return ( bitField & clearMask ) | ( bitValueNormalized << bitPosition )
     }
 
-    static getBits ( bitField, bitPositions ) {
+    static getBits( bitField, bitPositions ) {
         let bits = 0;
         for ( let bitPosition of bitPositions ) {
             if ( BitManager.getBit( bitField, bitPosition ) ) {

@@ -128,7 +128,7 @@ import {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector2 type
  * @returns {Mongoose}
  */
-function Vector2Type ( Mongoose ) {
+function Vector2Type( Mongoose ) {
     'use strict'
 
     /**
@@ -146,7 +146,7 @@ function Vector2Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector2' )
 
@@ -164,7 +164,7 @@ function Vector2Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
          * @returns {{x: Number, y: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
             if ( isNotObject( value ) &amp;&amp; !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }

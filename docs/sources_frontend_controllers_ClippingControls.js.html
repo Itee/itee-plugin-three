@@ -147,7 +147,7 @@ import { TranslateGizmo } from '../objects3d/gizmos/TranslateGizmo'
 // Basic Geometries
 class ClippingBox extends LineSegments {
 
-    constructor () {
+    constructor() {
         super()
 
         this.margin = 0.01
@@ -181,7 +181,7 @@ class ClippingBox extends LineSegments {
 
     }
 
-    getBoundingSphere () {
+    getBoundingSphere() {
 
         this.geometry.computeBoundingSphere()
         this.geometry.boundingSphere.applyMatrix4( this.matrixWorld )
@@ -190,13 +190,13 @@ class ClippingBox extends LineSegments {
 
     }
 
-    setColor ( color ) {
+    setColor( color ) {
 
         this.material.color.set( color )
 
     }
 
-    applyClippingTo ( state, objects ) {
+    applyClippingTo( state, objects ) {
 
         if ( isNotDefined( objects ) ) { return }
 
@@ -225,13 +225,13 @@ class ClippingBox extends LineSegments {
 
     }
 
-    updateSize ( size ) {
+    updateSize( size ) {
 
         this.scale.set( size.x, size.y, size.z )
 
     }
 
-    update () {
+    update() {
 
         this._boundingBox.setFromObject( this )
 
@@ -260,7 +260,7 @@ const ClippingModes = /*#__PURE__*/toEnum( {
 
 class ClippingControls extends Object3D {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -382,11 +382,11 @@ class ClippingControls extends Object3D {
 
     }
 
-    get objectsToClip () {
+    get objectsToClip() {
         return this._objectsToClip
     }
 
-    set objectsToClip ( value ) {
+    set objectsToClip( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
@@ -397,11 +397,11 @@ class ClippingControls extends Object3D {
 
     }
 
-    get camera () {
+    get camera() {
         return this._camera
     }
 
-    set camera ( value ) {
+    set camera( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
@@ -411,11 +411,11 @@ class ClippingControls extends Object3D {
 
     }
 
-    get domElement () {
+    get domElement() {
         return this._domElement
     }
 
-    set domElement ( value ) {
+    set domElement( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
@@ -435,11 +435,11 @@ class ClippingControls extends Object3D {
 
     }
 
-    get mode () {
+    get mode() {
         return this._mode
     }
 
-    set mode ( value ) {
+    set mode( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
@@ -467,35 +467,35 @@ class ClippingControls extends Object3D {
 
     }
 
-    setCamera ( value ) {
+    setCamera( value ) {
 
         this.camera = value
         return this
 
     }
 
-    setDomElement ( value ) {
+    setDomElement( value ) {
 
         this.domElement = value
         return this
 
     }
 
-    setMode ( value ) {
+    setMode( value ) {
 
         this.mode = value
         return this
 
     }
 
-    setObjectsToClip ( objects ) {
+    setObjectsToClip( objects ) {
 
         this.objectsToClip = objects
         return this
 
     }
 
-    impose () {
+    impose() {
 
         this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false )
         this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false )
@@ -528,7 +528,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    dispose () {
+    dispose() {
 
         this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false )
         this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false )
@@ -561,15 +561,15 @@ class ClippingControls extends Object3D {
 
     }
 
-    setTranslationSnap ( translationSnap ) {
+    setTranslationSnap( translationSnap ) {
         this.translationSnap = translationSnap
     }
 
-    setRotationSnap ( rotationSnap ) {
+    setRotationSnap( rotationSnap ) {
         this.rotationSnap = rotationSnap
     }
 
-    enable () {
+    enable() {
 
         this.visible = true
         this.enabled = true
@@ -596,7 +596,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    disable () {
+    disable() {
 
         this.visible = false
         this.enabled = false
@@ -604,7 +604,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    updateClipping () {
+    updateClipping() {
 
         if ( isNotDefined( this._objectsToClip ) ) { return }
 
@@ -613,7 +613,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    updateGizmo () {
+    updateGizmo() {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -626,7 +626,7 @@ class ClippingControls extends Object3D {
     }
 
     /// Handlers
-    _consumeEvent ( event ) {
+    _consumeEvent( event ) {
 
         if ( !event.cancelable ) {
             return
@@ -637,7 +637,7 @@ class ClippingControls extends Object3D {
     }
 
     // Keyboard
-    _onKeyDown ( keyEvent ) {
+    _onKeyDown( keyEvent ) {
 
         if ( !this.enabled ) { return }
         keyEvent.preventDefault()
@@ -785,7 +785,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onKeyUp ( keyEvent ) {
+    _onKeyUp( keyEvent ) {
 
         if ( !this.enabled || keyEvent.defaultPrevented ) { return }
         keyEvent.preventDefault()
@@ -795,7 +795,7 @@ class ClippingControls extends Object3D {
     }
 
     // Mouse
-    _onDblClick ( mouseEvent ) {
+    _onDblClick( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -805,7 +805,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseDown ( mouseEvent ) {
+    _onMouseDown( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -828,7 +828,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseEnter ( mouseEvent ) {
+    _onMouseEnter( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -841,7 +841,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseLeave ( mouseEvent ) {
+    _onMouseLeave( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -856,7 +856,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseMove ( mouseEvent ) {
+    _onMouseMove( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -1024,7 +1024,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseUp ( mouseEvent ) {
+    _onMouseUp( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         if ( this._mode === ClippingModes.None ) { return }
@@ -1061,7 +1061,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onMouseWheel ( mouseEvent ) {
+    _onMouseWheel( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         mouseEvent.preventDefault()
@@ -1071,7 +1071,7 @@ class ClippingControls extends Object3D {
     }
 
     // Touche
-    _onTouchCancel ( touchEvent ) {
+    _onTouchCancel( touchEvent ) {
 
         if ( !this.enabled ) { return }
         touchEvent.preventDefault()
@@ -1080,7 +1080,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onTouchEnd ( touchEvent ) {
+    _onTouchEnd( touchEvent ) {
 
         if ( !this.enabled ) { return }
         touchEvent.preventDefault()
@@ -1089,7 +1089,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onTouchLeave ( touchEvent ) {
+    _onTouchLeave( touchEvent ) {
 
         if ( !this.enabled ) { return }
         touchEvent.preventDefault()
@@ -1098,7 +1098,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onTouchMove ( touchEvent ) {
+    _onTouchMove( touchEvent ) {
 
         if ( !this.enabled ) { return }
         touchEvent.preventDefault()
@@ -1107,7 +1107,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _onTouchStart ( touchEvent ) {
+    _onTouchStart( touchEvent ) {
 
         if ( !this.enabled ) { return }
         touchEvent.preventDefault()
@@ -1118,11 +1118,11 @@ class ClippingControls extends Object3D {
 
     /// Utils
     // eslint-disable-next-line no-unused-vars
-    getActiveHandle ( pointer ) {
+    getActiveHandle( pointer ) {
 
     }
 
-    intersectObjects ( pointer, objects ) {
+    intersectObjects( pointer, objects ) {
 
         // calculate mouse position in normalized device coordinates
         // (-1 to +1) for both components
@@ -1150,35 +1150,35 @@ class ClippingControls extends Object3D {
     // Methods
 
     // Moving
-    _translate ( displacement ) {
+    _translate( displacement ) {
 
         this.position.add( displacement )
         this.updateMatrix()
 
     }
 
-    _translateX ( deltaX ) {
+    _translateX( deltaX ) {
 
         this.position.setX( this.position.x + deltaX )
         this.updateMatrix()
 
     }
 
-    _translateY ( deltaY ) {
+    _translateY( deltaY ) {
 
         this.position.setY( this.position.y + deltaY )
         this.updateMatrix()
 
     }
 
-    _translateZ ( deltaZ ) {
+    _translateZ( deltaZ ) {
 
         this.position.setZ( this.position.z + deltaZ )
         this.updateMatrix()
 
     }
 
-    _translateXY ( deltaX, deltaY ) {
+    _translateXY( deltaX, deltaY ) {
 
         this.position.setX( this.position.x + deltaX )
         this.position.setY( this.position.y + deltaY )
@@ -1186,7 +1186,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _translateXZ ( deltaX, deltaZ ) {
+    _translateXZ( deltaX, deltaZ ) {
 
         this.position.setX( this.position.x + deltaX )
         this.position.setZ( this.position.z + deltaZ )
@@ -1194,7 +1194,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _translateYZ ( deltaY, deltaZ ) {
+    _translateYZ( deltaY, deltaZ ) {
 
         this.position.setY( this.position.y + deltaY )
         this.position.setZ( this.position.z + deltaZ )
@@ -1202,7 +1202,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _translateXYZ ( deltaX, deltaY, deltaZ ) {
+    _translateXYZ( deltaX, deltaY, deltaZ ) {
 
         this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ )
         this.updateMatrix()
@@ -1211,56 +1211,56 @@ class ClippingControls extends Object3D {
 
     // Rotating
     // eslint-disable-next-line no-unused-vars
-    _rotateX ( delta ) {}
+    _rotateX( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateY ( delta ) {}
+    _rotateY( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateZ ( delta ) {}
+    _rotateZ( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateXY ( delta ) {}
+    _rotateXY( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateXZ ( delta ) {}
+    _rotateXZ( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateYZ ( delta ) {}
+    _rotateYZ( delta ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _rotateXYZ ( delta ) {}
+    _rotateXYZ( delta ) {}
 
     // Scaling
-    _scale ( changeAmout ) {
+    _scale( changeAmout ) {
 
         this.scale.add( changeAmout )
         this.updateMatrix()
 
     }
 
-    _scaleX ( deltaX ) {
+    _scaleX( deltaX ) {
 
         this.scale.setX( this.scale.x + deltaX )
         this.updateMatrix()
 
     }
 
-    _scaleY ( deltaY ) {
+    _scaleY( deltaY ) {
 
         this.scale.setY( this.scale.y + deltaY )
         this.updateMatrix()
 
     }
 
-    _scaleZ ( deltaZ ) {
+    _scaleZ( deltaZ ) {
 
         this.scale.setZ( this.scale.z + deltaZ )
         this.updateMatrix()
 
     }
 
-    _scaleXY ( deltaX, deltaY ) {
+    _scaleXY( deltaX, deltaY ) {
 
         this.scale.setX( this.scale.x + deltaX )
         this.scale.setY( this.scale.y + deltaY )
@@ -1268,7 +1268,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _scaleXZ ( deltaX, deltaZ ) {
+    _scaleXZ( deltaX, deltaZ ) {
 
         this.scale.setX( this.scale.x + deltaX )
         this.scale.setZ( this.scale.z + deltaZ )
@@ -1276,7 +1276,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _scaleYZ ( deltaY, deltaZ ) {
+    _scaleYZ( deltaY, deltaZ ) {
 
         this.scale.setY( this.scale.y + deltaY )
         this.scale.setZ( this.scale.z + deltaZ )
@@ -1284,7 +1284,7 @@ class ClippingControls extends Object3D {
 
     }
 
-    _scaleXYZ ( deltaX, deltaY, deltaZ ) {
+    _scaleXYZ( deltaX, deltaY, deltaZ ) {
 
         this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ )
         this.updateMatrix()

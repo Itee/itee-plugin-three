@@ -115,7 +115,7 @@
 
 class AbstractMongooseModel {
 
-    static getSchemaFrom ( Mongoose ) {
+    static getSchemaFrom( Mongoose ) {
 
         if ( !this._schema ) {
             this._schema = this.schema( Mongoose )
@@ -125,11 +125,11 @@ class AbstractMongooseModel {
 
     }
 
-    static schema ( /*Mongoose*/ ) {
+    static schema( /*Mongoose*/ ) {
         throw new Error( `${ this.name }.schema(): Need to be override !` )
     }
 
-    static getModelFrom ( Mongoose ) {
+    static getModelFrom( Mongoose ) {
 
         if ( !this._model ) {
             this._model = this.model( Mongoose, this.getSchemaFrom( Mongoose ) )
@@ -139,11 +139,11 @@ class AbstractMongooseModel {
 
     }
 
-    static model ( /*Mongoose, Schema*/ ) {
+    static model( /*Mongoose, Schema*/ ) {
         throw new Error( `${ this.name }.model(): Need to be override !` )
     }
 
-    static registerModelTo ( Mongoose ) {
+    static registerModelTo( Mongoose ) {
 
         this.getSchemaFrom( Mongoose, true )
         this.getModelFrom( Mongoose, true )

@@ -118,6 +118,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { FBXLoader }              from 'three-full'
+
 //import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
 
 /**
@@ -131,7 +132,7 @@ class FbxToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
         } )
@@ -148,7 +149,7 @@ class FbxToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {
