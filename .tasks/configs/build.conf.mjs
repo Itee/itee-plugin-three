@@ -21,7 +21,7 @@ import {
 }                  from 'path'
 import cleanup     from 'rollup-plugin-cleanup'
 import replace     from 'rollup-plugin-re'
-import { terser }  from 'rollup-plugin-terser'
+import terser      from '@rollup/plugin-terser'
 import {
     getPrettyPackageName,
     getPrettyPackageVersion,
