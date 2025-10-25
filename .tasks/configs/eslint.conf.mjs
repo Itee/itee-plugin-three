@@ -13,7 +13,6 @@ export default defineConfig( [
         '.idea',
         'builds',
         'docs',
-        'sources/scripts/*.js'
     ] ),
     {
         linterOptions: {
@@ -24,7 +23,11 @@ export default defineConfig( [
     },
     {
         name:    'sources/common',
-        files:   [ 'sources/**/*.js' ],
+        files:   [ 'sources/common/**/*.js' ],
+        ignores: [
+            'sources/common/loaders/ASCLoader.js',
+            'sources/common/loaders/LASLoader.js',
+        ],
         plugins: { js },
         extends: [ 'js/recommended' ],
         rules:   {
@@ -61,32 +64,21 @@ export default defineConfig( [
         }
     },
     {
-        name:  'sources/expected_rules',
-        files: [ 'sources/cores/strings.js' ],
-        rules: {
-            'no-control-regex': 'off'
-        }
-    },
-    {
         name:            'sources/frontend',
         files:           [
-            'sources/times/*.js',
-            'sources/cores/objects.js',
-            'sources/testings/benchmarks.js',
+            'sources/frontend/**/*.js',
+            'sources/common/loaders/ASCLoader.js',
+            'sources/common/loaders/LASLoader.js',
         ],
-        ignores:         [ 'sources/file-system/*' ],
+        ignores:         [],
         plugins:         { js },
         extends:         [ 'js/recommended' ],
         languageOptions: { globals: globals.browser }
     },
     {
         name:            'sources/backend',
-        files:           [ 'sources/file-system/*.js' ],
-        ignores:         [
-            'sources/times/*.js',
-            'sources/cores/objects.js',
-            'sources/testings/benchmarks.js',
-        ],
+        files:           [ 'sources/backend/**/*.js' ],
+        ignores:         [],
         plugins:         { js },
         extends:         [ 'js/recommended' ],
         languageOptions: { globals: globals.node }
@@ -115,13 +107,5 @@ export default defineConfig( [
         files:   [ 'tests/units/**/*.js' ],
         ignores: [ 'tests/units/builds/*' ],
         ...mocha.configs.all
-    },
-    // Todo: fix
-    {
-        name:  'to/fix',
-        files: [ 'tests/units/cores/strings.unit.js' ],
-        rules: {
-            'no-unused-vars': 'warn',
-        }
     },
 ] )
