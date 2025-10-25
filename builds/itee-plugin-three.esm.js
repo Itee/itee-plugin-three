@@ -9,7 +9,7 @@
  * 
  */
 import { DefaultLogger } from 'itee-core';
-import { Box3, DefaultLoadingManager, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, LinearFilter, ImageLoader, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
+import { DefaultLoadingManager, Box3, FileLoader, Group, BufferGeometry, BufferAttribute, PointsMaterial, Points, Vector3, Shape, EventDispatcher, Object3D, Vector2, Spherical, LineBasicMaterial, MeshBasicMaterial, DoubleSide, Mesh, OctahedronBufferGeometry, Quaternion, EdgesGeometry, LineSegments, Float32BufferAttribute, Line, ArrowHelper, CylinderBufferGeometry, BoxBufferGeometry, PlaneBufferGeometry, ConeBufferGeometry, Plane, Raycaster, Euler, SplineCurve, QuadraticBezierCurve3, QuadraticBezierCurve, Path, LineCurve3, LineCurve, EllipseCurve, CurvePath, Curve, CubicBezierCurve3, CubicBezierCurve, CatmullRomCurve3, ArcCurve, WireframeGeometry, SphereGeometry, TubeGeometry, TorusKnotGeometry, TorusGeometry, TextGeometry, TetrahedronGeometry, ShapeGeometry, RingGeometry, PolyhedronGeometry, PlaneGeometry, ParametricGeometry, OctahedronGeometry, LatheGeometry, IcosahedronGeometry, Geometry, ExtrudeGeometry, DodecahedronGeometry, ConeGeometry, CylinderGeometry, CircleGeometry, BoxGeometry, Face3, InstancedBufferGeometry, SphereBufferGeometry, TubeBufferGeometry, TorusKnotBufferGeometry, TorusBufferGeometry, TextBufferGeometry, TetrahedronBufferGeometry, RingBufferGeometry, PolyhedronBufferGeometry, ParametricBufferGeometry, LatheBufferGeometry, IcosahedronBufferGeometry, ExtrudeBufferGeometry, DodecahedronBufferGeometry, CircleBufferGeometry, TextureLoader, MeshLambertMaterial, MeshPhongMaterial, Color, ImageLoader, LinearFilter, Sprite, LineLoop, LOD, SkinnedMesh, HemisphereLight, SpotLight, RectAreaLight, PointLight, DirectionalLight, AmbientLight, OrthographicCamera, PerspectiveCamera, Scene, Fog, FogExp2, VertexColors } from 'three-full';
 import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
 import { toEnum, ringClockwise, ringContainsSome, degreesToRadians } from 'itee-utils';
 import { isDefined, isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefined, isNotArray, isArray, isObject, isNotString, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
@@ -44,6 +44,7 @@ import { isDefined, isNull, isUndefined, isNotBoolean, isEmptyArray, isNotDefine
  * } );
  *
  */
+
 
 /**
  * The ASCLoader class definition.
@@ -852,6 +853,7 @@ class ASCLoader {
  *
  */
 
+
 /**
  *
  * @type {Object}
@@ -1637,6 +1639,7 @@ DBFLoader.YearOffset    = 1900;
  * } );
  *
  */
+
 //import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
@@ -2976,6 +2979,7 @@ class LASLoader {
  *
  */
 
+
 /**
  *
  * @type {Object}
@@ -3824,6 +3828,7 @@ class BitManager {
  *
  */
 
+
 const FRONT = /*#__PURE__*/new Vector3( 0, 0, -1 );
 const BACK  = /*#__PURE__*/new Vector3( 0, 0, 1 );
 const UP    = /*#__PURE__*/new Vector3( 0, 1, 0 );
@@ -4491,7 +4496,7 @@ class CameraControls extends EventDispatcher {
 
         } else if ( actionMap.roll.right.includes( key ) ) {
 
-            this._roll( -1.0 );
+            this._roll( -1 );
             this._consumeEvent( keyEvent );
 
         } else if ( actionMap.zoom.includes( key ) ) {
@@ -5867,6 +5872,7 @@ class CameraControls extends EventDispatcher {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 //import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
 
 class HighlightableLineMaterial extends LineBasicMaterial {
@@ -5912,6 +5918,7 @@ class HighlightableLineMaterial extends LineBasicMaterial {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { DoubleSide }        from 'three-full/sources/constants'
 //import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
 
@@ -5958,6 +5965,7 @@ class HighlightableMaterial extends MeshBasicMaterial {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { DoubleSide }        from 'three-full/sources/constants'
 //import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
 //import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
@@ -5996,6 +6004,7 @@ class AbstractHitbox extends Mesh {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 //import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 
 class OctahedricalHitbox extends AbstractHitbox {
@@ -6020,6 +6029,7 @@ class OctahedricalHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { Object3D }   from 'three-full/sources/core/Object3D'
 //import { Quaternion } from 'three-full/sources/math/Quaternion'
 
@@ -6148,6 +6158,7 @@ class AbstractHandle extends Object3D {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 class OctahedricalHandle extends AbstractHandle {
 
     constructor( parameters = {} ) {
@@ -6197,6 +6208,7 @@ class OctahedricalHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 
@@ -6486,6 +6498,7 @@ class PlaneHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 //import { Vector3 }                from 'three-full/sources/math/Vector3'
@@ -6506,6 +6519,7 @@ class LineGeometry extends BufferGeometry {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 //import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
 
@@ -6533,6 +6547,7 @@ class CylindricaHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class ScaleHandle extends AbstractHandle {
 
@@ -6633,6 +6648,7 @@ class ScaleHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { DoubleSide }          from 'three-full/sources/constants'
 //import { Object3D }            from 'three-full/sources/core/Object3D'
 //import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
@@ -6790,6 +6806,7 @@ class AbstractGizmo extends Object3D {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 class ScaleGizmo extends AbstractGizmo {
 
     constructor() {
@@ -6861,6 +6878,7 @@ class ScaleGizmo extends AbstractGizmo {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 //import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 
@@ -6902,6 +6920,7 @@ class LozengeHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class LozengeHandle extends AbstractHandle {
 
@@ -7093,6 +7112,7 @@ class LozengeHandle extends AbstractHandle {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 class TranslateHandle extends AbstractHandle {
 
     constructor( parameters = {} ) {
@@ -7193,6 +7213,7 @@ class TranslateHandle extends AbstractHandle {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 class TranslateGizmo extends AbstractGizmo {
 
     constructor() {
@@ -7268,6 +7289,7 @@ class TranslateGizmo extends AbstractGizmo {
  * @example Todo
  *
  */
+
 
 // Basic Geometries
 class ClippingBox extends LineSegments {
@@ -8425,6 +8447,7 @@ class ClippingControls extends Object3D {
  *
  */
 
+
 class CurvesManager extends TDataBaseManager {
 
     constructor( parameters = {} ) {
@@ -8558,6 +8581,7 @@ class CurvesManager extends TDataBaseManager {
  * @requires '../../../node_modules/three/src/core/BufferAttribute'
  *
  */
+
 
 const ArrayType = /*#__PURE__*/toEnum( {
     Int8Array:         0,
@@ -9276,6 +9300,7 @@ class GeometriesManager extends TDataBaseManager {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * @class
  * @classdesc Todo...
@@ -9353,6 +9378,7 @@ class TexturesManager extends TDataBaseManager {
  * @requires TDataBaseManager
  *
  */
+
 
 const DEFAULT_IMAGE = /*#__PURE__*/new ImageLoader().load(
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
@@ -10160,6 +10186,7 @@ class MaterialsManager extends TDataBaseManager {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  *
  */
+
 
 /**
  * @class
@@ -11059,6 +11086,7 @@ class ObjectsManager extends TDataBaseManager {
  *
  */
 
+
 /**
  * @class
  * @classdesc Todo...
@@ -11232,6 +11260,7 @@ class OrbitControlsHelper extends LineSegments {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 //import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
 
 class TorusHitbox extends AbstractHitbox {
@@ -11256,6 +11285,7 @@ class TorusHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class RotateGizmo extends AbstractGizmo {
 
@@ -11416,6 +11446,7 @@ class RotateGizmo extends AbstractGizmo {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 //import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
 
 class BoxHitbox extends AbstractHitbox {
@@ -11440,6 +11471,7 @@ class BoxHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class BoxHandle extends AbstractHandle {
 
@@ -11511,6 +11543,7 @@ class BoxHandle extends AbstractHandle {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class ConeHandle extends AbstractHandle {
 
@@ -11609,36 +11642,36 @@ class LookAtGizmo extends AbstractGizmo {
             // Cone faces
             FACE_RIGHT: new ConeHandle( {
                 coneColor: 0xdd0000
-            } ).setPosition( +( 4 + this.explodeFactor ), +0, +0 )
+            } ).setPosition( +( 4 + this.explodeFactor ), 0, 0 )
                .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( 90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_LEFT: new ConeHandle( {
                 coneColor: 0x550000
-            } ).setPosition( -( 4 + this.explodeFactor ), +0, +0 )
+            } ).setPosition( -( 4 + this.explodeFactor ), 0, 0 )
                .setRotationFromAxisAndAngle( new Vector3( 0, 0, 1 ), degreesToRadians( -90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_TOP: new ConeHandle( {
                 coneColor: 0x0000dd
-            } ).setPosition( +0, +( 4 + this.explodeFactor ), +0 )
+            } ).setPosition( 0, +( 4 + this.explodeFactor ), 0 )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 180 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_BOTTOM: new ConeHandle( {
                 coneColor: 0x000055
-            } ).setPosition( +0, -( 4 + this.explodeFactor ), +0 )
+            } ).setPosition( 0, -( 4 + this.explodeFactor ), 0 )
                .setScale( 1, 4, 1 ),
 
             FACE_FRONT: new ConeHandle( {
                 coneColor: 0x005500
-            } ).setPosition( +0, +0, +( 4 + this.explodeFactor ) )
+            } ).setPosition( 0, 0, +( 4 + this.explodeFactor ) )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( -90 ) )
                .setScale( 1, 4, 1 ),
 
             FACE_BACK: new ConeHandle( {
                 coneColor: 0x00dd00
-            } ).setPosition( +0, +0, -( 4 + this.explodeFactor ) )
+            } ).setPosition( 0, 0, -( 4 + this.explodeFactor ) )
                .setRotationFromAxisAndAngle( new Vector3( 1, 0, 0 ), degreesToRadians( 90 ) )
                .setScale( 1, 4, 1 ),
 
@@ -11659,18 +11692,18 @@ class LookAtGizmo extends AbstractGizmo {
             CORNER_BOTTOM_RIGHT_FRONT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
             CORNER_BOTTOM_RIGHT_BACK:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
 
-            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 )
+            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 )
 
         };
 
@@ -11694,6 +11727,7 @@ class LookAtGizmo extends AbstractGizmo {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class RotateHandle extends AbstractHandle {
 
@@ -11724,6 +11758,7 @@ class RotateHandle extends AbstractHandle {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 //import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
 
 class SphericalHitbox extends AbstractHitbox {
@@ -11748,6 +11783,7 @@ class SphericalHitbox extends AbstractHitbox {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
 
 class HighlightableMesh extends Mesh {
 

@@ -51,6 +51,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 * The ASCLoader class definition.
 	 * It allow to load and parse an .asc file
@@ -858,6 +859,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 *
 	 * @type {Object}
@@ -1643,6 +1645,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * } );
 	 *
 	 */
+
 	//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 	//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
@@ -2982,6 +2985,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 *
 	 * @type {Object}
@@ -3830,6 +3834,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	const FRONT = /*#__PURE__*/new threeFull.Vector3( 0, 0, -1 );
 	const BACK  = /*#__PURE__*/new threeFull.Vector3( 0, 0, 1 );
 	const UP    = /*#__PURE__*/new threeFull.Vector3( 0, 1, 0 );
@@ -4497,7 +4502,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        } else if ( actionMap.roll.right.includes( key ) ) {
 
-	            this._roll( -1.0 );
+	            this._roll( -1 );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.zoom.includes( key ) ) {
@@ -5873,6 +5878,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
 
 	class HighlightableLineMaterial extends threeFull.LineBasicMaterial {
@@ -5918,6 +5924,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }        from 'three-full/sources/constants'
 	//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
 
@@ -5964,6 +5971,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }        from 'three-full/sources/constants'
 	//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
 	//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
@@ -6002,6 +6010,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 
 	class OctahedricalHitbox extends AbstractHitbox {
@@ -6026,6 +6035,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Object3D }   from 'three-full/sources/core/Object3D'
 	//import { Quaternion } from 'three-full/sources/math/Quaternion'
 
@@ -6154,6 +6164,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class OctahedricalHandle extends AbstractHandle {
 
 	    constructor( parameters = {} ) {
@@ -6203,6 +6214,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 
@@ -6492,6 +6504,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 	//import { Vector3 }                from 'three-full/sources/math/Vector3'
@@ -6512,6 +6525,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
 
@@ -6539,6 +6553,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class ScaleHandle extends AbstractHandle {
 
@@ -6639,6 +6654,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }          from 'three-full/sources/constants'
 	//import { Object3D }            from 'three-full/sources/core/Object3D'
 	//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
@@ -6796,6 +6812,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class ScaleGizmo extends AbstractGizmo {
 
 	    constructor() {
@@ -6867,6 +6884,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 
@@ -6908,6 +6926,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class LozengeHandle extends AbstractHandle {
 
@@ -7099,6 +7118,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class TranslateHandle extends AbstractHandle {
 
 	    constructor( parameters = {} ) {
@@ -7199,6 +7219,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class TranslateGizmo extends AbstractGizmo {
 
 	    constructor() {
@@ -7274,6 +7295,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @example Todo
 	 *
 	 */
+
 
 	// Basic Geometries
 	class ClippingBox extends threeFull.LineSegments {
@@ -8431,6 +8453,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	class CurvesManager extends iteeClient.TDataBaseManager {
 
 	    constructor( parameters = {} ) {
@@ -8564,6 +8587,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @requires '../../../node_modules/three/src/core/BufferAttribute'
 	 *
 	 */
+
 
 	const ArrayType = /*#__PURE__*/iteeUtils.toEnum( {
 	    Int8Array:         0,
@@ -9282,6 +9306,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	/**
 	 * @class
 	 * @classdesc Todo...
@@ -9359,6 +9384,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @requires TDataBaseManager
 	 *
 	 */
+
 
 	const DEFAULT_IMAGE = /*#__PURE__*/new threeFull.ImageLoader().load(
 	    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
@@ -10166,6 +10192,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 *
 	 */
+
 
 	/**
 	 * @class
@@ -11065,6 +11092,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 * @class
 	 * @classdesc Todo...
@@ -11238,6 +11266,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
 
 	class TorusHitbox extends AbstractHitbox {
@@ -11262,6 +11291,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class RotateGizmo extends AbstractGizmo {
 
@@ -11422,6 +11452,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
 
 	class BoxHitbox extends AbstractHitbox {
@@ -11446,6 +11477,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class BoxHandle extends AbstractHandle {
 
@@ -11517,6 +11549,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class ConeHandle extends AbstractHandle {
 
@@ -11615,36 +11648,36 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            // Cone faces
 	            FACE_RIGHT: new ConeHandle( {
 	                coneColor: 0xdd0000
-	            } ).setPosition( +( 4 + this.explodeFactor ), +0, +0 )
+	            } ).setPosition( +( 4 + this.explodeFactor ), 0, 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_LEFT: new ConeHandle( {
 	                coneColor: 0x550000
-	            } ).setPosition( -( 4 + this.explodeFactor ), +0, +0 )
+	            } ).setPosition( -( 4 + this.explodeFactor ), 0, 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_TOP: new ConeHandle( {
 	                coneColor: 0x0000dd
-	            } ).setPosition( +0, +( 4 + this.explodeFactor ), +0 )
+	            } ).setPosition( 0, +( 4 + this.explodeFactor ), 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 180 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BOTTOM: new ConeHandle( {
 	                coneColor: 0x000055
-	            } ).setPosition( +0, -( 4 + this.explodeFactor ), +0 )
+	            } ).setPosition( 0, -( 4 + this.explodeFactor ), 0 )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_FRONT: new ConeHandle( {
 	                coneColor: 0x005500
-	            } ).setPosition( +0, +0, +( 4 + this.explodeFactor ) )
+	            } ).setPosition( 0, 0, +( 4 + this.explodeFactor ) )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BACK: new ConeHandle( {
 	                coneColor: 0x00dd00
-	            } ).setPosition( +0, +0, -( 4 + this.explodeFactor ) )
+	            } ).setPosition( 0, 0, -( 4 + this.explodeFactor ) )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
@@ -11665,18 +11698,18 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            CORNER_BOTTOM_RIGHT_FRONT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
 	            CORNER_BOTTOM_RIGHT_BACK:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
 
-	            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 )
+	            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 )
 
 	        };
 
@@ -11700,6 +11733,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class RotateHandle extends AbstractHandle {
 
@@ -11730,6 +11764,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
 
 	class SphericalHitbox extends AbstractHitbox {
@@ -11754,6 +11789,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 
 	class HighlightableMesh extends threeFull.Mesh {
 
@@ -11816,8 +11852,6 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	exports.TorusHitbox = TorusHitbox;
 	exports.TranslateGizmo = TranslateGizmo;
 	exports.TranslateHandle = TranslateHandle;
-
-	Object.defineProperty(exports, '__esModule', { value: true });
 
 	return exports;
 
