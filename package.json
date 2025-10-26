@@ -55,7 +55,7 @@
     "postversion": "gulp build"
   },
   "dependencies": {
-    "bson": "^4.6.1",
+    "bson": "^6.10.4",
     "itee-client": "^8.3.0",
     "itee-core": "^1.4.0",
     "itee-database": "^8.3.0",
