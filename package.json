@@ -64,6 +64,7 @@
     "itee-validators": "^5.6.0"
   },
   "peerDependencies": {
+    "three": "^0.149.0",
     "three-full": "^28.0.2"
   },
   "devDependencies": {
