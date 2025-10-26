@@ -3,6 +3,5 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-export * from './datamaps/_datamaps'
-export * from './loaders/_loaders'
-export * from './utils/_utils'
+export * from './colors'
+export * from './directions'
