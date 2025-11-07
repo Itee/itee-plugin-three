@@ -416,56 +416,6 @@ const configs = {
             file:   null
         }
     },
-    'benchmarks-backend':                   {
-        input:     `tests/benchmarks/${ packageName }.benchs.js`,
-        plugins:   [],
-        treeshake: true,
-        output:    {
-            indent: '\t',
-            format: 'cjs',
-            name:   'Itee.Benchs',
-            file:   `tests/benchmarks/builds/${ packageName }.benchs.cjs.js`
-        }
-    },
-    'benchmarks-frontend':                  {
-        input:     `tests/benchmarks/${ packageName }.benchs.js`,
-        plugins:   [],
-        treeshake: true,
-        output:    {
-            indent: '\t',
-            format: 'iife',
-            name:   'Itee.Benchs',
-            file:   `tests/benchmarks/builds/${ packageName }.benchs.iife.js`
-        }
-    },
-    'units-backend':                        {
-        input:     `tests/units/${ packageName }.units.js`,
-        external:  [ 'chai' ],
-        plugins:   [],
-        treeshake: true,
-        output:    {
-            indent: '\t',
-            format: 'cjs',
-            name:   'Itee.Units',
-            file:   `tests/units/builds/${ packageName }.units.cjs.js`
-        }
-    },
-    'units-frontend':                       {
-        input:     `tests/units/${ packageName }.units.js`,
-        external:  [ 'chai', 'mocha' ],
-        plugins:   [],
-        treeshake: true,
-        output:    {
-            indent:  '\t',
-            format:  'iife',
-            name:    'Itee.Units',
-            globals: {
-                'chai':  'chai',
-                'mocha': 'mocha'
-            },
-            file:    `tests/units/builds/${ packageName }.units.iife.js`
-        }
-    },
 }
 
 function getRollupConfigurationFor( bundleName ) {
