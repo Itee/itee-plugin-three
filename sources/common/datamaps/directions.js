@@ -1,9 +1,10 @@
-import { Vector3 } from 'three'
 import {
     OneHalf,
     SquareRootOfThreeOnTwo,
     SquareRootOfTwoOnTwo
-}                  from '../constants/constants'
+}                  from 'itee-core'
+import { Vector3 } from 'three'
+
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
