@@ -9,14 +9,14 @@ import {
     Mesh,
     OctahedronBufferGeometry
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { OctahedricalHitbox }        from '../hitboxes/OctahedricalHitbox'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { OctahedricalHitbox }        from '../hitboxes/OctahedricalHitbox.js'
 //import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
 //import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
 //import { LineSegments }              from 'three-full/sources/objects/LineSegments'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractHandle }            from './AbstractHandle'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class OctahedricalHandle extends AbstractHandle {
 

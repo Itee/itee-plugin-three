@@ -4,7 +4,7 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-import { AbstractMongooseModel } from '../../AbstractMongooseModel'
+import { AbstractMongooseModel } from '../../AbstractMongooseModel.js'
 
 class KeyframeTrack extends AbstractMongooseModel {
 

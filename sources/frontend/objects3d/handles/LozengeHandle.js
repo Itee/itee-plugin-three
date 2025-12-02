@@ -15,15 +15,15 @@ import {
     Mesh,
     Vector3
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { LozengeHitbox }             from '../hitboxes/LozengeHitbox'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { LozengeHitbox }             from '../hitboxes/LozengeHitbox.js'
 //import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
 //import { Vector3 }                   from 'three-full/sources/math/Vector3'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractHandle }            from './AbstractHandle'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class LozengeHandle extends AbstractHandle {
 

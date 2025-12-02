@@ -45,7 +45,7 @@ import {
     TextureLoader,
     Vector2
 }                           from 'three-full'
-import { TexturesManager }  from './TexturesManager'
+import { TexturesManager }  from './TexturesManager.js'
 
 const DEFAULT_IMAGE = /*#__PURE__*/new ImageLoader().load(
     'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' )

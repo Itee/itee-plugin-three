@@ -4,7 +4,7 @@
  */
 
 import { BoxBufferGeometry } from 'three-full'
-import { AbstractHitbox }    from './AbstractHitbox'
+import { AbstractHitbox }    from './AbstractHitbox.js'
 
 //import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
 

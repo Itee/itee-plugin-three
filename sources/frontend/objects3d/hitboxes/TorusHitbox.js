@@ -4,7 +4,7 @@
  */
 
 import { TorusBufferGeometry } from 'three-full'
-import { AbstractHitbox }      from './AbstractHitbox'
+import { AbstractHitbox }      from './AbstractHitbox.js'
 
 //import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
 

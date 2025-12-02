@@ -10,7 +10,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { DBFLoader }              from '../../common/loaders/DBFLoader'
+import { DBFLoader }              from '../../common/loaders/DBFLoader.js'
 
 /**
  * This class allow to convert .dbf files into ThreeJs types

@@ -34,8 +34,8 @@ import {
     Vector2,
     Vector3
 }                         from 'three-full'
-import { ScaleGizmo }     from '../objects3d/gizmos/ScaleGizmo'
-import { TranslateGizmo } from '../objects3d/gizmos/TranslateGizmo'
+import { ScaleGizmo }     from '../objects3d/gizmos/ScaleGizmo.js'
+import { TranslateGizmo } from '../objects3d/gizmos/TranslateGizmo.js'
 
 // Basic Geometries
 class ClippingBox extends LineSegments {

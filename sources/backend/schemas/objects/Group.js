@@ -8,7 +8,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { Object3D } from '../core/Object3D'
+import { Object3D } from '../core/Object3D.js'
 
 let _schema = undefined
 let _model  = undefined

@@ -7,7 +7,7 @@ import {
     BufferGeometry,
     Float32BufferAttribute
 }                         from 'three-full'
-import { AbstractHitbox } from './AbstractHitbox'
+import { AbstractHitbox } from './AbstractHitbox.js'
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 

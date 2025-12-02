@@ -9,14 +9,14 @@ import {
     LineSegments,
     Mesh
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { BoxHitbox }                 from '../hitboxes/BoxHitbox'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { BoxHitbox }                 from '../hitboxes/BoxHitbox.js'
 //import { EdgesGeometry }             from 'three-full/sources/geometries/EdgesGeometry'
 //import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
 //import { LineSegments }              from 'three-full/sources/objects/LineSegments'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractHandle }            from './AbstractHandle'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class BoxHandle extends AbstractHandle {
 

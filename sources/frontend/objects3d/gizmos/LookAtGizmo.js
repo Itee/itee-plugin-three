@@ -4,9 +4,9 @@
  */
 import { degreesToRadians } from 'itee-utils'
 import { Vector3 }          from 'three-full'
-import { BoxHandle }        from '../handles/BoxHandle'
-import { ConeHandle }       from '../handles/ConeHandle'
-import { AbstractGizmo }    from './AbstractGizmo'
+import { BoxHandle }        from '../handles/BoxHandle.js'
+import { ConeHandle }       from '../handles/ConeHandle.js'
+import { AbstractGizmo }    from './AbstractGizmo.js'
 
 class LookAtGizmo extends AbstractGizmo {
 

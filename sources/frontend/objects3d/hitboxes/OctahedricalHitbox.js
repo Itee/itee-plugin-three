@@ -4,7 +4,7 @@
  */
 
 import { OctahedronBufferGeometry } from 'three-full'
-import { AbstractHitbox }           from './AbstractHitbox'
+import { AbstractHitbox }           from './AbstractHitbox.js'
 
 //import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 

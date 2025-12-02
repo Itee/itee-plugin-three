@@ -5,11 +5,11 @@
 
 import { degreesToRadians }   from 'itee-utils'
 import { Vector3 }            from 'three-full'
-import { LozengeHandle }      from '../handles/LozengeHandle'
-import { OctahedricalHandle } from '../handles/OctahedricalHandle'
-import { TranslateHandle }    from '../handles/TranslateHandle'
+import { LozengeHandle }      from '../handles/LozengeHandle.js'
+import { OctahedricalHandle } from '../handles/OctahedricalHandle.js'
+import { TranslateHandle }    from '../handles/TranslateHandle.js'
 //import { Vector3 }            from 'three-full/sources/math/Vector3'
-import { AbstractGizmo }      from './AbstractGizmo'
+import { AbstractGizmo }      from './AbstractGizmo.js'
 
 class TranslateGizmo extends AbstractGizmo {
 

@@ -10,7 +10,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { LASLoader }              from '../../common/loaders/LASLoader'
+import { LASLoader }              from '../../common/loaders/LASLoader.js'
 
 /**
  * This class allow to convert .asc files into ThreeJs types

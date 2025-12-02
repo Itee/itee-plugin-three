@@ -13,15 +13,15 @@ import {
     Mesh,
     Vector3
 }                                    from 'three-full'
-import { LineGeometry }              from '../../geometries/LineGeometry'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
+import { LineGeometry }              from '../../geometries/LineGeometry.js'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox.js'
 //import { ConeBufferGeometry }        from 'three-full/sources/geometries/ConeGeometry'
 //import { Vector3 }                   from 'three-full/sources/math/Vector3'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractHandle }            from './AbstractHandle'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class TranslateHandle extends AbstractHandle {
 

@@ -19,6 +19,7 @@
     "type": "git",
     "url":  "https://github.com/Itee/itee-plugin-three.git"
   },
+  "type":             "module",
   "main":             "builds/itee-plugin-three.cjs.js",
   "module":           "builds/itee-plugin-three.esm.js",
   "browser":          "builds/itee-plugin-three.iife.js",

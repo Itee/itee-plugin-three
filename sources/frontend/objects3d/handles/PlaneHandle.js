@@ -15,10 +15,10 @@ import {
     Mesh,
     Vector3
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { PlanarHitbox }              from '../hitboxes/PlanarHitbox'
-import { AbstractHandle }            from './AbstractHandle'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { PlanarHitbox }              from '../hitboxes/PlanarHitbox.js'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class PlaneHandle extends AbstractHandle {
 

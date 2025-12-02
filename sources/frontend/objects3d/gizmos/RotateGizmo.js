@@ -10,15 +10,15 @@ import {
     Mesh,
     OctahedronBufferGeometry
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { TorusHitbox }               from '../hitboxes/TorusHitbox'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { TorusHitbox }               from '../hitboxes/TorusHitbox.js'
 //import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
 //import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractGizmo }             from './AbstractGizmo'
+import { AbstractGizmo }             from './AbstractGizmo.js'
 
 class RotateGizmo extends AbstractGizmo {
 

@@ -3,5 +3,5 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-export * from './CameraControls'
-export * from './ClippingControls'
+export * from './CameraControls.js'
+export * from './ClippingControls.js'

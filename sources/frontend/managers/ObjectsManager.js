@@ -63,8 +63,8 @@ import {
     SpotLight,
     Sprite
 }                            from 'three-full'
-import { GeometriesManager } from './GeometriesManager'
-import { MaterialsManager }  from './MaterialsManager'
+import { GeometriesManager } from './GeometriesManager.js'
+import { MaterialsManager }  from './MaterialsManager.js'
 
 /**
  * @class

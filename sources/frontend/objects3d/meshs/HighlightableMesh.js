@@ -5,7 +5,7 @@
 
 import { Mesh }                  from 'three-full'
 //import { Mesh }                  from 'three-full/sources/objects/Mesh'
-import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
+import { HighlightableMaterial } from '../../materials/HighlightableMaterial.js'
 
 class HighlightableMesh extends Mesh {
 
