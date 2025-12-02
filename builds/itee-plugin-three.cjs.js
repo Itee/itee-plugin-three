@@ -4143,7 +4143,6 @@ var BufferAttributeExports = requireBufferAttribute();
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-//const { BufferAttribute } = require( './BufferAttribute' )
 
 let _schema$2 = undefined;
 let _model$2  = undefined;
