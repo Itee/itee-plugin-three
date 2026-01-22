@@ -17,16 +17,16 @@
   "private":          false,
   "repository":       {
     "type": "git",
-    "url":  "https://github.com/Itee/itee-plugin-three.git"
+    "url":  "https://github.com/Itee/plugin-three.git"
   },
   "type":             "module",
-  "main":             "builds/itee-plugin-three.cjs.js",
-  "module":           "builds/itee-plugin-three.esm.js",
-  "browser":          "builds/itee-plugin-three.iife.js",
-  "homepage":         "https://github.com/Itee/itee-plugin-three#readme",
+  "main":             "builds/plugin-three.cjs.js",
+  "module":           "builds/plugin-three.esm.js",
+  "browser":          "builds/plugin-three.iife.js",
+  "homepage":         "https://github.com/Itee/plugin-three#readme",
   "man":              "./docs/index.html",
   "bugs":             {
-    "url": "https://github.com/Itee/itee-plugin-three/issues"
+    "url": "https://github.com/Itee/plugin-three/issues"
   },
   "engines":          {
     "node": ">=20"
