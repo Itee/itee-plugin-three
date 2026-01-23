@@ -28,23 +28,12 @@ import {
  */
 class ThreeToMongoDB extends TAbstractDataInserter {
 
-    // Utils
-    static _toLog ( object ) {
-
-        return JSON.stringify( {
-            type: object.type || 'undefined',
-            name: object.name || 'undefined',
-            uuid: object.uuid || 'undefined',
-            id:   object._id || 'undefined'
-        } )
-
-    }
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
      * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -67,6 +56,17 @@ class ThreeToMongoDB extends TAbstractDataInserter {
         // Update objects in database if existing in file
 
     }
+    // Utils
+    static _toLog( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
+
+    }
     /**
      * Main entry point to insert data into database; It apply merge strategy over data to insert.
      *
@@ -79,7 +79,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _save ( data, parameters, onSuccess, onProgress, onError ) {
+    async _save( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = toArray( data )
         if ( isEmptyArray( dataToParse ) ) {
@@ -175,7 +175,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Query|null>>|null}
      * @private
      */
-    async _parseObjects ( objects = [], parentId = null ) {
+    async _parseObjects( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` )
 
         const _objects = toArray( objects )
@@ -200,7 +200,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Query|null>|null}
      * @private
      */
-    async _parseObject ( object, parentId = null ) {
+    async _parseObject( object, parentId = null ) {
         this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` )
 
         if ( isNotDefined( object ) ) {
@@ -377,7 +377,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _getOrCreateDocuments ( objects = [] ) {
+    async _getOrCreateDocuments( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` )
 
         const _objects = toArray( objects )
@@ -403,7 +403,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _getOrCreateDocument ( data ) {
+    async _getOrCreateDocument( data ) {
         this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` )
 
         if ( isNotDefined( data ) ) {
@@ -430,7 +430,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _createDocuments ( datas = [] ) {
+    async _createDocuments( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` )
 
         const _datas = toArray( datas )
@@ -455,7 +455,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _createDocument ( data ) {
+    async _createDocument( data ) {
         this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` )
 
         if ( isNotDefined( data ) ) {
@@ -487,7 +487,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readDocuments ( type, query ) {
+    async _readDocuments( type, query ) {
         this.logger.debug( `_readDocuments(...)` )
 
         if ( isNotDefined( type ) || isNotDefined( query ) ) {
@@ -511,7 +511,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readDocument ( type, query ) {
+    async _readDocument( type, query ) {
         this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` )
 
         if ( isNotDefined( type ) || isNotDefined( query ) ) {
@@ -547,7 +547,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+    async _updateDocuments( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` )
 
         const _documents = toArray( documents )
@@ -574,7 +574,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
+    async _updateDocument( document, updateQuery, queryOptions = { new: true } ) {
         this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` )
 
         if ( isNotDefined( document ) ) {
@@ -603,7 +603,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _deleteDocuments ( documents = [] ) {
+    async _deleteDocuments( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` )
 
         const _documents = toArray( documents )
@@ -628,7 +628,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` )
 
         if ( isNotDefined( document ) ) {
@@ -656,7 +656,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
         this.logger.debug( `_removeChildrenDocuments(...)` )
 
         let removed = []
@@ -674,7 +674,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
         this.logger.debug( `_removeChildDocument(${ ThreeToMongoDB._toLog( document ) })` )
 
         // Remove children recursively
@@ -699,7 +699,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` )
 
         if ( isNotDefined( geometryId ) ) { return }
@@ -720,7 +720,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         this.logger.debug( `_removeOrphanMaterialsWithIds(...)` )
 
         const removed = []
@@ -739,7 +739,7 @@ class ThreeToMongoDB extends TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         this.logger.debug( `_removeOrphanMaterialWithId(${ materialId })` )
 
         const referencingObjects = await this._readDocuments( 'Objects3D', { material: materialId } )

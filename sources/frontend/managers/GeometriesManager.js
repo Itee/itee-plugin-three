@@ -183,7 +183,7 @@ class GeometriesManager extends TDataBaseManager {
      *
      * @param parameters
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -207,11 +207,11 @@ class GeometriesManager extends TDataBaseManager {
 
     //// Getter/Setter
 
-    get computeBoundingBox () {
+    get computeBoundingBox() {
         return this._computeBoundingBox
     }
 
-    set computeBoundingBox ( value ) {
+    set computeBoundingBox( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
         if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -219,11 +219,11 @@ class GeometriesManager extends TDataBaseManager {
         this._computeBoundingBox = value
     }
 
-    get computeBoundingSphere () {
+    get computeBoundingSphere() {
         return this._computeBoundingSphere
     }
 
-    set computeBoundingSphere ( value ) {
+    set computeBoundingSphere( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
         if ( isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -231,11 +231,11 @@ class GeometriesManager extends TDataBaseManager {
         this._computeBoundingSphere = value
     }
 
-    get computeNormals () {
+    get computeNormals() {
         return this._computeNormals
     }
 
-    set computeNormals ( value ) {
+    set computeNormals( value ) {
         if ( isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
         if ( isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -243,11 +243,11 @@ class GeometriesManager extends TDataBaseManager {
         this._computeNormals = value
     }
 
-    get projectionSystem () {
+    get projectionSystem() {
         return this._projectionSystem
     }
 
-    set projectionSystem ( value ) {
+    set projectionSystem( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
@@ -256,11 +256,11 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    get globalScale () {
+    get globalScale() {
         return this._globalScale
     }
 
-    set globalScale ( value ) {
+    set globalScale( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -269,33 +269,33 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    setComputeBoundingBox ( value ) {
+    setComputeBoundingBox( value ) {
 
         this.computeBoundingBox = value
         return this
 
     }
 
-    setComputeBoundingShpere ( value ) {
+    setComputeBoundingShpere( value ) {
 
         this.computeBoundingSphere = value
         return this
 
     }
 
-    setComputeNormals ( value ) {
+    setComputeNormals( value ) {
         this.computeNormals = value
         return this
     }
 
-    setProjectionSystem ( value ) {
+    setProjectionSystem( value ) {
 
         this.projectionSystem = value
         return this
 
     }
 
-    setGlobalScale ( value ) {
+    setGlobalScale( value ) {
 
         this.globalScale = value
         return this
@@ -304,7 +304,7 @@ class GeometriesManager extends TDataBaseManager {
 
     //// Methods
 
-    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
         // Normalize to array
         const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData
@@ -339,7 +339,7 @@ class GeometriesManager extends TDataBaseManager {
      * @param data
      * @returns {*}
      */
-    convert ( data ) {
+    convert( data ) {
 
         if ( !data ) {
             throw new Error( 'GeometriesManager: Unable to convert null or undefined data !' )
@@ -388,7 +388,7 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    _convertJsonToGeometry ( data ) {
+    _convertJsonToGeometry( data ) {
 
         const geometryType = data.types
         let geometry       = null
@@ -531,7 +531,7 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    _convertJsonToBufferGeometry ( data ) {
+    _convertJsonToBufferGeometry( data ) {
 
         const bufferGeometryType = data.type
         let bufferGeometry       = null
@@ -740,7 +740,7 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    __convertArrayBufferToTypedArray ( arrayBuffer ) {
+    __convertArrayBufferToTypedArray( arrayBuffer ) {
 
         const ONE_BYTE       = 1
         const TWO_BYTE       = 2
@@ -826,7 +826,7 @@ class GeometriesManager extends TDataBaseManager {
 
     }
 
-    __convertBase64ToArrayBuffer ( base64 ) {
+    __convertBase64ToArrayBuffer( base64 ) {
 
         const chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
         const lookup = new Uint8Array( 256 )

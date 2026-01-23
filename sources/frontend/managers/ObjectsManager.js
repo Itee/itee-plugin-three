@@ -63,8 +63,8 @@ import {
     SpotLight,
     Sprite
 }                            from 'three-full'
-import { GeometriesManager } from './GeometriesManager'
-import { MaterialsManager }  from './MaterialsManager'
+import { GeometriesManager } from './GeometriesManager.js'
+import { MaterialsManager }  from './MaterialsManager.js'
 
 /**
  * @class
@@ -77,7 +77,7 @@ class ObjectsManager extends TDataBaseManager {
      *
      * @param parameters
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -102,11 +102,11 @@ class ObjectsManager extends TDataBaseManager {
 
     //// Getter/Setter
 
-    get geometriesProvider () {
+    get geometriesProvider() {
         return this._geometriesProvider
     }
 
-    set geometriesProvider ( value ) {
+    set geometriesProvider( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
@@ -116,11 +116,11 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    get materialsProvider () {
+    get materialsProvider() {
         return this._materialsProvider
     }
 
-    set materialsProvider ( value ) {
+    set materialsProvider( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
@@ -130,11 +130,11 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    get projectionSystem () {
+    get projectionSystem() {
         return this._projectionSystem
     }
 
-    set projectionSystem ( value ) {
+    set projectionSystem( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
@@ -143,11 +143,11 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    get globalScale () {
+    get globalScale() {
         return this._globalScale
     }
 
-    set globalScale ( value ) {
+    set globalScale( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -156,11 +156,11 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    get autoFillObjects3D () {
+    get autoFillObjects3D() {
         return this._autoFillObjects3D
     }
 
-    set autoFillObjects3D ( value ) {
+    set autoFillObjects3D( value ) {
 
         if ( isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
         if ( isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -170,35 +170,35 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    setGeometriesProvider ( value ) {
+    setGeometriesProvider( value ) {
 
         this.geometriesProvider = value
         return this
 
     }
 
-    setMaterialsProvider ( value ) {
+    setMaterialsProvider( value ) {
 
         this.materialsProvider = value
         return this
 
     }
 
-    setProjectionSystem ( value ) {
+    setProjectionSystem( value ) {
 
         this.projectionSystem = value
         return this
 
     }
 
-    setGlobalScale ( value ) {
+    setGlobalScale( value ) {
 
         this.globalScale = value
         return this
 
     }
 
-    setAutoFillObjects3D ( value ) {
+    setAutoFillObjects3D( value ) {
 
         this.autoFillObjects3D = value
         return this
@@ -207,7 +207,7 @@ class ObjectsManager extends TDataBaseManager {
 
     //// Methods
 
-    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
         // Convert data from db to instanced object and add them into a map
         const results = {}
@@ -239,20 +239,20 @@ class ObjectsManager extends TDataBaseManager {
     }
 
     // eslint-disable-next-line no-unused-vars
-    _onArrayBuffer ( data, onSuccess, onProgress, onError ) {}
+    _onArrayBuffer( data, onSuccess, onProgress, onError ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _onBlob ( data, onSuccess, onProgress, onError ) {}
+    _onBlob( data, onSuccess, onProgress, onError ) {}
 
     // eslint-disable-next-line no-unused-vars
-    _onText ( data, onSuccess, onProgress, onError ) {}
+    _onText( data, onSuccess, onProgress, onError ) {}
 
     /**
      *
      * @param data
      * @return {*}
      */
-    convert ( data ) {
+    convert( data ) {
 
         if ( !data ) {
             throw new Error( 'ObjectsManager: Unable to convert null or undefined data !' )
@@ -434,7 +434,7 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    _fillBaseObjectsData ( object, data ) {
+    _fillBaseObjectsData( object, data ) {
 
         // Common object properties
         object._id = data._id
@@ -599,7 +599,7 @@ class ObjectsManager extends TDataBaseManager {
      * @param {GlobalCallback} onProgress
      * @param {module:Managers/ObjectsManager~ObjectsManager~ClassCallback} onError
      */
-    fillObjects3D ( objects, onSuccess, onProgress, onError ) {
+    fillObjects3D( objects, onSuccess, onProgress, onError ) {
 
         const self = this
 
@@ -634,7 +634,7 @@ class ObjectsManager extends TDataBaseManager {
             onEndDataFetching()
         }, onProgress, onError )
 
-        function onEndDataFetching () {
+        function onEndDataFetching() {
 
             if ( !geometriesMap || !materialsMap ) { return }
 
@@ -652,7 +652,7 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    _retrieveGeometriesOf ( meshes, onSuccess, onProgress, onError ) {
+    _retrieveGeometriesOf( meshes, onSuccess, onProgress, onError ) {
 
         const geometriesIds = meshes.map( object => object.geometry )
                                     .filter( ( value, index, self ) => {
@@ -674,7 +674,7 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    _retrieveMaterialsOf ( meshes, onSuccess, onProgress, onError ) {
+    _retrieveMaterialsOf( meshes, onSuccess, onProgress, onError ) {
 
         const materialsArray       = meshes.map( object => object.material )
         const concatMaterialsArray = [].concat.apply( [], materialsArray )
@@ -884,7 +884,7 @@ class ObjectsManager extends TDataBaseManager {
      /////////////
      */
 
-    applyGeometry ( object, geometries ) {
+    applyGeometry( object, geometries ) {
 
         const geometryId = object.geometry
         if ( !geometryId ) {
@@ -901,7 +901,7 @@ class ObjectsManager extends TDataBaseManager {
 
     }
 
-    applyMaterials ( object, materials ) {
+    applyMaterials( object, materials ) {
 
         const materialIds = object.material
         if ( !materialIds ) {

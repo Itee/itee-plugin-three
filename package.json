@@ -1,109 +1,83 @@
 {
-  "name": "itee-plugin-three",
-  "version": "1.7.0",
-  "description": "This itee plugin allow to use three js content from end to end in an itee client-server-database architecture",
-  "keywords": [
+  "name":             "itee-plugin-three",
+  "version":          "1.7.0",
+  "description":      "This itee plugin allow to use three js content from end to end in an itee client-server-database architecture",
+  "keywords":         [
     "itee",
     "plugin",
     "three",
     "threejs"
   ],
-  "author": {
+  "author":           {
     "name": "Itee (Tristan Valcke)",
-    "url": "https://github.com/Itee"
+    "url":  "https://github.com/Itee"
   },
-  "contributors": [],
-  "license": "BSD-3-Clause",
-  "private": false,
-  "repository": {
+  "contributors":     [],
+  "license":          "BSD-3-Clause",
+  "private":          false,
+  "repository":       {
     "type": "git",
-    "url": "https://github.com/Itee/itee-plugin-three.git"
+    "url":  "https://github.com/Itee/plugin-three.git"
   },
-  "main": "builds/itee-plugin-three.cjs.js",
-  "module": "builds/itee-plugin-three.esm.js",
-  "browser": "builds/itee-plugin-three.iife.js",
-  "homepage": "https://github.com/Itee/itee-plugin-three#readme",
-  "man": "./docs/index.html",
-  "bugs": {
-    "url": "https://github.com/Itee/itee-plugin-three/issues"
+  "type":             "module",
+  "main":             "builds/plugin-three.cjs.js",
+  "module":           "builds/plugin-three.esm.js",
+  "browser":          "builds/plugin-three.iife.js",
+  "homepage":         "https://github.com/Itee/plugin-three#readme",
+  "man":              "./docs/index.html",
+  "bugs":             {
+    "url": "https://github.com/Itee/plugin-three/issues"
   },
-  "engines": {
-    "node": ">=18"
+  "engines":          {
+    "node": ">=20"
   },
-  "os": [
+  "os":               [
     "win32",
     "linux"
   ],
-  "cpu": [
+  "cpu":              [
     "x64",
     "ia32"
   ],
-  "scripts": {
-    "default": "gulp",
-    "help": "gulp help",
-    "patch": "gulp patch",
-    "clean": "gulp clean",
-    "lint": "gulp lint",
-    "doc": "gulp doc",
-    "build-test": "gulp build-tests",
-    "bench": "gulp run-benchmarks",
-    "unit": "gulp run-unit-tests",
-    "test": "gulp test",
-    "build": "gulp build",
-    "release": "gulp release",
-    "semantic-release": "semantic-release --dry-run --no-ci",
-    "postversion": "gulp build"
+  "scripts":          {
+    "default":                     "gulp --tasks",
+    "refresh":                     "node ./node_modules/@itee/tasks/scripts/refresh.mjs",
+    "help":                        "gulp help",
+    "patch":                       "gulp patch",
+    "clean":                       "gulp clean",
+    "lint":                        "gulp lint",
+    "doc":                         "gulp doc",
+    "build":                       "gulp build",
+    "tests:run":                   "gulp run-tests",
+    "tests:bundling":              "gulp check-bundling",
+    "tests:bundling:build-import": "gulp check-bundling-from-esm-build-import",
+    "tests:bundling:files-import": "gulp check-bundling-from-esm-files-import",
+    "tests:bundling:files-direct": "gulp check-bundling-from-esm-files-direct",
+    "tests:benches:compute":       "gulp compute-benchmarks",
+    "tests:benches:run":           "gulp run-benchmarks",
+    "tests:benches:run:back":      "gulp run-benchmarks-for-backend",
+    "tests:benches:run:front":     "gulp run-benchmarks-for-frontend",
+    "tests:units:compute":         "gulp compute-unit-tests",
+    "tests:units:run":             "gulp run-unit-tests",
+    "tests:units:run:back":        "gulp run-unit-tests-for-backend",
+    "tests:units:run:front":       "gulp run-unit-tests-for-frontend",
+    "release":                     "gulp release",
+    "semantic-release":            "semantic-release --dry-run --no-ci"
   },
-  "dependencies": {
-    "bson": "^4.6.1",
-    "itee-client": "^8.3.0",
-    "itee-core": "^1.4.0",
-    "itee-database": "^8.3.0",
-    "itee-mongodb": "^1.2.0",
-    "itee-utils": "^5.6.0",
-    "itee-validators": "^5.6.0"
+  "dependencies":     {
+    "bson":            "^6.10.4",
+    "itee-client":     "^9.0.0",
+    "itee-core":       "^2.0.0",
+    "itee-database":   "^9.0.0",
+    "itee-mongodb":    "^2.0.0",
+    "itee-utils":      "^6.0.6",
+    "itee-validators": "^6.1.3"
   },
   "peerDependencies": {
+    "three":      "^0.149.0",
     "three-full": "^28.0.2"
   },
-  "devDependencies": {
-    "@rollup/plugin-alias": "^3.1.9",
-    "@rollup/plugin-commonjs": "^21.0.1",
-    "@rollup/plugin-node-resolve": "^13.1.3",
-    "@semantic-release/changelog": "^6.0.1",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^8.0.2",
-    "@semantic-release/npm": "^9.0.0",
-    "ansi-colors": "^4.1.1",
-    "benchmark": "^2.1.4",
-    "chai": "^4.3.6",
-    "cz-emoji": "^1.3.2-canary.2",
-    "del": "^7.1.0",
-    "eslint-plugin-mocha": "^10.0.3",
-    "fancy-log": "^2.0.0",
-    "figlet": "^1.9.3",
-    "glob": "^7.2.0",
-    "gulp": "^4.0.2",
-    "gulp-eslint": "^6.0.0",
-    "gulp-jsdoc3": "^3.0.0",
-    "karma": "^4.4.1",
-    "karma-benchmark": "^1.0.4",
-    "karma-benchmarkjs-reporter": "^1.0.0",
-    "karma-chai": "^0.1.0",
-    "karma-chrome-launcher": "^3.1.0",
-    "karma-edge-launcher": "^0.4.2",
-    "karma-firefox-launcher": "^2.1.2",
-    "karma-htmlfile-reporter": "^0.3.8",
-    "karma-mocha": "^2.0.1",
-    "karma-mocha-reporter": "^2.2.5",
-    "minimist": "^1.2.5",
-    "mocha": "^9.2.0",
-    "mochawesome": "^7.0.1",
-    "rollup": "^2.67.2",
-    "rollup-plugin-cleanup": "^3.2.1",
-    "rollup-plugin-re": "^1.0.7",
-    "rollup-plugin-terser": "^7.0.2",
-    "semantic-release": "^19.0.2",
-    "semantic-release-gitmoji": "^1.6.8"
+  "devDependencies":  {
+    "@itee/tasks": "^1.4.4"
   }
 }

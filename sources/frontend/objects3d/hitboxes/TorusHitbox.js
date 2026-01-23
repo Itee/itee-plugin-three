@@ -4,13 +4,13 @@
  */
 
 import { TorusBufferGeometry } from 'three-full'
-import { AbstractHitbox }      from './AbstractHitbox'
+import { AbstractHitbox }      from './AbstractHitbox.js'
 
 //import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
 
 class TorusHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

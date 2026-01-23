@@ -11,6 +11,7 @@
 
 import { TAbstractFileConverter } from 'itee-database'
 import { TDSLoader }              from 'three-full'
+
 //import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
 
 /**
@@ -24,7 +25,7 @@ class TdsToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
         } )
@@ -41,7 +42,7 @@ class TdsToThree extends TAbstractFileConverter {
      * @param {callback} onError A callback that will handle the parsing errors
      * @return {Object}
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

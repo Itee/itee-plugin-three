@@ -16,7 +16,7 @@ import {
 
 class TObjects3DController extends TMongooseController {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
         super( parameters )
     }
 
@@ -38,7 +38,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readOneDocument ( type, query ) {
+    async _readOneDocument( type, query ) {
         if ( isNotDefined( type ) || isNotDefined( query ) ) { return null }
 
         const model = await this._driver
@@ -60,7 +60,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query, projection ) {
+    async _readManyDocument( type, query, projection ) {
         if ( isNotDefined( type ) || isNotDefined( query ) ) { return null }
 
         let models = await this._driver
@@ -82,7 +82,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions ) {
+    async _updateDocument( document, updateQuery, queryOptions ) {
 
         if ( isNotDefined( document ) ) {
             return null
@@ -96,7 +96,7 @@ class TObjects3DController extends TMongooseController {
         return result
     }
 
-    async getAllChildrenIds ( parentId, recursive = false ) {
+    async getAllChildrenIds( parentId, recursive = false ) {
 
         const result              = {
             children:   [],
@@ -156,7 +156,7 @@ class TObjects3DController extends TMongooseController {
 
     }
 
-    async _deleteOne ( id, response ) {
+    async _deleteOne( id, response ) {
 
         try {
 
@@ -220,7 +220,7 @@ class TObjects3DController extends TMongooseController {
 
     }
 
-    async _deleteDocuments ( type, documentIds ) {
+    async _deleteDocuments( type, documentIds ) {
         if ( isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
@@ -244,7 +244,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         if ( isNotDefined( document ) ) { return null }
 
         //        console.log( `Delete: ${ document.name } [${ document._id }]` )
@@ -260,7 +260,7 @@ class TObjects3DController extends TMongooseController {
 
     ///
 
-    async _removeParentReference ( document ) {
+    async _removeParentReference( document ) {
         const parentId = document.parent
         if ( isNotDefined( parentId ) ) { return null }
 
@@ -285,7 +285,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
 
         let removed = []
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
@@ -302,7 +302,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
 
         // Remove children recursively
         const children        = await this._readManyDocument( 'Objects3D', { parent: document._id } )
@@ -333,7 +333,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         if ( isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } )
@@ -353,7 +353,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         if ( isNotDefined( materialsIds ) ) { return }
         if ( isEmptyArray( materialsIds ) ) { return }
 
@@ -373,7 +373,7 @@ class TObjects3DController extends TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         if ( isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } )

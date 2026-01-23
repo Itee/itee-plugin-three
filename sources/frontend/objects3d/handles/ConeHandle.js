@@ -7,13 +7,13 @@ import {
     ConeBufferGeometry,
     Mesh
 }                                from 'three-full'
-import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
-import { BoxHitbox }             from '../hitboxes/BoxHitbox'
-import { AbstractHandle }        from './AbstractHandle'
+import { HighlightableMaterial } from '../../materials/HighlightableMaterial.js'
+import { BoxHitbox }             from '../hitboxes/BoxHitbox.js'
+import { AbstractHandle }        from './AbstractHandle.js'
 
 class ConeHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -68,7 +68,7 @@ class ConeHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
         this.updateMatrix()

@@ -8,12 +8,12 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { AbstractMongooseModel } from '../../AbstractMongooseModel'
-import { KeyframeTrack }         from './KeyframeTrack'
+import { AbstractMongooseModel } from '../../AbstractMongooseModel.js'
+import { KeyframeTrack }         from './KeyframeTrack.js'
 
 class BooleanKeyframeTrack extends AbstractMongooseModel {
 
-    static schema ( Mongoose ) {
+    static schema( Mongoose ) {
 
         const Schema = Mongoose.Schema
 
@@ -31,7 +31,7 @@ class BooleanKeyframeTrack extends AbstractMongooseModel {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model( Mongoose, Schema ) {
 
         return KeyframeTrack.getModelFrom( Mongoose )
                             .discriminator( this.name, Schema )

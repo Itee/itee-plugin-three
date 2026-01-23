@@ -4,13 +4,13 @@
  */
 
 import { BoxBufferGeometry } from 'three-full'
-import { AbstractHitbox }    from './AbstractHitbox'
+import { AbstractHitbox }    from './AbstractHitbox.js'
 
 //import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
 
 class BoxHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

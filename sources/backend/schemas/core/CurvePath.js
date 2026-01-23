@@ -14,7 +14,7 @@ const { Curve } = require( '../curves/Curve' )
 let _schema = undefined
 let _model  = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -25,7 +25,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Schema = Mongoose.Schema
@@ -51,7 +51,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
     'use strict'
 
     if ( !_model ) {
@@ -62,7 +62,7 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
     'use strict'
 
     const CurveBaseModel = Curve.getModelFrom( Mongoose )
@@ -70,7 +70,7 @@ function _createModel ( Mongoose ) {
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
     'use strict'
 
     if ( !_model ) {

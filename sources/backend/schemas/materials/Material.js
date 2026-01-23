@@ -9,7 +9,7 @@
 let _schema = undefined
 let _model  = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -20,7 +20,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Schema = Mongoose.Schema
@@ -70,7 +70,7 @@ function _createSchema ( Mongoose ) {
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
     'use strict'
 
     if ( !_model ) {
@@ -81,7 +81,7 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
     'use strict'
 
     // We need to pre-declare the base model to be able to use correctly
@@ -92,7 +92,7 @@ function _createModel ( Mongoose ) {
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
 
     if ( !_model ) {
         _createModel( Mongoose )

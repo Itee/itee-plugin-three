@@ -22,7 +22,7 @@ import {
  * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix4 type
  * @returns {Mongoose}
  */
-function Matrix4Type ( Mongoose ) {
+function Matrix4Type( Mongoose ) {
     'use strict'
 
     /**
@@ -40,7 +40,7 @@ function Matrix4Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Matrix4' )
 
@@ -56,7 +56,7 @@ function Matrix4Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
          * @returns {Array.<Number>} The validated array of length 9
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
             if ( isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }

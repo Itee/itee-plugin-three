@@ -13,19 +13,19 @@ import {
     Mesh,
     Vector3
 }                                    from 'three-full'
-import { LineGeometry }              from '../../geometries/LineGeometry'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox'
+import { LineGeometry }              from '../../geometries/LineGeometry.js'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { CylindricaHitbox }          from '../hitboxes/CylindricaHitbox.js'
 //import { BoxBufferGeometry }         from 'three-full/sources/geometries/BoxGeometry'
 //import { Vector3 }                   from 'three-full/sources/math/Vector3'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractHandle }            from './AbstractHandle'
+import { AbstractHandle }            from './AbstractHandle.js'
 
 class ScaleHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -56,13 +56,13 @@ class ScaleHandle extends AbstractHandle {
 
     }
 
-    get direction () {
+    get direction() {
 
         return this._direction
 
     }
 
-    set direction ( value ) {
+    set direction( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -89,7 +89,7 @@ class ScaleHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
 
         super.update( cameraDirection )
 
@@ -103,14 +103,14 @@ class ScaleHandle extends AbstractHandle {
 
     }
 
-    setDirection ( direction ) {
+    setDirection( direction ) {
 
         this.direction = direction
         return this
 
     }
 
-    flipDirection () {
+    flipDirection() {
 
         this.direction = this._direction.negate()
 

@@ -88,7 +88,7 @@ class LASLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+    constructor( manager = DefaultLoadingManager, logger = DefaultLogger ) {
 
         this.manager = manager
         this.logger  = logger
@@ -175,7 +175,7 @@ class LASLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //this.logger.time("LASLoader")
 
@@ -194,7 +194,7 @@ class LASLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -212,7 +212,7 @@ class LASLoader {
      * @param onProgress
      * @param onError
      */
-    parse ( arraybuffer, onLoad, onProgress, onError ) {
+    parse( arraybuffer, onLoad, onProgress, onError ) {
 
         try {
 
@@ -249,7 +249,7 @@ class LASLoader {
 
     // Header
 
-    _parseHeader ( lasVersion ) {
+    _parseHeader( lasVersion ) {
 
         switch ( lasVersion ) {
             case '1.0':
@@ -269,7 +269,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_0 () {
+    _parseHeader_1_0() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -307,7 +307,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_1 () {
+    _parseHeader_1_1() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -346,7 +346,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_2 () {
+    _parseHeader_1_2() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -388,7 +388,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_3 () {
+    _parseHeader_1_3() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -434,7 +434,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_4 () {
+    _parseHeader_1_4() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -487,7 +487,7 @@ class LASLoader {
 
     // VariableLengthRecord
 
-    _parseVariableLengthRecords ( header ) {
+    _parseVariableLengthRecords( header ) {
 
         const fullVersion            = `${ header.VersionMajor }.${ header.VersionMinor }`
         const variablesLengthRecords = []
@@ -517,7 +517,7 @@ class LASLoader {
 
     }
 
-    _parseVariableLengthRecordHeader () {
+    _parseVariableLengthRecordHeader() {
 
         return {
             Reserved:                this._reader.getUint16(),
@@ -528,7 +528,7 @@ class LASLoader {
         }
 
     }
-    _parseVariableLengthRecordContent ( userId, recordId, recordLength ) {
+    _parseVariableLengthRecordContent( userId, recordId, recordLength ) {
 
         switch ( userId ) {
             case 'LASF_Projection':
@@ -542,7 +542,7 @@ class LASLoader {
 
     }
 
-    _parseProjectionRecord ( recordId, recordLength ) {
+    _parseProjectionRecord( recordId, recordLength ) {
 
         switch ( recordId ) {
             case 2111:
@@ -564,20 +564,20 @@ class LASLoader {
     }
 
     // Todo
-    _parseOGCMathTransformWKT () {
+    _parseOGCMathTransformWKT() {
 
         return undefined
 
     }
 
     // Todo
-    _parseOGCCoordinateTransformWKT () {
+    _parseOGCCoordinateTransformWKT() {
 
         return undefined
 
     }
 
-    _parseGeoKeyDirectoryTag () {
+    _parseGeoKeyDirectoryTag() {
 
         const geoKey = {
             wKeyDirectoryVersion: this._reader.getUint16(),
@@ -600,7 +600,7 @@ class LASLoader {
 
     }
 
-    _parseGeoDoubleParamsTag ( recordLength ) {
+    _parseGeoDoubleParamsTag( recordLength ) {
 
         const numberOfEntries = recordLength / Byte.Height
         const params          = []
@@ -613,13 +613,13 @@ class LASLoader {
 
     }
 
-    _parseGeoASCIIParamsTag ( recordLength ) {
+    _parseGeoASCIIParamsTag( recordLength ) {
 
         return this._reader.getString( recordLength ).replace( NullCharRegex, '' )
 
     }
 
-    _parseSpecRecord ( recordId ) {
+    _parseSpecRecord( recordId ) {
 
         if ( recordId < 100 ) {
 
@@ -657,7 +657,7 @@ class LASLoader {
 
     }
 
-    _parseClassificationLookupRecord () {
+    _parseClassificationLookupRecord() {
 
         const records = []
 
@@ -672,7 +672,7 @@ class LASLoader {
 
     }
 
-    _parseHeaderLookupForFlightLinesRecord () {
+    _parseHeaderLookupForFlightLinesRecord() {
 
         return {
             FileMarkerNumber: this._reader.getUint8(),
@@ -681,47 +681,47 @@ class LASLoader {
 
     }
 
-    _parseHistogramRecord () {
+    _parseHistogramRecord() {
 
         return undefined
 
     }
 
-    _parseTextAreaDescriptionRecord () {
-
-        return undefined
-
-    }
-
-    // Todo
-    _parseExtraBytesRecord () {
+    _parseTextAreaDescriptionRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseSupersededRecord () {
+    _parseExtraBytesRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformPacketDesciptor () {
+    _parseSupersededRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformDataPacket () {
+    _parseWaveformPacketDesciptor() {
 
         return undefined
 
     }
 
-    _parseCustomRecord ( recordLength ) {
+    // Todo
+    _parseWaveformDataPacket() {
+
+        return undefined
+
+    }
+
+    _parseCustomRecord( recordLength ) {
 
         const record = new Uint8Array( recordLength )
 
@@ -735,7 +735,7 @@ class LASLoader {
 
     // PointDataRecords
 
-    _parsePointDataRecords ( header, onProgress ) {
+    _parsePointDataRecords( header, onProgress ) {
 
         const offsetToPointData = header.OffsetToPointData
         if ( this._reader.offset !== offsetToPointData ) {
@@ -765,7 +765,7 @@ class LASLoader {
 
     }
 
-    _getPointDataRecordFormat ( format ) {
+    _getPointDataRecordFormat( format ) {
 
         switch ( format ) {
             case 0:
@@ -797,7 +797,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_0 () {
+    _parsePointDataRecordFormat_0() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -821,7 +821,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_1 () {
+    _parsePointDataRecordFormat_1() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -846,7 +846,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_2 () {
+    _parsePointDataRecordFormat_2() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -873,7 +873,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_3 () {
+    _parsePointDataRecordFormat_3() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -901,7 +901,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_4 () {
+    _parsePointDataRecordFormat_4() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -933,7 +933,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_5 () {
+    _parsePointDataRecordFormat_5() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -968,7 +968,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_6 () {
+    _parsePointDataRecordFormat_6() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -995,7 +995,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_7 () {
+    _parsePointDataRecordFormat_7() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -1025,7 +1025,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_8 () {
+    _parsePointDataRecordFormat_8() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -1056,7 +1056,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_9 () {
+    _parsePointDataRecordFormat_9() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -1090,7 +1090,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_10 () {
+    _parsePointDataRecordFormat_10() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -1128,7 +1128,7 @@ class LASLoader {
 
     }
 
-    convert ( lasDatas, onLoad, onProgress, onError ) {
+    convert( lasDatas, onLoad, onProgress, onError ) {
 
         try {
 
@@ -1163,7 +1163,7 @@ class LASLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -1193,7 +1193,7 @@ class LASLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoints ( groupToFeed, lasDatas, onProgress ) {
+    _createCloudPoints( groupToFeed, lasDatas, onProgress ) {
 
         const classPointReverseMap = {
             0:  'Created',
@@ -1317,7 +1317,7 @@ class LASLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length
         const geometry       = new BufferGeometry()

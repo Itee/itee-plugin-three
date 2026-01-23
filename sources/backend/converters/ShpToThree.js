@@ -10,7 +10,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { SHPLoader }              from '../../common/loaders/SHPLoader'
+import { SHPLoader }              from '../../common/loaders/SHPLoader.js'
 
 /**
  * This class allow to convert .shp files into ThreeJs types
@@ -23,7 +23,7 @@ class ShpToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: TAbstractFileConverter.DumpType.ArrayBuffer
         } )
@@ -40,7 +40,7 @@ class ShpToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

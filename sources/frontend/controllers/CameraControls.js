@@ -94,7 +94,7 @@ const CameraControlMode = /*#__PURE__*/toEnum( {
     Path:        4
 } )
 
-function isInWorker () {
+function isInWorker() {
     return typeof importScripts === 'function'
 }
 
@@ -148,7 +148,7 @@ class CameraControls extends EventDispatcher {
      * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
      * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -340,7 +340,7 @@ class CameraControls extends EventDispatcher {
      * @function module:Controllers/CameraControls~CameraControls#get camera
      * @returns {THREE~Camera}
      */
-    get camera () {
+    get camera() {
 
         return this._camera
 
@@ -352,7 +352,7 @@ class CameraControls extends EventDispatcher {
      * @param {THREE~Camera} value
      * @throws Will throw an error if the argument is null.
      */
-    set camera ( value ) {
+    set camera( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
@@ -367,13 +367,13 @@ class CameraControls extends EventDispatcher {
      * @type {THREE~Object3D}
      * @throws {Error} if the argument is null.
      */
-    get target () {
+    get target() {
 
         return this._target
 
     }
 
-    set target ( value ) {
+    set target( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
@@ -387,11 +387,11 @@ class CameraControls extends EventDispatcher {
      * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
      * @throws {Error} if the argument is null.
      */
-    get mode () {
+    get mode() {
         return this._mode
     }
 
-    set mode ( value ) {
+    set mode( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
@@ -405,21 +405,21 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    get paths () {
+    get paths() {
         return this._paths
     }
 
-    set paths ( value ) {
+    set paths( value ) {
 
         this._paths = value
 
     }
 
-    get trackPath () {
+    get trackPath() {
         return this._trackPath
     }
 
-    set trackPath ( value ) {
+    set trackPath( value ) {
 
         if ( isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
@@ -431,21 +431,23 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    get domElement () {
+    get domElement() {
 
         return this._domElement
 
     }
 
-    set domElement ( value ) {
+    set domElement( value ) {
 
         if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
         if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-        if ( ![ 'Window',
-                'HTMLDocument',
-                'HTMLDivElement',
-                'HTMLCanvasElement',
-                'OffscreenCanvas' ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+        if ( ![
+            'Window',
+            'HTMLDocument',
+            'HTMLDivElement',
+            'HTMLCanvasElement',
+            'OffscreenCanvas'
+        ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
         // Check focusability of given dom element because in case the element is not focusable
         // the keydown event won't work !
@@ -464,7 +466,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    get handlers () {
+    get handlers() {
         return this._handlers
     }
 
@@ -474,7 +476,7 @@ class CameraControls extends EventDispatcher {
      * @param {THREE~Camera} value - The camera to manage
      * @return {module:Controllers/CameraControls~CameraControls} The current instance (this, chainable)
      */
-    setCamera ( value ) {
+    setCamera( value ) {
 
         this.camera = value
         return this
@@ -487,7 +489,7 @@ class CameraControls extends EventDispatcher {
      * @param {THREE~Object3D} value - The target to use
      * @return {CameraControls} The current instance (this, chainable)
      */
-    setTarget ( value ) {
+    setTarget( value ) {
 
         this.target = value
         return this
@@ -500,7 +502,7 @@ class CameraControls extends EventDispatcher {
      * @param {Enum.State} value - The target to use
      * @return {CameraControls} The current instance (this, chainable)
      */
-    setMode ( value ) {
+    setMode( value ) {
 
         this.mode = value
         return this
@@ -514,28 +516,28 @@ class CameraControls extends EventDispatcher {
      * @throws {BadERROR} a bad error
      * @return {CameraControls} The current instance (this, chainable)
      */
-    setPaths ( value ) {
+    setPaths( value ) {
 
         this.paths = value
         return this
 
     }
 
-    addPath ( value ) {
+    addPath( value ) {
 
         this._paths.push( value )
         return this
 
     }
 
-    setTrackPath ( value ) {
+    setTrackPath( value ) {
 
         this.trackPath = value
         return this
 
     }
 
-    setDomElement ( value ) {
+    setDomElement( value ) {
 
         this.domElement = value
         return this
@@ -544,7 +546,7 @@ class CameraControls extends EventDispatcher {
 
     ///////////////
 
-    impose () {
+    impose() {
 
         this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false )
         this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false )
@@ -577,7 +579,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    dispose () {
+    dispose() {
 
         this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false )
         this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false )
@@ -610,11 +612,11 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    update () {
+    update() {
 
     }
 
-    setCameraPosition ( newCameraPosition ) {
+    setCameraPosition( newCameraPosition ) {
 
         this._camera.position.copy( newCameraPosition )
         this._camera.lookAt( this._target.position )
@@ -628,7 +630,7 @@ class CameraControls extends EventDispatcher {
      * @param {external:THREE~Vector3} newTargetPosition - The new target position
      * @return {CameraControls} The current instance (this, chainable)
      */
-    setTargetPosition ( newTargetPosition ) {
+    setTargetPosition( newTargetPosition ) {
 
         this._target.position.copy( newTargetPosition )
         this._camera.lookAt( this._target.position )
@@ -638,13 +640,13 @@ class CameraControls extends EventDispatcher {
     }
 
     // Handlers
-    _preventEvent ( event ) {
+    _preventEvent( event ) {
         if ( !event.preventDefault ) { return }
 
         event.preventDefault()
     }
 
-    _consumeEvent ( event ) {
+    _consumeEvent( event ) {
         if ( !event.cancelable ) { return }
         if ( !event.stopImmediatePropagation ) { return }
 
@@ -652,7 +654,7 @@ class CameraControls extends EventDispatcher {
     }
 
     // Keys
-    _onKeyDown ( keyEvent ) {
+    _onKeyDown( keyEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( keyEvent )
@@ -775,7 +777,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onKeyUp ( keyEvent ) {
+    _onKeyUp( keyEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( keyEvent )
@@ -783,7 +785,7 @@ class CameraControls extends EventDispatcher {
     }
 
     // Touches
-    _onTouchStart ( touchEvent ) {
+    _onTouchStart( touchEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( touchEvent )
@@ -792,7 +794,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onTouchEnd ( touchEvent ) {
+    _onTouchEnd( touchEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( touchEvent )
@@ -802,7 +804,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onTouchCancel ( touchEvent ) {
+    _onTouchCancel( touchEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( touchEvent )
@@ -812,7 +814,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onTouchLeave ( touchEvent ) {
+    _onTouchLeave( touchEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( touchEvent )
@@ -822,7 +824,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onTouchMove ( touchEvent ) {
+    _onTouchMove( touchEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( touchEvent )
@@ -876,7 +878,7 @@ class CameraControls extends EventDispatcher {
     }
 
     // Mouse
-    _onMouseEnter ( mouseEvent ) {
+    _onMouseEnter( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -888,7 +890,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onMouseLeave ( mouseEvent ) {
+    _onMouseLeave( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -901,7 +903,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onMouseDown ( mouseEvent ) {
+    _onMouseDown( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -978,7 +980,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onMouseMove ( mouseEvent ) {
+    _onMouseMove( mouseEvent ) {
 
         if ( !this.enabled || this._state === State.None ) { return }
         this._preventEvent( mouseEvent )
@@ -1022,7 +1024,7 @@ class CameraControls extends EventDispatcher {
     }
 
     //todo allow other displacement from wheel
-    _onMouseWheel ( mouseEvent ) {
+    _onMouseWheel( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -1033,7 +1035,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onMouseUp ( mouseEvent ) {
+    _onMouseUp( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -1043,7 +1045,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _onDblClick ( mouseEvent ) {
+    _onDblClick( mouseEvent ) {
 
         if ( !this.enabled ) { return }
         this._preventEvent( mouseEvent )
@@ -1053,7 +1055,7 @@ class CameraControls extends EventDispatcher {
     }
 
     // Positional methods
-    _front () {
+    _front() {
 
         if ( !this.canMove || !this.canFront ) { return }
 
@@ -1101,7 +1103,7 @@ class CameraControls extends EventDispatcher {
      * @private
      * @return {void}
      */
-    _back () {
+    _back() {
 
         if ( !this.canMove || !this.canBack ) { return }
 
@@ -1155,7 +1157,7 @@ class CameraControls extends EventDispatcher {
      * @fires module:Controllers/CameraControls~CameraControls#move
      * @fires module:Controllers/CameraControls~CameraControls#change
      */
-    _up () {
+    _up() {
 
         if ( !this.canMove || !this.canUp ) { return }
 
@@ -1184,7 +1186,7 @@ class CameraControls extends EventDispatcher {
      * @private
      * @return {void}
      */
-    _down () {
+    _down() {
 
         if ( !this.canMove || !this.canDown ) { return }
 
@@ -1213,7 +1215,7 @@ class CameraControls extends EventDispatcher {
      * @private
      * @return {void}
      */
-    _left () {
+    _left() {
 
         if ( !this.canMove || !this.canLeft ) { return }
 
@@ -1237,7 +1239,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _right () {
+    _right() {
 
         if ( !this.canMove || !this.canRight ) { return }
 
@@ -1261,7 +1263,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _rotate ( delta ) {
+    _rotate( delta ) {
 
         if ( !this.canRotate ) { return }
 
@@ -1342,7 +1344,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _pan ( delta ) {
+    _pan( delta ) {
 
         if ( !this.canPan ) { return }
 
@@ -1369,7 +1371,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _roll ( delta ) {
+    _roll( delta ) {
 
         if ( !this.canRoll ) { return }
 
@@ -1396,7 +1398,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _zoom ( delta ) {
+    _zoom( delta ) {
 
         if ( !this.canZoom ) { return }
 
@@ -1524,7 +1526,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _lookAt ( direction ) {
+    _lookAt( direction ) {
 
         if ( !this.canLookAt ) { return }
 
@@ -1568,7 +1570,7 @@ class CameraControls extends EventDispatcher {
     }
 
     // Helpers
-    _initPathDisplacement () {
+    _initPathDisplacement() {
 
         //todo: project on closest path position
         //todo: move on path in the FRONT camera direction
@@ -1629,7 +1631,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _getPathDisplacement ( cameraDirection ) {
+    _getPathDisplacement( cameraDirection ) {
 
         let displacement = null
 
@@ -1814,7 +1816,7 @@ class CameraControls extends EventDispatcher {
 
     }
 
-    _getDirectionsMap () {
+    _getDirectionsMap() {
 
         //todo: use cache !!! Could become a complet map with nodes on path network
 

@@ -3,11 +3,11 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { AbstractHandle } from './AbstractHandle'
+import { AbstractHandle } from './AbstractHandle.js'
 
 class RotateHandle extends AbstractHandle {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{}, ...parameters
@@ -19,7 +19,7 @@ class RotateHandle extends AbstractHandle {
 
     }
 
-    update ( cameraDirection ) {
+    update( cameraDirection ) {
         super.update( cameraDirection )
 
 

@@ -19,7 +19,7 @@ import {
 
 class AbstractGizmo extends Object3D {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -62,7 +62,7 @@ class AbstractGizmo extends Object3D {
 
     }
 
-    _setupHandles ( handlesMap ) {
+    _setupHandles( handlesMap ) {
 
         const parent = this
         //        const parent = this.handles
@@ -125,7 +125,7 @@ class AbstractGizmo extends Object3D {
 
     }
 
-    highlight ( axis ) {
+    highlight( axis ) {
 
         // Reset highlight for all of them
         for ( let key in this.handleGizmos ) {
@@ -140,7 +140,7 @@ class AbstractGizmo extends Object3D {
 
     }
 
-    update ( cameraPosition, cameraDirection ) {
+    update( cameraPosition, cameraDirection ) {
 
         this.traverse( ( child ) => {
 
@@ -154,7 +154,7 @@ class AbstractGizmo extends Object3D {
 
     }
 
-    updateIntersectPlane ( cameraPosition ) {
+    updateIntersectPlane( cameraPosition ) {
 
         this.intersectPlane.lookAt( cameraPosition )
         this.intersectPlane.updateMatrix()

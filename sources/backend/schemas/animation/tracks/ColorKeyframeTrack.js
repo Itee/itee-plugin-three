@@ -8,11 +8,11 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { KeyframeTrack } from './KeyframeTrack'
+import { KeyframeTrack } from './KeyframeTrack.js'
 
 class ColorKeyframeTrack extends KeyframeTrack {
 
-    static schema ( Mongoose ) {
+    static schema( Mongoose ) {
 
         const Schema = Mongoose.Schema
 
@@ -25,7 +25,7 @@ class ColorKeyframeTrack extends KeyframeTrack {
 
     }
 
-    static model ( Mongoose, Schema ) {
+    static model( Mongoose, Schema ) {
 
         //        const KeyframeTrackBaseModel = KeyframeTrack.getModelFrom( Mongoose )
         //        const model             = KeyframeTrackBaseModel.discriminator( this.name, Schema )

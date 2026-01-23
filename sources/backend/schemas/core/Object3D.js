@@ -7,7 +7,7 @@
  * @description Todo...
  */
 
-function Object3D () {}
+function Object3D() {}
 
 Object3D.getSchemaFrom   = Mongoose => {
 
@@ -67,7 +67,7 @@ Object3D._createSchema   = Mongoose => {
             type: Mixed,
             set:  value => {
 
-                function RemoveRecursivelyDotInKeyOf ( properties ) {
+                function RemoveRecursivelyDotInKeyOf( properties ) {
                     let result = {}
 
                     for ( let property in properties ) {

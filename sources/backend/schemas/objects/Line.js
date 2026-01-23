@@ -13,7 +13,7 @@ const { Object3D } = require( '../core/Object3D' )
 let _schema = undefined
 let _model  = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -24,7 +24,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Schema   = Mongoose.Schema
@@ -36,16 +36,18 @@ function _createSchema ( Mongoose ) {
             type: ObjectId,
             ref:  'Geometry'
         },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
+        material: [
+            {
+                type: ObjectId,
+                ref:  'LineBasicMaterial'
+            }
+        ],
         drawMode: Number
     } )
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
     'use strict'
 
     if ( !_model ) {
@@ -56,7 +58,7 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
     'use strict'
 
     const Object3DBaseModel = Object3D.getModelFrom( Mongoose )
@@ -64,7 +66,7 @@ function _createModel ( Mongoose ) {
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
     'use strict'
 
     if ( !_model ) {

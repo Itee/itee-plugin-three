@@ -10,19 +10,19 @@ import {
     Mesh,
     OctahedronBufferGeometry
 }                                    from 'three-full'
-import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial'
-import { HighlightableMaterial }     from '../../materials/HighlightableMaterial'
-import { TorusHitbox }               from '../hitboxes/TorusHitbox'
+import { HighlightableLineMaterial } from '../../materials/HighlightableLineMaterial.js'
+import { HighlightableMaterial }     from '../../materials/HighlightableMaterial.js'
+import { TorusHitbox }               from '../hitboxes/TorusHitbox.js'
 //import { Float32BufferAttribute }    from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }            from 'three-full/sources/core/BufferGeometry'
 //import { OctahedronBufferGeometry }  from 'three-full/sources/geometries/OctahedronGeometry'
 //import { Line }                      from 'three-full/sources/objects/Line'
 //import { Mesh }                      from 'three-full/sources/objects/Mesh'
-import { AbstractGizmo }             from './AbstractGizmo'
+import { AbstractGizmo }             from './AbstractGizmo.js'
 
 class RotateGizmo extends AbstractGizmo {
 
-    constructor () {
+    constructor() {
 
         super()
         this.isRotateGizmo = true
@@ -55,14 +55,20 @@ class RotateGizmo extends AbstractGizmo {
 
         this.handleGizmos = {
 
-            X: [ [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+            X: [
+                [ new Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
+            ],
 
-            Y: [ [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+            Y: [
+                [ new Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
+            ],
 
-            Z: [ [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-                 [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+            Z: [
+                [ new Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+                [ new Mesh( new OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ]
+            ],
 
             E: [ [ new Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
@@ -78,12 +84,16 @@ class RotateGizmo extends AbstractGizmo {
 
             Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
 
-            E: [ [ new TorusHitbox( {
-                radius:          1.25,
-                tube:            0.12,
-                radialSegments:  2,
-                tubularSegments: 24
-            } ) ] ],
+            E: [
+                [
+                    new TorusHitbox( {
+                        radius:          1.25,
+                        tube:            0.12,
+                        radialSegments:  2,
+                        tubularSegments: 24
+                    } )
+                ]
+            ],
 
             XYZ: [ [ new TorusHitbox() ] ]
 
@@ -96,7 +106,7 @@ class RotateGizmo extends AbstractGizmo {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }

@@ -5,11 +5,11 @@
 
 import { Mesh }                  from 'three-full'
 //import { Mesh }                  from 'three-full/sources/objects/Mesh'
-import { HighlightableMaterial } from '../../materials/HighlightableMaterial'
+import { HighlightableMaterial } from '../../materials/HighlightableMaterial.js'
 
 class HighlightableMesh extends Mesh {
 
-    constructor ( geometry, parameters = {} ) {
+    constructor( geometry, parameters = {} ) {
         super( geometry, new HighlightableMaterial( {
             color:       parameters.color,
             transparent: true,
@@ -21,7 +21,7 @@ class HighlightableMesh extends Mesh {
 
     }
 
-    highlight ( value ) {
+    highlight( value ) {
 
         this.material.highlight( value )
 

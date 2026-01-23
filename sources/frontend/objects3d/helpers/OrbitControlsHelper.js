@@ -31,7 +31,33 @@ import {
  */
 class OrbitControlsHelper extends LineSegments {
 
-    static _createInternalGeometry ( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
+    constructor( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                radius:     2,
+                radials:    16,
+                circles:    2,
+                divisions:  64,
+                innerColor: new Color( 0x444444 ),
+                outerColor: new Color( 0x888888 )
+            }, ...parameters
+        }
+
+        super(
+            OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ),
+            OrbitControlsHelper._createInternalMaterial()
+        )
+
+
+        this.matrixAutoUpdate = false
+        //        this.control     = control
+        this._intervalId      = undefined
+
+        //        this.impose()
+
+    }
+    static _createInternalGeometry( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
 
         const vertices = []
         const colors   = []
@@ -119,7 +145,7 @@ class OrbitControlsHelper extends LineSegments {
         return geometry
 
     }
-    static _createInternalMaterial () {
+    static _createInternalMaterial() {
 
         const material       = new LineBasicMaterial( { vertexColors: VertexColors } )
         material.transparent = true
@@ -129,30 +155,7 @@ class OrbitControlsHelper extends LineSegments {
         return material
 
     }
-    constructor ( parameters = {} ) {
-
-        const _parameters = {
-            ...{
-                radius:     2,
-                radials:    16,
-                circles:    2,
-                divisions:  64,
-                innerColor: new Color( 0x444444 ),
-                outerColor: new Color( 0x888888 )
-            }, ...parameters
-        }
-
-        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() )
-
-
-        this.matrixAutoUpdate = false
-        //        this.control     = control
-        this._intervalId      = undefined
-
-        //        this.impose()
-
-    }
-    startOpacityAnimation () {
+    startOpacityAnimation() {
 
         // In case fade off is running, kill it an restore opacity to 1
         if ( this._intervalId !== undefined ) {
@@ -166,7 +169,7 @@ class OrbitControlsHelper extends LineSegments {
 
     }
 
-    endOpacityAnimation () {
+    endOpacityAnimation() {
 
         // Manage transparency interval
         this._intervalId = setInterval( function () {

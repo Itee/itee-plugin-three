@@ -10,7 +10,7 @@
  */
 this.Itee = this.Itee || {};
 this.Itee.Plugin = this.Itee.Plugin || {};
-this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, iteeUtils, iteeValidators) {
+this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, iteeClient, iteeValidators) {
 	'use strict';
 
 	if( iteeValidators === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Validators to be defined first. Please check your scripts loading order.') }
@@ -19,6 +19,2422 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	if( iteeClient === undefined ) { throw new Error('Itee.Plugin.Three need Itee.Client to be defined first. Please check your scripts loading order.') }
 	if( threeFull === undefined ) { throw new Error('Itee.Plugin.Three need Three to be defined first. Please check your scripts loading order.') }
 
+
+	/**
+	 * @license
+	 * Copyright 2010-2023 Three.js Authors
+	 * SPDX-License-Identifier: MIT
+	 */
+	const REVISION = '149';
+	const SRGBColorSpace = 'srgb';
+	const LinearSRGBColorSpace = 'srgb-linear';
+
+	function clamp( value, min, max ) {
+
+		return Math.max( min, Math.min( max, value ) );
+
+	}
+
+	// compute euclidean modulo of m % n
+	// https://en.wikipedia.org/wiki/Modulo_operation
+	function euclideanModulo( n, m ) {
+
+		return ( ( n % m ) + m ) % m;
+
+	}
+
+	// https://en.wikipedia.org/wiki/Linear_interpolation
+	function lerp( x, y, t ) {
+
+		return ( 1 - t ) * x + t * y;
+
+	}
+
+	function SRGBToLinear( c ) {
+
+		return ( c < 0.04045 ) ? c * 0.0773993808 : Math.pow( c * 0.9478672986 + 0.0521327014, 2.4 );
+
+	}
+
+	function LinearToSRGB( c ) {
+
+		return ( c < 0.0031308 ) ? c * 12.92 : 1.055 * ( Math.pow( c, 0.41666 ) ) - 0.055;
+
+	}
+
+	// JavaScript RGB-to-RGB transforms, defined as
+	// FN[InputColorSpace][OutputColorSpace] callback functions.
+	const FN = {
+		[ SRGBColorSpace ]: { [ LinearSRGBColorSpace ]: SRGBToLinear },
+		[ LinearSRGBColorSpace ]: { [ SRGBColorSpace ]: LinearToSRGB },
+	};
+
+	const ColorManagement = {
+
+		legacyMode: true,
+
+		get workingColorSpace() {
+
+			return LinearSRGBColorSpace;
+
+		},
+
+		set workingColorSpace( colorSpace ) {
+
+			console.warn( 'THREE.ColorManagement: .workingColorSpace is readonly.' );
+
+		},
+
+		convert: function ( color, sourceColorSpace, targetColorSpace ) {
+
+			if ( this.legacyMode || sourceColorSpace === targetColorSpace || ! sourceColorSpace || ! targetColorSpace ) {
+
+				return color;
+
+			}
+
+			if ( FN[ sourceColorSpace ] && FN[ sourceColorSpace ][ targetColorSpace ] !== undefined ) {
+
+				const fn = FN[ sourceColorSpace ][ targetColorSpace ];
+
+				color.r = fn( color.r );
+				color.g = fn( color.g );
+				color.b = fn( color.b );
+
+				return color;
+
+			}
+
+			throw new Error( 'Unsupported color space conversion.' );
+
+		},
+
+		fromWorkingColorSpace: function ( color, targetColorSpace ) {
+
+			return this.convert( color, this.workingColorSpace, targetColorSpace );
+
+		},
+
+		toWorkingColorSpace: function ( color, sourceColorSpace ) {
+
+			return this.convert( color, sourceColorSpace, this.workingColorSpace );
+
+		},
+
+	};
+
+	const _colorKeywords = { 'aliceblue': 0xF0F8FF, 'antiquewhite': 0xFAEBD7, 'aqua': 0x00FFFF, 'aquamarine': 0x7FFFD4, 'azure': 0xF0FFFF,
+		'beige': 0xF5F5DC, 'bisque': 0xFFE4C4, 'black': 0x000000, 'blanchedalmond': 0xFFEBCD, 'blue': 0x0000FF, 'blueviolet': 0x8A2BE2,
+		'brown': 0xA52A2A, 'burlywood': 0xDEB887, 'cadetblue': 0x5F9EA0, 'chartreuse': 0x7FFF00, 'chocolate': 0xD2691E, 'coral': 0xFF7F50,
+		'cornflowerblue': 0x6495ED, 'cornsilk': 0xFFF8DC, 'crimson': 0xDC143C, 'cyan': 0x00FFFF, 'darkblue': 0x00008B, 'darkcyan': 0x008B8B,
+		'darkgoldenrod': 0xB8860B, 'darkgray': 0xA9A9A9, 'darkgreen': 0x006400, 'darkgrey': 0xA9A9A9, 'darkkhaki': 0xBDB76B, 'darkmagenta': 0x8B008B,
+		'darkolivegreen': 0x556B2F, 'darkorange': 0xFF8C00, 'darkorchid': 0x9932CC, 'darkred': 0x8B0000, 'darksalmon': 0xE9967A, 'darkseagreen': 0x8FBC8F,
+		'darkslateblue': 0x483D8B, 'darkslategray': 0x2F4F4F, 'darkslategrey': 0x2F4F4F, 'darkturquoise': 0x00CED1, 'darkviolet': 0x9400D3,
+		'deeppink': 0xFF1493, 'deepskyblue': 0x00BFFF, 'dimgray': 0x696969, 'dimgrey': 0x696969, 'dodgerblue': 0x1E90FF, 'firebrick': 0xB22222,
+		'floralwhite': 0xFFFAF0, 'forestgreen': 0x228B22, 'fuchsia': 0xFF00FF, 'gainsboro': 0xDCDCDC, 'ghostwhite': 0xF8F8FF, 'gold': 0xFFD700,
+		'goldenrod': 0xDAA520, 'gray': 0x808080, 'green': 0x008000, 'greenyellow': 0xADFF2F, 'grey': 0x808080, 'honeydew': 0xF0FFF0, 'hotpink': 0xFF69B4,
+		'indianred': 0xCD5C5C, 'indigo': 0x4B0082, 'ivory': 0xFFFFF0, 'khaki': 0xF0E68C, 'lavender': 0xE6E6FA, 'lavenderblush': 0xFFF0F5, 'lawngreen': 0x7CFC00,
+		'lemonchiffon': 0xFFFACD, 'lightblue': 0xADD8E6, 'lightcoral': 0xF08080, 'lightcyan': 0xE0FFFF, 'lightgoldenrodyellow': 0xFAFAD2, 'lightgray': 0xD3D3D3,
+		'lightgreen': 0x90EE90, 'lightgrey': 0xD3D3D3, 'lightpink': 0xFFB6C1, 'lightsalmon': 0xFFA07A, 'lightseagreen': 0x20B2AA, 'lightskyblue': 0x87CEFA,
+		'lightslategray': 0x778899, 'lightslategrey': 0x778899, 'lightsteelblue': 0xB0C4DE, 'lightyellow': 0xFFFFE0, 'lime': 0x00FF00, 'limegreen': 0x32CD32,
+		'linen': 0xFAF0E6, 'magenta': 0xFF00FF, 'maroon': 0x800000, 'mediumaquamarine': 0x66CDAA, 'mediumblue': 0x0000CD, 'mediumorchid': 0xBA55D3,
+		'mediumpurple': 0x9370DB, 'mediumseagreen': 0x3CB371, 'mediumslateblue': 0x7B68EE, 'mediumspringgreen': 0x00FA9A, 'mediumturquoise': 0x48D1CC,
+		'mediumvioletred': 0xC71585, 'midnightblue': 0x191970, 'mintcream': 0xF5FFFA, 'mistyrose': 0xFFE4E1, 'moccasin': 0xFFE4B5, 'navajowhite': 0xFFDEAD,
+		'navy': 0x000080, 'oldlace': 0xFDF5E6, 'olive': 0x808000, 'olivedrab': 0x6B8E23, 'orange': 0xFFA500, 'orangered': 0xFF4500, 'orchid': 0xDA70D6,
+		'palegoldenrod': 0xEEE8AA, 'palegreen': 0x98FB98, 'paleturquoise': 0xAFEEEE, 'palevioletred': 0xDB7093, 'papayawhip': 0xFFEFD5, 'peachpuff': 0xFFDAB9,
+		'peru': 0xCD853F, 'pink': 0xFFC0CB, 'plum': 0xDDA0DD, 'powderblue': 0xB0E0E6, 'purple': 0x800080, 'rebeccapurple': 0x663399, 'red': 0xFF0000, 'rosybrown': 0xBC8F8F,
+		'royalblue': 0x4169E1, 'saddlebrown': 0x8B4513, 'salmon': 0xFA8072, 'sandybrown': 0xF4A460, 'seagreen': 0x2E8B57, 'seashell': 0xFFF5EE,
+		'sienna': 0xA0522D, 'silver': 0xC0C0C0, 'skyblue': 0x87CEEB, 'slateblue': 0x6A5ACD, 'slategray': 0x708090, 'slategrey': 0x708090, 'snow': 0xFFFAFA,
+		'springgreen': 0x00FF7F, 'steelblue': 0x4682B4, 'tan': 0xD2B48C, 'teal': 0x008080, 'thistle': 0xD8BFD8, 'tomato': 0xFF6347, 'turquoise': 0x40E0D0,
+		'violet': 0xEE82EE, 'wheat': 0xF5DEB3, 'white': 0xFFFFFF, 'whitesmoke': 0xF5F5F5, 'yellow': 0xFFFF00, 'yellowgreen': 0x9ACD32 };
+
+	const _rgb$1 = { r: 0, g: 0, b: 0 };
+	const _hslA = { h: 0, s: 0, l: 0 };
+	const _hslB = { h: 0, s: 0, l: 0 };
+
+	function hue2rgb( p, q, t ) {
+
+		if ( t < 0 ) t += 1;
+		if ( t > 1 ) t -= 1;
+		if ( t < 1 / 6 ) return p + ( q - p ) * 6 * t;
+		if ( t < 1 / 2 ) return q;
+		if ( t < 2 / 3 ) return p + ( q - p ) * 6 * ( 2 / 3 - t );
+		return p;
+
+	}
+
+	function toComponents( source, target ) {
+
+		target.r = source.r;
+		target.g = source.g;
+		target.b = source.b;
+
+		return target;
+
+	}
+
+	class Color {
+
+		constructor( r, g, b ) {
+
+			this.isColor = true;
+
+			this.r = 1;
+			this.g = 1;
+			this.b = 1;
+
+			if ( g === undefined && b === undefined ) {
+
+				// r is THREE.Color, hex or string
+				return this.set( r );
+
+			}
+
+			return this.setRGB( r, g, b );
+
+		}
+
+		set( value ) {
+
+			if ( value && value.isColor ) {
+
+				this.copy( value );
+
+			} else if ( typeof value === 'number' ) {
+
+				this.setHex( value );
+
+			} else if ( typeof value === 'string' ) {
+
+				this.setStyle( value );
+
+			}
+
+			return this;
+
+		}
+
+		setScalar( scalar ) {
+
+			this.r = scalar;
+			this.g = scalar;
+			this.b = scalar;
+
+			return this;
+
+		}
+
+		setHex( hex, colorSpace = SRGBColorSpace ) {
+
+			hex = Math.floor( hex );
+
+			this.r = ( hex >> 16 & 255 ) / 255;
+			this.g = ( hex >> 8 & 255 ) / 255;
+			this.b = ( hex & 255 ) / 255;
+
+			ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+			return this;
+
+		}
+
+		setRGB( r, g, b, colorSpace = ColorManagement.workingColorSpace ) {
+
+			this.r = r;
+			this.g = g;
+			this.b = b;
+
+			ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+			return this;
+
+		}
+
+		setHSL( h, s, l, colorSpace = ColorManagement.workingColorSpace ) {
+
+			// h,s,l ranges are in 0.0 - 1.0
+			h = euclideanModulo( h, 1 );
+			s = clamp( s, 0, 1 );
+			l = clamp( l, 0, 1 );
+
+			if ( s === 0 ) {
+
+				this.r = this.g = this.b = l;
+
+			} else {
+
+				const p = l <= 0.5 ? l * ( 1 + s ) : l + s - ( l * s );
+				const q = ( 2 * l ) - p;
+
+				this.r = hue2rgb( q, p, h + 1 / 3 );
+				this.g = hue2rgb( q, p, h );
+				this.b = hue2rgb( q, p, h - 1 / 3 );
+
+			}
+
+			ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+			return this;
+
+		}
+
+		setStyle( style, colorSpace = SRGBColorSpace ) {
+
+			function handleAlpha( string ) {
+
+				if ( string === undefined ) return;
+
+				if ( parseFloat( string ) < 1 ) {
+
+					console.warn( 'THREE.Color: Alpha component of ' + style + ' will be ignored.' );
+
+				}
+
+			}
+
+
+			let m;
+
+			if ( m = /^((?:rgb|hsl)a?)\(([^\)]*)\)/.exec( style ) ) {
+
+				// rgb / hsl
+
+				let color;
+				const name = m[ 1 ];
+				const components = m[ 2 ];
+
+				switch ( name ) {
+
+					case 'rgb':
+					case 'rgba':
+
+						if ( color = /^\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+							// rgb(255,0,0) rgba(255,0,0,0.5)
+							this.r = Math.min( 255, parseInt( color[ 1 ], 10 ) ) / 255;
+							this.g = Math.min( 255, parseInt( color[ 2 ], 10 ) ) / 255;
+							this.b = Math.min( 255, parseInt( color[ 3 ], 10 ) ) / 255;
+
+							ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+							handleAlpha( color[ 4 ] );
+
+							return this;
+
+						}
+
+						if ( color = /^\s*(\d+)\%\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+							// rgb(100%,0%,0%) rgba(100%,0%,0%,0.5)
+							this.r = Math.min( 100, parseInt( color[ 1 ], 10 ) ) / 100;
+							this.g = Math.min( 100, parseInt( color[ 2 ], 10 ) ) / 100;
+							this.b = Math.min( 100, parseInt( color[ 3 ], 10 ) ) / 100;
+
+							ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+							handleAlpha( color[ 4 ] );
+
+							return this;
+
+						}
+
+						break;
+
+					case 'hsl':
+					case 'hsla':
+
+						if ( color = /^\s*(\d*\.?\d+)\s*,\s*(\d*\.?\d+)\%\s*,\s*(\d*\.?\d+)\%\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+							// hsl(120,50%,50%) hsla(120,50%,50%,0.5)
+							const h = parseFloat( color[ 1 ] ) / 360;
+							const s = parseFloat( color[ 2 ] ) / 100;
+							const l = parseFloat( color[ 3 ] ) / 100;
+
+							handleAlpha( color[ 4 ] );
+
+							return this.setHSL( h, s, l, colorSpace );
+
+						}
+
+						break;
+
+				}
+
+			} else if ( m = /^\#([A-Fa-f\d]+)$/.exec( style ) ) {
+
+				// hex color
+
+				const hex = m[ 1 ];
+				const size = hex.length;
+
+				if ( size === 3 ) {
+
+					// #ff0
+					this.r = parseInt( hex.charAt( 0 ) + hex.charAt( 0 ), 16 ) / 255;
+					this.g = parseInt( hex.charAt( 1 ) + hex.charAt( 1 ), 16 ) / 255;
+					this.b = parseInt( hex.charAt( 2 ) + hex.charAt( 2 ), 16 ) / 255;
+
+					ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+					return this;
+
+				} else if ( size === 6 ) {
+
+					// #ff0000
+					this.r = parseInt( hex.charAt( 0 ) + hex.charAt( 1 ), 16 ) / 255;
+					this.g = parseInt( hex.charAt( 2 ) + hex.charAt( 3 ), 16 ) / 255;
+					this.b = parseInt( hex.charAt( 4 ) + hex.charAt( 5 ), 16 ) / 255;
+
+					ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+					return this;
+
+				}
+
+			}
+
+			if ( style && style.length > 0 ) {
+
+				return this.setColorName( style, colorSpace );
+
+			}
+
+			return this;
+
+		}
+
+		setColorName( style, colorSpace = SRGBColorSpace ) {
+
+			// color keywords
+			const hex = _colorKeywords[ style.toLowerCase() ];
+
+			if ( hex !== undefined ) {
+
+				// red
+				this.setHex( hex, colorSpace );
+
+			} else {
+
+				// unknown color
+				console.warn( 'THREE.Color: Unknown color ' + style );
+
+			}
+
+			return this;
+
+		}
+
+		clone() {
+
+			return new this.constructor( this.r, this.g, this.b );
+
+		}
+
+		copy( color ) {
+
+			this.r = color.r;
+			this.g = color.g;
+			this.b = color.b;
+
+			return this;
+
+		}
+
+		copySRGBToLinear( color ) {
+
+			this.r = SRGBToLinear( color.r );
+			this.g = SRGBToLinear( color.g );
+			this.b = SRGBToLinear( color.b );
+
+			return this;
+
+		}
+
+		copyLinearToSRGB( color ) {
+
+			this.r = LinearToSRGB( color.r );
+			this.g = LinearToSRGB( color.g );
+			this.b = LinearToSRGB( color.b );
+
+			return this;
+
+		}
+
+		convertSRGBToLinear() {
+
+			this.copySRGBToLinear( this );
+
+			return this;
+
+		}
+
+		convertLinearToSRGB() {
+
+			this.copyLinearToSRGB( this );
+
+			return this;
+
+		}
+
+		getHex( colorSpace = SRGBColorSpace ) {
+
+			ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+			return clamp( _rgb$1.r * 255, 0, 255 ) << 16 ^ clamp( _rgb$1.g * 255, 0, 255 ) << 8 ^ clamp( _rgb$1.b * 255, 0, 255 ) << 0;
+
+		}
+
+		getHexString( colorSpace = SRGBColorSpace ) {
+
+			return ( '000000' + this.getHex( colorSpace ).toString( 16 ) ).slice( -6 );
+
+		}
+
+		getHSL( target, colorSpace = ColorManagement.workingColorSpace ) {
+
+			// h,s,l ranges are in 0.0 - 1.0
+
+			ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+			const r = _rgb$1.r, g = _rgb$1.g, b = _rgb$1.b;
+
+			const max = Math.max( r, g, b );
+			const min = Math.min( r, g, b );
+
+			let hue, saturation;
+			const lightness = ( min + max ) / 2.0;
+
+			if ( min === max ) {
+
+				hue = 0;
+				saturation = 0;
+
+			} else {
+
+				const delta = max - min;
+
+				saturation = lightness <= 0.5 ? delta / ( max + min ) : delta / ( 2 - max - min );
+
+				switch ( max ) {
+
+					case r: hue = ( g - b ) / delta + ( g < b ? 6 : 0 ); break;
+					case g: hue = ( b - r ) / delta + 2; break;
+					case b: hue = ( r - g ) / delta + 4; break;
+
+				}
+
+				hue /= 6;
+
+			}
+
+			target.h = hue;
+			target.s = saturation;
+			target.l = lightness;
+
+			return target;
+
+		}
+
+		getRGB( target, colorSpace = ColorManagement.workingColorSpace ) {
+
+			ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+			target.r = _rgb$1.r;
+			target.g = _rgb$1.g;
+			target.b = _rgb$1.b;
+
+			return target;
+
+		}
+
+		getStyle( colorSpace = SRGBColorSpace ) {
+
+			ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+			if ( colorSpace !== SRGBColorSpace ) {
+
+				// Requires CSS Color Module Level 4 (https://www.w3.org/TR/css-color-4/).
+				return `color(${ colorSpace } ${ _rgb$1.r } ${ _rgb$1.g } ${ _rgb$1.b })`;
+
+			}
+
+			return `rgb(${( _rgb$1.r * 255 ) | 0},${( _rgb$1.g * 255 ) | 0},${( _rgb$1.b * 255 ) | 0})`;
+
+		}
+
+		offsetHSL( h, s, l ) {
+
+			this.getHSL( _hslA );
+
+			_hslA.h += h; _hslA.s += s; _hslA.l += l;
+
+			this.setHSL( _hslA.h, _hslA.s, _hslA.l );
+
+			return this;
+
+		}
+
+		add( color ) {
+
+			this.r += color.r;
+			this.g += color.g;
+			this.b += color.b;
+
+			return this;
+
+		}
+
+		addColors( color1, color2 ) {
+
+			this.r = color1.r + color2.r;
+			this.g = color1.g + color2.g;
+			this.b = color1.b + color2.b;
+
+			return this;
+
+		}
+
+		addScalar( s ) {
+
+			this.r += s;
+			this.g += s;
+			this.b += s;
+
+			return this;
+
+		}
+
+		sub( color ) {
+
+			this.r = Math.max( 0, this.r - color.r );
+			this.g = Math.max( 0, this.g - color.g );
+			this.b = Math.max( 0, this.b - color.b );
+
+			return this;
+
+		}
+
+		multiply( color ) {
+
+			this.r *= color.r;
+			this.g *= color.g;
+			this.b *= color.b;
+
+			return this;
+
+		}
+
+		multiplyScalar( s ) {
+
+			this.r *= s;
+			this.g *= s;
+			this.b *= s;
+
+			return this;
+
+		}
+
+		lerp( color, alpha ) {
+
+			this.r += ( color.r - this.r ) * alpha;
+			this.g += ( color.g - this.g ) * alpha;
+			this.b += ( color.b - this.b ) * alpha;
+
+			return this;
+
+		}
+
+		lerpColors( color1, color2, alpha ) {
+
+			this.r = color1.r + ( color2.r - color1.r ) * alpha;
+			this.g = color1.g + ( color2.g - color1.g ) * alpha;
+			this.b = color1.b + ( color2.b - color1.b ) * alpha;
+
+			return this;
+
+		}
+
+		lerpHSL( color, alpha ) {
+
+			this.getHSL( _hslA );
+			color.getHSL( _hslB );
+
+			const h = lerp( _hslA.h, _hslB.h, alpha );
+			const s = lerp( _hslA.s, _hslB.s, alpha );
+			const l = lerp( _hslA.l, _hslB.l, alpha );
+
+			this.setHSL( h, s, l );
+
+			return this;
+
+		}
+
+		equals( c ) {
+
+			return ( c.r === this.r ) && ( c.g === this.g ) && ( c.b === this.b );
+
+		}
+
+		fromArray( array, offset = 0 ) {
+
+			this.r = array[ offset ];
+			this.g = array[ offset + 1 ];
+			this.b = array[ offset + 2 ];
+
+			return this;
+
+		}
+
+		toArray( array = [], offset = 0 ) {
+
+			array[ offset ] = this.r;
+			array[ offset + 1 ] = this.g;
+			array[ offset + 2 ] = this.b;
+
+			return array;
+
+		}
+
+		fromBufferAttribute( attribute, index ) {
+
+			this.r = attribute.getX( index );
+			this.g = attribute.getY( index );
+			this.b = attribute.getZ( index );
+
+			return this;
+
+		}
+
+		toJSON() {
+
+			return this.getHex();
+
+		}
+
+		*[ Symbol.iterator ]() {
+
+			yield this.r;
+			yield this.g;
+			yield this.b;
+
+		}
+
+	}
+
+	Color.NAMES = _colorKeywords;
+
+	class Quaternion {
+
+		constructor( x = 0, y = 0, z = 0, w = 1 ) {
+
+			this.isQuaternion = true;
+
+			this._x = x;
+			this._y = y;
+			this._z = z;
+			this._w = w;
+
+		}
+
+		static slerpFlat( dst, dstOffset, src0, srcOffset0, src1, srcOffset1, t ) {
+
+			// fuzz-free, array-based Quaternion SLERP operation
+
+			let x0 = src0[ srcOffset0 + 0 ],
+				y0 = src0[ srcOffset0 + 1 ],
+				z0 = src0[ srcOffset0 + 2 ],
+				w0 = src0[ srcOffset0 + 3 ];
+
+			const x1 = src1[ srcOffset1 + 0 ],
+				y1 = src1[ srcOffset1 + 1 ],
+				z1 = src1[ srcOffset1 + 2 ],
+				w1 = src1[ srcOffset1 + 3 ];
+
+			if ( t === 0 ) {
+
+				dst[ dstOffset + 0 ] = x0;
+				dst[ dstOffset + 1 ] = y0;
+				dst[ dstOffset + 2 ] = z0;
+				dst[ dstOffset + 3 ] = w0;
+				return;
+
+			}
+
+			if ( t === 1 ) {
+
+				dst[ dstOffset + 0 ] = x1;
+				dst[ dstOffset + 1 ] = y1;
+				dst[ dstOffset + 2 ] = z1;
+				dst[ dstOffset + 3 ] = w1;
+				return;
+
+			}
+
+			if ( w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1 ) {
+
+				let s = 1 - t;
+				const cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
+					dir = ( cos >= 0 ? 1 : -1 ),
+					sqrSin = 1 - cos * cos;
+
+				// Skip the Slerp for tiny steps to avoid numeric problems:
+				if ( sqrSin > Number.EPSILON ) {
+
+					const sin = Math.sqrt( sqrSin ),
+						len = Math.atan2( sin, cos * dir );
+
+					s = Math.sin( s * len ) / sin;
+					t = Math.sin( t * len ) / sin;
+
+				}
+
+				const tDir = t * dir;
+
+				x0 = x0 * s + x1 * tDir;
+				y0 = y0 * s + y1 * tDir;
+				z0 = z0 * s + z1 * tDir;
+				w0 = w0 * s + w1 * tDir;
+
+				// Normalize in case we just did a lerp:
+				if ( s === 1 - t ) {
+
+					const f = 1 / Math.sqrt( x0 * x0 + y0 * y0 + z0 * z0 + w0 * w0 );
+
+					x0 *= f;
+					y0 *= f;
+					z0 *= f;
+					w0 *= f;
+
+				}
+
+			}
+
+			dst[ dstOffset ] = x0;
+			dst[ dstOffset + 1 ] = y0;
+			dst[ dstOffset + 2 ] = z0;
+			dst[ dstOffset + 3 ] = w0;
+
+		}
+
+		static multiplyQuaternionsFlat( dst, dstOffset, src0, srcOffset0, src1, srcOffset1 ) {
+
+			const x0 = src0[ srcOffset0 ];
+			const y0 = src0[ srcOffset0 + 1 ];
+			const z0 = src0[ srcOffset0 + 2 ];
+			const w0 = src0[ srcOffset0 + 3 ];
+
+			const x1 = src1[ srcOffset1 ];
+			const y1 = src1[ srcOffset1 + 1 ];
+			const z1 = src1[ srcOffset1 + 2 ];
+			const w1 = src1[ srcOffset1 + 3 ];
+
+			dst[ dstOffset ] = x0 * w1 + w0 * x1 + y0 * z1 - z0 * y1;
+			dst[ dstOffset + 1 ] = y0 * w1 + w0 * y1 + z0 * x1 - x0 * z1;
+			dst[ dstOffset + 2 ] = z0 * w1 + w0 * z1 + x0 * y1 - y0 * x1;
+			dst[ dstOffset + 3 ] = w0 * w1 - x0 * x1 - y0 * y1 - z0 * z1;
+
+			return dst;
+
+		}
+
+		get x() {
+
+			return this._x;
+
+		}
+
+		set x( value ) {
+
+			this._x = value;
+			this._onChangeCallback();
+
+		}
+
+		get y() {
+
+			return this._y;
+
+		}
+
+		set y( value ) {
+
+			this._y = value;
+			this._onChangeCallback();
+
+		}
+
+		get z() {
+
+			return this._z;
+
+		}
+
+		set z( value ) {
+
+			this._z = value;
+			this._onChangeCallback();
+
+		}
+
+		get w() {
+
+			return this._w;
+
+		}
+
+		set w( value ) {
+
+			this._w = value;
+			this._onChangeCallback();
+
+		}
+
+		set( x, y, z, w ) {
+
+			this._x = x;
+			this._y = y;
+			this._z = z;
+			this._w = w;
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		clone() {
+
+			return new this.constructor( this._x, this._y, this._z, this._w );
+
+		}
+
+		copy( quaternion ) {
+
+			this._x = quaternion.x;
+			this._y = quaternion.y;
+			this._z = quaternion.z;
+			this._w = quaternion.w;
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		setFromEuler( euler, update ) {
+
+			const x = euler._x, y = euler._y, z = euler._z, order = euler._order;
+
+			// http://www.mathworks.com/matlabcentral/fileexchange/
+			// 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+			//	content/SpinCalc.m
+
+			const cos = Math.cos;
+			const sin = Math.sin;
+
+			const c1 = cos( x / 2 );
+			const c2 = cos( y / 2 );
+			const c3 = cos( z / 2 );
+
+			const s1 = sin( x / 2 );
+			const s2 = sin( y / 2 );
+			const s3 = sin( z / 2 );
+
+			switch ( order ) {
+
+				case 'XYZ':
+					this._x = s1 * c2 * c3 + c1 * s2 * s3;
+					this._y = c1 * s2 * c3 - s1 * c2 * s3;
+					this._z = c1 * c2 * s3 + s1 * s2 * c3;
+					this._w = c1 * c2 * c3 - s1 * s2 * s3;
+					break;
+
+				case 'YXZ':
+					this._x = s1 * c2 * c3 + c1 * s2 * s3;
+					this._y = c1 * s2 * c3 - s1 * c2 * s3;
+					this._z = c1 * c2 * s3 - s1 * s2 * c3;
+					this._w = c1 * c2 * c3 + s1 * s2 * s3;
+					break;
+
+				case 'ZXY':
+					this._x = s1 * c2 * c3 - c1 * s2 * s3;
+					this._y = c1 * s2 * c3 + s1 * c2 * s3;
+					this._z = c1 * c2 * s3 + s1 * s2 * c3;
+					this._w = c1 * c2 * c3 - s1 * s2 * s3;
+					break;
+
+				case 'ZYX':
+					this._x = s1 * c2 * c3 - c1 * s2 * s3;
+					this._y = c1 * s2 * c3 + s1 * c2 * s3;
+					this._z = c1 * c2 * s3 - s1 * s2 * c3;
+					this._w = c1 * c2 * c3 + s1 * s2 * s3;
+					break;
+
+				case 'YZX':
+					this._x = s1 * c2 * c3 + c1 * s2 * s3;
+					this._y = c1 * s2 * c3 + s1 * c2 * s3;
+					this._z = c1 * c2 * s3 - s1 * s2 * c3;
+					this._w = c1 * c2 * c3 - s1 * s2 * s3;
+					break;
+
+				case 'XZY':
+					this._x = s1 * c2 * c3 - c1 * s2 * s3;
+					this._y = c1 * s2 * c3 - s1 * c2 * s3;
+					this._z = c1 * c2 * s3 + s1 * s2 * c3;
+					this._w = c1 * c2 * c3 + s1 * s2 * s3;
+					break;
+
+				default:
+					console.warn( 'THREE.Quaternion: .setFromEuler() encountered an unknown order: ' + order );
+
+			}
+
+			if ( update !== false ) this._onChangeCallback();
+
+			return this;
+
+		}
+
+		setFromAxisAngle( axis, angle ) {
+
+			// http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+
+			// assumes axis is normalized
+
+			const halfAngle = angle / 2, s = Math.sin( halfAngle );
+
+			this._x = axis.x * s;
+			this._y = axis.y * s;
+			this._z = axis.z * s;
+			this._w = Math.cos( halfAngle );
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		setFromRotationMatrix( m ) {
+
+			// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+
+			// assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+			const te = m.elements,
+
+				m11 = te[ 0 ], m12 = te[ 4 ], m13 = te[ 8 ],
+				m21 = te[ 1 ], m22 = te[ 5 ], m23 = te[ 9 ],
+				m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ],
+
+				trace = m11 + m22 + m33;
+
+			if ( trace > 0 ) {
+
+				const s = 0.5 / Math.sqrt( trace + 1.0 );
+
+				this._w = 0.25 / s;
+				this._x = ( m32 - m23 ) * s;
+				this._y = ( m13 - m31 ) * s;
+				this._z = ( m21 - m12 ) * s;
+
+			} else if ( m11 > m22 && m11 > m33 ) {
+
+				const s = 2.0 * Math.sqrt( 1.0 + m11 - m22 - m33 );
+
+				this._w = ( m32 - m23 ) / s;
+				this._x = 0.25 * s;
+				this._y = ( m12 + m21 ) / s;
+				this._z = ( m13 + m31 ) / s;
+
+			} else if ( m22 > m33 ) {
+
+				const s = 2.0 * Math.sqrt( 1.0 + m22 - m11 - m33 );
+
+				this._w = ( m13 - m31 ) / s;
+				this._x = ( m12 + m21 ) / s;
+				this._y = 0.25 * s;
+				this._z = ( m23 + m32 ) / s;
+
+			} else {
+
+				const s = 2.0 * Math.sqrt( 1.0 + m33 - m11 - m22 );
+
+				this._w = ( m21 - m12 ) / s;
+				this._x = ( m13 + m31 ) / s;
+				this._y = ( m23 + m32 ) / s;
+				this._z = 0.25 * s;
+
+			}
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		setFromUnitVectors( vFrom, vTo ) {
+
+			// assumes direction vectors vFrom and vTo are normalized
+
+			let r = vFrom.dot( vTo ) + 1;
+
+			if ( r < Number.EPSILON ) {
+
+				// vFrom and vTo point in opposite directions
+
+				r = 0;
+
+				if ( Math.abs( vFrom.x ) > Math.abs( vFrom.z ) ) {
+
+					this._x = - vFrom.y;
+					this._y = vFrom.x;
+					this._z = 0;
+					this._w = r;
+
+				} else {
+
+					this._x = 0;
+					this._y = - vFrom.z;
+					this._z = vFrom.y;
+					this._w = r;
+
+				}
+
+			} else {
+
+				// crossVectors( vFrom, vTo ); // inlined to avoid cyclic dependency on Vector3
+
+				this._x = vFrom.y * vTo.z - vFrom.z * vTo.y;
+				this._y = vFrom.z * vTo.x - vFrom.x * vTo.z;
+				this._z = vFrom.x * vTo.y - vFrom.y * vTo.x;
+				this._w = r;
+
+			}
+
+			return this.normalize();
+
+		}
+
+		angleTo( q ) {
+
+			return 2 * Math.acos( Math.abs( clamp( this.dot( q ), -1, 1 ) ) );
+
+		}
+
+		rotateTowards( q, step ) {
+
+			const angle = this.angleTo( q );
+
+			if ( angle === 0 ) return this;
+
+			const t = Math.min( 1, step / angle );
+
+			this.slerp( q, t );
+
+			return this;
+
+		}
+
+		identity() {
+
+			return this.set( 0, 0, 0, 1 );
+
+		}
+
+		invert() {
+
+			// quaternion is assumed to have unit length
+
+			return this.conjugate();
+
+		}
+
+		conjugate() {
+
+			this._x *= -1;
+			this._y *= -1;
+			this._z *= -1;
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		dot( v ) {
+
+			return this._x * v._x + this._y * v._y + this._z * v._z + this._w * v._w;
+
+		}
+
+		lengthSq() {
+
+			return this._x * this._x + this._y * this._y + this._z * this._z + this._w * this._w;
+
+		}
+
+		length() {
+
+			return Math.sqrt( this._x * this._x + this._y * this._y + this._z * this._z + this._w * this._w );
+
+		}
+
+		normalize() {
+
+			let l = this.length();
+
+			if ( l === 0 ) {
+
+				this._x = 0;
+				this._y = 0;
+				this._z = 0;
+				this._w = 1;
+
+			} else {
+
+				l = 1 / l;
+
+				this._x = this._x * l;
+				this._y = this._y * l;
+				this._z = this._z * l;
+				this._w = this._w * l;
+
+			}
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		multiply( q ) {
+
+			return this.multiplyQuaternions( this, q );
+
+		}
+
+		premultiply( q ) {
+
+			return this.multiplyQuaternions( q, this );
+
+		}
+
+		multiplyQuaternions( a, b ) {
+
+			// from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
+
+			const qax = a._x, qay = a._y, qaz = a._z, qaw = a._w;
+			const qbx = b._x, qby = b._y, qbz = b._z, qbw = b._w;
+
+			this._x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+			this._y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+			this._z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+			this._w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		slerp( qb, t ) {
+
+			if ( t === 0 ) return this;
+			if ( t === 1 ) return this.copy( qb );
+
+			const x = this._x, y = this._y, z = this._z, w = this._w;
+
+			// http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
+
+			let cosHalfTheta = w * qb._w + x * qb._x + y * qb._y + z * qb._z;
+
+			if ( cosHalfTheta < 0 ) {
+
+				this._w = - qb._w;
+				this._x = - qb._x;
+				this._y = - qb._y;
+				this._z = - qb._z;
+
+				cosHalfTheta = - cosHalfTheta;
+
+			} else {
+
+				this.copy( qb );
+
+			}
+
+			if ( cosHalfTheta >= 1.0 ) {
+
+				this._w = w;
+				this._x = x;
+				this._y = y;
+				this._z = z;
+
+				return this;
+
+			}
+
+			const sqrSinHalfTheta = 1.0 - cosHalfTheta * cosHalfTheta;
+
+			if ( sqrSinHalfTheta <= Number.EPSILON ) {
+
+				const s = 1 - t;
+				this._w = s * w + t * this._w;
+				this._x = s * x + t * this._x;
+				this._y = s * y + t * this._y;
+				this._z = s * z + t * this._z;
+
+				this.normalize();
+				this._onChangeCallback();
+
+				return this;
+
+			}
+
+			const sinHalfTheta = Math.sqrt( sqrSinHalfTheta );
+			const halfTheta = Math.atan2( sinHalfTheta, cosHalfTheta );
+			const ratioA = Math.sin( ( 1 - t ) * halfTheta ) / sinHalfTheta,
+				ratioB = Math.sin( t * halfTheta ) / sinHalfTheta;
+
+			this._w = ( w * ratioA + this._w * ratioB );
+			this._x = ( x * ratioA + this._x * ratioB );
+			this._y = ( y * ratioA + this._y * ratioB );
+			this._z = ( z * ratioA + this._z * ratioB );
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		slerpQuaternions( qa, qb, t ) {
+
+			return this.copy( qa ).slerp( qb, t );
+
+		}
+
+		random() {
+
+			// Derived from http://planning.cs.uiuc.edu/node198.html
+			// Note, this source uses w, x, y, z ordering,
+			// so we swap the order below.
+
+			const u1 = Math.random();
+			const sqrt1u1 = Math.sqrt( 1 - u1 );
+			const sqrtu1 = Math.sqrt( u1 );
+
+			const u2 = 2 * Math.PI * Math.random();
+
+			const u3 = 2 * Math.PI * Math.random();
+
+			return this.set(
+				sqrt1u1 * Math.cos( u2 ),
+				sqrtu1 * Math.sin( u3 ),
+				sqrtu1 * Math.cos( u3 ),
+				sqrt1u1 * Math.sin( u2 ),
+			);
+
+		}
+
+		equals( quaternion ) {
+
+			return ( quaternion._x === this._x ) && ( quaternion._y === this._y ) && ( quaternion._z === this._z ) && ( quaternion._w === this._w );
+
+		}
+
+		fromArray( array, offset = 0 ) {
+
+			this._x = array[ offset ];
+			this._y = array[ offset + 1 ];
+			this._z = array[ offset + 2 ];
+			this._w = array[ offset + 3 ];
+
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		toArray( array = [], offset = 0 ) {
+
+			array[ offset ] = this._x;
+			array[ offset + 1 ] = this._y;
+			array[ offset + 2 ] = this._z;
+			array[ offset + 3 ] = this._w;
+
+			return array;
+
+		}
+
+		fromBufferAttribute( attribute, index ) {
+
+			this._x = attribute.getX( index );
+			this._y = attribute.getY( index );
+			this._z = attribute.getZ( index );
+			this._w = attribute.getW( index );
+
+			return this;
+
+		}
+
+		_onChange( callback ) {
+
+			this._onChangeCallback = callback;
+
+			return this;
+
+		}
+
+		_onChangeCallback() {}
+
+		*[ Symbol.iterator ]() {
+
+			yield this._x;
+			yield this._y;
+			yield this._z;
+			yield this._w;
+
+		}
+
+	}
+
+	class Vector3 {
+
+		constructor( x = 0, y = 0, z = 0 ) {
+
+			Vector3.prototype.isVector3 = true;
+
+			this.x = x;
+			this.y = y;
+			this.z = z;
+
+		}
+
+		set( x, y, z ) {
+
+			if ( z === undefined ) z = this.z; // sprite.scale.set(x,y)
+
+			this.x = x;
+			this.y = y;
+			this.z = z;
+
+			return this;
+
+		}
+
+		setScalar( scalar ) {
+
+			this.x = scalar;
+			this.y = scalar;
+			this.z = scalar;
+
+			return this;
+
+		}
+
+		setX( x ) {
+
+			this.x = x;
+
+			return this;
+
+		}
+
+		setY( y ) {
+
+			this.y = y;
+
+			return this;
+
+		}
+
+		setZ( z ) {
+
+			this.z = z;
+
+			return this;
+
+		}
+
+		setComponent( index, value ) {
+
+			switch ( index ) {
+
+				case 0: this.x = value; break;
+				case 1: this.y = value; break;
+				case 2: this.z = value; break;
+				default: throw new Error( 'index is out of range: ' + index );
+
+			}
+
+			return this;
+
+		}
+
+		getComponent( index ) {
+
+			switch ( index ) {
+
+				case 0: return this.x;
+				case 1: return this.y;
+				case 2: return this.z;
+				default: throw new Error( 'index is out of range: ' + index );
+
+			}
+
+		}
+
+		clone() {
+
+			return new this.constructor( this.x, this.y, this.z );
+
+		}
+
+		copy( v ) {
+
+			this.x = v.x;
+			this.y = v.y;
+			this.z = v.z;
+
+			return this;
+
+		}
+
+		add( v ) {
+
+			this.x += v.x;
+			this.y += v.y;
+			this.z += v.z;
+
+			return this;
+
+		}
+
+		addScalar( s ) {
+
+			this.x += s;
+			this.y += s;
+			this.z += s;
+
+			return this;
+
+		}
+
+		addVectors( a, b ) {
+
+			this.x = a.x + b.x;
+			this.y = a.y + b.y;
+			this.z = a.z + b.z;
+
+			return this;
+
+		}
+
+		addScaledVector( v, s ) {
+
+			this.x += v.x * s;
+			this.y += v.y * s;
+			this.z += v.z * s;
+
+			return this;
+
+		}
+
+		sub( v ) {
+
+			this.x -= v.x;
+			this.y -= v.y;
+			this.z -= v.z;
+
+			return this;
+
+		}
+
+		subScalar( s ) {
+
+			this.x -= s;
+			this.y -= s;
+			this.z -= s;
+
+			return this;
+
+		}
+
+		subVectors( a, b ) {
+
+			this.x = a.x - b.x;
+			this.y = a.y - b.y;
+			this.z = a.z - b.z;
+
+			return this;
+
+		}
+
+		multiply( v ) {
+
+			this.x *= v.x;
+			this.y *= v.y;
+			this.z *= v.z;
+
+			return this;
+
+		}
+
+		multiplyScalar( scalar ) {
+
+			this.x *= scalar;
+			this.y *= scalar;
+			this.z *= scalar;
+
+			return this;
+
+		}
+
+		multiplyVectors( a, b ) {
+
+			this.x = a.x * b.x;
+			this.y = a.y * b.y;
+			this.z = a.z * b.z;
+
+			return this;
+
+		}
+
+		applyEuler( euler ) {
+
+			return this.applyQuaternion( _quaternion$4.setFromEuler( euler ) );
+
+		}
+
+		applyAxisAngle( axis, angle ) {
+
+			return this.applyQuaternion( _quaternion$4.setFromAxisAngle( axis, angle ) );
+
+		}
+
+		applyMatrix3( m ) {
+
+			const x = this.x, y = this.y, z = this.z;
+			const e = m.elements;
+
+			this.x = e[ 0 ] * x + e[ 3 ] * y + e[ 6 ] * z;
+			this.y = e[ 1 ] * x + e[ 4 ] * y + e[ 7 ] * z;
+			this.z = e[ 2 ] * x + e[ 5 ] * y + e[ 8 ] * z;
+
+			return this;
+
+		}
+
+		applyNormalMatrix( m ) {
+
+			return this.applyMatrix3( m ).normalize();
+
+		}
+
+		applyMatrix4( m ) {
+
+			const x = this.x, y = this.y, z = this.z;
+			const e = m.elements;
+
+			const w = 1 / ( e[ 3 ] * x + e[ 7 ] * y + e[ 11 ] * z + e[ 15 ] );
+
+			this.x = ( e[ 0 ] * x + e[ 4 ] * y + e[ 8 ] * z + e[ 12 ] ) * w;
+			this.y = ( e[ 1 ] * x + e[ 5 ] * y + e[ 9 ] * z + e[ 13 ] ) * w;
+			this.z = ( e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ] ) * w;
+
+			return this;
+
+		}
+
+		applyQuaternion( q ) {
+
+			const x = this.x, y = this.y, z = this.z;
+			const qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+
+			// calculate quat * vector
+
+			const ix = qw * x + qy * z - qz * y;
+			const iy = qw * y + qz * x - qx * z;
+			const iz = qw * z + qx * y - qy * x;
+			const iw = - qx * x - qy * y - qz * z;
+
+			// calculate result * inverse quat
+
+			this.x = ix * qw + iw * - qx + iy * - qz - iz * - qy;
+			this.y = iy * qw + iw * - qy + iz * - qx - ix * - qz;
+			this.z = iz * qw + iw * - qz + ix * - qy - iy * - qx;
+
+			return this;
+
+		}
+
+		project( camera ) {
+
+			return this.applyMatrix4( camera.matrixWorldInverse ).applyMatrix4( camera.projectionMatrix );
+
+		}
+
+		unproject( camera ) {
+
+			return this.applyMatrix4( camera.projectionMatrixInverse ).applyMatrix4( camera.matrixWorld );
+
+		}
+
+		transformDirection( m ) {
+
+			// input: THREE.Matrix4 affine matrix
+			// vector interpreted as a direction
+
+			const x = this.x, y = this.y, z = this.z;
+			const e = m.elements;
+
+			this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ] * z;
+			this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ] * z;
+			this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z;
+
+			return this.normalize();
+
+		}
+
+		divide( v ) {
+
+			this.x /= v.x;
+			this.y /= v.y;
+			this.z /= v.z;
+
+			return this;
+
+		}
+
+		divideScalar( scalar ) {
+
+			return this.multiplyScalar( 1 / scalar );
+
+		}
+
+		min( v ) {
+
+			this.x = Math.min( this.x, v.x );
+			this.y = Math.min( this.y, v.y );
+			this.z = Math.min( this.z, v.z );
+
+			return this;
+
+		}
+
+		max( v ) {
+
+			this.x = Math.max( this.x, v.x );
+			this.y = Math.max( this.y, v.y );
+			this.z = Math.max( this.z, v.z );
+
+			return this;
+
+		}
+
+		clamp( min, max ) {
+
+			// assumes min < max, componentwise
+
+			this.x = Math.max( min.x, Math.min( max.x, this.x ) );
+			this.y = Math.max( min.y, Math.min( max.y, this.y ) );
+			this.z = Math.max( min.z, Math.min( max.z, this.z ) );
+
+			return this;
+
+		}
+
+		clampScalar( minVal, maxVal ) {
+
+			this.x = Math.max( minVal, Math.min( maxVal, this.x ) );
+			this.y = Math.max( minVal, Math.min( maxVal, this.y ) );
+			this.z = Math.max( minVal, Math.min( maxVal, this.z ) );
+
+			return this;
+
+		}
+
+		clampLength( min, max ) {
+
+			const length = this.length();
+
+			return this.divideScalar( length || 1 ).multiplyScalar( Math.max( min, Math.min( max, length ) ) );
+
+		}
+
+		floor() {
+
+			this.x = Math.floor( this.x );
+			this.y = Math.floor( this.y );
+			this.z = Math.floor( this.z );
+
+			return this;
+
+		}
+
+		ceil() {
+
+			this.x = Math.ceil( this.x );
+			this.y = Math.ceil( this.y );
+			this.z = Math.ceil( this.z );
+
+			return this;
+
+		}
+
+		round() {
+
+			this.x = Math.round( this.x );
+			this.y = Math.round( this.y );
+			this.z = Math.round( this.z );
+
+			return this;
+
+		}
+
+		roundToZero() {
+
+			this.x = ( this.x < 0 ) ? Math.ceil( this.x ) : Math.floor( this.x );
+			this.y = ( this.y < 0 ) ? Math.ceil( this.y ) : Math.floor( this.y );
+			this.z = ( this.z < 0 ) ? Math.ceil( this.z ) : Math.floor( this.z );
+
+			return this;
+
+		}
+
+		negate() {
+
+			this.x = - this.x;
+			this.y = - this.y;
+			this.z = - this.z;
+
+			return this;
+
+		}
+
+		dot( v ) {
+
+			return this.x * v.x + this.y * v.y + this.z * v.z;
+
+		}
+
+		// TODO lengthSquared?
+
+		lengthSq() {
+
+			return this.x * this.x + this.y * this.y + this.z * this.z;
+
+		}
+
+		length() {
+
+			return Math.sqrt( this.x * this.x + this.y * this.y + this.z * this.z );
+
+		}
+
+		manhattanLength() {
+
+			return Math.abs( this.x ) + Math.abs( this.y ) + Math.abs( this.z );
+
+		}
+
+		normalize() {
+
+			return this.divideScalar( this.length() || 1 );
+
+		}
+
+		setLength( length ) {
+
+			return this.normalize().multiplyScalar( length );
+
+		}
+
+		lerp( v, alpha ) {
+
+			this.x += ( v.x - this.x ) * alpha;
+			this.y += ( v.y - this.y ) * alpha;
+			this.z += ( v.z - this.z ) * alpha;
+
+			return this;
+
+		}
+
+		lerpVectors( v1, v2, alpha ) {
+
+			this.x = v1.x + ( v2.x - v1.x ) * alpha;
+			this.y = v1.y + ( v2.y - v1.y ) * alpha;
+			this.z = v1.z + ( v2.z - v1.z ) * alpha;
+
+			return this;
+
+		}
+
+		cross( v ) {
+
+			return this.crossVectors( this, v );
+
+		}
+
+		crossVectors( a, b ) {
+
+			const ax = a.x, ay = a.y, az = a.z;
+			const bx = b.x, by = b.y, bz = b.z;
+
+			this.x = ay * bz - az * by;
+			this.y = az * bx - ax * bz;
+			this.z = ax * by - ay * bx;
+
+			return this;
+
+		}
+
+		projectOnVector( v ) {
+
+			const denominator = v.lengthSq();
+
+			if ( denominator === 0 ) return this.set( 0, 0, 0 );
+
+			const scalar = v.dot( this ) / denominator;
+
+			return this.copy( v ).multiplyScalar( scalar );
+
+		}
+
+		projectOnPlane( planeNormal ) {
+
+			_vector$c.copy( this ).projectOnVector( planeNormal );
+
+			return this.sub( _vector$c );
+
+		}
+
+		reflect( normal ) {
+
+			// reflect incident vector off plane orthogonal to normal
+			// normal is assumed to have unit length
+
+			return this.sub( _vector$c.copy( normal ).multiplyScalar( 2 * this.dot( normal ) ) );
+
+		}
+
+		angleTo( v ) {
+
+			const denominator = Math.sqrt( this.lengthSq() * v.lengthSq() );
+
+			if ( denominator === 0 ) return Math.PI / 2;
+
+			const theta = this.dot( v ) / denominator;
+
+			// clamp, to handle numerical problems
+
+			return Math.acos( clamp( theta, -1, 1 ) );
+
+		}
+
+		distanceTo( v ) {
+
+			return Math.sqrt( this.distanceToSquared( v ) );
+
+		}
+
+		distanceToSquared( v ) {
+
+			const dx = this.x - v.x, dy = this.y - v.y, dz = this.z - v.z;
+
+			return dx * dx + dy * dy + dz * dz;
+
+		}
+
+		manhattanDistanceTo( v ) {
+
+			return Math.abs( this.x - v.x ) + Math.abs( this.y - v.y ) + Math.abs( this.z - v.z );
+
+		}
+
+		setFromSpherical( s ) {
+
+			return this.setFromSphericalCoords( s.radius, s.phi, s.theta );
+
+		}
+
+		setFromSphericalCoords( radius, phi, theta ) {
+
+			const sinPhiRadius = Math.sin( phi ) * radius;
+
+			this.x = sinPhiRadius * Math.sin( theta );
+			this.y = Math.cos( phi ) * radius;
+			this.z = sinPhiRadius * Math.cos( theta );
+
+			return this;
+
+		}
+
+		setFromCylindrical( c ) {
+
+			return this.setFromCylindricalCoords( c.radius, c.theta, c.y );
+
+		}
+
+		setFromCylindricalCoords( radius, theta, y ) {
+
+			this.x = radius * Math.sin( theta );
+			this.y = y;
+			this.z = radius * Math.cos( theta );
+
+			return this;
+
+		}
+
+		setFromMatrixPosition( m ) {
+
+			const e = m.elements;
+
+			this.x = e[ 12 ];
+			this.y = e[ 13 ];
+			this.z = e[ 14 ];
+
+			return this;
+
+		}
+
+		setFromMatrixScale( m ) {
+
+			const sx = this.setFromMatrixColumn( m, 0 ).length();
+			const sy = this.setFromMatrixColumn( m, 1 ).length();
+			const sz = this.setFromMatrixColumn( m, 2 ).length();
+
+			this.x = sx;
+			this.y = sy;
+			this.z = sz;
+
+			return this;
+
+		}
+
+		setFromMatrixColumn( m, index ) {
+
+			return this.fromArray( m.elements, index * 4 );
+
+		}
+
+		setFromMatrix3Column( m, index ) {
+
+			return this.fromArray( m.elements, index * 3 );
+
+		}
+
+		setFromEuler( e ) {
+
+			this.x = e._x;
+			this.y = e._y;
+			this.z = e._z;
+
+			return this;
+
+		}
+
+		equals( v ) {
+
+			return ( ( v.x === this.x ) && ( v.y === this.y ) && ( v.z === this.z ) );
+
+		}
+
+		fromArray( array, offset = 0 ) {
+
+			this.x = array[ offset ];
+			this.y = array[ offset + 1 ];
+			this.z = array[ offset + 2 ];
+
+			return this;
+
+		}
+
+		toArray( array = [], offset = 0 ) {
+
+			array[ offset ] = this.x;
+			array[ offset + 1 ] = this.y;
+			array[ offset + 2 ] = this.z;
+
+			return array;
+
+		}
+
+		fromBufferAttribute( attribute, index ) {
+
+			this.x = attribute.getX( index );
+			this.y = attribute.getY( index );
+			this.z = attribute.getZ( index );
+
+			return this;
+
+		}
+
+		random() {
+
+			this.x = Math.random();
+			this.y = Math.random();
+			this.z = Math.random();
+
+			return this;
+
+		}
+
+		randomDirection() {
+
+			// Derived from https://mathworld.wolfram.com/SpherePointPicking.html
+
+			const u = ( Math.random() - 0.5 ) * 2;
+			const t = Math.random() * Math.PI * 2;
+			const f = Math.sqrt( 1 - u ** 2 );
+
+			this.x = f * Math.cos( t );
+			this.y = f * Math.sin( t );
+			this.z = u;
+
+			return this;
+
+		}
+
+		*[ Symbol.iterator ]() {
+
+			yield this.x;
+			yield this.y;
+			yield this.z;
+
+		}
+
+	}
+
+	const _vector$c = /*@__PURE__*/ new Vector3();
+	const _quaternion$4 = /*@__PURE__*/ new Quaternion();
+
+	if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
+
+		__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'register', { detail: {
+			revision: REVISION,
+		} } ) );
+
+	}
+
+	if ( typeof window !== 'undefined' ) {
+
+		if ( window.__THREE__ ) {
+
+			console.warn( 'WARNING: Multiple instances of Three.js being imported.' );
+
+		} else {
+
+			window.__THREE__ = REVISION;
+
+		}
+
+	}
+
+	/**
+	 * @author [Tristan Valcke]{@link https://github.com/Itee}
+	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+	 */
+
+
+	const Colors = /*#__PURE__*/iteeUtils.toEnum( {
+	    Black:                /*#__PURE__*/new Color( '#000000' ),
+	    Navy:                 /*#__PURE__*/new Color( '#000080' ),
+	    DarkBlue:             /*#__PURE__*/new Color( '#00008b' ),
+	    MediumBlue:           /*#__PURE__*/new Color( '#0000cd' ),
+	    Blue:                 /*#__PURE__*/new Color( '#0000ff' ),
+	    DarkGreen:            /*#__PURE__*/new Color( '#006400' ),
+	    Green:                /*#__PURE__*/new Color( '#008000' ),
+	    Teal:                 /*#__PURE__*/new Color( '#008080' ),
+	    DarkCyan:             /*#__PURE__*/new Color( '#008b8b' ),
+	    DeepSkyBlue:          /*#__PURE__*/new Color( '#00bfff' ),
+	    DarkTurquoise:        /*#__PURE__*/new Color( '#00ced1' ),
+	    MediumSpringGreen:    /*#__PURE__*/new Color( '#00fa9a' ),
+	    Lime:                 /*#__PURE__*/new Color( '#00ff00' ),
+	    SpringGreen:          /*#__PURE__*/new Color( '#00ff7f' ),
+	    Aqua:                 /*#__PURE__*/new Color( '#00ffff' ),
+	    Cyan:                 /*#__PURE__*/new Color( '#00ffff' ),
+	    MidnightBlue:         /*#__PURE__*/new Color( '#191970' ),
+	    DodgerBlue:           /*#__PURE__*/new Color( '#1e90ff' ),
+	    LightSeaGreen:        /*#__PURE__*/new Color( '#20b2aa' ),
+	    ForestGreen:          /*#__PURE__*/new Color( '#228b22' ),
+	    SeaGreen:             /*#__PURE__*/new Color( '#2e8b57' ),
+	    DarkSlateGray:        /*#__PURE__*/new Color( '#2f4f4f' ),
+	    DarkSlateGrey:        /*#__PURE__*/new Color( '#2f4f4f' ),
+	    LimeGreen:            /*#__PURE__*/new Color( '#32cd32' ),
+	    MediumSeaGreen:       /*#__PURE__*/new Color( '#3cb371' ),
+	    Turquoise:            /*#__PURE__*/new Color( '#40e0d0' ),
+	    RoyalBlue:            /*#__PURE__*/new Color( '#4169e1' ),
+	    SteelBlue:            /*#__PURE__*/new Color( '#4682b4' ),
+	    DarkSlateBlue:        /*#__PURE__*/new Color( '#483d8b' ),
+	    MediumTurquoise:      /*#__PURE__*/new Color( '#48d1cc' ),
+	    Indigo:               /*#__PURE__*/new Color( '#4b0082' ),
+	    DarkOliveGreen:       /*#__PURE__*/new Color( '#556b2f' ),
+	    CadetBlue:            /*#__PURE__*/new Color( '#5f9ea0' ),
+	    CornflowerBlue:       /*#__PURE__*/new Color( '#6495ed' ),
+	    RebeccaPurple:        /*#__PURE__*/new Color( '#663399' ),
+	    MediumAquaMarine:     /*#__PURE__*/new Color( '#66cdaa' ),
+	    DimGray:              /*#__PURE__*/new Color( '#696969' ),
+	    DimGrey:              /*#__PURE__*/new Color( '#696969' ),
+	    SlateBlue:            /*#__PURE__*/new Color( '#6a5acd' ),
+	    OliveDrab:            /*#__PURE__*/new Color( '#6b8e23' ),
+	    SlateGray:            /*#__PURE__*/new Color( '#708090' ),
+	    SlateGrey:            /*#__PURE__*/new Color( '#708090' ),
+	    LightSlateGray:       /*#__PURE__*/new Color( '#778899' ),
+	    LightSlateGrey:       /*#__PURE__*/new Color( '#778899' ),
+	    MediumSlateBlue:      /*#__PURE__*/new Color( '#7b68ee' ),
+	    LawnGreen:            /*#__PURE__*/new Color( '#7cfc00' ),
+	    Chartreuse:           /*#__PURE__*/new Color( '#7fff00' ),
+	    Aquamarine:           /*#__PURE__*/new Color( '#7fffd4' ),
+	    Maroon:               /*#__PURE__*/new Color( '#800000' ),
+	    Purple:               /*#__PURE__*/new Color( '#800080' ),
+	    Olive:                /*#__PURE__*/new Color( '#808000' ),
+	    Gray:                 /*#__PURE__*/new Color( '#808080' ),
+	    Grey:                 /*#__PURE__*/new Color( '#808080' ),
+	    SkyBlue:              /*#__PURE__*/new Color( '#87ceeb' ),
+	    LightSkyBlue:         /*#__PURE__*/new Color( '#87cefa' ),
+	    BlueViolet:           /*#__PURE__*/new Color( '#8a2be2' ),
+	    DarkRed:              /*#__PURE__*/new Color( '#8b0000' ),
+	    DarkMagenta:          /*#__PURE__*/new Color( '#8b008b' ),
+	    SaddleBrown:          /*#__PURE__*/new Color( '#8b4513' ),
+	    DarkSeaGreen:         /*#__PURE__*/new Color( '#8fbc8f' ),
+	    LightGreen:           /*#__PURE__*/new Color( '#90ee90' ),
+	    MediumPurple:         /*#__PURE__*/new Color( '#9370db' ),
+	    DarkViolet:           /*#__PURE__*/new Color( '#9400d3' ),
+	    PaleGreen:            /*#__PURE__*/new Color( '#98fb98' ),
+	    DarkOrchid:           /*#__PURE__*/new Color( '#9932cc' ),
+	    YellowGreen:          /*#__PURE__*/new Color( '#9acd32' ),
+	    Sienna:               /*#__PURE__*/new Color( '#a0522d' ),
+	    Brown:                /*#__PURE__*/new Color( '#a52a2a' ),
+	    DarkGray:             /*#__PURE__*/new Color( '#a9a9a9' ),
+	    DarkGrey:             /*#__PURE__*/new Color( '#a9a9a9' ),
+	    LightBlue:            /*#__PURE__*/new Color( '#add8e6' ),
+	    GreenYellow:          /*#__PURE__*/new Color( '#adff2f' ),
+	    PaleTurquoise:        /*#__PURE__*/new Color( '#afeeee' ),
+	    LightSteelBlue:       /*#__PURE__*/new Color( '#b0c4de' ),
+	    PowderBlue:           /*#__PURE__*/new Color( '#b0e0e6' ),
+	    FireBrick:            /*#__PURE__*/new Color( '#b22222' ),
+	    DarkGoldenRod:        /*#__PURE__*/new Color( '#b8860b' ),
+	    MediumOrchid:         /*#__PURE__*/new Color( '#ba55d3' ),
+	    RosyBrown:            /*#__PURE__*/new Color( '#bc8f8f' ),
+	    DarkKhaki:            /*#__PURE__*/new Color( '#bdb76b' ),
+	    Silver:               /*#__PURE__*/new Color( '#c0c0c0' ),
+	    MediumVioletRed:      /*#__PURE__*/new Color( '#c71585' ),
+	    IndianRed:            /*#__PURE__*/new Color( '#cd5c5c' ),
+	    Peru:                 /*#__PURE__*/new Color( '#cd853f' ),
+	    Chocolate:            /*#__PURE__*/new Color( '#d2691e' ),
+	    Tan:                  /*#__PURE__*/new Color( '#d2b48c' ),
+	    LightGray:            /*#__PURE__*/new Color( '#d3d3d3' ),
+	    LightGrey:            /*#__PURE__*/new Color( '#d3d3d3' ),
+	    Thistle:              /*#__PURE__*/new Color( '#d8bfd8' ),
+	    Orchid:               /*#__PURE__*/new Color( '#da70d6' ),
+	    GoldenRod:            /*#__PURE__*/new Color( '#daa520' ),
+	    PaleVioletRed:        /*#__PURE__*/new Color( '#db7093' ),
+	    Crimson:              /*#__PURE__*/new Color( '#dc143c' ),
+	    Gainsboro:            /*#__PURE__*/new Color( '#dcdcdc' ),
+	    Plum:                 /*#__PURE__*/new Color( '#dda0dd' ),
+	    BurlyWood:            /*#__PURE__*/new Color( '#deb887' ),
+	    LightCyan:            /*#__PURE__*/new Color( '#e0ffff' ),
+	    Lavender:             /*#__PURE__*/new Color( '#e6e6fa' ),
+	    DarkSalmon:           /*#__PURE__*/new Color( '#e9967a' ),
+	    Violet:               /*#__PURE__*/new Color( '#ee82ee' ),
+	    PaleGoldenRod:        /*#__PURE__*/new Color( '#eee8aa' ),
+	    LightCoral:           /*#__PURE__*/new Color( '#f08080' ),
+	    Khaki:                /*#__PURE__*/new Color( '#f0e68c' ),
+	    AliceBlue:            /*#__PURE__*/new Color( '#f0f8ff' ),
+	    HoneyDew:             /*#__PURE__*/new Color( '#f0fff0' ),
+	    Azure:                /*#__PURE__*/new Color( '#f0ffff' ),
+	    SandyBrown:           /*#__PURE__*/new Color( '#f4a460' ),
+	    Wheat:                /*#__PURE__*/new Color( '#f5deb3' ),
+	    Beige:                /*#__PURE__*/new Color( '#f5f5dc' ),
+	    WhiteSmoke:           /*#__PURE__*/new Color( '#f5f5f5' ),
+	    MintCream:            /*#__PURE__*/new Color( '#f5fffa' ),
+	    GhostWhite:           /*#__PURE__*/new Color( '#f8f8ff' ),
+	    Salmon:               /*#__PURE__*/new Color( '#fa8072' ),
+	    AntiqueWhite:         /*#__PURE__*/new Color( '#faebd7' ),
+	    Linen:                /*#__PURE__*/new Color( '#faf0e6' ),
+	    LightGoldenRodYellow: /*#__PURE__*/new Color( '#fafad2' ),
+	    OldLace:              /*#__PURE__*/new Color( '#fdf5e6' ),
+	    Red:                  /*#__PURE__*/new Color( '#ff0000' ),
+	    Fuchsia:              /*#__PURE__*/new Color( '#ff00ff' ),
+	    Magenta:              /*#__PURE__*/new Color( '#ff00ff' ),
+	    DeepPink:             /*#__PURE__*/new Color( '#ff1493' ),
+	    OrangeRed:            /*#__PURE__*/new Color( '#ff4500' ),
+	    Tomato:               /*#__PURE__*/new Color( '#ff6347' ),
+	    HotPink:              /*#__PURE__*/new Color( '#ff69b4' ),
+	    Coral:                /*#__PURE__*/new Color( '#ff7f50' ),
+	    DarkOrange:           /*#__PURE__*/new Color( '#ff8c00' ),
+	    LightSalmon:          /*#__PURE__*/new Color( '#ffa07a' ),
+	    Orange:               /*#__PURE__*/new Color( '#ffa500' ),
+	    LightPink:            /*#__PURE__*/new Color( '#ffb6c1' ),
+	    Pink:                 /*#__PURE__*/new Color( '#ffc0cb' ),
+	    Gold:                 /*#__PURE__*/new Color( '#ffd700' ),
+	    PeachPuff:            /*#__PURE__*/new Color( '#ffdab9' ),
+	    NavajoWhite:          /*#__PURE__*/new Color( '#ffdead' ),
+	    Moccasin:             /*#__PURE__*/new Color( '#ffe4b5' ),
+	    Bisque:               /*#__PURE__*/new Color( '#ffe4c4' ),
+	    MistyRose:            /*#__PURE__*/new Color( '#ffe4e1' ),
+	    BlanchedAlmond:       /*#__PURE__*/new Color( '#ffebcd' ),
+	    PapayaWhip:           /*#__PURE__*/new Color( '#ffefd5' ),
+	    LavenderBlush:        /*#__PURE__*/new Color( '#fff0f5' ),
+	    SeaShell:             /*#__PURE__*/new Color( '#fff5ee' ),
+	    Cornsilk:             /*#__PURE__*/new Color( '#fff8dc' ),
+	    LemonChiffon:         /*#__PURE__*/new Color( '#fffacd' ),
+	    FloralWhite:          /*#__PURE__*/new Color( '#fffaf0' ),
+	    Snow:                 /*#__PURE__*/new Color( '#fffafa' ),
+	    Yellow:               /*#__PURE__*/new Color( '#ffff00' ),
+	    LightYellow:          /*#__PURE__*/new Color( '#ffffe0' ),
+	    Ivory:                /*#__PURE__*/new Color( '#fffff0' ),
+	    White:                /*#__PURE__*/new Color( '#ffffff' )
+	} );
+
+	class ColorPalette {
+
+	    constructor( palette ) {
+	        if ( palette.default ) {
+	            this.default.set( palette.default );
+	        } else {
+	            this.default.set( Colors.Fuchsia );
+	        }
+
+	        if ( palette.intersected ) {
+	            this.intersected.set( palette.intersected );
+	        } else {
+	            this.default.set( Colors.PeachPuff );
+	        }
+
+	        if ( palette.selected ) {
+	            this.selected.set( palette.selected );
+	        } else {
+	            this.default.set( Colors.DarkOrange );
+	        }
+
+	        if ( palette.active ) {
+	            this.active.set( palette.active );
+	        } else {
+	            this.default.set( Colors.YellowGreen );
+	        }
+
+	        if ( palette.inactive ) {
+	            this.inactive.set( palette.inactive );
+	        } else {
+	            this.default.set( Colors.LightCyan );
+	        }
+
+	        if ( palette.enabled ) {
+	            this.enabled.set( palette.enabled );
+	        } else {
+	            this.default.set( Colors.Lavender );
+	        }
+
+	        if ( palette.disabled ) {
+	            this.disabled.set( palette.disabled );
+	        } else {
+	            this.default.set( Colors.Grey );
+	        }
+	    }
+
+	}
+
+	/**
+	 * @author [Tristan Valcke]{@link https://github.com/Itee}
+	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+	 */
+
+	//[x:LEFT-RIGHT][y:DOWN-UP][z:BACK-FRONT]
+	const Left_Down_Back   = /*#__PURE__*/new Vector3( -1, -1, -1 ).normalize();
+	const Left_Down        = /*#__PURE__*/new Vector3( -1, -1, 0 ).normalize();
+	const Left_Down_Front  = /*#__PURE__*/new Vector3( -1, -1, 1 ).normalize();
+	const Left_Back        = /*#__PURE__*/new Vector3( -1, 0, -1 ).normalize();
+	const Left             = /*#__PURE__*/new Vector3( -1, 0, 0 ).normalize();
+	const Left_Front       = /*#__PURE__*/new Vector3( -1, 0, 1 ).normalize();
+	const Left_Up_Back     = /*#__PURE__*/new Vector3( -1, 1, -1 ).normalize();
+	const Left_Up          = /*#__PURE__*/new Vector3( -1, 1, 0 ).normalize();
+	const Left_Up_Front    = /*#__PURE__*/new Vector3( -1, 1, 1 ).normalize();
+	const Down_Back        = /*#__PURE__*/new Vector3( 0, -1, -1 ).normalize();
+	const Down             = /*#__PURE__*/new Vector3( 0, -1, 0 ).normalize();
+	const Down_Front       = /*#__PURE__*/new Vector3( 0, -1, 1 ).normalize();
+	const Back             = /*#__PURE__*/new Vector3( 0, 0, -1 ).normalize();
+	const Null             = /*#__PURE__*/new Vector3( 0, 0, 0 ).normalize();
+	const Front            = /*#__PURE__*/new Vector3( 0, 0, 1 ).normalize();
+	const Up_Back          = /*#__PURE__*/new Vector3( 0, 1, -1 ).normalize();
+	const Up               = /*#__PURE__*/new Vector3( 0, 1, 0 ).normalize();
+	const Up_Front         = /*#__PURE__*/new Vector3( 0, 1, 1 ).normalize();
+	const Right_Down_Back  = /*#__PURE__*/new Vector3( 1, -1, -1 ).normalize();
+	const Right_Down       = /*#__PURE__*/new Vector3( 1, -1, 0 ).normalize();
+	const Right_Down_Front = /*#__PURE__*/new Vector3( 1, -1, 1 ).normalize();
+	const Right_Back       = /*#__PURE__*/new Vector3( 1, 0, -1 ).normalize();
+	const Right            = /*#__PURE__*/new Vector3( 1, 0, 0 ).normalize();
+	const Right_Front      = /*#__PURE__*/new Vector3( 1, 0, 1 ).normalize();
+	const Right_Up_Back    = /*#__PURE__*/new Vector3( 1, 1, -1 ).normalize();
+	const Right_Up         = /*#__PURE__*/new Vector3( 1, 1, 0 ).normalize();
+	const Right_Up_Front   = /*#__PURE__*/new Vector3( 1, 1, 1 ).normalize();
+
+	/*
+
+
+	 -Z              nnw N nne
+	 /|\            NW   |   NE
+	 |          wnw  \  |  /  ene
+	 |          W ------x------ E
+	 |          wsw  /  |  \  ese
+	 |             SW   |   SE
+	 |              ssw S sse
+	 |
+	 _|_________________________________\ +X
+	 |                                 /
+
+	 */
+	const Cardinales = {
+	    North:            Back,
+	    North_North_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+	    North_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+	    East_North_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+	    East:             Right,
+	    East_South_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+	    South_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+	    South_South_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+	    South:            Front,
+	    South_South_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+	    South_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+	    West_South_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+	    West:             Left,
+	    West_North_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+	    North_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+	    North_North_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize()
+	};
+
+	const Directions = {
+	    Left_Down_Back,
+	    Left_Down,
+	    Left_Down_Front,
+	    Left_Back,
+	    Left,
+	    Left_Front,
+	    Left_Up_Back,
+	    Left_Up,
+	    Left_Up_Front,
+	    Down_Back,
+	    Down,
+	    Down_Front,
+	    Back,
+	    Null,
+	    Front,
+	    Up_Back,
+	    Up,
+	    Up_Front,
+	    Right_Down_Back,
+	    Right_Down,
+	    Right_Down_Front,
+	    Right_Back,
+	    Right,
+	    Right_Front,
+	    Right_Up_Back,
+	    Right_Up,
+	    Right_Up_Front,
+
+	    Cardinales
+	};
 
 	/**
 	 * @module Loader/ASCLoader
@@ -51,6 +2467,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 * The ASCLoader class definition.
 	 * It allow to load and parse an .asc file
@@ -64,7 +2481,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+	    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
@@ -99,7 +2516,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {callback} onError - A error callback
 	     * @param {Number} [sampling=100] - A sampling in percent to apply over file
 	     */
-	    load ( url, onLoad, onProgress, onError, sampling ) {
+	    load( url, onLoad, onProgress, onError, sampling ) {
 
 	        //        //this.logger.time("ASCLoader")
 
@@ -120,7 +2537,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
 	     */
-	    setOffset ( offset ) {
+	    setOffset( offset ) {
 
 	        //TODO: check is correct
 
@@ -141,7 +2558,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param sampling
 	     * @private
 	     */
-	    _parse ( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
+	    _parse( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
 
 	        const self = this;
 
@@ -263,7 +2680,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        // reader.readAsText(blob);
 	        seek();
 
-	        function seek () {
+	        function seek() {
 
 	            if ( offset >= blob.size ) { return }
 
@@ -279,7 +2696,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param line
 	     * @private
 	     */
-	    _parseLine ( line ) {
+	    _parseLine( line ) {
 
 	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
@@ -384,7 +2801,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLines ( lines ) {
+	    _parseLines( lines ) {
 
 	        const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean );
 	        const pointType = firstLine.length;
@@ -428,7 +2845,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZ ( lines ) {
+	    _parseLinesAsXYZ( lines ) {
 
 	        let words = [];
 
@@ -450,7 +2867,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZI ( lines ) {
+	    _parseLinesAsXYZI( lines ) {
 
 	        this._pointsHaveIntensity = true;
 	        let words                 = [];
@@ -475,7 +2892,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZRGB ( lines ) {
+	    _parseLinesAsXYZRGB( lines ) {
 
 	        this._pointsHaveColor = true;
 	        let words             = [];
@@ -502,7 +2919,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZnXnYnZ ( lines ) {
+	    _parseLinesAsXYZnXnYnZ( lines ) {
 
 	        let words = [];
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -527,7 +2944,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZIRGB ( lines ) {
+	    _parseLinesAsXYZIRGB( lines ) {
 
 	        this._pointsHaveIntensity = true;
 	        this._pointsHaveColor     = true;
@@ -555,7 +2972,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZInXnYnZ ( lines ) {
+	    _parseLinesAsXYZInXnYnZ( lines ) {
 
 	        let words = [];
 	        for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -581,7 +2998,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZRGBnXnYnZ ( lines ) {
+	    _parseLinesAsXYZRGBnXnYnZ( lines ) {
 
 	        this._pointsHaveColor   = true;
 	        this._pointsHaveNormals = true;
@@ -612,7 +3029,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param lines
 	     * @private
 	     */
-	    _parseLinesAsXYZIRGBnXnYnZ ( lines ) {
+	    _parseLinesAsXYZIRGBnXnYnZ( lines ) {
 
 	        this._pointsHaveIntensity = true;
 	        this._pointsHaveColor     = true;
@@ -644,7 +3061,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param line
 	     * @private
 	     */
-	    _parseLineB ( line ) {
+	    _parseLineB( line ) {
 
 	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
@@ -668,7 +3085,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param line
 	     * @private
 	     */
-	    _parseLineC ( line ) {
+	    _parseLineC( line ) {
 
 	        const values        = line.split( /\s/g ).filter( Boolean );
 	        const numberOfWords = values.length;
@@ -691,7 +3108,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @private
 	     */
-	    _offsetPoints () {
+	    _offsetPoints() {
 
 	        // Compute bounding box in view to get his center for auto offseting the cloud point.
 	        if ( this._autoOffset ) {
@@ -721,7 +3138,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param groupToFeed
 	     * @private
 	     */
-	    _createCloudPoint ( groupToFeed ) {
+	    _createCloudPoint( groupToFeed ) {
 
 	        const SPLIT_LIMIT        = 1000000;
 	        // var group = new Group();
@@ -789,7 +3206,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param group
 	     * @private
 	     */
-	    _createSubCloudPoint ( group ) {
+	    _createSubCloudPoint( group ) {
 
 	        const numberOfPoints = this._points.length;
 	        const geometry       = new threeFull.BufferGeometry();
@@ -858,6 +3275,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 *
 	 * @type {Object}
@@ -919,7 +3337,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param logger
 	     * @constructor
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -935,41 +3353,41 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get manager () {
+	    get manager() {
 	        return this._manager
 	    }
 
-	    set manager ( value ) {
+	    set manager( value ) {
 	        this._manager = value;
 	    }
 
-	    get logger () {
+	    get logger() {
 	        return this._logger
 	    }
 
-	    set logger ( value ) {
+	    set logger( value ) {
 	        this._logger = value;
 	    }
 
-	    get reader () {
+	    get reader() {
 	        return this._reader
 	    }
 
-	    set reader ( value ) {
+	    set reader( value ) {
 	        this._reader = value;
 	    }
 
-	    setManager ( value ) {
+	    setManager( value ) {
 	        this.manager = value;
 	        return this
 	    }
 
-	    setLogger ( value ) {
+	    setLogger( value ) {
 	        this.logger = value;
 	        return this
 	    }
 
-	    setReader ( value ) {
+	    setReader( value ) {
 	        this.reader = value;
 	        return this
 	    }
@@ -981,7 +3399,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param onProgress
 	     * @param onError
 	     */
-	    load ( url, onLoad, onProgress, onError ) {
+	    load( url, onLoad, onProgress, onError ) {
 
 	        const scope = this;
 
@@ -1000,7 +3418,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param arrayBuffer
 	     * @return {*}
 	     */
-	    parse ( arrayBuffer ) {
+	    parse( arrayBuffer ) {
 
 	        this.reader
 	            .setEndianess( iteeClient.Endianness.Big )
@@ -1028,7 +3446,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {boolean}
 	     * @private
 	     */
-	    _isValidVersion ( version ) {
+	    _isValidVersion( version ) {
 
 	        return DBFVersion.includes( version )
 
@@ -1040,7 +3458,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{}}
 	     * @private
 	     */
-	    _parseHeader ( version ) {
+	    _parseHeader( version ) {
 
 	        let header = {};
 
@@ -1090,7 +3508,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
 	     * @private
 	     */
-	    _parseHeaderV2 () {
+	    _parseHeaderV2() {
 
 	        const numberOfRecords     = this.reader.getInt16();
 	        const year                = this.reader.getInt8() + DBFLoader.YearOffset;
@@ -1139,7 +3557,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
 	     * @private
 	     */
-	    _parseHeaderV2_5 () {
+	    _parseHeaderV2_5() {
 
 	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
 	        const month = this.reader.getInt8();
@@ -1204,7 +3622,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *     (*|number), languageDriverId: (*|number), fields: Array}}
 	     * @private
 	     */
-	    _parseHeaderV3 () {
+	    _parseHeaderV3() {
 
 	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
 	        const month = this.reader.getInt8();
@@ -1276,7 +3694,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
 	     * @private
 	     */
-	    _parseHeaderV4 () {
+	    _parseHeaderV4() {
 
 	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
 	        const month = this.reader.getInt8();
@@ -1351,7 +3769,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {Array}
 	     * @private
 	     */
-	    _parseDatas ( version, header ) {
+	    _parseDatas( version, header ) {
 
 	        const numberOfRecords = header.numberOfRecords;
 	        const fields          = header.fields;
@@ -1471,7 +3889,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
 	     * @private
 	     */
-	    _parseFieldProperties () {
+	    _parseFieldProperties() {
 
 	        const numberOfStandardProperties             = this.reader.getInt16();
 	        const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
@@ -1518,7 +3936,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
 	     * @private
 	     */
-	    _getStandardProperties () {
+	    _getStandardProperties() {
 
 	        const generationalNumber = this.reader.getInt16();
 	        const tableFieldOffset   = this.reader.getInt16();
@@ -1546,7 +3964,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
 	     * @private
 	     */
-	    _getCustomProperties () {
+	    _getCustomProperties() {
 
 	        const generationalNumber = this.reader.getInt16();
 	        const tableFieldOffset   = this.reader.getInt16();
@@ -1575,7 +3993,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
 	     * @private
 	     */
-	    _getReferentialIntegrityProperties () {
+	    _getReferentialIntegrityProperties() {
 
 	        const databaseState                = this.reader.getInt8();
 	        const sequentialNumberRule         = this.reader.getInt16();
@@ -1643,6 +4061,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * } );
 	 *
 	 */
+
 	//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 	//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
@@ -1683,7 +4102,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+	    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
@@ -1770,7 +4189,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {callback} onError - A error callback
 	     * @param {Number} [sampling=100] - A sampling in percent to apply over file
 	     */
-	    load ( url, onLoad, onProgress, onError, sampling ) {
+	    load( url, onLoad, onProgress, onError, sampling ) {
 
 	        //this.logger.time("LASLoader")
 
@@ -1789,7 +4208,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
 	     */
-	    setOffset ( offset ) {
+	    setOffset( offset ) {
 
 	        //TODO: check is correct
 
@@ -1807,7 +4226,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param onProgress
 	     * @param onError
 	     */
-	    parse ( arraybuffer, onLoad, onProgress, onError ) {
+	    parse( arraybuffer, onLoad, onProgress, onError ) {
 
 	        try {
 
@@ -1844,7 +4263,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    // Header
 
-	    _parseHeader ( lasVersion ) {
+	    _parseHeader( lasVersion ) {
 
 	        switch ( lasVersion ) {
 	            case '1.0':
@@ -1864,7 +4283,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeader_1_0 () {
+	    _parseHeader_1_0() {
 
 	        return {
 	            FileSignature:                 this._reader.getString( 4 ),
@@ -1902,7 +4321,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeader_1_1 () {
+	    _parseHeader_1_1() {
 
 	        return {
 	            FileSignature:                 this._reader.getString( 4 ),
@@ -1941,7 +4360,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeader_1_2 () {
+	    _parseHeader_1_2() {
 
 	        return {
 	            FileSignature:  this._reader.getString( 4 ),
@@ -1983,7 +4402,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeader_1_3 () {
+	    _parseHeader_1_3() {
 
 	        return {
 	            FileSignature:  this._reader.getString( 4 ),
@@ -2029,7 +4448,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeader_1_4 () {
+	    _parseHeader_1_4() {
 
 	        return {
 	            FileSignature:  this._reader.getString( 4 ),
@@ -2082,7 +4501,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    // VariableLengthRecord
 
-	    _parseVariableLengthRecords ( header ) {
+	    _parseVariableLengthRecords( header ) {
 
 	        const fullVersion            = `${ header.VersionMajor }.${ header.VersionMinor }`;
 	        const variablesLengthRecords = [];
@@ -2112,7 +4531,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseVariableLengthRecordHeader () {
+	    _parseVariableLengthRecordHeader() {
 
 	        return {
 	            Reserved:                this._reader.getUint16(),
@@ -2123,7 +4542,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        }
 
 	    }
-	    _parseVariableLengthRecordContent ( userId, recordId, recordLength ) {
+	    _parseVariableLengthRecordContent( userId, recordId, recordLength ) {
 
 	        switch ( userId ) {
 	            case 'LASF_Projection':
@@ -2137,7 +4556,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseProjectionRecord ( recordId, recordLength ) {
+	    _parseProjectionRecord( recordId, recordLength ) {
 
 	        switch ( recordId ) {
 	            case 2111:
@@ -2159,20 +4578,20 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Todo
-	    _parseOGCMathTransformWKT () {
+	    _parseOGCMathTransformWKT() {
 
 	        return undefined
 
 	    }
 
 	    // Todo
-	    _parseOGCCoordinateTransformWKT () {
+	    _parseOGCCoordinateTransformWKT() {
 
 	        return undefined
 
 	    }
 
-	    _parseGeoKeyDirectoryTag () {
+	    _parseGeoKeyDirectoryTag() {
 
 	        const geoKey = {
 	            wKeyDirectoryVersion: this._reader.getUint16(),
@@ -2195,7 +4614,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseGeoDoubleParamsTag ( recordLength ) {
+	    _parseGeoDoubleParamsTag( recordLength ) {
 
 	        const numberOfEntries = recordLength / iteeClient.Byte.Height;
 	        const params          = [];
@@ -2208,13 +4627,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseGeoASCIIParamsTag ( recordLength ) {
+	    _parseGeoASCIIParamsTag( recordLength ) {
 
 	        return this._reader.getString( recordLength ).replace( NullCharRegex, '' )
 
 	    }
 
-	    _parseSpecRecord ( recordId ) {
+	    _parseSpecRecord( recordId ) {
 
 	        if ( recordId < 100 ) {
 
@@ -2252,7 +4671,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseClassificationLookupRecord () {
+	    _parseClassificationLookupRecord() {
 
 	        const records = [];
 
@@ -2267,7 +4686,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHeaderLookupForFlightLinesRecord () {
+	    _parseHeaderLookupForFlightLinesRecord() {
 
 	        return {
 	            FileMarkerNumber: this._reader.getUint8(),
@@ -2276,47 +4695,47 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseHistogramRecord () {
+	    _parseHistogramRecord() {
 
 	        return undefined
 
 	    }
 
-	    _parseTextAreaDescriptionRecord () {
-
-	        return undefined
-
-	    }
-
-	    // Todo
-	    _parseExtraBytesRecord () {
+	    _parseTextAreaDescriptionRecord() {
 
 	        return undefined
 
 	    }
 
 	    // Todo
-	    _parseSupersededRecord () {
+	    _parseExtraBytesRecord() {
 
 	        return undefined
 
 	    }
 
 	    // Todo
-	    _parseWaveformPacketDesciptor () {
+	    _parseSupersededRecord() {
 
 	        return undefined
 
 	    }
 
 	    // Todo
-	    _parseWaveformDataPacket () {
+	    _parseWaveformPacketDesciptor() {
 
 	        return undefined
 
 	    }
 
-	    _parseCustomRecord ( recordLength ) {
+	    // Todo
+	    _parseWaveformDataPacket() {
+
+	        return undefined
+
+	    }
+
+	    _parseCustomRecord( recordLength ) {
 
 	        const record = new Uint8Array( recordLength );
 
@@ -2330,7 +4749,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    // PointDataRecords
 
-	    _parsePointDataRecords ( header, onProgress ) {
+	    _parsePointDataRecords( header, onProgress ) {
 
 	        const offsetToPointData = header.OffsetToPointData;
 	        if ( this._reader.offset !== offsetToPointData ) {
@@ -2360,7 +4779,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _getPointDataRecordFormat ( format ) {
+	    _getPointDataRecordFormat( format ) {
 
 	        switch ( format ) {
 	            case 0:
@@ -2392,7 +4811,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_0 () {
+	    _parsePointDataRecordFormat_0() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2416,7 +4835,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_1 () {
+	    _parsePointDataRecordFormat_1() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2441,7 +4860,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_2 () {
+	    _parsePointDataRecordFormat_2() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2468,7 +4887,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_3 () {
+	    _parsePointDataRecordFormat_3() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2496,7 +4915,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_4 () {
+	    _parsePointDataRecordFormat_4() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2528,7 +4947,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_5 () {
+	    _parsePointDataRecordFormat_5() {
 
 	        return {
 	            X:                 this._reader.getInt32(),
@@ -2563,7 +4982,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_6 () {
+	    _parsePointDataRecordFormat_6() {
 
 	        return {
 	            X:                   this._reader.getInt32(),
@@ -2590,7 +5009,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_7 () {
+	    _parsePointDataRecordFormat_7() {
 
 	        return {
 	            X:                   this._reader.getInt32(),
@@ -2620,7 +5039,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_8 () {
+	    _parsePointDataRecordFormat_8() {
 
 	        return {
 	            X:                   this._reader.getInt32(),
@@ -2651,7 +5070,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_9 () {
+	    _parsePointDataRecordFormat_9() {
 
 	        return {
 	            X:                   this._reader.getInt32(),
@@ -2685,7 +5104,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parsePointDataRecordFormat_10 () {
+	    _parsePointDataRecordFormat_10() {
 
 	        return {
 	            X:                   this._reader.getInt32(),
@@ -2723,7 +5142,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    convert ( lasDatas, onLoad, onProgress, onError ) {
+	    convert( lasDatas, onLoad, onProgress, onError ) {
 
 	        try {
 
@@ -2758,7 +5177,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @private
 	     */
-	    _offsetPoints () {
+	    _offsetPoints() {
 
 	        // Compute bounding box in view to get his center for auto offseting the cloud point.
 	        if ( this._autoOffset ) {
@@ -2788,7 +5207,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param groupToFeed
 	     * @private
 	     */
-	    _createCloudPoints ( groupToFeed, lasDatas, onProgress ) {
+	    _createCloudPoints( groupToFeed, lasDatas, onProgress ) {
 
 	        const classPointReverseMap = {
 	            0:  'Created',
@@ -2912,7 +5331,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param group
 	     * @private
 	     */
-	    _createSubCloudPoint ( group ) {
+	    _createSubCloudPoint( group ) {
 
 	        const numberOfPoints = this._points.length;
 	        const geometry       = new threeFull.BufferGeometry();
@@ -2982,6 +5401,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 *
 	 * @type {Object}
@@ -3023,7 +5443,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param logger
 	     * @constructor
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -3046,67 +5466,67 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get globalOffset () {
+	    get globalOffset() {
 	        return this._globalOffset
 	    }
 
-	    set globalOffset ( value ) {
+	    set globalOffset( value ) {
 	        this._globalOffset = value;
 	    }
 
-	    get worldAxis () {
+	    get worldAxis() {
 	        return this._worldAxis
 	    }
 
-	    set worldAxis ( value ) {
+	    set worldAxis( value ) {
 	        this._worldAxis = value;
 	    }
 
-	    get manager () {
+	    get manager() {
 	        return this._manager
 	    }
 
-	    set manager ( value ) {
+	    set manager( value ) {
 	        this._manager = value;
 	    }
 
-	    get logger () {
+	    get logger() {
 	        return this._logger
 	    }
 
-	    set logger ( value ) {
+	    set logger( value ) {
 	        this._logger = value;
 	    }
 
-	    get reader () {
+	    get reader() {
 	        return this._reader
 	    }
 
-	    set reader ( value ) {
+	    set reader( value ) {
 	        this._reader = value;
 	    }
 
-	    setGlobalOffset ( value ) {
+	    setGlobalOffset( value ) {
 	        this.globalOffset = value;
 	        return this
 	    }
 
-	    setWorldAxis ( value ) {
+	    setWorldAxis( value ) {
 	        this.worldAxis = value;
 	        return this
 	    }
 
-	    setManager ( value ) {
+	    setManager( value ) {
 	        this.manager = value;
 	        return this
 	    }
 
-	    setLogger ( value ) {
+	    setLogger( value ) {
 	        this.logger = value;
 	        return this
 	    }
 
-	    setReader ( value ) {
+	    setReader( value ) {
 	        this.reader = value;
 	        return this
 	    }
@@ -3118,7 +5538,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param onProgress
 	     * @param onError
 	     */
-	    load ( url, onLoad, onProgress, onError ) {
+	    load( url, onLoad, onProgress, onError ) {
 
 	        const scope = this;
 
@@ -3137,7 +5557,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param arrayBuffer
 	     * @return {*}
 	     */
-	    parse ( arrayBuffer ) {
+	    parse( arrayBuffer ) {
 
 	        this._reader
 	            .setEndianess( iteeClient.Endianness.Big )
@@ -3176,7 +5596,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
 	     * @private
 	     */
-	    _parseHeader () {
+	    _parseHeader() {
 
 	        const fileCode = this._reader.getInt32();
 	        this._reader.skipOffsetOf( 20 );
@@ -3220,7 +5640,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {Array}
 	     * @private
 	     */
-	    _parseDatas ( header ) {
+	    _parseDatas( header ) {
 
 	        this._reader.skipOffsetTo( 100 );
 
@@ -3335,7 +5755,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {{recordNumber, contentLength}}
 	     * @private
 	     */
-	    _parseRecordHeader () {
+	    _parseRecordHeader() {
 
 	        this._reader.setEndianess( iteeClient.Endianness.Big );
 
@@ -3349,7 +5769,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _parseNull () {
+	    _parseNull() {
 
 	        this._reader.getInt32();
 	        return null
@@ -3361,7 +5781,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {*}
 	     * @private
 	     */
-	    _parsePoint () {
+	    _parsePoint() {
 
 	        const shapeType = this._reader.getInt32();
 	        if ( shapeType === ShapeType.NullShape ) {
@@ -3384,7 +5804,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {*}
 	     * @private
 	     */
-	    _parsePolyLine () {
+	    _parsePolyLine() {
 
 	        const shapeType = this._reader.getInt32();
 	        if ( shapeType === ShapeType.NullShape ) {
@@ -3430,7 +5850,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {*}
 	     * @private
 	     */
-	    _parsePolygon () {
+	    _parsePolygon() {
 
 	        const shapeType = this._reader.getInt32();
 	        if ( shapeType === ShapeType.NullShape ) {
@@ -3509,7 +5929,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {*}
 	     * @private
 	     */
-	    _parseMultiPoint () {
+	    _parseMultiPoint() {
 
 	        const shapeType = this._reader.getInt32();
 	        if ( shapeType === ShapeType.NullShape ) {
@@ -3545,7 +5965,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {*}
 	     * @private
 	     */
-	    _parseMultiPatch () {
+	    _parseMultiPatch() {
 
 	        const shapeType = this._reader.getInt32();
 	        if ( shapeType === ShapeType.NullShape ) {
@@ -3564,7 +5984,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @return {Array}
 	     * @private
 	     */
-	    _convertToObjects ( datas ) {
+	    _convertToObjects( datas ) {
 
 	        let shapes = [];
 
@@ -3587,7 +6007,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        }
 
-	        function __createObjectsFromArrays ( arrays ) {
+	        function __createObjectsFromArrays( arrays ) {
 
 	            //Todo: need to fix parsePolygon to avoid too much array imbrication
 
@@ -3614,7 +6034,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        }
 
-	        function __createObjectFromPoints ( points ) {
+	        function __createObjectFromPoints( points ) {
 
 	            shapes.push( new threeFull.Shape( points ) );
 
@@ -3636,68 +6056,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    /* PRIVATE STATIC METHODS */
 
-	    // Calculate the intersection of two bits
-	    static _intersect ( bit1, bit2 ) {
-	        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-	    }
-
-	    // Calculate the union of two bits
-	    static _union ( bit1, bit2 ) {
-	        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-	    }
-
-	    // Calculate the difference of two bits
-	    static _difference ( bit1, bit2 ) {
-	        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
-	    }
-
-	    // Get the longest or shortest (smallest) length of the two bit arrays
-	    static _getLen ( bitArray1, bitArray2, smallest ) {
-	        var l1 = bitArray1.getLength();
-	        var l2 = bitArray2.getLength();
-
-	        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
-	    }
-
-	    /* PUBLIC STATIC METHODS */
-	    static getUnion ( bitArray1, bitArray2 ) {
-	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-	        var result = new BitArray( len );
-	        for ( var i = 0 ; i < len ; i++ ) {
-	            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-	        }
-	        return result
-	    }
-
-	    static getIntersection ( bitArray1, bitArray2 ) {
-	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-	        var result = new BitArray( len );
-	        for ( var i = 0 ; i < len ; i++ ) {
-	            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-	        }
-	        return result
-	    }
-
-	    static getDifference ( bitArray1, bitArray2 ) {
-	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-	        var result = new BitArray( len );
-	        for ( var i = 0 ; i < len ; i++ ) {
-	            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-	        }
-	        return result
-	    }
-
-	    static shred ( number ) {
-	        var bits = new Array();
-	        var q    = number;
-	        do {
-	            bits.push( q % 2 );
-	            q = Math.floor( q / 2 );
-	        } while ( q > 0 )
-	        return new BitArray( bits.length, bits.reverse() )
-	    }
-
-	    constructor ( size, bits ) {
+	    constructor( size, bits ) {
 	        // Private field - array for our bits
 	        this.m_bits = new Array();
 
@@ -3721,25 +6080,77 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            }
 	        }
 	    }
+	    // Calculate the intersection of two bits
+	    static _intersect( bit1, bit2 ) {
+	        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+	    }
+	    // Calculate the union of two bits
+	    static _union( bit1, bit2 ) {
+	        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+	    }
+	    // Calculate the difference of two bits
+	    static _difference( bit1, bit2 ) {
+	        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
+	    }
+	    // Get the longest or shortest (smallest) length of the two bit arrays
+	    static _getLen( bitArray1, bitArray2, smallest ) {
+	        var l1 = bitArray1.getLength();
+	        var l2 = bitArray2.getLength();
 
-	    getLength () {
+	        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
+	    }
+	    /* PUBLIC STATIC METHODS */
+	    static getUnion( bitArray1, bitArray2 ) {
+	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+	        var result = new BitArray( len );
+	        for ( var i = 0 ; i < len ; i++ ) {
+	            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+	        }
+	        return result
+	    }
+	    static getIntersection( bitArray1, bitArray2 ) {
+	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+	        var result = new BitArray( len );
+	        for ( var i = 0 ; i < len ; i++ ) {
+	            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+	        }
+	        return result
+	    }
+	    static getDifference( bitArray1, bitArray2 ) {
+	        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+	        var result = new BitArray( len );
+	        for ( var i = 0 ; i < len ; i++ ) {
+	            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+	        }
+	        return result
+	    }
+	    static shred( number ) {
+	        var bits = new Array();
+	        var q    = number;
+	        do {
+	            bits.push( q % 2 );
+	            q = Math.floor( q / 2 );
+	        } while ( q > 0 )
+	        return new BitArray( bits.length, bits.reverse() )
+	    }
+	    getLength() {
 	        return this.m_bits.length
 	    }
 
-	    getAt ( index ) {
+	    getAt( index ) {
 	        if ( index < this.m_bits.length ) {
 	            return this.m_bits[ index ]
 	        }
 	        return null
 	    }
 
-	    setAt ( index, value ) {
+	    setAt( index, value ) {
 	        if ( index < this.m_bits.length ) {
 	            this.m_bits[ index ] = value ? BitArray._ON : BitArray._OFF;
 	        }
 	    }
 
-	    resize ( newSize ) {
+	    resize( newSize ) {
 	        var tmp = new Array();
 	        for ( var i = 0 ; i < newSize ; i++ ) {
 	            if ( i < this.m_bits.length ) {
@@ -3751,7 +6162,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this.m_bits = tmp;
 	    }
 
-	    getCompliment () {
+	    getCompliment() {
 	        var result = new BitArray( this.m_bits.length );
 	        for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
 	            result.setAt( i, this.m_bits[ i ] ? BitArray._OFF : BitArray._ON );
@@ -3759,7 +6170,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        return result
 	    }
 
-	    toString () {
+	    toString() {
 	        var s = new String();
 	        for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
 	            s = s.concat( this.m_bits[ i ] === BitArray._ON ? '1' : '0' );
@@ -3767,7 +6178,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        return s
 	    }
 
-	    toNumber () {
+	    toNumber() {
 	        var pow = 0;
 	        var n   = 0;
 	        for ( var i = this.m_bits.length - 1 ; i >= 0 ; i-- ) {
@@ -3790,26 +6201,26 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	class BitManager {
 
-	    static getBit ( bitField, bitPosition ) {
+	    static getBit( bitField, bitPosition ) {
 	        return ( bitField & ( 1 << bitPosition ) ) === 0 ? 0 : 1
 	    }
 
-	    static setBit ( bitField, bitPosition ) {
+	    static setBit( bitField, bitPosition ) {
 	        return bitField | ( 1 << bitPosition )
 	    }
 
-	    static clearBit ( bitField, bitPosition ) {
+	    static clearBit( bitField, bitPosition ) {
 	        const mask = ~( 1 << bitPosition );
 	        return bitField & mask
 	    }
 
-	    static updateBit ( bitField, bitPosition, bitValue ) {
+	    static updateBit( bitField, bitPosition, bitValue ) {
 	        const bitValueNormalized = bitValue ? 1 : 0;
 	        const clearMask          = ~( 1 << bitPosition );
 	        return ( bitField & clearMask ) | ( bitValueNormalized << bitPosition )
 	    }
 
-	    static getBits ( bitField, bitPositions ) {
+	    static getBits( bitField, bitPositions ) {
 	        let bits = 0;
 	        for ( let bitPosition of bitPositions ) {
 	            if ( BitManager.getBit( bitField, bitPosition ) ) {
@@ -3838,6 +6249,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
 	 *
 	 */
+
 
 	const FRONT = /*#__PURE__*/new threeFull.Vector3( 0, 0, -1 );
 	const BACK  = /*#__PURE__*/new threeFull.Vector3( 0, 0, 1 );
@@ -3887,7 +6299,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    Path:        4
 	} );
 
-	function isInWorker () {
+	function isInWorker() {
 	    return typeof importScripts === 'function'
 	}
 
@@ -3941,7 +6353,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {module:Controllers/CameraControls.CameraControlMode} [parameters.mode=CameraControlMode.Orbit] - The current controller mode
 	     * @param {Window|HTMLDocument|HTMLDivElement|HTMLCanvasElement} [parameters.domElement=window] - The DOMElement to listen for mouse and keyboard inputs
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -4133,7 +6545,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @function module:Controllers/CameraControls~CameraControls#get camera
 	     * @returns {THREE~Camera}
 	     */
-	    get camera () {
+	    get camera() {
 
 	        return this._camera
 
@@ -4145,7 +6557,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {THREE~Camera} value
 	     * @throws Will throw an error if the argument is null.
 	     */
-	    set camera ( value ) {
+	    set camera( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
@@ -4160,13 +6572,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @type {THREE~Object3D}
 	     * @throws {Error} if the argument is null.
 	     */
-	    get target () {
+	    get target() {
 
 	        return this._target
 
 	    }
 
-	    set target ( value ) {
+	    set target( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
@@ -4180,11 +6592,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @property {module:Controllers/CameraControls#CameraControlMode} mode - The current displacement mode
 	     * @throws {Error} if the argument is null.
 	     */
-	    get mode () {
+	    get mode() {
 	        return this._mode
 	    }
 
-	    set mode ( value ) {
+	    set mode( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
@@ -4198,21 +6610,21 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get paths () {
+	    get paths() {
 	        return this._paths
 	    }
 
-	    set paths ( value ) {
+	    set paths( value ) {
 
 	        this._paths = value;
 
 	    }
 
-	    get trackPath () {
+	    get trackPath() {
 	        return this._trackPath
 	    }
 
-	    set trackPath ( value ) {
+	    set trackPath( value ) {
 
 	        if ( iteeValidators.isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
@@ -4224,21 +6636,23 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get domElement () {
+	    get domElement() {
 
 	        return this._domElement
 
 	    }
 
-	    set domElement ( value ) {
+	    set domElement( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
-	        if ( ![ 'Window',
-	                'HTMLDocument',
-	                'HTMLDivElement',
-	                'HTMLCanvasElement',
-	                'OffscreenCanvas' ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
+	        if ( ![
+	            'Window',
+	            'HTMLDocument',
+	            'HTMLDivElement',
+	            'HTMLCanvasElement',
+	            'OffscreenCanvas'
+	        ].includes( value.constructor.name ) ) { throw new Error( `DomElement cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument or HTMLDivElement.` ) }
 
 	        // Check focusability of given dom element because in case the element is not focusable
 	        // the keydown event won't work !
@@ -4257,7 +6671,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get handlers () {
+	    get handlers() {
 	        return this._handlers
 	    }
 
@@ -4267,7 +6681,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {THREE~Camera} value - The camera to manage
 	     * @return {module:Controllers/CameraControls~CameraControls} The current instance (this, chainable)
 	     */
-	    setCamera ( value ) {
+	    setCamera( value ) {
 
 	        this.camera = value;
 	        return this
@@ -4280,7 +6694,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {THREE~Object3D} value - The target to use
 	     * @return {CameraControls} The current instance (this, chainable)
 	     */
-	    setTarget ( value ) {
+	    setTarget( value ) {
 
 	        this.target = value;
 	        return this
@@ -4293,7 +6707,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {Enum.State} value - The target to use
 	     * @return {CameraControls} The current instance (this, chainable)
 	     */
-	    setMode ( value ) {
+	    setMode( value ) {
 
 	        this.mode = value;
 	        return this
@@ -4307,28 +6721,28 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @throws {BadERROR} a bad error
 	     * @return {CameraControls} The current instance (this, chainable)
 	     */
-	    setPaths ( value ) {
+	    setPaths( value ) {
 
 	        this.paths = value;
 	        return this
 
 	    }
 
-	    addPath ( value ) {
+	    addPath( value ) {
 
 	        this._paths.push( value );
 	        return this
 
 	    }
 
-	    setTrackPath ( value ) {
+	    setTrackPath( value ) {
 
 	        this.trackPath = value;
 	        return this
 
 	    }
 
-	    setDomElement ( value ) {
+	    setDomElement( value ) {
 
 	        this.domElement = value;
 	        return this
@@ -4337,7 +6751,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    ///////////////
 
-	    impose () {
+	    impose() {
 
 	        this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false );
 	        this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false );
@@ -4370,7 +6784,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    dispose () {
+	    dispose() {
 
 	        this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false );
 	        this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false );
@@ -4403,11 +6817,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update () {
+	    update() {
 
 	    }
 
-	    setCameraPosition ( newCameraPosition ) {
+	    setCameraPosition( newCameraPosition ) {
 
 	        this._camera.position.copy( newCameraPosition );
 	        this._camera.lookAt( this._target.position );
@@ -4421,7 +6835,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {external:THREE~Vector3} newTargetPosition - The new target position
 	     * @return {CameraControls} The current instance (this, chainable)
 	     */
-	    setTargetPosition ( newTargetPosition ) {
+	    setTargetPosition( newTargetPosition ) {
 
 	        this._target.position.copy( newTargetPosition );
 	        this._camera.lookAt( this._target.position );
@@ -4431,13 +6845,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Handlers
-	    _preventEvent ( event ) {
+	    _preventEvent( event ) {
 	        if ( !event.preventDefault ) { return }
 
 	        event.preventDefault();
 	    }
 
-	    _consumeEvent ( event ) {
+	    _consumeEvent( event ) {
 	        if ( !event.cancelable ) { return }
 	        if ( !event.stopImmediatePropagation ) { return }
 
@@ -4445,7 +6859,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Keys
-	    _onKeyDown ( keyEvent ) {
+	    _onKeyDown( keyEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( keyEvent );
@@ -4504,7 +6918,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        } else if ( actionMap.roll.right.includes( key ) ) {
 
-	            this._roll( -1.0 );
+	            this._roll( -1 );
 	            this._consumeEvent( keyEvent );
 
 	        } else if ( actionMap.zoom.includes( key ) ) {
@@ -4566,7 +6980,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onKeyUp ( keyEvent ) {
+	    _onKeyUp( keyEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( keyEvent );
@@ -4574,7 +6988,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Touches
-	    _onTouchStart ( touchEvent ) {
+	    _onTouchStart( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( touchEvent );
@@ -4583,7 +6997,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchEnd ( touchEvent ) {
+	    _onTouchEnd( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( touchEvent );
@@ -4593,7 +7007,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchCancel ( touchEvent ) {
+	    _onTouchCancel( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( touchEvent );
@@ -4603,7 +7017,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchLeave ( touchEvent ) {
+	    _onTouchLeave( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( touchEvent );
@@ -4613,7 +7027,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchMove ( touchEvent ) {
+	    _onTouchMove( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( touchEvent );
@@ -4667,7 +7081,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Mouse
-	    _onMouseEnter ( mouseEvent ) {
+	    _onMouseEnter( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4679,7 +7093,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseLeave ( mouseEvent ) {
+	    _onMouseLeave( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4692,7 +7106,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseDown ( mouseEvent ) {
+	    _onMouseDown( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4769,7 +7183,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseMove ( mouseEvent ) {
+	    _onMouseMove( mouseEvent ) {
 
 	        if ( !this.enabled || this._state === State.None ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4813,7 +7227,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    //todo allow other displacement from wheel
-	    _onMouseWheel ( mouseEvent ) {
+	    _onMouseWheel( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4824,7 +7238,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseUp ( mouseEvent ) {
+	    _onMouseUp( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4834,7 +7248,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onDblClick ( mouseEvent ) {
+	    _onDblClick( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        this._preventEvent( mouseEvent );
@@ -4844,7 +7258,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Positional methods
-	    _front () {
+	    _front() {
 
 	        if ( !this.canMove || !this.canFront ) { return }
 
@@ -4892,7 +7306,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @private
 	     * @return {void}
 	     */
-	    _back () {
+	    _back() {
 
 	        if ( !this.canMove || !this.canBack ) { return }
 
@@ -4946,7 +7360,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @fires module:Controllers/CameraControls~CameraControls#move
 	     * @fires module:Controllers/CameraControls~CameraControls#change
 	     */
-	    _up () {
+	    _up() {
 
 	        if ( !this.canMove || !this.canUp ) { return }
 
@@ -4975,7 +7389,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @private
 	     * @return {void}
 	     */
-	    _down () {
+	    _down() {
 
 	        if ( !this.canMove || !this.canDown ) { return }
 
@@ -5004,7 +7418,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @private
 	     * @return {void}
 	     */
-	    _left () {
+	    _left() {
 
 	        if ( !this.canMove || !this.canLeft ) { return }
 
@@ -5028,7 +7442,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _right () {
+	    _right() {
 
 	        if ( !this.canMove || !this.canRight ) { return }
 
@@ -5048,7 +7462,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _rotate ( delta ) {
+	    _rotate( delta ) {
 
 	        if ( !this.canRotate ) { return }
 
@@ -5129,7 +7543,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _pan ( delta ) {
+	    _pan( delta ) {
 
 	        if ( !this.canPan ) { return }
 
@@ -5152,7 +7566,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _roll ( delta ) {
+	    _roll( delta ) {
 
 	        if ( !this.canRoll ) { return }
 
@@ -5175,7 +7589,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _zoom ( delta ) {
+	    _zoom( delta ) {
 
 	        if ( !this.canZoom ) { return }
 
@@ -5303,7 +7717,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _lookAt ( direction ) {
+	    _lookAt( direction ) {
 
 	        if ( !this.canLookAt ) { return }
 
@@ -5347,7 +7761,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Helpers
-	    _initPathDisplacement () {
+	    _initPathDisplacement() {
 
 	        //todo: project on closest path position
 	        //todo: move on path in the FRONT camera direction
@@ -5408,7 +7822,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _getPathDisplacement ( cameraDirection ) {
+	    _getPathDisplacement( cameraDirection ) {
 
 	        let displacement = null;
 
@@ -5593,7 +8007,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _getDirectionsMap () {
+	    _getDirectionsMap() {
 
 	        //todo: use cache !!! Could become a complet map with nodes on path network
 
@@ -5880,11 +8294,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { LineBasicMaterial }        from 'three-full/sources/materials/LineBasicMaterial'
 
 	class HighlightableLineMaterial extends threeFull.LineBasicMaterial {
 
-	    constructor ( parameters ) {
+	    constructor( parameters ) {
 	        super( parameters );
 	        this.isHighlightableMaterial = true;
 	        //        this.type                    = 'HighlightableLineMaterial'
@@ -5898,7 +8313,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    highlight ( highlighted ) {
+	    highlight( highlighted ) {
 
 	        if ( highlighted ) {
 
@@ -5925,12 +8340,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }        from 'three-full/sources/constants'
 	//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
 
 	class HighlightableMaterial extends threeFull.MeshBasicMaterial {
 
-	    constructor ( parameters ) {
+	    constructor( parameters ) {
 	        super( parameters );
 	        this.isHighlightableMaterial = true;
 	        //        this.type                    = 'HighlightableMaterial'
@@ -5944,7 +8360,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    highlight ( highlighted ) {
+	    highlight( highlighted ) {
 
 	        if ( highlighted ) {
 
@@ -5971,6 +8387,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }        from 'three-full/sources/constants'
 	//import { BufferGeometry }    from 'three-full/sources/core/BufferGeometry'
 	//import { MeshBasicMaterial } from 'three-full/sources/materials/MeshBasicMaterial'
@@ -5978,7 +8395,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	class AbstractHitbox extends threeFull.Mesh {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6009,11 +8426,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 
 	class OctahedricalHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6033,12 +8451,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Object3D }   from 'three-full/sources/core/Object3D'
 	//import { Quaternion } from 'three-full/sources/math/Quaternion'
 
 	class AbstractHandle extends threeFull.Object3D {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6061,13 +8480,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get color () {
+	    get color() {
 
 	        return this.line.material.color.clone()
 
 	    }
 
-	    set color ( value ) {
+	    set color( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Color cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Color cannot be undefined ! Expect an instance of Color.' ) }
@@ -6084,40 +8503,40 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get hitbox () {
+	    get hitbox() {
 	        return this._hitbox
 	    }
 
-	    set hitbox ( value ) {
+	    set hitbox( value ) {
 	        this._hitbox = value;
 	        this.add( value );
 	    }
 
-	    setColor ( value ) {
+	    setColor( value ) {
 
 	        this.color = value;
 	        return this
 
 	    }
 
-	    setHitbox ( value ) {
+	    setHitbox( value ) {
 	        this.hitbox = value;
 	        return this
 	    }
 
-	    setScale ( x, y, z ) {
+	    setScale( x, y, z ) {
 
 	        this.scale.set( x, y, z );
 	        return this
 
 	    }
 
-	    setPosition ( x, y, z ) {
+	    setPosition( x, y, z ) {
 	        this.position.set( x, y, z );
 	        return this
 	    }
 
-	    highlight ( value ) {
+	    highlight( value ) {
 
 	        for ( let childIndex = 0, numberOfChildren = this.children.length ; childIndex < numberOfChildren ; childIndex++ ) {
 	            const child = this.children[ childIndex ];
@@ -6131,7 +8550,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    raycast ( raycaster, intersects ) {
+	    raycast( raycaster, intersects ) {
 
 	        const intersections = raycaster.intersectObject( this._hitbox, false );
 	        if ( intersections.length > 0 ) {
@@ -6143,7 +8562,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setRotationFromAxisAndAngle ( axis, angle ) {
+	    setRotationFromAxisAndAngle( axis, angle ) {
 
 	        this.quaternion.setFromAxisAngle( axis, angle );
 	        this.baseQuaternion.copy( this.quaternion );
@@ -6152,7 +8571,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // eslint-disable-next-line no-unused-vars
-	    update ( cameraDirection ) {}
+	    update( cameraDirection ) {}
 
 	}
 
@@ -6161,9 +8580,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class OctahedricalHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6197,7 +8617,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 	        super.update( cameraDirection );
 
 	        this.updateMatrix();
@@ -6210,20 +8630,21 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 
 	class PlanarHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const planePositions = ( parameters.centered ) ?
-	            [
-	                -0.6, -0.6, 0.0,
-	                0.6, -0.6, 0.0,
-	                0.6, 0.6, 0.0,
-	                -0.6, 0.6, 0.0
-	            ] : [
+	                               [
+	                                   -0.6, -0.6, 0.0,
+	                                   0.6, -0.6, 0.0,
+	                                   0.6, 0.6, 0.0,
+	                                   -0.6, 0.6, 0.0
+	                               ] : [
 	                0.0, 0.0, 0.0,
 	                1.1, 0.0, 0.0,
 	                1.1, 1.1, 0.0,
@@ -6259,7 +8680,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	class PlaneHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6294,12 +8715,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        // Plane
 	        const planePositions = ( _parameters.centered ) ?
-	            [
-	                -0.5, -0.5, 0.0,
-	                0.5, -0.5, 0.0,
-	                0.5, 0.5, 0.0,
-	                -0.5, 0.5, 0.0
-	            ] : [
+	                               [
+	                                   -0.5, -0.5, 0.0,
+	                                   0.5, -0.5, 0.0,
+	                                   0.5, 0.5, 0.0,
+	                                   -0.5, 0.5, 0.0
+	                               ] : [
 	                0.1, 0.1, 0.0,
 	                1.0, 0.1, 0.0,
 	                1.0, 1.0, 0.0,
@@ -6340,13 +8761,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        }
 	    }
 
-	    get direction () {
+	    get direction() {
 
 	        return this._direction
 
 	    }
 
-	    set direction ( value ) {
+	    set direction( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -6356,7 +8777,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 
 	        super.update( cameraDirection );
 
@@ -6468,26 +8889,26 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setDirection ( direction ) {
+	    setDirection( direction ) {
 
 	        this.direction = direction;
 	        return this
 
 	    }
 
-	    flipXDirection () {
+	    flipXDirection() {
 
 	        this.xDirection.setX( -this.xDirection.x );
 
 	    }
 
-	    flipYDirection () {
+	    flipYDirection() {
 
 	        this.yDirection.setY( -this.yDirection.y );
 
 	    }
 
-	    flipZDirection () {
+	    flipZDirection() {
 
 	        this.zDirection.setZ( -this.zDirection.z );
 
@@ -6499,13 +8920,14 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 	//import { Vector3 }                from 'three-full/sources/math/Vector3'
 
 	class LineGeometry extends threeFull.BufferGeometry {
 
-	    constructor ( pointA = new threeFull.Vector3( 0, 0, 0 ), pointB = new threeFull.Vector3( 1, 0, 0 ) ) {
+	    constructor( pointA = new threeFull.Vector3( 0, 0, 0 ), pointB = new threeFull.Vector3( 1, 0, 0 ) ) {
 	        super();
 
 	        this.type = 'LineGeometry';
@@ -6520,11 +8942,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { CylinderBufferGeometry } from 'three-full/sources/geometries/CylinderGeometry'
 
 	class CylindricaHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const cylinderGeometry = new threeFull.CylinderBufferGeometry( 0.2, 0, 1, 4, 1, false );
 	        cylinderGeometry.translate( 0, 0.5, 0 );
@@ -6547,9 +8970,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class ScaleHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6580,13 +9004,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get direction () {
+	    get direction() {
 
 	        return this._direction
 
 	    }
 
-	    set direction ( value ) {
+	    set direction( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -6613,7 +9037,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 
 	        super.update( cameraDirection );
 
@@ -6627,14 +9051,14 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setDirection ( direction ) {
+	    setDirection( direction ) {
 
 	        this.direction = direction;
 	        return this
 
 	    }
 
-	    flipDirection () {
+	    flipDirection() {
 
 	        this.direction = this._direction.negate();
 
@@ -6646,6 +9070,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { DoubleSide }          from 'three-full/sources/constants'
 	//import { Object3D }            from 'three-full/sources/core/Object3D'
 	//import { PlaneBufferGeometry } from 'three-full/sources/geometries/PlaneGeometry'
@@ -6654,7 +9079,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	class AbstractGizmo extends threeFull.Object3D {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6697,7 +9122,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _setupHandles ( handlesMap ) {
+	    _setupHandles( handlesMap ) {
 
 	        const parent = this;
 	        //        const parent = this.handles
@@ -6760,7 +9185,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    highlight ( axis ) {
+	    highlight( axis ) {
 
 	        // Reset highlight for all of them
 	        for ( let key in this.handleGizmos ) {
@@ -6775,7 +9200,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraPosition, cameraDirection ) {
+	    update( cameraPosition, cameraDirection ) {
 
 	        this.traverse( ( child ) => {
 
@@ -6789,7 +9214,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    updateIntersectPlane ( cameraPosition ) {
+	    updateIntersectPlane( cameraPosition ) {
 
 	        this.intersectPlane.lookAt( cameraPosition );
 	        this.intersectPlane.updateMatrix();
@@ -6803,9 +9228,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class ScaleGizmo extends AbstractGizmo {
 
-	    constructor () {
+	    constructor() {
 
 	        super();
 	        this.isScaleGizmo = true;
@@ -6856,7 +9282,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    raycast ( raycaster, intersects ) {
+	    raycast( raycaster, intersects ) {
 
 	        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
 	        if ( !isIntersected ) { return }
@@ -6874,12 +9300,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
+
 	//import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 	//import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 
 	class LozengeHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        // Lozenge
 	        const lozengePositions        = [
@@ -6916,9 +9343,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class LozengeHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -6977,13 +9405,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this.zAxis      = new threeFull.Vector3( 0, 0, 1 );
 	    }
 
-	    get direction () {
+	    get direction() {
 
 	        return this._direction
 
 	    }
 
-	    set direction ( value ) {
+	    set direction( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -6993,7 +9421,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 
 	        super.update( cameraDirection );
 
@@ -7065,14 +9493,14 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setDirection ( direction ) {
+	    setDirection( direction ) {
 
 	        this.direction = direction;
 	        return this
 
 	    }
 
-	    flipXAxis () {
+	    flipXAxis() {
 
 	        const tempDirection = this._direction.clone();
 	        tempDirection.x     = -tempDirection.x;
@@ -7081,7 +9509,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    flipYAxis () {
+	    flipYAxis() {
 
 	        const tempDirection = this._direction.clone();
 	        tempDirection.y     = -tempDirection.y;
@@ -7090,7 +9518,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    flipZAxis () {
+	    flipZAxis() {
 
 	        const tempDirection = this._direction.clone();
 	        tempDirection.z     = -tempDirection.z;
@@ -7106,9 +9534,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class TranslateHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -7139,13 +9568,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get direction () {
+	    get direction() {
 
 	        return this._direction
 
 	    }
 
-	    set direction ( value ) {
+	    set direction( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
@@ -7172,7 +9601,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 
 	        super.update( cameraDirection );
 
@@ -7186,14 +9615,14 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setDirection ( direction ) {
+	    setDirection( direction ) {
 
 	        this.direction = direction;
 	        return this
 
 	    }
 
-	    flipDirection () {
+	    flipDirection() {
 
 	        this.direction = this._direction.negate();
 
@@ -7206,9 +9635,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class TranslateGizmo extends AbstractGizmo {
 
-	    constructor () {
+	    constructor() {
 
 	        super();
 	        this.isTranslateGizmo = true;
@@ -7259,7 +9689,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    raycast ( raycaster, intersects ) {
+	    raycast( raycaster, intersects ) {
 
 	        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
 	        if ( !isIntersected ) { return }
@@ -7282,10 +9712,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	// Basic Geometries
 	class ClippingBox extends threeFull.LineSegments {
 
-	    constructor () {
+	    constructor() {
 	        super();
 
 	        this.margin = 0.01;
@@ -7319,7 +9750,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    getBoundingSphere () {
+	    getBoundingSphere() {
 
 	        this.geometry.computeBoundingSphere();
 	        this.geometry.boundingSphere.applyMatrix4( this.matrixWorld );
@@ -7328,13 +9759,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setColor ( color ) {
+	    setColor( color ) {
 
 	        this.material.color.set( color );
 
 	    }
 
-	    applyClippingTo ( state, objects ) {
+	    applyClippingTo( state, objects ) {
 
 	        if ( iteeValidators.isNotDefined( objects ) ) { return }
 
@@ -7363,13 +9794,13 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    updateSize ( size ) {
+	    updateSize( size ) {
 
 	        this.scale.set( size.x, size.y, size.z );
 
 	    }
 
-	    update () {
+	    update() {
 
 	        this._boundingBox.setFromObject( this );
 
@@ -7398,7 +9829,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	class ClippingControls extends threeFull.Object3D {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -7520,11 +9951,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get objectsToClip () {
+	    get objectsToClip() {
 	        return this._objectsToClip
 	    }
 
-	    set objectsToClip ( value ) {
+	    set objectsToClip( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
@@ -7535,11 +9966,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get camera () {
+	    get camera() {
 	        return this._camera
 	    }
 
-	    set camera ( value ) {
+	    set camera( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
@@ -7549,11 +9980,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get domElement () {
+	    get domElement() {
 	        return this._domElement
 	    }
 
-	    set domElement ( value ) {
+	    set domElement( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
@@ -7573,11 +10004,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get mode () {
+	    get mode() {
 	        return this._mode
 	    }
 
-	    set mode ( value ) {
+	    set mode( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
@@ -7605,35 +10036,35 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setCamera ( value ) {
+	    setCamera( value ) {
 
 	        this.camera = value;
 	        return this
 
 	    }
 
-	    setDomElement ( value ) {
+	    setDomElement( value ) {
 
 	        this.domElement = value;
 	        return this
 
 	    }
 
-	    setMode ( value ) {
+	    setMode( value ) {
 
 	        this.mode = value;
 	        return this
 
 	    }
 
-	    setObjectsToClip ( objects ) {
+	    setObjectsToClip( objects ) {
 
 	        this.objectsToClip = objects;
 	        return this
 
 	    }
 
-	    impose () {
+	    impose() {
 
 	        this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false );
 	        this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false );
@@ -7666,7 +10097,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    dispose () {
+	    dispose() {
 
 	        this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false );
 	        this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false );
@@ -7699,15 +10130,15 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setTranslationSnap ( translationSnap ) {
+	    setTranslationSnap( translationSnap ) {
 	        this.translationSnap = translationSnap;
 	    }
 
-	    setRotationSnap ( rotationSnap ) {
+	    setRotationSnap( rotationSnap ) {
 	        this.rotationSnap = rotationSnap;
 	    }
 
-	    enable () {
+	    enable() {
 
 	        this.visible = true;
 	        this.enabled = true;
@@ -7734,7 +10165,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    disable () {
+	    disable() {
 
 	        this.visible = false;
 	        this.enabled = false;
@@ -7742,7 +10173,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    updateClipping () {
+	    updateClipping() {
 
 	        if ( iteeValidators.isNotDefined( this._objectsToClip ) ) { return }
 
@@ -7751,7 +10182,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    updateGizmo () {
+	    updateGizmo() {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7764,7 +10195,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    /// Handlers
-	    _consumeEvent ( event ) {
+	    _consumeEvent( event ) {
 
 	        if ( !event.cancelable ) {
 	            return
@@ -7775,7 +10206,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Keyboard
-	    _onKeyDown ( keyEvent ) {
+	    _onKeyDown( keyEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        keyEvent.preventDefault();
@@ -7920,7 +10351,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onKeyUp ( keyEvent ) {
+	    _onKeyUp( keyEvent ) {
 
 	        if ( !this.enabled || keyEvent.defaultPrevented ) { return }
 	        keyEvent.preventDefault();
@@ -7930,7 +10361,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Mouse
-	    _onDblClick ( mouseEvent ) {
+	    _onDblClick( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7940,7 +10371,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseDown ( mouseEvent ) {
+	    _onMouseDown( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7963,7 +10394,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseEnter ( mouseEvent ) {
+	    _onMouseEnter( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7976,7 +10407,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseLeave ( mouseEvent ) {
+	    _onMouseLeave( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -7991,7 +10422,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseMove ( mouseEvent ) {
+	    _onMouseMove( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -8159,7 +10590,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseUp ( mouseEvent ) {
+	    _onMouseUp( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
@@ -8196,7 +10627,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onMouseWheel ( mouseEvent ) {
+	    _onMouseWheel( mouseEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        mouseEvent.preventDefault();
@@ -8206,7 +10637,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // Touche
-	    _onTouchCancel ( touchEvent ) {
+	    _onTouchCancel( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        touchEvent.preventDefault();
@@ -8215,7 +10646,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchEnd ( touchEvent ) {
+	    _onTouchEnd( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        touchEvent.preventDefault();
@@ -8224,7 +10655,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchLeave ( touchEvent ) {
+	    _onTouchLeave( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        touchEvent.preventDefault();
@@ -8233,7 +10664,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchMove ( touchEvent ) {
+	    _onTouchMove( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        touchEvent.preventDefault();
@@ -8242,7 +10673,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onTouchStart ( touchEvent ) {
+	    _onTouchStart( touchEvent ) {
 
 	        if ( !this.enabled ) { return }
 	        touchEvent.preventDefault();
@@ -8253,11 +10684,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    /// Utils
 	    // eslint-disable-next-line no-unused-vars
-	    getActiveHandle ( pointer ) {
+	    getActiveHandle( pointer ) {
 
 	    }
 
-	    intersectObjects ( pointer, objects ) {
+	    intersectObjects( pointer, objects ) {
 
 	        // calculate mouse position in normalized device coordinates
 	        // (-1 to +1) for both components
@@ -8285,35 +10716,35 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    // Methods
 
 	    // Moving
-	    _translate ( displacement ) {
+	    _translate( displacement ) {
 
 	        this.position.add( displacement );
 	        this.updateMatrix();
 
 	    }
 
-	    _translateX ( deltaX ) {
+	    _translateX( deltaX ) {
 
 	        this.position.setX( this.position.x + deltaX );
 	        this.updateMatrix();
 
 	    }
 
-	    _translateY ( deltaY ) {
+	    _translateY( deltaY ) {
 
 	        this.position.setY( this.position.y + deltaY );
 	        this.updateMatrix();
 
 	    }
 
-	    _translateZ ( deltaZ ) {
+	    _translateZ( deltaZ ) {
 
 	        this.position.setZ( this.position.z + deltaZ );
 	        this.updateMatrix();
 
 	    }
 
-	    _translateXY ( deltaX, deltaY ) {
+	    _translateXY( deltaX, deltaY ) {
 
 	        this.position.setX( this.position.x + deltaX );
 	        this.position.setY( this.position.y + deltaY );
@@ -8321,7 +10752,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _translateXZ ( deltaX, deltaZ ) {
+	    _translateXZ( deltaX, deltaZ ) {
 
 	        this.position.setX( this.position.x + deltaX );
 	        this.position.setZ( this.position.z + deltaZ );
@@ -8329,7 +10760,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _translateYZ ( deltaY, deltaZ ) {
+	    _translateYZ( deltaY, deltaZ ) {
 
 	        this.position.setY( this.position.y + deltaY );
 	        this.position.setZ( this.position.z + deltaZ );
@@ -8337,7 +10768,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _translateXYZ ( deltaX, deltaY, deltaZ ) {
+	    _translateXYZ( deltaX, deltaY, deltaZ ) {
 
 	        this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ );
 	        this.updateMatrix();
@@ -8346,56 +10777,56 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    // Rotating
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateX ( delta ) {}
+	    _rotateX( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateY ( delta ) {}
+	    _rotateY( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateZ ( delta ) {}
+	    _rotateZ( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateXY ( delta ) {}
+	    _rotateXY( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateXZ ( delta ) {}
+	    _rotateXZ( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateYZ ( delta ) {}
+	    _rotateYZ( delta ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _rotateXYZ ( delta ) {}
+	    _rotateXYZ( delta ) {}
 
 	    // Scaling
-	    _scale ( changeAmout ) {
+	    _scale( changeAmout ) {
 
 	        this.scale.add( changeAmout );
 	        this.updateMatrix();
 
 	    }
 
-	    _scaleX ( deltaX ) {
+	    _scaleX( deltaX ) {
 
 	        this.scale.setX( this.scale.x + deltaX );
 	        this.updateMatrix();
 
 	    }
 
-	    _scaleY ( deltaY ) {
+	    _scaleY( deltaY ) {
 
 	        this.scale.setY( this.scale.y + deltaY );
 	        this.updateMatrix();
 
 	    }
 
-	    _scaleZ ( deltaZ ) {
+	    _scaleZ( deltaZ ) {
 
 	        this.scale.setZ( this.scale.z + deltaZ );
 	        this.updateMatrix();
 
 	    }
 
-	    _scaleXY ( deltaX, deltaY ) {
+	    _scaleXY( deltaX, deltaY ) {
 
 	        this.scale.setX( this.scale.x + deltaX );
 	        this.scale.setY( this.scale.y + deltaY );
@@ -8403,7 +10834,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _scaleXZ ( deltaX, deltaZ ) {
+	    _scaleXZ( deltaX, deltaZ ) {
 
 	        this.scale.setX( this.scale.x + deltaX );
 	        this.scale.setZ( this.scale.z + deltaZ );
@@ -8411,7 +10842,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _scaleYZ ( deltaY, deltaZ ) {
+	    _scaleYZ( deltaY, deltaZ ) {
 
 	        this.scale.setY( this.scale.y + deltaY );
 	        this.scale.setZ( this.scale.z + deltaZ );
@@ -8419,7 +10850,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _scaleXYZ ( deltaX, deltaY, deltaZ ) {
+	    _scaleXYZ( deltaX, deltaY, deltaZ ) {
 
 	        this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ );
 	        this.updateMatrix();
@@ -8438,9 +10869,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	class CurvesManager extends iteeClient.TDataBaseManager {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -8453,7 +10885,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    convert ( data ) {
+	    convert( data ) {
 
 	        if ( !data ) {
 	            throw new Error( 'CurvesManager: Unable to convert null or undefined data !' )
@@ -8533,7 +10965,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
 	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
@@ -8572,6 +11004,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	const ArrayType = /*#__PURE__*/iteeUtils.toEnum( {
 	    Int8Array:         0,
 	    Uint8Array:        1,
@@ -8595,7 +11028,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @param parameters
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -8619,11 +11052,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //// Getter/Setter
 
-	    get computeBoundingBox () {
+	    get computeBoundingBox() {
 	        return this._computeBoundingBox
 	    }
 
-	    set computeBoundingBox ( value ) {
+	    set computeBoundingBox( value ) {
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
 	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -8631,11 +11064,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this._computeBoundingBox = value;
 	    }
 
-	    get computeBoundingSphere () {
+	    get computeBoundingSphere() {
 	        return this._computeBoundingSphere
 	    }
 
-	    set computeBoundingSphere ( value ) {
+	    set computeBoundingSphere( value ) {
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
 	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -8643,11 +11076,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this._computeBoundingSphere = value;
 	    }
 
-	    get computeNormals () {
+	    get computeNormals() {
 	        return this._computeNormals
 	    }
 
-	    set computeNormals ( value ) {
+	    set computeNormals( value ) {
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
 	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
@@ -8655,11 +11088,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this._computeNormals = value;
 	    }
 
-	    get projectionSystem () {
+	    get projectionSystem() {
 	        return this._projectionSystem
 	    }
 
-	    set projectionSystem ( value ) {
+	    set projectionSystem( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
@@ -8668,11 +11101,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get globalScale () {
+	    get globalScale() {
 	        return this._globalScale
 	    }
 
-	    set globalScale ( value ) {
+	    set globalScale( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -8681,33 +11114,33 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setComputeBoundingBox ( value ) {
+	    setComputeBoundingBox( value ) {
 
 	        this.computeBoundingBox = value;
 	        return this
 
 	    }
 
-	    setComputeBoundingShpere ( value ) {
+	    setComputeBoundingShpere( value ) {
 
 	        this.computeBoundingSphere = value;
 	        return this
 
 	    }
 
-	    setComputeNormals ( value ) {
+	    setComputeNormals( value ) {
 	        this.computeNormals = value;
 	        return this
 	    }
 
-	    setProjectionSystem ( value ) {
+	    setProjectionSystem( value ) {
 
 	        this.projectionSystem = value;
 	        return this
 
 	    }
 
-	    setGlobalScale ( value ) {
+	    setGlobalScale( value ) {
 
 	        this.globalScale = value;
 	        return this
@@ -8716,7 +11149,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //// Methods
 
-	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
 	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
@@ -8751,7 +11184,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param data
 	     * @returns {*}
 	     */
-	    convert ( data ) {
+	    convert( data ) {
 
 	        if ( !data ) {
 	            throw new Error( 'GeometriesManager: Unable to convert null or undefined data !' )
@@ -8800,7 +11233,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _convertJsonToGeometry ( data ) {
+	    _convertJsonToGeometry( data ) {
 
 	        const geometryType = data.types;
 	        let geometry       = null;
@@ -8943,7 +11376,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _convertJsonToBufferGeometry ( data ) {
+	    _convertJsonToBufferGeometry( data ) {
 
 	        const bufferGeometryType = data.type;
 	        let bufferGeometry       = null;
@@ -9152,7 +11585,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    __convertArrayBufferToTypedArray ( arrayBuffer ) {
+	    __convertArrayBufferToTypedArray( arrayBuffer ) {
 
 	        const ONE_BYTE       = 1;
 	        const TWO_BYTE       = 2;
@@ -9238,7 +11671,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    __convertBase64ToArrayBuffer ( base64 ) {
+	    __convertBase64ToArrayBuffer( base64 ) {
 
 	        const chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	        const lookup = new Uint8Array( 256 );
@@ -9289,6 +11722,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	/**
 	 * @class
 	 * @classdesc Todo...
@@ -9296,7 +11730,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 */
 	class TexturesManager extends iteeClient.TDataBaseManager {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -9309,7 +11743,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    convert ( data ) {
+	    convert( data ) {
 
 	        if ( !data ) {
 	            throw new Error( 'TexturesManager: Unable to convert null or undefined data !' )
@@ -9332,7 +11766,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
 	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
@@ -9367,7 +11801,9 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
-	const DEFAULT_IMAGE = /*#__PURE__*/new threeFull.ImageLoader().load( 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
+
+	const DEFAULT_IMAGE = /*#__PURE__*/new threeFull.ImageLoader().load(
+	    'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAB3RJTUUH4gkKDRoGpGNegQAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAAMSURBVAjXY/j//z8ABf4C/tzMWecAAAAASUVORK5CYII=' );
 
 	/**
 	 * @class
@@ -9386,7 +11822,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param texturesPath
 	     * @param texturesProvider
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -9407,11 +11843,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get texturesPath () {
+	    get texturesPath() {
 	        return this._texturesPath
 	    }
 
-	    set texturesPath ( value ) {
+	    set texturesPath( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
@@ -9423,11 +11859,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get texturesProvider () {
+	    get texturesProvider() {
 	        return this._texturesProvider
 	    }
 
-	    set texturesProvider ( value ) {
+	    set texturesProvider( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
@@ -9437,11 +11873,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get generateMipmap () {
+	    get generateMipmap() {
 	        return this._generateMipmap
 	    }
 
-	    set generateMipmap ( value ) {
+	    set generateMipmap( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
@@ -9450,11 +11886,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        this._generateMipmap = value;
 	    }
 
-	    get autoFillTextures () {
+	    get autoFillTextures() {
 	        return this._autoFillTextures
 	    }
 
-	    set autoFillTextures ( value ) {
+	    set autoFillTextures( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -9464,28 +11900,28 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setTexturesPath ( value ) {
+	    setTexturesPath( value ) {
 
 	        this.texturesPath = value;
 	        return this
 
 	    }
 
-	    setTexturesProvider ( value ) {
+	    setTexturesProvider( value ) {
 
 	        this.texturesProvider = value;
 	        return this
 
 	    }
 
-	    setGenerateMipmap ( value ) {
+	    setGenerateMipmap( value ) {
 
 	        this.generateMipmap = value;
 	        return this
 
 	    }
 
-	    setAutoFillTextures ( value ) {
+	    setAutoFillTextures( value ) {
 
 	        this.autoFillTextures = value;
 	        return this
@@ -9494,7 +11930,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //// Methods
 
-	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
 	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
@@ -9531,7 +11967,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param data
 	     * @return {undefined}
 	     */
-	    convert ( data ) {
+	    convert( data ) {
 
 	        if ( !data ) {
 	            throw new Error( 'MaterialsManager: Unable to convert null or undefined data !' )
@@ -9874,7 +12310,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _fillBaseMaterialData ( material, data ) {
+	    _fillBaseMaterialData( material, data ) {
 
 	        const _id = data._id;
 	        if ( iteeValidators.isDefined( _id ) && iteeValidators.isString( _id ) ) {
@@ -10053,7 +12489,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _setVector2 ( vec2 ) {
+	    _setVector2( vec2 ) {
 
 	        const x = vec2.x;
 	        const y = vec2.y;
@@ -10065,7 +12501,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _setColor ( color ) {
+	    _setColor( color ) {
 
 	        const r = color.r;
 	        const g = color.g;
@@ -10078,7 +12514,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    fillTextures ( materials, onSuccess/*, onProgress, onError */ ) {
+	    fillTextures( materials, onSuccess/*, onProgress, onError */ ) {
 
 	        const texturesMap = this._retrieveTexturesOf( materials );
 
@@ -10099,7 +12535,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _retrieveTexturesOf ( materials ) {
+	    _retrieveTexturesOf( materials ) {
 
 	        const availableTextures = [ 'map', 'lightMap', 'aoMap', 'emissiveMap', 'bumpMap', 'normalMap', 'displacementMap', 'specularMap', 'alphaMap', 'envMap' ];
 	        const texturesMap       = {};
@@ -10173,6 +12609,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 * @class
 	 * @classdesc Todo...
@@ -10184,7 +12621,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     *
 	     * @param parameters
 	     */
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -10209,11 +12646,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //// Getter/Setter
 
-	    get geometriesProvider () {
+	    get geometriesProvider() {
 	        return this._geometriesProvider
 	    }
 
-	    set geometriesProvider ( value ) {
+	    set geometriesProvider( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
@@ -10223,11 +12660,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get materialsProvider () {
+	    get materialsProvider() {
 	        return this._materialsProvider
 	    }
 
-	    set materialsProvider ( value ) {
+	    set materialsProvider( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
@@ -10237,11 +12674,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get projectionSystem () {
+	    get projectionSystem() {
 	        return this._projectionSystem
 	    }
 
-	    set projectionSystem ( value ) {
+	    set projectionSystem( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
@@ -10250,11 +12687,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get globalScale () {
+	    get globalScale() {
 	        return this._globalScale
 	    }
 
-	    set globalScale ( value ) {
+	    set globalScale( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -10263,11 +12700,11 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    get autoFillObjects3D () {
+	    get autoFillObjects3D() {
 	        return this._autoFillObjects3D
 	    }
 
-	    set autoFillObjects3D ( value ) {
+	    set autoFillObjects3D( value ) {
 
 	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
 	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
@@ -10277,35 +12714,35 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    setGeometriesProvider ( value ) {
+	    setGeometriesProvider( value ) {
 
 	        this.geometriesProvider = value;
 	        return this
 
 	    }
 
-	    setMaterialsProvider ( value ) {
+	    setMaterialsProvider( value ) {
 
 	        this.materialsProvider = value;
 	        return this
 
 	    }
 
-	    setProjectionSystem ( value ) {
+	    setProjectionSystem( value ) {
 
 	        this.projectionSystem = value;
 	        return this
 
 	    }
 
-	    setGlobalScale ( value ) {
+	    setGlobalScale( value ) {
 
 	        this.globalScale = value;
 	        return this
 
 	    }
 
-	    setAutoFillObjects3D ( value ) {
+	    setAutoFillObjects3D( value ) {
 
 	        this.autoFillObjects3D = value;
 	        return this
@@ -10314,7 +12751,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //// Methods
 
-	    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Convert data from db to instanced object and add them into a map
 	        const results = {};
@@ -10346,20 +12783,20 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	    }
 
 	    // eslint-disable-next-line no-unused-vars
-	    _onArrayBuffer ( data, onSuccess, onProgress, onError ) {}
+	    _onArrayBuffer( data, onSuccess, onProgress, onError ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _onBlob ( data, onSuccess, onProgress, onError ) {}
+	    _onBlob( data, onSuccess, onProgress, onError ) {}
 
 	    // eslint-disable-next-line no-unused-vars
-	    _onText ( data, onSuccess, onProgress, onError ) {}
+	    _onText( data, onSuccess, onProgress, onError ) {}
 
 	    /**
 	     *
 	     * @param data
 	     * @return {*}
 	     */
-	    convert ( data ) {
+	    convert( data ) {
 
 	        if ( !data ) {
 	            throw new Error( 'ObjectsManager: Unable to convert null or undefined data !' )
@@ -10541,7 +12978,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _fillBaseObjectsData ( object, data ) {
+	    _fillBaseObjectsData( object, data ) {
 
 	        // Common object properties
 	        object._id = data._id;
@@ -10706,7 +13143,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     * @param {GlobalCallback} onProgress
 	     * @param {module:Managers/ObjectsManager~ObjectsManager~ClassCallback} onError
 	     */
-	    fillObjects3D ( objects, onSuccess, onProgress, onError ) {
+	    fillObjects3D( objects, onSuccess, onProgress, onError ) {
 
 	        const self = this;
 
@@ -10741,7 +13178,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            onEndDataFetching();
 	        }, onProgress, onError );
 
-	        function onEndDataFetching () {
+	        function onEndDataFetching() {
 
 	            if ( !geometriesMap || !materialsMap ) { return }
 
@@ -10759,7 +13196,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _retrieveGeometriesOf ( meshes, onSuccess, onProgress, onError ) {
+	    _retrieveGeometriesOf( meshes, onSuccess, onProgress, onError ) {
 
 	        const geometriesIds = meshes.map( object => object.geometry )
 	                                    .filter( ( value, index, self ) => {
@@ -10781,7 +13218,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    _retrieveMaterialsOf ( meshes, onSuccess, onProgress, onError ) {
+	    _retrieveMaterialsOf( meshes, onSuccess, onProgress, onError ) {
 
 	        const materialsArray       = meshes.map( object => object.material );
 	        const concatMaterialsArray = [].concat.apply( [], materialsArray );
@@ -10991,7 +13428,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	     /////////////
 	     */
 
-	    applyGeometry ( object, geometries ) {
+	    applyGeometry( object, geometries ) {
 
 	        const geometryId = object.geometry;
 	        if ( !geometryId ) {
@@ -11008,7 +13445,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    applyMaterials ( object, materials ) {
+	    applyMaterials( object, materials ) {
 
 	        const materialIds = object.material;
 	        if ( !materialIds ) {
@@ -11071,6 +13508,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 *
 	 */
 
+
 	/**
 	 * @class
 	 * @classdesc Todo...
@@ -11078,7 +13516,33 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 */
 	class OrbitControlsHelper extends threeFull.LineSegments {
 
-	    static _createInternalGeometry ( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
+	    constructor( parameters = {} ) {
+
+	        const _parameters = {
+	            ...{
+	                radius:     2,
+	                radials:    16,
+	                circles:    2,
+	                divisions:  64,
+	                innerColor: new threeFull.Color( 0x444444 ),
+	                outerColor: new threeFull.Color( 0x888888 )
+	            }, ...parameters
+	        };
+
+	        super(
+	            OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ),
+	            OrbitControlsHelper._createInternalMaterial()
+	        );
+
+
+	        this.matrixAutoUpdate = false;
+	        //        this.control     = control
+	        this._intervalId      = undefined;
+
+	        //        this.impose()
+
+	    }
+	    static _createInternalGeometry( RADIUS, RADIALS, CIRCLES, DIVISIONS, color1, color2 ) {
 
 	        const vertices = [];
 	        const colors   = [];
@@ -11166,7 +13630,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        return geometry
 
 	    }
-	    static _createInternalMaterial () {
+	    static _createInternalMaterial() {
 
 	        const material       = new threeFull.LineBasicMaterial( { vertexColors: threeFull.VertexColors } );
 	        material.transparent = true;
@@ -11176,30 +13640,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	        return material
 
 	    }
-	    constructor ( parameters = {} ) {
-
-	        const _parameters = {
-	            ...{
-	                radius:     2,
-	                radials:    16,
-	                circles:    2,
-	                divisions:  64,
-	                innerColor: new threeFull.Color( 0x444444 ),
-	                outerColor: new threeFull.Color( 0x888888 )
-	            }, ...parameters
-	        };
-
-	        super( OrbitControlsHelper._createInternalGeometry( _parameters.radius, _parameters.radials, _parameters.circles, _parameters.divisions, _parameters.innerColor, _parameters.outerColor ), OrbitControlsHelper._createInternalMaterial() );
-
-
-	        this.matrixAutoUpdate = false;
-	        //        this.control     = control
-	        this._intervalId      = undefined;
-
-	        //        this.impose()
-
-	    }
-	    startOpacityAnimation () {
+	    startOpacityAnimation() {
 
 	        // In case fade off is running, kill it an restore opacity to 1
 	        if ( this._intervalId !== undefined ) {
@@ -11213,7 +13654,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    endOpacityAnimation () {
+	    endOpacityAnimation() {
 
 	        // Manage transparency interval
 	        this._intervalId = setInterval( function () {
@@ -11241,11 +13682,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { TorusBufferGeometry } from 'three-full/sources/geometries/TorusGeometry'
 
 	class TorusHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11266,9 +13708,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class RotateGizmo extends AbstractGizmo {
 
-	    constructor () {
+	    constructor() {
 
 	        super();
 	        this.isRotateGizmo = true;
@@ -11301,14 +13744,20 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	        this.handleGizmos = {
 
-	            X: [ [ new threeFull.Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+	            X: [
+	                [ new threeFull.Line( new CircleGeometry( 1, 'x', 0.5 ), new HighlightableLineMaterial( { color: 0xff0000 } ) ) ],
+	                [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0xff0000 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
+	            ],
 
-	            Y: [ [ new threeFull.Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ] ],
+	            Y: [
+	                [ new threeFull.Line( new CircleGeometry( 1, 'y', 0.5 ), new HighlightableLineMaterial( { color: 0x00ff00 } ) ) ],
+	                [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x00ff00 } ) ), [ 0, 0, 0.99 ], null, [ 3, 1, 1 ] ]
+	            ],
 
-	            Z: [ [ new threeFull.Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
-	                 [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ] ],
+	            Z: [
+	                [ new threeFull.Line( new CircleGeometry( 1, 'z', 0.5 ), new HighlightableLineMaterial( { color: 0x0000ff } ) ) ],
+	                [ new threeFull.Mesh( new threeFull.OctahedronBufferGeometry( 0.04, 0 ), new HighlightableMaterial( { color: 0x0000ff } ) ), [ 0.99, 0, 0 ], null, [ 1, 3, 1 ] ]
+	            ],
 
 	            E: [ [ new threeFull.Line( new CircleGeometry( 1.25, 'z', 1 ), new HighlightableLineMaterial( { color: 0xcccc00 } ) ) ] ],
 
@@ -11324,12 +13773,16 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	            Z: [ [ new TorusHitbox(), [ 0, 0, 0 ], [ 0, 0, -Math.PI / 2 ] ] ],
 
-	            E: [ [ new TorusHitbox( {
-	                radius:          1.25,
-	                tube:            0.12,
-	                radialSegments:  2,
-	                tubularSegments: 24
-	            } ) ] ],
+	            E: [
+	                [
+	                    new TorusHitbox( {
+	                        radius:          1.25,
+	                        tube:            0.12,
+	                        radialSegments:  2,
+	                        tubularSegments: 24
+	                    } )
+	                ]
+	            ],
 
 	            XYZ: [ [ new TorusHitbox() ] ]
 
@@ -11342,7 +13795,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    raycast ( raycaster, intersects ) {
+	    raycast( raycaster, intersects ) {
 
 	        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
 	        if ( !isIntersected ) { return }
@@ -11415,11 +13868,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { BoxBufferGeometry } from 'three-full/sources/geometries/BoxGeometry'
 
 	class BoxHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11440,9 +13894,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class BoxHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11497,7 +13952,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 	        super.update( cameraDirection );
 
 	        this.updateMatrix();
@@ -11511,9 +13966,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class ConeHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11568,7 +14024,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 	        super.update( cameraDirection );
 
 	        this.updateMatrix();
@@ -11587,7 +14043,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    //TYPE ENTITY ENUM COLOMNU
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11608,36 +14064,36 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            // Cone faces
 	            FACE_RIGHT: new ConeHandle( {
 	                coneColor: 0xdd0000
-	            } ).setPosition( +( 4 + this.explodeFactor ), +0, +0 )
+	            } ).setPosition( +( 4 + this.explodeFactor ), 0, 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_LEFT: new ConeHandle( {
 	                coneColor: 0x550000
-	            } ).setPosition( -( 4 + this.explodeFactor ), +0, +0 )
+	            } ).setPosition( -( 4 + this.explodeFactor ), 0, 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_TOP: new ConeHandle( {
 	                coneColor: 0x0000dd
-	            } ).setPosition( +0, +( 4 + this.explodeFactor ), +0 )
+	            } ).setPosition( 0, +( 4 + this.explodeFactor ), 0 )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 180 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BOTTOM: new ConeHandle( {
 	                coneColor: 0x000055
-	            } ).setPosition( +0, -( 4 + this.explodeFactor ), +0 )
+	            } ).setPosition( 0, -( 4 + this.explodeFactor ), 0 )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_FRONT: new ConeHandle( {
 	                coneColor: 0x005500
-	            } ).setPosition( +0, +0, +( 4 + this.explodeFactor ) )
+	            } ).setPosition( 0, 0, +( 4 + this.explodeFactor ) )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BACK: new ConeHandle( {
 	                coneColor: 0x00dd00
-	            } ).setPosition( +0, +0, -( 4 + this.explodeFactor ) )
+	            } ).setPosition( 0, 0, -( 4 + this.explodeFactor ) )
 	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
@@ -11658,18 +14114,18 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	            CORNER_BOTTOM_RIGHT_FRONT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ),
 	            CORNER_BOTTOM_RIGHT_BACK:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ),
 
-	            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( +0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
-	            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 ),
-	            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( +0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
-	            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), +0 ).setScale( 1, 1, 3 )
+	            EDGE_TOP_FRONT:    new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_TOP_LEFT:     new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_TOP_BACK:     new BoxHandle( _parameters ).setPosition( 0, +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_TOP_RIGHT:    new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_LEFT_FRONT:   new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_LEFT_BACK:    new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_RIGHT_FRONT:  new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, +( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_RIGHT_BACK:   new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), 0, -( 2 + this.explodeFactor ) ).setScale( 1, 3, 1 ),
+	            EDGE_BOTTOM_FRONT: new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), +( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_BOTTOM_LEFT:  new BoxHandle( _parameters ).setPosition( -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 ),
+	            EDGE_BOTTOM_BACK:  new BoxHandle( _parameters ).setPosition( 0, -( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ) ).setScale( 3, 1, 1 ),
+	            EDGE_BOTTOM_RIGHT: new BoxHandle( _parameters ).setPosition( +( 2 + this.explodeFactor ), -( 2 + this.explodeFactor ), 0 ).setScale( 1, 1, 3 )
 
 	        };
 
@@ -11677,7 +14133,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    raycast ( raycaster, intersects ) {
+	    raycast( raycaster, intersects ) {
 
 	        const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 );
 	        if ( !isIntersected ) { return }
@@ -11694,9 +14150,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class RotateHandle extends AbstractHandle {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{}, ...parameters
@@ -11708,7 +14165,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    update ( cameraDirection ) {
+	    update( cameraDirection ) {
 	        super.update( cameraDirection );
 
 
@@ -11723,11 +14180,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	//import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
 
 	class SphericalHitbox extends AbstractHitbox {
 
-	    constructor ( parameters = {} ) {
+	    constructor( parameters = {} ) {
 
 	        const _parameters = {
 	            ...{
@@ -11748,9 +14206,10 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 */
 
+
 	class HighlightableMesh extends threeFull.Mesh {
 
-	    constructor ( geometry, parameters = {} ) {
+	    constructor( geometry, parameters = {} ) {
 	        super( geometry, new HighlightableMaterial( {
 	            color:       parameters.color,
 	            transparent: true,
@@ -11762,7 +14221,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 
 	    }
 
-	    highlight ( value ) {
+	    highlight( value ) {
 
 	        this.material.highlight( value );
 
@@ -11781,9 +14240,12 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	exports.ClippingBox = ClippingBox;
 	exports.ClippingControls = ClippingControls;
 	exports.ClippingModes = ClippingModes;
+	exports.ColorPalette = ColorPalette;
+	exports.Colors = Colors;
 	exports.CurvesManager = CurvesManager;
 	exports.CylindricaHitbox = CylindricaHitbox;
 	exports.DBFLoader = DBFLoader;
+	exports.Directions = Directions;
 	exports.GeometriesManager = GeometriesManager;
 	exports.HighlightableMesh = HighlightableMesh;
 	exports.LASLoader = LASLoader;
@@ -11810,9 +14272,7 @@ this.Itee.Plugin.Three = (function (exports, iteeCore, threeFull, iteeClient, it
 	exports.TranslateGizmo = TranslateGizmo;
 	exports.TranslateHandle = TranslateHandle;
 
-	Object.defineProperty(exports, '__esModule', { value: true });
-
 	return exports;
 
-})({}, Itee.Core, Three, Itee.Client, Itee.Utils, Itee.Validators);
+})({}, Itee.Utils, Itee.Core, Three, Itee.Client, Itee.Validators);
 //# sourceMappingURL=itee-plugin-three.iife.js.map

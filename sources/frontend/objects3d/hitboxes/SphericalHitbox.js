@@ -4,13 +4,13 @@
  */
 
 import { SphereBufferGeometry } from 'three-full'
-import { AbstractHitbox }       from './AbstractHitbox'
+import { AbstractHitbox }       from './AbstractHitbox.js'
 
 //import { SphereBufferGeometry } from 'three-full/sources/geometries/SphereGeometry'
 
 class SphericalHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

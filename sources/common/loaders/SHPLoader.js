@@ -77,7 +77,7 @@ class SHPLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -100,67 +100,67 @@ class SHPLoader {
 
     }
 
-    get globalOffset () {
+    get globalOffset() {
         return this._globalOffset
     }
 
-    set globalOffset ( value ) {
+    set globalOffset( value ) {
         this._globalOffset = value
     }
 
-    get worldAxis () {
+    get worldAxis() {
         return this._worldAxis
     }
 
-    set worldAxis ( value ) {
+    set worldAxis( value ) {
         this._worldAxis = value
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value
     }
 
-    setGlobalOffset ( value ) {
+    setGlobalOffset( value ) {
         this.globalOffset = value
         return this
     }
 
-    setWorldAxis ( value ) {
+    setWorldAxis( value ) {
         this.worldAxis = value
         return this
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value
         return this
     }
@@ -172,7 +172,7 @@ class SHPLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this
 
@@ -191,7 +191,7 @@ class SHPLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this._reader
             .setEndianess( Endianness.Big )
@@ -230,7 +230,7 @@ class SHPLoader {
      * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
      * @private
      */
-    _parseHeader () {
+    _parseHeader() {
 
         const fileCode = this._reader.getInt32()
         this._reader.skipOffsetOf( 20 )
@@ -274,7 +274,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( header ) {
+    _parseDatas( header ) {
 
         this._reader.skipOffsetTo( 100 )
 
@@ -389,7 +389,7 @@ class SHPLoader {
      * @return {{recordNumber, contentLength}}
      * @private
      */
-    _parseRecordHeader () {
+    _parseRecordHeader() {
 
         this._reader.setEndianess( Endianness.Big )
 
@@ -403,7 +403,7 @@ class SHPLoader {
 
     }
 
-    _parseNull () {
+    _parseNull() {
 
         this._reader.getInt32()
         return null
@@ -415,7 +415,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePoint () {
+    _parsePoint() {
 
         const shapeType = this._reader.getInt32()
         if ( shapeType === ShapeType.NullShape ) {
@@ -438,7 +438,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolyLine () {
+    _parsePolyLine() {
 
         const shapeType = this._reader.getInt32()
         if ( shapeType === ShapeType.NullShape ) {
@@ -484,7 +484,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolygon () {
+    _parsePolygon() {
 
         const shapeType = this._reader.getInt32()
         if ( shapeType === ShapeType.NullShape ) {
@@ -563,7 +563,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPoint () {
+    _parseMultiPoint() {
 
         const shapeType = this._reader.getInt32()
         if ( shapeType === ShapeType.NullShape ) {
@@ -599,7 +599,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPatch () {
+    _parseMultiPatch() {
 
         const shapeType = this._reader.getInt32()
         if ( shapeType === ShapeType.NullShape ) {
@@ -618,7 +618,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _convertToObjects ( datas ) {
+    _convertToObjects( datas ) {
 
         let shapes = []
 
@@ -641,7 +641,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectsFromArrays ( arrays ) {
+        function __createObjectsFromArrays( arrays ) {
 
             //Todo: need to fix parsePolygon to avoid too much array imbrication
 
@@ -668,7 +668,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectFromPoints ( points ) {
+        function __createObjectFromPoints( points ) {
 
             shapes.push( new Shape( points ) )
 

@@ -15,7 +15,7 @@ import { isObject }         from 'itee-validators'
  */
 class TexturesManager extends TDataBaseManager {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -28,7 +28,7 @@ class TexturesManager extends TDataBaseManager {
 
     }
 
-    convert ( data ) {
+    convert( data ) {
 
         if ( !data ) {
             throw new Error( 'TexturesManager: Unable to convert null or undefined data !' )
@@ -51,7 +51,7 @@ class TexturesManager extends TDataBaseManager {
 
     }
 
-    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
         // Normalize to array
         const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData

@@ -4,6 +4,6 @@
  *
  */
 
-export * from './MongoDBThreePlugin'
+export * from './MongoDBThreePlugin.js'
 //export { MongoDBThreePlugin as default } from './MongoDBThreePlugin'
 //export { MongoDBThreePlugin } from './MongoDBThreePlugin'

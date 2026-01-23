@@ -4,13 +4,13 @@
  */
 
 import { OctahedronBufferGeometry } from 'three-full'
-import { AbstractHitbox }           from './AbstractHitbox'
+import { AbstractHitbox }           from './AbstractHitbox.js'
 
 //import { OctahedronBufferGeometry } from 'three-full/sources/geometries/OctahedronGeometry'
 
 class OctahedricalHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{

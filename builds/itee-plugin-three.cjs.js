@@ -10,8 +10,6 @@
  */
 'use strict';
 
-Object.defineProperty(exports, '__esModule', { value: true });
-
 var iteeDatabase = require('itee-database');
 var iteeMongodb = require('itee-mongodb');
 var require$$0$3 = require('itee-validators');
@@ -21,9 +19,9 @@ var iteeCore = require('itee-core');
 var iteeUtils = require('itee-utils');
 var bson = require('bson');
 
-function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
+function _interopDefault (e) { return e && e.__esModule ? e : { default: e }; }
 
-var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
+var require$$0__default = /*#__PURE__*/_interopDefault(require$$0$3);
 
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -33,9 +31,10 @@ var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0$3);
  *
  */
 
+
 class TObjects3DController extends iteeMongodb.TMongooseController {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
         super( parameters );
     }
 
@@ -57,7 +56,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readOneDocument ( type, query ) {
+    async _readOneDocument( type, query ) {
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         const model = await this._driver
@@ -79,7 +78,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readManyDocument ( type, query, projection ) {
+    async _readManyDocument( type, query, projection ) {
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) { return null }
 
         let models = await this._driver
@@ -101,7 +100,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions ) {
+    async _updateDocument( document, updateQuery, queryOptions ) {
 
         if ( require$$0$3.isNotDefined( document ) ) {
             return null
@@ -115,7 +114,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
         return result
     }
 
-    async getAllChildrenIds ( parentId, recursive = false ) {
+    async getAllChildrenIds( parentId, recursive = false ) {
 
         const result              = {
             children:   [],
@@ -175,7 +174,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     }
 
-    async _deleteOne ( id, response ) {
+    async _deleteOne( id, response ) {
 
         try {
 
@@ -217,7 +216,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     }
 
-    async _deleteDocuments ( type, documentIds ) {
+    async _deleteDocuments( type, documentIds ) {
         if ( require$$0$3.isEmptyArray( documentIds ) ) { return 0 }
 
         const deleteResult = await this._driver
@@ -241,7 +240,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         if ( require$$0$3.isNotDefined( document ) ) { return null }
 
         //        console.log( `Delete: ${ document.name } [${ document._id }]` )
@@ -257,7 +256,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
     ///
 
-    async _removeParentReference ( document ) {
+    async _removeParentReference( document ) {
         const parentId = document.parent;
         if ( require$$0$3.isNotDefined( parentId ) ) { return null }
 
@@ -282,7 +281,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
 
         let removed = [];
         for ( let childIndex = documents.length - 1 ; childIndex >= 0 ; childIndex-- ) {
@@ -299,7 +298,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
 
         // Remove children recursively
         const children        = await this._readManyDocument( 'Objects3D', { parent: document._id } );
@@ -330,7 +329,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         if ( require$$0$3.isNotDefined( geometryId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { geometry: geometryId } );
@@ -350,7 +349,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         if ( require$$0$3.isNotDefined( materialsIds ) ) { return }
         if ( require$$0$3.isEmptyArray( materialsIds ) ) { return }
 
@@ -370,7 +369,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         if ( require$$0$3.isNotDefined( materialId ) ) { return }
 
         const referencingObjects = await this._readManyDocument( 'Objects3D', { material: materialId } );
@@ -393,6 +392,8 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'
 
 /**
@@ -406,7 +407,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -423,7 +424,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -454,6 +455,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  *
  *
  */
+
 
 /**
  *
@@ -516,7 +518,7 @@ class DBFLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -532,41 +534,41 @@ class DBFLoader {
 
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value;
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value;
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value;
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value;
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value;
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value;
         return this
     }
@@ -578,7 +580,7 @@ class DBFLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this;
 
@@ -597,7 +599,7 @@ class DBFLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this.reader
             .setEndianess( iteeClient.Endianness.Big )
@@ -625,7 +627,7 @@ class DBFLoader {
      * @return {boolean}
      * @private
      */
-    _isValidVersion ( version ) {
+    _isValidVersion( version ) {
 
         return DBFVersion.includes( version )
 
@@ -637,7 +639,7 @@ class DBFLoader {
      * @return {{}}
      * @private
      */
-    _parseHeader ( version ) {
+    _parseHeader( version ) {
 
         let header = {};
 
@@ -687,7 +689,7 @@ class DBFLoader {
      * @return {{numberOfRecords, year: *, month: (*|number), day: (*|number), lengthOfEachRecords, fields: Array}}
      * @private
      */
-    _parseHeaderV2 () {
+    _parseHeaderV2() {
 
         const numberOfRecords     = this.reader.getInt16();
         const year                = this.reader.getInt8() + DBFLoader.YearOffset;
@@ -736,7 +738,7 @@ class DBFLoader {
      * @return {{year: *, month: (*|number), day: (*|number), numberOfRecords, numberOfByteInHeader, numberOfByteInRecord, fields: Array}}
      * @private
      */
-    _parseHeaderV2_5 () {
+    _parseHeaderV2_5() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -801,7 +803,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), fields: Array}}
      * @private
      */
-    _parseHeaderV3 () {
+    _parseHeaderV3() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -873,7 +875,7 @@ class DBFLoader {
      *     (*|number), languageDriverId: (*|number), languageDriverName, fields: Array}}
      * @private
      */
-    _parseHeaderV4 () {
+    _parseHeaderV4() {
 
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
@@ -948,7 +950,7 @@ class DBFLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( version, header ) {
+    _parseDatas( version, header ) {
 
         const numberOfRecords = header.numberOfRecords;
         const fields          = header.fields;
@@ -1068,7 +1070,7 @@ class DBFLoader {
      *     startOfReferentialIntegrityDescriptor, startOfData, sizeOfPropertiesStructure, standardProperties: Array, customProperties: Array, referentialIntegrityProperties: Array}}
      * @private
      */
-    _parseFieldProperties () {
+    _parseFieldProperties() {
 
         const numberOfStandardProperties             = this.reader.getInt16();
         const startOfStandardPropertiesDescriptor    = this.reader.getInt16();
@@ -1115,7 +1117,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, propertyDescribed: (*|number), type: (*|number), isConstraint: (*|number), offsetFromStart, widthOfDatabaseField}}
      * @private
      */
-    _getStandardProperties () {
+    _getStandardProperties() {
 
         const generationalNumber = this.reader.getInt16();
         const tableFieldOffset   = this.reader.getInt16();
@@ -1143,7 +1145,7 @@ class DBFLoader {
      * @return {{generationalNumber, tableFieldOffset, type: (*|number), offsetFromStartOfName, lengthOfName, offsetFromStartOfData, lengthOfData}}
      * @private
      */
-    _getCustomProperties () {
+    _getCustomProperties() {
 
         const generationalNumber = this.reader.getInt16();
         const tableFieldOffset   = this.reader.getInt16();
@@ -1172,7 +1174,7 @@ class DBFLoader {
      *     numberOfFieldsInLinkingKey, offsetOfLocalTableTagName, sizeOfTheLocalTableTagName, offsetOfForeignTableTagName, sizeOfTheForeignTableTagName}}
      * @private
      */
-    _getReferentialIntegrityProperties () {
+    _getReferentialIntegrityProperties() {
 
         const databaseState                = this.reader.getInt8();
         const sequentialNumberRule         = this.reader.getInt16();
@@ -1221,6 +1223,7 @@ DBFLoader.YearOffset    = 1900;
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * This class allow to convert .dbf files into ThreeJs types
  *
@@ -1232,7 +1235,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( { dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer } );
     }
 
@@ -1247,7 +1250,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1276,6 +1279,8 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { FBXLoader }              from 'three-full/sources/loaders/FBXLoader'
 
 /**
@@ -1289,7 +1294,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -1306,7 +1311,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1335,6 +1340,8 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'
 
 /**
@@ -1348,7 +1355,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -1365,7 +1372,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1394,6 +1401,8 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { MTLLoader }              from 'three-full/sources/loaders/MTLLoader'
 
 /**
@@ -1407,7 +1416,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.String
         } );
@@ -1424,7 +1433,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1452,6 +1461,8 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { OBJLoader2 }             from 'three-full/sources/loaders/OBJLoader2'
 
 /**
@@ -1465,7 +1476,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -1482,7 +1493,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -1514,6 +1525,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  * @example Todo...
  *
  */
+
 
 /**
  *
@@ -1556,7 +1568,7 @@ class SHPLoader {
      * @param logger
      * @constructor
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -1579,67 +1591,67 @@ class SHPLoader {
 
     }
 
-    get globalOffset () {
+    get globalOffset() {
         return this._globalOffset
     }
 
-    set globalOffset ( value ) {
+    set globalOffset( value ) {
         this._globalOffset = value;
     }
 
-    get worldAxis () {
+    get worldAxis() {
         return this._worldAxis
     }
 
-    set worldAxis ( value ) {
+    set worldAxis( value ) {
         this._worldAxis = value;
     }
 
-    get manager () {
+    get manager() {
         return this._manager
     }
 
-    set manager ( value ) {
+    set manager( value ) {
         this._manager = value;
     }
 
-    get logger () {
+    get logger() {
         return this._logger
     }
 
-    set logger ( value ) {
+    set logger( value ) {
         this._logger = value;
     }
 
-    get reader () {
+    get reader() {
         return this._reader
     }
 
-    set reader ( value ) {
+    set reader( value ) {
         this._reader = value;
     }
 
-    setGlobalOffset ( value ) {
+    setGlobalOffset( value ) {
         this.globalOffset = value;
         return this
     }
 
-    setWorldAxis ( value ) {
+    setWorldAxis( value ) {
         this.worldAxis = value;
         return this
     }
 
-    setManager ( value ) {
+    setManager( value ) {
         this.manager = value;
         return this
     }
 
-    setLogger ( value ) {
+    setLogger( value ) {
         this.logger = value;
         return this
     }
 
-    setReader ( value ) {
+    setReader( value ) {
         this.reader = value;
         return this
     }
@@ -1651,7 +1663,7 @@ class SHPLoader {
      * @param onProgress
      * @param onError
      */
-    load ( url, onLoad, onProgress, onError ) {
+    load( url, onLoad, onProgress, onError ) {
 
         const scope = this;
 
@@ -1670,7 +1682,7 @@ class SHPLoader {
      * @param arrayBuffer
      * @return {*}
      */
-    parse ( arrayBuffer ) {
+    parse( arrayBuffer ) {
 
         this._reader
             .setEndianess( iteeClient.Endianness.Big )
@@ -1709,7 +1721,7 @@ class SHPLoader {
      * @return {{fileCode, fileLength, version, shapeType, boundingBox: {xMin, xMax, yMin, yMax, zMin, zMax, mMin, mMax}}}
      * @private
      */
-    _parseHeader () {
+    _parseHeader() {
 
         const fileCode = this._reader.getInt32();
         this._reader.skipOffsetOf( 20 );
@@ -1753,7 +1765,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _parseDatas ( header ) {
+    _parseDatas( header ) {
 
         this._reader.skipOffsetTo( 100 );
 
@@ -1868,7 +1880,7 @@ class SHPLoader {
      * @return {{recordNumber, contentLength}}
      * @private
      */
-    _parseRecordHeader () {
+    _parseRecordHeader() {
 
         this._reader.setEndianess( iteeClient.Endianness.Big );
 
@@ -1882,7 +1894,7 @@ class SHPLoader {
 
     }
 
-    _parseNull () {
+    _parseNull() {
 
         this._reader.getInt32();
         return null
@@ -1894,7 +1906,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePoint () {
+    _parsePoint() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -1917,7 +1929,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolyLine () {
+    _parsePolyLine() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -1963,7 +1975,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parsePolygon () {
+    _parsePolygon() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2042,7 +2054,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPoint () {
+    _parseMultiPoint() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2078,7 +2090,7 @@ class SHPLoader {
      * @return {*}
      * @private
      */
-    _parseMultiPatch () {
+    _parseMultiPatch() {
 
         const shapeType = this._reader.getInt32();
         if ( shapeType === ShapeType.NullShape ) {
@@ -2097,7 +2109,7 @@ class SHPLoader {
      * @return {Array}
      * @private
      */
-    _convertToObjects ( datas ) {
+    _convertToObjects( datas ) {
 
         let shapes = [];
 
@@ -2120,7 +2132,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectsFromArrays ( arrays ) {
+        function __createObjectsFromArrays( arrays ) {
 
             //Todo: need to fix parsePolygon to avoid too much array imbrication
 
@@ -2147,7 +2159,7 @@ class SHPLoader {
 
         }
 
-        function __createObjectFromPoints ( points ) {
+        function __createObjectFromPoints( points ) {
 
             shapes.push( new threeFull.Shape( points ) );
 
@@ -2174,6 +2186,7 @@ SHPLoader.MinVersion    = 1000;
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * This class allow to convert .shp files into ThreeJs types
  *
@@ -2185,7 +2198,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -2202,7 +2215,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2231,6 +2244,8 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { STLLoader }              from 'three-full/sources/loaders/STLLoader'
 
 /**
@@ -2244,7 +2259,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
         } );
@@ -2261,7 +2276,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2290,6 +2305,8 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
+
+
 //import { TDSLoader }              from 'three-full/sources/loaders/TDSLoader'
 
 /**
@@ -2303,7 +2320,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( {
             dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
@@ -2320,7 +2337,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
      * @param {callback} onError A callback that will handle the parsing errors
      * @return {Object}
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError );
 
         try {
@@ -2351,6 +2368,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * This class allow to insert ThreeJs stuff in MongoDB database.
  *
@@ -2359,23 +2377,12 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  */
 class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
-    // Utils
-    static _toLog ( object ) {
-
-        return JSON.stringify( {
-            type: object.type || 'undefined',
-            name: object.name || 'undefined',
-            uuid: object.uuid || 'undefined',
-            id:   object._id || 'undefined'
-        } )
-
-    }
     /**
      * @constructor
      * @param {Object} [parameters={}] - An object containing all parameters to pass through the inheritance chain and for initialize this instance
      * @param {TLogger} [parameters.logger=Itee.Core.DefaultLogger]
      */
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -2398,6 +2405,17 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         // Update objects in database if existing in file
 
     }
+    // Utils
+    static _toLog( object ) {
+
+        return JSON.stringify( {
+            type: object.type || 'undefined',
+            name: object.name || 'undefined',
+            uuid: object.uuid || 'undefined',
+            id:   object._id || 'undefined'
+        } )
+
+    }
     /**
      * Main entry point to insert data into database; It apply merge strategy over data to insert.
      *
@@ -2410,7 +2428,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _save ( data, parameters, onSuccess, onProgress, onError ) {
+    async _save( data, parameters, onSuccess, onProgress, onError ) {
 
         const dataToParse = iteeUtils.toArray( data );
         if ( require$$0$3.isEmptyArray( dataToParse ) ) {
@@ -2506,7 +2524,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Query|null>>|null}
      * @private
      */
-    async _parseObjects ( objects = [], parentId = null ) {
+    async _parseObjects( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` );
 
         const _objects = iteeUtils.toArray( objects );
@@ -2531,7 +2549,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Query|null>|null}
      * @private
      */
-    async _parseObject ( object, parentId = null ) {
+    async _parseObject( object, parentId = null ) {
         this.logger.debug( `_parseObject(${ ThreeToMongoDB._toLog( object ) }, ${ parentId })` );
 
         if ( require$$0$3.isNotDefined( object ) ) {
@@ -2708,7 +2726,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _getOrCreateDocuments ( objects = [] ) {
+    async _getOrCreateDocuments( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` );
 
         const _objects = iteeUtils.toArray( objects );
@@ -2734,7 +2752,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _getOrCreateDocument ( data ) {
+    async _getOrCreateDocument( data ) {
         this.logger.debug( `_getOrCreateDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( require$$0$3.isNotDefined( data ) ) {
@@ -2761,7 +2779,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _createDocuments ( datas = [] ) {
+    async _createDocuments( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` );
 
         const _datas = iteeUtils.toArray( datas );
@@ -2786,7 +2804,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _createDocument ( data ) {
+    async _createDocument( data ) {
         this.logger.debug( `_createDocument(${ ThreeToMongoDB._toLog( data ) })` );
 
         if ( require$$0$3.isNotDefined( data ) ) {
@@ -2818,7 +2836,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _readDocuments ( type, query ) {
+    async _readDocuments( type, query ) {
         this.logger.debug( `_readDocuments(...)` );
 
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
@@ -2842,7 +2860,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _readDocument ( type, query ) {
+    async _readDocument( type, query ) {
         this.logger.debug( `_readDocument(${ type }, ${ JSON.stringify( query ) })` );
 
         if ( require$$0$3.isNotDefined( type ) || require$$0$3.isNotDefined( query ) ) {
@@ -2878,7 +2896,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _updateDocuments ( documents = [], updateQuery, queryOptions ) {
+    async _updateDocuments( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` );
 
         const _documents = iteeUtils.toArray( documents );
@@ -2905,7 +2923,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _updateDocument ( document, updateQuery, queryOptions = { new: true } ) {
+    async _updateDocument( document, updateQuery, queryOptions = { new: true } ) {
         this.logger.debug( `_updateDocument(${ ThreeToMongoDB._toLog( document ) }, ${ JSON.stringify( updateQuery ) }, ${ JSON.stringify( queryOptions ) })` );
 
         if ( require$$0$3.isNotDefined( document ) ) {
@@ -2934,7 +2952,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<Mongoose.Document|null>>|null}
      * @private
      */
-    async _deleteDocuments ( documents = [] ) {
+    async _deleteDocuments( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` );
 
         const _documents = iteeUtils.toArray( documents );
@@ -2959,7 +2977,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Mongoose.Document|null>|null}
      * @private
      */
-    async _deleteDocument ( document ) {
+    async _deleteDocument( document ) {
         this.logger.debug( `_deleteDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         if ( require$$0$3.isNotDefined( document ) ) {
@@ -2987,7 +3005,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeChildrenDocuments ( documents ) {
+    async _removeChildrenDocuments( documents ) {
         this.logger.debug( `_removeChildrenDocuments(...)` );
 
         let removed = [];
@@ -3005,7 +3023,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeChildDocument ( document ) {
+    async _removeChildDocument( document ) {
         this.logger.debug( `_removeChildDocument(${ ThreeToMongoDB._toLog( document ) })` );
 
         // Remove children recursively
@@ -3030,7 +3048,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanGeometryWithId ( geometryId ) {
+    async _removeOrphanGeometryWithId( geometryId ) {
         this.logger.debug( `_removeOrphanGeometryWithId(${ geometryId })` );
 
         if ( require$$0$3.isNotDefined( geometryId ) ) { return }
@@ -3051,7 +3069,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<Array<void>>}
      * @private
      */
-    async _removeOrphanMaterialsWithIds ( materialsIds ) {
+    async _removeOrphanMaterialsWithIds( materialsIds ) {
         this.logger.debug( `_removeOrphanMaterialsWithIds(...)` );
 
         const removed = [];
@@ -3070,7 +3088,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      * @returns {Promise<void>}
      * @private
      */
-    async _removeOrphanMaterialWithId ( materialId ) {
+    async _removeOrphanMaterialWithId( materialId ) {
         this.logger.debug( `_removeOrphanMaterialWithId(${ materialId })` );
 
         const referencingObjects = await this._readDocuments( 'Objects3D', { material: materialId } );
@@ -3112,8 +3130,22 @@ ThreeToMongoDB.AvailableSpriteTypes         = [ 'Sprite' ];
 ThreeToMongoDB.AvailableSpriteMaterialTypes = [ 'SpriteMaterial' ];
 
 function getAugmentedNamespace(n) {
-	if (n.__esModule) return n;
-	var a = Object.defineProperty({}, '__esModule', {value: true});
+  if (Object.prototype.hasOwnProperty.call(n, '__esModule')) return n;
+  var f = n.default;
+	if (typeof f == "function") {
+		var a = function a () {
+			var isInstance = false;
+      try {
+        isInstance = this instanceof a;
+      } catch {}
+			if (isInstance) {
+        return Reflect.construct(f, arguments, this.constructor);
+			}
+			return f.apply(this, arguments);
+		};
+		a.prototype = f.prototype;
+  } else a = {};
+  Object.defineProperty(a, '__esModule', {value: true});
 	Object.keys(n).forEach(function (k) {
 		var d = Object.getOwnPropertyDescriptor(n, k);
 		Object.defineProperty(a, k, d.get ? d : {
@@ -3126,6 +3158,8 @@ function getAugmentedNamespace(n) {
 	return a;
 }
 
+var Audio = {};
+
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -3135,18 +3169,18 @@ function getAugmentedNamespace(n) {
  * @description Todo...
  */
 
-function Object3D$I () {}
+function Object3D() {}
 
-Object3D$I.getSchemaFrom   = Mongoose => {
+Object3D.getSchemaFrom   = Mongoose => {
 
-    if ( !Object3D$I._schema ) {
-        Object3D$I._createSchema( Mongoose );
+    if ( !Object3D._schema ) {
+        Object3D._createSchema( Mongoose );
     }
 
-    return Object3D$I._schema
+    return Object3D._schema
 
 };
-Object3D$I._createSchema   = Mongoose => {
+Object3D._createSchema   = Mongoose => {
 
     const Schema     = Mongoose.Schema;
     const Types      = Schema.Types;
@@ -3157,7 +3191,7 @@ Object3D$I._createSchema   = Mongoose => {
     const Matrix4    = Types.Matrix4;
     const Euler      = Types.Euler;
 
-    Object3D$I._schema = new Schema( {
+    Object3D._schema = new Schema( {
         uuid:       String,
         name:       String,
         type:       String,
@@ -3194,7 +3228,7 @@ Object3D$I._createSchema   = Mongoose => {
             type: Mixed,
             set:  value => {
 
-                function RemoveRecursivelyDotInKeyOf ( properties ) {
+                function RemoveRecursivelyDotInKeyOf( properties ) {
                     let result = {};
 
                     for ( let property in properties ) {
@@ -3223,43 +3257,43 @@ Object3D$I._createSchema   = Mongoose => {
     } );
 
 };
-Object3D$I.getModelFrom    = Mongoose => {
+Object3D.getModelFrom    = Mongoose => {
 
-    if ( !Object3D$I._model ) {
-        Object3D$I._createModel( Mongoose );
+    if ( !Object3D._model ) {
+        Object3D._createModel( Mongoose );
     }
 
-    return Object3D$I._model
+    return Object3D._model
 
 };
-Object3D$I._createModel    = Mongoose => {
+Object3D._createModel    = Mongoose => {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
     // Care here, the model contains an S char, not the discriminator !
-    Object3D$I._model = Mongoose.model( 'Objects3D', Object3D$I.getSchemaFrom( Mongoose ) );
-    Object3D$I._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) );
+    Object3D._model = Mongoose.model( 'Objects3D', Object3D.getSchemaFrom( Mongoose ) );
+    Object3D._model.discriminator( 'Object3D', new Mongoose.Schema( {} ) );
 
 };
-Object3D$I.registerModelTo = Mongoose => {
+Object3D.registerModelTo = Mongoose => {
 
-    if ( !Object3D$I._model ) {
-        Object3D$I._createModel( Mongoose );
+    if ( !Object3D._model ) {
+        Object3D._createModel( Mongoose );
     }
 
     return Mongoose
 
 };
-Object3D$I._schema         = null;
-Object3D$I._model          = null;
+Object3D._schema         = null;
+Object3D._model          = null;
 
-var Object3D$J = /*#__PURE__*/Object.freeze({
+var Object3D$1 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	Object3D: Object3D$I
+	Object3D: Object3D
 });
 
-var require$$0$2 = /*@__PURE__*/getAugmentedNamespace(Object3D$J);
+var require$$0$2 = /*@__PURE__*/getAugmentedNamespace(Object3D$1);
 
 /**
  * @module Schemas/Audio/Audio
@@ -3271,63 +3305,74 @@ var require$$0$2 = /*@__PURE__*/getAugmentedNamespace(Object3D$J);
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$H } = require$$0$2;
+var hasRequiredAudio;
 
-let _schema$2e = undefined;
-let _model$23  = undefined;
+function requireAudio () {
+	if (hasRequiredAudio) return Audio;
+	hasRequiredAudio = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$2e ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2e ) {
-        _createSchema$2e( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2e
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Audio', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+
+	Audio.Audio = {
+	    name:            'Audio',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Audio;
 }
 
-function _createSchema$2e ( Mongoose ) {
+var AudioExports = requireAudio();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2e = new Schema( {} );
-
-}
-
-function getModelFrom$23 ( Mongoose ) {
-
-    if ( !_model$23 ) {
-        _createModel$23( Mongoose );
-    }
-
-    return _model$23
-
-}
-
-function _createModel$23 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$H.getModelFrom( Mongoose );
-    _model$23                  = Object3DBaseModel.discriminator( 'Audio', getSchemaFrom$2e( Mongoose ) );
-
-}
-
-function registerModelTo$23 ( Mongoose ) {
-
-    if ( !_model$23 ) {
-        _createModel$23( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-
-var Audio_1 = {
-    name:            'Audio',
-    getSchemaFrom:   getSchemaFrom$2e,
-    getModelFrom:    getModelFrom$23,
-    registerModelTo: registerModelTo$23
-};
+var AudioListener = {};
 
 /**
  * @module Schemas/Audio/AudioListener
@@ -3339,62 +3384,73 @@ var Audio_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$G } = require$$0$2;
+var hasRequiredAudioListener;
 
-let _schema$2d = undefined;
-let _model$22  = undefined;
+function requireAudioListener () {
+	if (hasRequiredAudioListener) return AudioListener;
+	hasRequiredAudioListener = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$2d ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2d ) {
-        _createSchema$2d( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2d
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'AudioListener', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	AudioListener.AudioListener = {
+	    name:            'AudioListener',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return AudioListener;
 }
 
-function _createSchema$2d ( Mongoose ) {
+var AudioListenerExports = requireAudioListener();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2d = new Schema( {} );
-
-}
-
-function getModelFrom$22 ( Mongoose ) {
-
-    if ( !_model$22 ) {
-        _createModel$22( Mongoose );
-    }
-
-    return _model$22
-
-}
-
-function _createModel$22 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$G.getModelFrom( Mongoose );
-    _model$22                  = Object3DBaseModel.discriminator( 'AudioListener', getSchemaFrom$2d( Mongoose ) );
-
-}
-
-function registerModelTo$22 ( Mongoose ) {
-
-    if ( !_model$22 ) {
-        _createModel$22( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var AudioListener_1 = {
-    name:            'AudioListener',
-    getSchemaFrom:   getSchemaFrom$2d,
-    getModelFrom:    getModelFrom$22,
-    registerModelTo: registerModelTo$22
-};
+var PositionalAudio = {};
 
 /**
  * @module Schemas/Audio/PositionalAudio
@@ -3406,62 +3462,73 @@ var AudioListener_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$F } = require$$0$2;
+var hasRequiredPositionalAudio;
 
-let _schema$2c = undefined;
-let _model$21  = undefined;
+function requirePositionalAudio () {
+	if (hasRequiredPositionalAudio) return PositionalAudio;
+	hasRequiredPositionalAudio = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$2c ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2c ) {
-        _createSchema$2c( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2c
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PositionalAudio', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PositionalAudio.PositionalAudio = {
+	    name:            'PositionalAudio',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PositionalAudio;
 }
 
-function _createSchema$2c ( Mongoose ) {
+var PositionalAudioExports = requirePositionalAudio();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2c = new Schema( {} );
-
-}
-
-function getModelFrom$21 ( Mongoose ) {
-
-    if ( !_model$21 ) {
-        _createModel$21( Mongoose );
-    }
-
-    return _model$21
-
-}
-
-function _createModel$21 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$F.getModelFrom( Mongoose );
-    _model$21                  = Object3DBaseModel.discriminator( 'PositionalAudio', getSchemaFrom$2c( Mongoose ) );
-
-}
-
-function registerModelTo$21 ( Mongoose ) {
-
-    if ( !_model$21 ) {
-        _createModel$21( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PositionalAudio_1 = {
-    name:            'PositionalAudio',
-    getSchemaFrom:   getSchemaFrom$2c,
-    getModelFrom:    getModelFrom$21,
-    registerModelTo: registerModelTo$21
-};
+var ArrayCamera = {};
 
 /**
  * @module Schemas/Camera/ArrayCamera
@@ -3473,62 +3540,73 @@ var PositionalAudio_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$E } = require$$0$2;
+var hasRequiredArrayCamera;
 
-let _schema$2b = undefined;
-let _model$20  = undefined;
+function requireArrayCamera () {
+	if (hasRequiredArrayCamera) return ArrayCamera;
+	hasRequiredArrayCamera = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$2b ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2b ) {
-        _createSchema$2b( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2b
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'ArrayCamera', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ArrayCamera.ArrayCamera = {
+	    name:            'ArrayCamera',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ArrayCamera;
 }
 
-function _createSchema$2b ( Mongoose ) {
+var ArrayCameraExports = requireArrayCamera();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2b = new Schema( {} );
-
-}
-
-function getModelFrom$20 ( Mongoose ) {
-
-    if ( !_model$20 ) {
-        _createModel$20( Mongoose );
-    }
-
-    return _model$20
-
-}
-
-function _createModel$20 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$E.getModelFrom( Mongoose );
-    _model$20                  = Object3DBaseModel.discriminator( 'ArrayCamera', getSchemaFrom$2b( Mongoose ) );
-
-}
-
-function registerModelTo$20 ( Mongoose ) {
-
-    if ( !_model$20 ) {
-        _createModel$20( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ArrayCamera_1 = {
-    name:            'ArrayCamera',
-    getSchemaFrom:   getSchemaFrom$2b,
-    getModelFrom:    getModelFrom$20,
-    registerModelTo: registerModelTo$20
-};
+var Camera = {};
 
 /**
  * @module Schemas/Camera/Camera
@@ -3540,62 +3618,73 @@ var ArrayCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$D } = require$$0$2;
+var hasRequiredCamera;
 
-let _schema$2a = undefined;
-let _model$1$  = undefined;
+function requireCamera () {
+	if (hasRequiredCamera) return Camera;
+	hasRequiredCamera = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$2a ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2a ) {
-        _createSchema$2a( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2a
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Camera', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Camera.Camera = {
+	    name:            'Camera',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Camera;
 }
 
-function _createSchema$2a ( Mongoose ) {
+var CameraExports = requireCamera();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2a = new Schema( {} );
-
-}
-
-function getModelFrom$1$ ( Mongoose ) {
-
-    if ( !_model$1$ ) {
-        _createModel$1$( Mongoose );
-    }
-
-    return _model$1$
-
-}
-
-function _createModel$1$ ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$D.getModelFrom( Mongoose );
-    _model$1$                  = Object3DBaseModel.discriminator( 'Camera', getSchemaFrom$2a( Mongoose ) );
-
-}
-
-function registerModelTo$1$ ( Mongoose ) {
-
-    if ( !_model$1$ ) {
-        _createModel$1$( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Camera_1 = {
-    name:            'Camera',
-    getSchemaFrom:   getSchemaFrom$2a,
-    getModelFrom:    getModelFrom$1$,
-    registerModelTo: registerModelTo$1$
-};
+var CubeCamera = {};
 
 /**
  * @module Schemas/Camera/CubeCamera
@@ -3607,62 +3696,73 @@ var Camera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$C } = require$$0$2;
+var hasRequiredCubeCamera;
 
-let _schema$29 = undefined;
-let _model$1_  = undefined;
+function requireCubeCamera () {
+	if (hasRequiredCubeCamera) return CubeCamera;
+	hasRequiredCubeCamera = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$29 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$29 ) {
-        _createSchema$29( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$29
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'CubeCamera', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CubeCamera.CubeCamera = {
+	    name:            'CubeCamera',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CubeCamera;
 }
 
-function _createSchema$29 ( Mongoose ) {
+var CubeCameraExports = requireCubeCamera();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$29 = new Schema( {} );
-
-}
-
-function getModelFrom$1_ ( Mongoose ) {
-
-    if ( !_model$1_ ) {
-        _createModel$1_( Mongoose );
-    }
-
-    return _model$1_
-
-}
-
-function _createModel$1_ ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$C.getModelFrom( Mongoose );
-    _model$1_                  = Object3DBaseModel.discriminator( 'CubeCamera', getSchemaFrom$29( Mongoose ) );
-
-}
-
-function registerModelTo$1_ ( Mongoose ) {
-
-    if ( !_model$1_ ) {
-        _createModel$1_( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CubeCamera_1 = {
-    name:            'CubeCamera',
-    getSchemaFrom:   getSchemaFrom$29,
-    getModelFrom:    getModelFrom$1_,
-    registerModelTo: registerModelTo$1_
-};
+var OrthographicCamera = {};
 
 /**
  * @module Schemas/Camera/OrthographicCamera
@@ -3674,62 +3774,73 @@ var CubeCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$B } = require$$0$2;
+var hasRequiredOrthographicCamera;
 
-let _schema$28 = undefined;
-let _model$1Z  = undefined;
+function requireOrthographicCamera () {
+	if (hasRequiredOrthographicCamera) return OrthographicCamera;
+	hasRequiredOrthographicCamera = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$28 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$28 ) {
-        _createSchema$28( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$28
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'OrthographicCamera', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	OrthographicCamera.OrthographicCamera = {
+	    name:            'OrthographicCamera',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return OrthographicCamera;
 }
 
-function _createSchema$28 ( Mongoose ) {
+var OrthographicCameraExports = requireOrthographicCamera();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$28 = new Schema( {} );
-
-}
-
-function getModelFrom$1Z ( Mongoose ) {
-
-    if ( !_model$1Z ) {
-        _createModel$1Z( Mongoose );
-    }
-
-    return _model$1Z
-
-}
-
-function _createModel$1Z ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$B.getModelFrom( Mongoose );
-    _model$1Z                  = Object3DBaseModel.discriminator( 'OrthographicCamera', getSchemaFrom$28( Mongoose ) );
-
-}
-
-function registerModelTo$1Z ( Mongoose ) {
-
-    if ( !_model$1Z ) {
-        _createModel$1Z( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var OrthographicCamera_1 = {
-    name:            'OrthographicCamera',
-    getSchemaFrom:   getSchemaFrom$28,
-    getModelFrom:    getModelFrom$1Z,
-    registerModelTo: registerModelTo$1Z
-};
+var PerspectiveCamera = {};
 
 /**
  * @module Schemas/Camera/PerspectiveCamera
@@ -3741,62 +3852,73 @@ var OrthographicCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$A } = require$$0$2;
+var hasRequiredPerspectiveCamera;
 
-let _schema$27 = undefined;
-let _model$1Y  = undefined;
+function requirePerspectiveCamera () {
+	if (hasRequiredPerspectiveCamera) return PerspectiveCamera;
+	hasRequiredPerspectiveCamera = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$27 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$27 ) {
-        _createSchema$27( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$27
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PerspectiveCamera', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PerspectiveCamera.PerspectiveCamera = {
+	    name:            'PerspectiveCamera',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PerspectiveCamera;
 }
 
-function _createSchema$27 ( Mongoose ) {
+var PerspectiveCameraExports = requirePerspectiveCamera();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$27 = new Schema( {} );
-
-}
-
-function getModelFrom$1Y ( Mongoose ) {
-
-    if ( !_model$1Y ) {
-        _createModel$1Y( Mongoose );
-    }
-
-    return _model$1Y
-
-}
-
-function _createModel$1Y ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$A.getModelFrom( Mongoose );
-    _model$1Y                  = Object3DBaseModel.discriminator( 'PerspectiveCamera', getSchemaFrom$27( Mongoose ) );
-
-}
-
-function registerModelTo$1Y ( Mongoose ) {
-
-    if ( !_model$1Y ) {
-        _createModel$1Y( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PerspectiveCamera_1 = {
-    name:            'PerspectiveCamera',
-    getSchemaFrom:   getSchemaFrom$27,
-    getModelFrom:    getModelFrom$1Y,
-    registerModelTo: registerModelTo$1Y
-};
+var BufferAttribute = {};
 
 /**
  * @module Schemas/Core/BufferAttribute
@@ -3808,199 +3930,208 @@ var PerspectiveCamera_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const {
-          isInt8Array,
-          isInt16Array,
-          isInt32Array,
-          isFloat32Array,
-          isFloat64Array,
-          isUint8Array,
-          isUint8ClampedArray,
-          isUint16Array,
-          isUint32Array,
-          isBigInt64Array,
-          isBigUint64Array
-      } = require$$0__default["default"];
+var hasRequiredBufferAttribute;
 
-let _schema$26 = undefined;
+function requireBufferAttribute () {
+	if (hasRequiredBufferAttribute) return BufferAttribute;
+	hasRequiredBufferAttribute = 1;
+	const {
+	          isInt8Array,
+	          isInt16Array,
+	          isInt32Array,
+	          isFloat32Array,
+	          isFloat64Array,
+	          isUint8Array,
+	          isUint8ClampedArray,
+	          isUint16Array,
+	          isUint32Array,
+	          isBigInt64Array,
+	          isBigUint64Array
+	      } = require$$0__default.default;
 
-function getSchemaFrom$26 ( Mongoose ) {
+	let _schema = undefined;
 
-    if ( !_schema$26 ) {
-        _createSchema$26( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$26
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    const ONE_BYTE    = 1;
+	    const TWO_BYTE    = 2;
+	    const FOUR_BYTE   = 4;
+	    const HEIGHT_BYTE = 8;
+
+	    const ArrayType = {
+	        Int8Array:         0,
+	        Uint8Array:        1,
+	        Uint8ClampedArray: 2,
+	        Int16Array:        3,
+	        Uint16Array:       4,
+	        Int32Array:        5,
+	        Uint32Array:       6,
+	        Float32Array:      7,
+	        Float64Array:      8,
+	        BigInt64Array:     9,
+	        BigUint64Array:    10
+	    };
+
+	    _schema = new Schema( {
+	        array: {
+	            type: Buffer,
+	            set:  ( array ) => {
+
+	                //                if ( !isTypedArray( array ) ) { throw new TypeError( 'Invalid array, expect a typed array.' )}
+
+	                const arrayLength = array.length;
+	                let buffer        = null;
+	                let offset        = 0;
+
+	                if ( isInt8Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Int8Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeInt8( array[ index ], offset );
+	                    }
+
+	                } else if ( isUint8Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Uint8Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeUInt8( array[ index ], offset );
+	                    }
+
+	                } else if ( isUint8ClampedArray( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Uint8ClampedArray, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeUInt8( array[ index ], offset );
+	                    }
+
+	                } else if ( isInt16Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * TWO_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Int16Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeInt16BE( array[ index ], offset );
+	                    }
+
+	                } else if ( isUint16Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * TWO_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Uint16Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeUInt16BE( array[ index ], offset );
+	                    }
+
+	                } else if ( isInt32Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Int32Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeInt32BE( array[ index ], offset );
+	                    }
+
+	                } else if ( isUint32Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Uint32Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeUInt32BE( array[ index ], offset );
+	                    }
+
+	                } else if ( isFloat32Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Float32Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeFloatBE( array[ index ], offset );
+	                    }
+
+	                } else if ( isFloat64Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.Float64Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeDoubleBE( array[ index ], offset );
+	                    }
+
+	                } else if ( isBigInt64Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.BigInt64Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeDoubleBE( array[ index ], offset );
+	                    }
+
+	                } else if ( isBigUint64Array( array ) ) {
+
+	                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
+	                    offset = buffer.writeUInt8( ArrayType.BigUint64Array, offset );
+
+	                    for ( let index = 0 ; index < arrayLength ; index++ ) {
+	                        offset = buffer.writeDoubleBE( array[ index ], offset );
+	                    }
+
+	                } else {
+
+	                    throw new Error( 'Unable to determine the array type to bufferize.' )
+
+	                }
+
+	                return buffer
+
+	            }
+	        },
+	        count:       Number,
+	        dynamic:     Boolean,
+	        itemSize:    Number,
+	        name:        String,
+	        needsUpdate: Boolean,
+	        normalized:  Boolean,
+	        updateRange: Mixed,
+	        uuid:        String,
+	        version:     Number
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	BufferAttribute.BufferAttribute = {
+	    name:            'BufferAttribute',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return BufferAttribute;
 }
 
-function _createSchema$26 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    const ONE_BYTE    = 1;
-    const TWO_BYTE    = 2;
-    const FOUR_BYTE   = 4;
-    const HEIGHT_BYTE = 8;
-
-    const ArrayType = {
-        Int8Array:         0,
-        Uint8Array:        1,
-        Uint8ClampedArray: 2,
-        Int16Array:        3,
-        Uint16Array:       4,
-        Int32Array:        5,
-        Uint32Array:       6,
-        Float32Array:      7,
-        Float64Array:      8,
-        BigInt64Array:     9,
-        BigUint64Array:    10
-    };
-
-    _schema$26 = new Schema( {
-        array: {
-            type: Buffer,
-            set:  ( array ) => {
-
-                //                if ( !isTypedArray( array ) ) { throw new TypeError( 'Invalid array, expect a typed array.' )}
-
-                const arrayLength = array.length;
-                let buffer        = null;
-                let offset        = 0;
-
-                if ( isInt8Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Int8Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeInt8( array[ index ], offset );
-                    }
-
-                } else if ( isUint8Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Uint8Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeUInt8( array[ index ], offset );
-                    }
-
-                } else if ( isUint8ClampedArray( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * ONE_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Uint8ClampedArray, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeUInt8( array[ index ], offset );
-                    }
-
-                } else if ( isInt16Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * TWO_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Int16Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeInt16BE( array[ index ], offset );
-                    }
-
-                } else if ( isUint16Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * TWO_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Uint16Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeUInt16BE( array[ index ], offset );
-                    }
-
-                } else if ( isInt32Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Int32Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeInt32BE( array[ index ], offset );
-                    }
-
-                } else if ( isUint32Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Uint32Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeUInt32BE( array[ index ], offset );
-                    }
-
-                } else if ( isFloat32Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * FOUR_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Float32Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeFloatBE( array[ index ], offset );
-                    }
-
-                } else if ( isFloat64Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.Float64Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeDoubleBE( array[ index ], offset );
-                    }
-
-                } else if ( isBigInt64Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.BigInt64Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeDoubleBE( array[ index ], offset );
-                    }
-
-                } else if ( isBigUint64Array( array ) ) {
-
-                    buffer = Buffer.allocUnsafe( ONE_BYTE + arrayLength * HEIGHT_BYTE );
-                    offset = buffer.writeUInt8( ArrayType.BigUint64Array, offset );
-
-                    for ( let index = 0 ; index < arrayLength ; index++ ) {
-                        offset = buffer.writeDoubleBE( array[ index ], offset );
-                    }
-
-                } else {
-
-                    throw new Error( 'Unable to determine the array type to bufferize.' )
-
-                }
-
-                return buffer
-
-            }
-        },
-        count:       Number,
-        dynamic:     Boolean,
-        itemSize:    Number,
-        name:        String,
-        needsUpdate: Boolean,
-        normalized:  Boolean,
-        updateRange: Mixed,
-        uuid:        String,
-        version:     Number
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var BufferAttribute_1 = {
-    name:            'BufferAttribute',
-    getSchemaFrom:   getSchemaFrom$26,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var BufferAttributeExports = requireBufferAttribute();
 
 /**
  * @module Schemas/Core/BufferGeometry
@@ -4011,31 +4142,31 @@ var BufferAttribute_1 = {
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-//const { BufferAttribute } = require( './BufferAttribute' )
 
-let _schema$25 = undefined;
-let _model$1X  = undefined;
 
-function getSchemaFrom$25 ( Mongoose ) {
+let _schema$2 = undefined;
+let _model$2  = undefined;
 
-    if ( !_schema$25 ) {
-        _createSchema$25( Mongoose );
+function getSchemaFrom$2( Mongoose ) {
+
+    if ( !_schema$2 ) {
+        _createSchema$2( Mongoose );
     }
 
-    return _schema$25
+    return _schema$2
 
 }
 
-function _createSchema$25 ( Mongoose ) {
+function _createSchema$2( Mongoose ) {
 
     const Schema  = Mongoose.Schema;
     const Types   = Schema.Types;
     const Mixed   = Types.Mixed;
     const Vector3 = Types.Vector3;
 
-    const BufferAttributeSchema = BufferAttribute_1.getSchemaFrom( Mongoose );
+    const BufferAttributeSchema = BufferAttributeExports.BufferAttribute.getSchemaFrom( Mongoose );
 
-    _schema$25 = new Schema( {
+    _schema$2 = new Schema( {
         uuid:       String,
         name:       String,
         type:       String,
@@ -4063,51 +4194,53 @@ function _createSchema$25 ( Mongoose ) {
 
 }
 
-function getModelFrom$1X ( Mongoose ) {
+function getModelFrom$2( Mongoose ) {
 
-    if ( !_model$1X ) {
-        _createModel$1X( Mongoose );
+    if ( !_model$2 ) {
+        _createModel$2( Mongoose );
     }
 
-    return _model$1X
+    return _model$2
 
 }
 
-function _createModel$1X ( Mongoose ) {
+function _createModel$2( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$1X = Mongoose.model( 'BufferGeometries', getSchemaFrom$25( Mongoose ) );
-    _model$1X.discriminator( 'BufferGeometry', new Mongoose.Schema( {} ) );
+    _model$2 = Mongoose.model( 'BufferGeometries', getSchemaFrom$2( Mongoose ) );
+    _model$2.discriminator( 'BufferGeometry', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$1X ( Mongoose ) {
+function registerModelTo$2( Mongoose ) {
 
-    if ( !_model$1X ) {
-        _createModel$1X( Mongoose );
+    if ( !_model$2 ) {
+        _createModel$2( Mongoose );
     }
 
     return Mongoose
 
 }
 
-const BufferGeometry$l = {
-    getSchemaFrom:   getSchemaFrom$25,
-    getModelFrom:    getModelFrom$1X,
-    registerModelTo: registerModelTo$1X
+const BufferGeometry = {
+    getSchemaFrom:   getSchemaFrom$2,
+    getModelFrom:    getModelFrom$2,
+    registerModelTo: registerModelTo$2
 };
 
 
 //module.exports.BufferGeometry =
 
-var BufferGeometry$m = /*#__PURE__*/Object.freeze({
+var BufferGeometry$1 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	BufferGeometry: BufferGeometry$l
+	BufferGeometry: BufferGeometry
 });
 
-var Curve$g = {};
+var CurvePath = {};
+
+var Curve = {};
 
 /**
  * @module Schemas/Curves/Curve
@@ -4116,72 +4249,79 @@ var Curve$g = {};
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$24 = undefined;
-let _model$1W  = undefined;
+var hasRequiredCurve;
 
-function getSchemaFrom$24 ( Mongoose ) {
+function requireCurve () {
+	if (hasRequiredCurve) return Curve;
+	hasRequiredCurve = 1;
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$24 ) {
-        _createSchema$24( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$24
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        type: {
+	            type:    String,
+	            default: 'Curve'
+	        },
+	        arcLengthDivisions: Number
+	    }, {
+	        collection:       'curves',
+	        discriminatorKey: 'type'
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    // We need to pre-declare the base model to be able to use correctly
+	    // the discriminator 'type' correctly with the main type, instead of
+	    // directly register the model as it
+	    _model = Mongoose.model( 'Curves', getSchemaFrom( Mongoose ) );
+	    _model.discriminator( 'Curve', new Mongoose.Schema( {} ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Curve.Curve = {
+	    name: 'Curve',
+	    getSchemaFrom,
+	    getModelFrom,
+	    registerModelTo
+	};
+	return Curve;
 }
-
-function _createSchema$24 ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$24 = new Schema( {
-        type: {
-            type:    String,
-            default: 'Curve'
-        },
-        arcLengthDivisions: Number
-    }, {
-        collection:       'curves',
-        discriminatorKey: 'type'
-    } );
-
-}
-
-function getModelFrom$1W ( Mongoose ) {
-
-    if ( !_model$1W ) {
-        _createModel$1W( Mongoose );
-    }
-
-    return _model$1W
-
-}
-
-function _createModel$1W ( Mongoose ) {
-
-    // We need to pre-declare the base model to be able to use correctly
-    // the discriminator 'type' correctly with the main type, instead of
-    // directly register the model as it
-    _model$1W = Mongoose.model( 'Curves', getSchemaFrom$24( Mongoose ) );
-    _model$1W.discriminator( 'Curve', new Mongoose.Schema( {} ) );
-
-}
-
-function registerModelTo$1W ( Mongoose ) {
-
-    if ( !_model$1W ) {
-        _createModel$1W( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Curve_1 = Curve$g.Curve = {
-    name: 'Curve',
-    getSchemaFrom: getSchemaFrom$24,
-    getModelFrom: getModelFrom$1W,
-    registerModelTo: registerModelTo$1W
-};
 
 /**
  * @module Schemas/Core/CurvePath
@@ -4194,79 +4334,90 @@ var Curve_1 = Curve$g.Curve = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$f } = Curve$g;
+var hasRequiredCurvePath;
 
-let _schema$23 = undefined;
-let _model$1V  = undefined;
+function requireCurvePath () {
+	if (hasRequiredCurvePath) return CurvePath;
+	hasRequiredCurvePath = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$23 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$23 ) {
-        _createSchema$23( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$23
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    const NestedCurveSchema = new Schema( {
+	        type: {
+	            type:    String,
+	            default: 'Curve'
+	        },
+	        arcLengthDivisions: Number
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    _schema = new Schema( {
+	        curves:    [ NestedCurveSchema ], // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        }
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'CurvePath', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CurvePath.CurvePath = {
+	    name:            'CurvePath',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CurvePath;
 }
 
-function _createSchema$23 ( Mongoose ) {
+var CurvePathExports = requireCurvePath();
 
-    const Schema = Mongoose.Schema;
-
-    const NestedCurveSchema = new Schema( {
-        type: {
-            type:    String,
-            default: 'Curve'
-        },
-        arcLengthDivisions: Number
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    _schema$23 = new Schema( {
-        curves:    [ NestedCurveSchema ], // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        }
-    } );
-
-}
-
-function getModelFrom$1V ( Mongoose ) {
-
-    if ( !_model$1V ) {
-        _createModel$1V( Mongoose );
-    }
-
-    return _model$1V
-
-}
-
-function _createModel$1V ( Mongoose ) {
-
-    const CurveBaseModel = Curve$f.getModelFrom( Mongoose );
-    _model$1V               = CurveBaseModel.discriminator( 'CurvePath', getSchemaFrom$23( Mongoose ) );
-
-}
-
-function registerModelTo$1V ( Mongoose ) {
-
-    if ( !_model$1V ) {
-        _createModel$1V( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CurvePath_1 = {
-    name:            'CurvePath',
-    getSchemaFrom:   getSchemaFrom$23,
-    getModelFrom:    getModelFrom$1V,
-    registerModelTo: registerModelTo$1V
-};
+var Face3 = {};
 
 /**
  * @module Schemas/Core/Face3
@@ -4275,47 +4426,56 @@ var CurvePath_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$22 = undefined;
+var hasRequiredFace3;
 
-function getSchemaFrom$22 ( Mongoose ) {
+function requireFace3 () {
+	if (hasRequiredFace3) return Face3;
+	hasRequiredFace3 = 1;
+	let _schema = undefined;
 
-    if ( !_schema$22 ) {
-        _createSchema$22( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$22
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Color   = Types.Color;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        a:             Number,
+	        b:             Number,
+	        c:             Number,
+	        normal:        Vector3,
+	        vertexNormals: [ Number ],
+	        color:         Color,
+	        vertexColors:  [ Number ],
+	        materialIndex: Number
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Face3.Face3 = {
+	    name:            'Face3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Face3;
 }
 
-function _createSchema$22 ( Mongoose ) {
-
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Color   = Types.Color;
-    const Vector3 = Types.Vector3;
-
-    _schema$22 = new Schema( {
-        a:             Number,
-        b:             Number,
-        c:             Number,
-        normal:        Vector3,
-        vertexNormals: [ Number ],
-        color:         Color,
-        vertexColors:  [ Number ],
-        materialIndex: Number
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Face3_1 = {
-    name:            'Face3',
-    getSchemaFrom:   getSchemaFrom$22,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Face3Exports = requireFace3();
 
 /**
  * @module Schemas/Core/Geometry
@@ -4327,27 +4487,28 @@ var Face3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$21 = undefined;
-let _model$1U  = undefined;
 
-function getSchemaFrom$21 ( Mongoose ) {
+let _schema$1 = undefined;
+let _model$1  = undefined;
 
-    if ( !_schema$21 ) {
-        _createSchema$21( Mongoose );
+function getSchemaFrom$1( Mongoose ) {
+
+    if ( !_schema$1 ) {
+        _createSchema$1( Mongoose );
     }
 
-    return _schema$21
+    return _schema$1
 
 }
 
-function _createSchema$21 ( Mongoose ) {
+function _createSchema$1( Mongoose ) {
 
-    const Face3Schema = Face3_1.getSchemaFrom( Mongoose );
+    const Face3Schema = Face3Exports.Face3.getSchemaFrom( Mongoose );
     const Schema      = Mongoose.Schema;
     const Types       = Schema.Types;
     const Vector3     = Types.Vector3;
 
-    _schema$21 = new Schema( {
+    _schema$1 = new Schema( {
         uuid:          String,
         name:          String,
         type:          String,
@@ -4382,47 +4543,49 @@ function _createSchema$21 ( Mongoose ) {
 
 }
 
-function getModelFrom$1U ( Mongoose ) {
+function getModelFrom$1( Mongoose ) {
 
-    if ( !_model$1U ) {
-        _createModel$1U( Mongoose );
+    if ( !_model$1 ) {
+        _createModel$1( Mongoose );
     }
 
-    return _model$1U
+    return _model$1
 
 }
 
-function _createModel$1U ( Mongoose ) {
+function _createModel$1( Mongoose ) {
 
     // We need to pre-declare the base model to be able to use correctly
     // the discriminator 'type' correctly with the main type, instead of
     // directly register the model as it
-    _model$1U = Mongoose.model( 'Geometries', getSchemaFrom$21( Mongoose ) );
-    _model$1U.discriminator( 'Geometry', new Mongoose.Schema( {} ) );
+    _model$1 = Mongoose.model( 'Geometries', getSchemaFrom$1( Mongoose ) );
+    _model$1.discriminator( 'Geometry', new Mongoose.Schema( {} ) );
 
 }
 
-function registerModelTo$1U ( Mongoose ) {
+function registerModelTo$1( Mongoose ) {
 
-    if ( !_model$1U ) {
-        _createModel$1U( Mongoose );
+    if ( !_model$1 ) {
+        _createModel$1( Mongoose );
     }
 
     return Mongoose
 
 }
 
-const Geometry$o = {
+const Geometry = {
     name: 'Geometry',
-    getSchemaFrom: getSchemaFrom$21,
-    getModelFrom: getModelFrom$1U,
-    registerModelTo: registerModelTo$1U
+    getSchemaFrom: getSchemaFrom$1,
+    getModelFrom: getModelFrom$1,
+    registerModelTo: registerModelTo$1
 };
 
-var Geometry$p = /*#__PURE__*/Object.freeze({
+var Geometry$1 = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	Geometry: Geometry$o
+	Geometry: Geometry
 });
+
+var Path = {};
 
 /**
  * @module Schemas/Core/Path
@@ -4434,89 +4597,100 @@ var Geometry$p = /*#__PURE__*/Object.freeze({
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$e } = Curve$g;
+var hasRequiredPath;
 
-let _schema$20 = undefined;
-let _model$1T  = undefined;
+function requirePath () {
+	if (hasRequiredPath) return Path;
+	hasRequiredPath = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$20 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$20 ) {
-        _createSchema$20( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$20
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    const NestedCurveSchema = new Schema( {
+	        type: {
+	            type:    String,
+	            default: 'Curve'
+	        },
+	        arcLengthDivisions: Number
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    _schema = new Schema( {
+
+	        // CurvePath inheritance
+	        curves: [ NestedCurveSchema ],
+
+	        // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        },
+
+	        // Path inheritance
+	        currentPoint: Vector2
+
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'Path', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Path.Path = {
+	    name:            'Path',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Path;
 }
 
-function _createSchema$20 ( Mongoose ) {
+var PathExports = requirePath();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    const NestedCurveSchema = new Schema( {
-        type: {
-            type:    String,
-            default: 'Curve'
-        },
-        arcLengthDivisions: Number
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    _schema$20 = new Schema( {
-
-        // CurvePath inheritance
-        curves: [ NestedCurveSchema ],
-
-        // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        },
-
-        // Path inheritance
-        currentPoint: Vector2
-
-    } );
-
-}
-
-function getModelFrom$1T ( Mongoose ) {
-
-    if ( !_model$1T ) {
-        _createModel$1T( Mongoose );
-    }
-
-    return _model$1T
-
-}
-
-function _createModel$1T ( Mongoose ) {
-
-    const CurveBaseModel = Curve$e.getModelFrom( Mongoose );
-    _model$1T               = CurveBaseModel.discriminator( 'Path', getSchemaFrom$20( Mongoose ) );
-
-}
-
-function registerModelTo$1T ( Mongoose ) {
-
-    if ( !_model$1T ) {
-        _createModel$1T( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Path_1 = {
-    name:            'Path',
-    getSchemaFrom:   getSchemaFrom$20,
-    getModelFrom:    getModelFrom$1T,
-    registerModelTo: registerModelTo$1T
-};
+var Shape = {};
 
 /**
  * @module Schemas/Core/Shape
@@ -4528,108 +4702,119 @@ var Path_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$d } = Curve$g;
+var hasRequiredShape;
 
-let _schema$1$ = undefined;
-let _model$1S  = undefined;
+function requireShape () {
+	if (hasRequiredShape) return Shape;
+	hasRequiredShape = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1$ ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1$ ) {
-        _createSchema$1$( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1$
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    const NestedCurveSchema = new Schema( {
+	        type: {
+	            type:    String,
+	            default: 'Curve'
+	        },
+	        arcLengthDivisions: Number
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    const NestedPathSchema = new Schema( {
+
+	        // CurvePath inheritance
+	        curves:    [ NestedCurveSchema ], // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        },
+
+	        // Path inheritance
+	        currentPoint: Vector2
+
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    _schema = new Schema( {
+
+	        // CurvePath inheritance
+	        curves:    [ NestedCurveSchema ], // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        },
+
+	        // Path inheritance
+	        currentPoint: Vector2,
+
+	        // Shape inheritance
+	        uuid:  String,
+	        holes: [ NestedPathSchema ] // Path
+
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'Shape', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Shape.Shape = {
+	    name:            'Shape',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Shape;
 }
 
-function _createSchema$1$ ( Mongoose ) {
+var ShapeExports = requireShape();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    const NestedCurveSchema = new Schema( {
-        type: {
-            type:    String,
-            default: 'Curve'
-        },
-        arcLengthDivisions: Number
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    const NestedPathSchema = new Schema( {
-
-        // CurvePath inheritance
-        curves:    [ NestedCurveSchema ], // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        },
-
-        // Path inheritance
-        currentPoint: Vector2
-
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    _schema$1$ = new Schema( {
-
-        // CurvePath inheritance
-        curves:    [ NestedCurveSchema ], // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        },
-
-        // Path inheritance
-        currentPoint: Vector2,
-
-        // Shape inheritance
-        uuid:  String,
-        holes: [ NestedPathSchema ] // Path
-
-    } );
-
-}
-
-function getModelFrom$1S ( Mongoose ) {
-
-    if ( !_model$1S ) {
-        _createModel$1S( Mongoose );
-    }
-
-    return _model$1S
-
-}
-
-function _createModel$1S ( Mongoose ) {
-
-    const CurveBaseModel = Curve$d.getModelFrom( Mongoose );
-    _model$1S               = CurveBaseModel.discriminator( 'Shape', getSchemaFrom$1$( Mongoose ) );
-
-}
-
-function registerModelTo$1S ( Mongoose ) {
-
-    if ( !_model$1S ) {
-        _createModel$1S( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Shape_1 = {
-    name:            'Shape',
-    getSchemaFrom:   getSchemaFrom$1$,
-    getModelFrom:    getModelFrom$1S,
-    registerModelTo: registerModelTo$1S
-};
+var ArcCurve = {};
 
 /**
  * @module Schemas/Curves/ArcCurve
@@ -4641,72 +4826,83 @@ var Shape_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$c } = Curve$g;
+var hasRequiredArcCurve;
 
-let _schema$1_ = undefined;
-let _model$1R  = undefined;
+function requireArcCurve () {
+	if (hasRequiredArcCurve) return ArcCurve;
+	hasRequiredArcCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1_ ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1_ ) {
-        _createSchema$1_( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1_
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        // EllipseCurve inheritance
+	        aX:          Number,
+	        aY:          Number,
+	        xRadius:     Number,
+	        yRadius:     Number,
+	        aStartAngle: Number,
+	        aEndAngle:   Number,
+	        aClockwise:  Boolean,
+	        aRotation:   Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'ArcCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ArcCurve.ArcCurve = {
+	    name:            'ArcCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ArcCurve;
 }
 
-function _createSchema$1_ ( Mongoose ) {
+var ArcCurveExports = requireArcCurve();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1_ = new Schema( {
-        // EllipseCurve inheritance
-        aX:          Number,
-        aY:          Number,
-        xRadius:     Number,
-        yRadius:     Number,
-        aStartAngle: Number,
-        aEndAngle:   Number,
-        aClockwise:  Boolean,
-        aRotation:   Number
-    } );
-
-}
-
-function getModelFrom$1R ( Mongoose ) {
-
-    if ( !_model$1R ) {
-        _createModel$1R( Mongoose );
-    }
-
-    return _model$1R
-
-}
-
-function _createModel$1R ( Mongoose ) {
-
-    const CurveBaseModel = Curve$c.getModelFrom( Mongoose );
-    _model$1R               = CurveBaseModel.discriminator( 'ArcCurve', getSchemaFrom$1_( Mongoose ) );
-
-}
-
-function registerModelTo$1R ( Mongoose ) {
-
-    if ( !_model$1R ) {
-        _createModel$1R( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ArcCurve_1 = {
-    name:            'ArcCurve',
-    getSchemaFrom:   getSchemaFrom$1_,
-    getModelFrom:    getModelFrom$1R,
-    registerModelTo: registerModelTo$1R
-};
+var CatmullRomCurve3 = {};
 
 /**
  * @module Schemas/Curves/CatmullRomCurve3
@@ -4718,69 +4914,80 @@ var ArcCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$b } = Curve$g;
+var hasRequiredCatmullRomCurve3;
 
-let _schema$1Z = undefined;
-let _model$1Q  = undefined;
+function requireCatmullRomCurve3 () {
+	if (hasRequiredCatmullRomCurve3) return CatmullRomCurve3;
+	hasRequiredCatmullRomCurve3 = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1Z ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1Z ) {
-        _createSchema$1Z( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1Z
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        points:    [ Vector3 ],
+	        closed:    Boolean,
+	        curveType: String,
+	        tension:   Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'CatmullRomCurve3', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CatmullRomCurve3.CatmullRomCurve3 = {
+	    name:            'CatmullRomCurve3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CatmullRomCurve3;
 }
 
-function _createSchema$1Z ( Mongoose ) {
+var CatmullRomCurve3Exports = requireCatmullRomCurve3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$1Z = new Schema( {
-        points:    [ Vector3 ],
-        closed:    Boolean,
-        curveType: String,
-        tension:   Number
-    } );
-
-}
-
-function getModelFrom$1Q ( Mongoose ) {
-
-    if ( !_model$1Q ) {
-        _createModel$1Q( Mongoose );
-    }
-
-    return _model$1Q
-
-}
-
-function _createModel$1Q ( Mongoose ) {
-
-    const CurveBaseModel = Curve$b.getModelFrom( Mongoose );
-    _model$1Q               = CurveBaseModel.discriminator( 'CatmullRomCurve3', getSchemaFrom$1Z( Mongoose ) );
-
-}
-
-function registerModelTo$1Q ( Mongoose ) {
-
-    if ( !_model$1Q ) {
-        _createModel$1Q( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CatmullRomCurve3_1 = {
-    name:            'CatmullRomCurve3',
-    getSchemaFrom:   getSchemaFrom$1Z,
-    getModelFrom:    getModelFrom$1Q,
-    registerModelTo: registerModelTo$1Q
-};
+var CubicBezierCurve = {};
 
 /**
  * @module Schemas/Curves/CubicBezierCurve
@@ -4792,69 +4999,80 @@ var CatmullRomCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$a } = Curve$g;
+var hasRequiredCubicBezierCurve;
 
-let _schema$1Y = undefined;
-let _model$1P  = undefined;
+function requireCubicBezierCurve () {
+	if (hasRequiredCubicBezierCurve) return CubicBezierCurve;
+	hasRequiredCubicBezierCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1Y ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1Y ) {
-        _createSchema$1Y( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1Y
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        v0: Vector2,
+	        v1: Vector2,
+	        v2: Vector2,
+	        v3: Vector2
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'CubicBezierCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CubicBezierCurve.CubicBezierCurve = {
+	    name:            'CubicBezierCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CubicBezierCurve;
 }
 
-function _createSchema$1Y ( Mongoose ) {
+var CubicBezierCurveExports = requireCubicBezierCurve();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    _schema$1Y = new Schema( {
-        v0: Vector2,
-        v1: Vector2,
-        v2: Vector2,
-        v3: Vector2
-    } );
-
-}
-
-function getModelFrom$1P ( Mongoose ) {
-
-    if ( !_model$1P ) {
-        _createModel$1P( Mongoose );
-    }
-
-    return _model$1P
-
-}
-
-function _createModel$1P ( Mongoose ) {
-
-    const CurveBaseModel = Curve$a.getModelFrom( Mongoose );
-    _model$1P               = CurveBaseModel.discriminator( 'CubicBezierCurve', getSchemaFrom$1Y( Mongoose ) );
-
-}
-
-function registerModelTo$1P ( Mongoose ) {
-
-    if ( !_model$1P ) {
-        _createModel$1P( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CubicBezierCurve_1 = {
-    name:            'CubicBezierCurve',
-    getSchemaFrom:   getSchemaFrom$1Y,
-    getModelFrom:    getModelFrom$1P,
-    registerModelTo: registerModelTo$1P
-};
+var CubicBezierCurve3 = {};
 
 /**
  * @module Schemas/Curves/CubicBezierCurve3
@@ -4866,69 +5084,82 @@ var CubicBezierCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$9 } = Curve$g;
+var hasRequiredCubicBezierCurve3;
 
-let _schema$1X = undefined;
-let _model$1O  = undefined;
+function requireCubicBezierCurve3 () {
+	if (hasRequiredCubicBezierCurve3) return CubicBezierCurve3;
+	hasRequiredCubicBezierCurve3 = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1X ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1X ) {
-        _createSchema$1X( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1X
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        v0: Vector3,
+	        v1: Vector3,
+	        v2: Vector3,
+	        v3: Vector3
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'CubicBezierCurve3', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CubicBezierCurve3.CubicBezierCurve3 = {
+	    name:            'CubicBezierCurve3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CubicBezierCurve3;
 }
 
-function _createSchema$1X ( Mongoose ) {
+var CubicBezierCurve3Exports = requireCubicBezierCurve3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
+var CurveExports = requireCurve();
 
-    _schema$1X = new Schema( {
-        v0: Vector3,
-        v1: Vector3,
-        v2: Vector3,
-        v3: Vector3
-    } );
-
-}
-
-function getModelFrom$1O ( Mongoose ) {
-
-    if ( !_model$1O ) {
-        _createModel$1O( Mongoose );
-    }
-
-    return _model$1O
-
-}
-
-function _createModel$1O ( Mongoose ) {
-
-    const CurveBaseModel = Curve$9.getModelFrom( Mongoose );
-    _model$1O               = CurveBaseModel.discriminator( 'CubicBezierCurve3', getSchemaFrom$1X( Mongoose ) );
-
-}
-
-function registerModelTo$1O ( Mongoose ) {
-
-    if ( !_model$1O ) {
-        _createModel$1O( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CubicBezierCurve3_1 = {
-    name:            'CubicBezierCurve3',
-    getSchemaFrom:   getSchemaFrom$1X,
-    getModelFrom:    getModelFrom$1O,
-    registerModelTo: registerModelTo$1O
-};
+var CurveExtras = {};
 
 /**
  * @module Schemas/Curves/CurveExtras
@@ -4940,62 +5171,73 @@ var CubicBezierCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$8 } = Curve$g;
+var hasRequiredCurveExtras;
 
-let _schema$1W = undefined;
-let _model$1N  = undefined;
+function requireCurveExtras () {
+	if (hasRequiredCurveExtras) return CurveExtras;
+	hasRequiredCurveExtras = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1W ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1W ) {
-        _createSchema$1W( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1W
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CurveExtras.CurveExtras = {
+	    name:            'CurveExtras',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CurveExtras;
 }
 
-function _createSchema$1W ( Mongoose ) {
+var CurveExtrasExports = requireCurveExtras();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1W = new Schema( {} );
-
-}
-
-function getModelFrom$1N ( Mongoose ) {
-
-    if ( !_model$1N ) {
-        _createModel$1N( Mongoose );
-    }
-
-    return _model$1N
-
-}
-
-function _createModel$1N ( Mongoose ) {
-
-    const CurveBaseModel = Curve$8.getModelFrom( Mongoose );
-    _model$1N               = CurveBaseModel.discriminator( 'CurveExtras', getSchemaFrom$1W( Mongoose ) );
-
-}
-
-function registerModelTo$1N ( Mongoose ) {
-
-    if ( !_model$1N ) {
-        _createModel$1N( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CurveExtras_1 = {
-    name:            'CurveExtras',
-    getSchemaFrom:   getSchemaFrom$1W,
-    getModelFrom:    getModelFrom$1N,
-    registerModelTo: registerModelTo$1N
-};
+var EllipseCurve = {};
 
 /**
  * @module Schemas/Curves/EllipseCurve
@@ -5007,71 +5249,82 @@ var CurveExtras_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$7 } = Curve$g;
+var hasRequiredEllipseCurve;
 
-let _schema$1V = undefined;
-let _model$1M  = undefined;
+function requireEllipseCurve () {
+	if (hasRequiredEllipseCurve) return EllipseCurve;
+	hasRequiredEllipseCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1V ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1V ) {
-        _createSchema$1V( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1V
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        aX:          Number,
+	        aY:          Number,
+	        xRadius:     Number,
+	        yRadius:     Number,
+	        aStartAngle: Number,
+	        aEndAngle:   Number,
+	        aClockwise:  Boolean,
+	        aRotation:   Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'EllipseCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	EllipseCurve.EllipseCurve = {
+	    name:            'EllipseCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return EllipseCurve;
 }
 
-function _createSchema$1V ( Mongoose ) {
+var EllipseCurveExports = requireEllipseCurve();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1V = new Schema( {
-        aX:          Number,
-        aY:          Number,
-        xRadius:     Number,
-        yRadius:     Number,
-        aStartAngle: Number,
-        aEndAngle:   Number,
-        aClockwise:  Boolean,
-        aRotation:   Number
-    } );
-
-}
-
-function getModelFrom$1M ( Mongoose ) {
-
-    if ( !_model$1M ) {
-        _createModel$1M( Mongoose );
-    }
-
-    return _model$1M
-
-}
-
-function _createModel$1M ( Mongoose ) {
-
-    const CurveBaseModel = Curve$7.getModelFrom( Mongoose );
-    _model$1M               = CurveBaseModel.discriminator( 'EllipseCurve', getSchemaFrom$1V( Mongoose ) );
-
-}
-
-function registerModelTo$1M ( Mongoose ) {
-
-    if ( !_model$1M ) {
-        _createModel$1M( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var EllipseCurve_1 = {
-    name:            'EllipseCurve',
-    getSchemaFrom:   getSchemaFrom$1V,
-    getModelFrom:    getModelFrom$1M,
-    registerModelTo: registerModelTo$1M
-};
+var LineCurve = {};
 
 /**
  * @module Schemas/Curves/LineCurve
@@ -5083,67 +5336,78 @@ var EllipseCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$6 } = Curve$g;
+var hasRequiredLineCurve;
 
-let _schema$1U = undefined;
-let _model$1L  = undefined;
+function requireLineCurve () {
+	if (hasRequiredLineCurve) return LineCurve;
+	hasRequiredLineCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1U ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1U ) {
-        _createSchema$1U( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1U
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        v0: Vector2,
+	        v1: Vector2
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'LineCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineCurve.LineCurve = {
+	    name:            'LineCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineCurve;
 }
 
-function _createSchema$1U ( Mongoose ) {
+var LineCurveExports = requireLineCurve();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    _schema$1U = new Schema( {
-        v0: Vector2,
-        v1: Vector2
-    } );
-
-}
-
-function getModelFrom$1L ( Mongoose ) {
-
-    if ( !_model$1L ) {
-        _createModel$1L( Mongoose );
-    }
-
-    return _model$1L
-
-}
-
-function _createModel$1L ( Mongoose ) {
-
-    const CurveBaseModel = Curve$6.getModelFrom( Mongoose );
-    _model$1L               = CurveBaseModel.discriminator( 'LineCurve', getSchemaFrom$1U( Mongoose ) );
-
-}
-
-function registerModelTo$1L ( Mongoose ) {
-
-    if ( !_model$1L ) {
-        _createModel$1L( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineCurve_1 = {
-    name:            'LineCurve',
-    getSchemaFrom:   getSchemaFrom$1U,
-    getModelFrom:    getModelFrom$1L,
-    registerModelTo: registerModelTo$1L
-};
+var LineCurve3 = {};
 
 /**
  * @module Schemas/Curves/LineCurve3
@@ -5155,67 +5419,78 @@ var LineCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$5 } = Curve$g;
+var hasRequiredLineCurve3;
 
-let _schema$1T = undefined;
-let _model$1K  = undefined;
+function requireLineCurve3 () {
+	if (hasRequiredLineCurve3) return LineCurve3;
+	hasRequiredLineCurve3 = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1T ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1T ) {
-        _createSchema$1T( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1T
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        v0: Vector3,
+	        v1: Vector3
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'LineCurve3', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineCurve3.LineCurve3 = {
+	    name:            'LineCurve3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineCurve3;
 }
 
-function _createSchema$1T ( Mongoose ) {
+var LineCurve3Exports = requireLineCurve3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$1T = new Schema( {
-        v0: Vector3,
-        v1: Vector3
-    } );
-
-}
-
-function getModelFrom$1K ( Mongoose ) {
-
-    if ( !_model$1K ) {
-        _createModel$1K( Mongoose );
-    }
-
-    return _model$1K
-
-}
-
-function _createModel$1K ( Mongoose ) {
-
-    const CurveBaseModel = Curve$5.getModelFrom( Mongoose );
-    _model$1K               = CurveBaseModel.discriminator( 'LineCurve3', getSchemaFrom$1T( Mongoose ) );
-
-}
-
-function registerModelTo$1K ( Mongoose ) {
-
-    if ( !_model$1K ) {
-        _createModel$1K( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineCurve3_1 = {
-    name:            'LineCurve3',
-    getSchemaFrom:   getSchemaFrom$1T,
-    getModelFrom:    getModelFrom$1K,
-    registerModelTo: registerModelTo$1K
-};
+var NURBSCurve = {};
 
 /**
  * @module Schemas/Curves/NURBSCurve
@@ -5227,62 +5502,73 @@ var LineCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$4 } = Curve$g;
+var hasRequiredNURBSCurve;
 
-let _schema$1S = undefined;
-let _model$1J  = undefined;
+function requireNURBSCurve () {
+	if (hasRequiredNURBSCurve) return NURBSCurve;
+	hasRequiredNURBSCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1S ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1S ) {
-        _createSchema$1S( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1S
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'NURBSCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	NURBSCurve.NURBSCurve = {
+	    name:            'NURBSCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return NURBSCurve;
 }
 
-function _createSchema$1S ( Mongoose ) {
+var NURBSCurveExports = requireNURBSCurve();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1S = new Schema( {} );
-
-}
-
-function getModelFrom$1J ( Mongoose ) {
-
-    if ( !_model$1J ) {
-        _createModel$1J( Mongoose );
-    }
-
-    return _model$1J
-
-}
-
-function _createModel$1J ( Mongoose ) {
-
-    const CurveBaseModel = Curve$4.getModelFrom( Mongoose );
-    _model$1J               = CurveBaseModel.discriminator( 'NURBSCurve', getSchemaFrom$1S( Mongoose ) );
-
-}
-
-function registerModelTo$1J ( Mongoose ) {
-
-    if ( !_model$1J ) {
-        _createModel$1J( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var NURBSCurve_1 = {
-    name:            'NURBSCurve',
-    getSchemaFrom:   getSchemaFrom$1S,
-    getModelFrom:    getModelFrom$1J,
-    registerModelTo: registerModelTo$1J
-};
+var NURBSSurface = {};
 
 /**
  * @module Schemas/Curves/NURBSSurface
@@ -5294,62 +5580,73 @@ var NURBSCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$3 } = Curve$g;
+var hasRequiredNURBSSurface;
 
-let _schema$1R = undefined;
-let _model$1I  = undefined;
+function requireNURBSSurface () {
+	if (hasRequiredNURBSSurface) return NURBSSurface;
+	hasRequiredNURBSSurface = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1R ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1R ) {
-        _createSchema$1R( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1R
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'NURBSSurface', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	NURBSSurface.NURBSSurface = {
+	    name:            'NURBSSurface',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return NURBSSurface;
 }
 
-function _createSchema$1R ( Mongoose ) {
+var NURBSSurfaceExports = requireNURBSSurface();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1R = new Schema( {} );
-
-}
-
-function getModelFrom$1I ( Mongoose ) {
-
-    if ( !_model$1I ) {
-        _createModel$1I( Mongoose );
-    }
-
-    return _model$1I
-
-}
-
-function _createModel$1I ( Mongoose ) {
-
-    const CurveBaseModel = Curve$3.getModelFrom( Mongoose );
-    _model$1I               = CurveBaseModel.discriminator( 'NURBSSurface', getSchemaFrom$1R( Mongoose ) );
-
-}
-
-function registerModelTo$1I ( Mongoose ) {
-
-    if ( !_model$1I ) {
-        _createModel$1I( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var NURBSSurface_1 = {
-    name:            'NURBSSurface',
-    getSchemaFrom:   getSchemaFrom$1R,
-    getModelFrom:    getModelFrom$1I,
-    registerModelTo: registerModelTo$1I
-};
+var QuadraticBezierCurve = {};
 
 /**
  * @module Schemas/Curves/QuadraticBezierCurve
@@ -5361,68 +5658,79 @@ var NURBSSurface_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$2 } = Curve$g;
+var hasRequiredQuadraticBezierCurve;
 
-let _schema$1Q = undefined;
-let _model$1H  = undefined;
+function requireQuadraticBezierCurve () {
+	if (hasRequiredQuadraticBezierCurve) return QuadraticBezierCurve;
+	hasRequiredQuadraticBezierCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1Q ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1Q ) {
-        _createSchema$1Q( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1Q
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        v0: Vector2,
+	        v1: Vector2,
+	        v2: Vector2
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'QuadraticBezierCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	QuadraticBezierCurve.QuadraticBezierCurve = {
+	    name:            'QuadraticBezierCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return QuadraticBezierCurve;
 }
 
-function _createSchema$1Q ( Mongoose ) {
+var QuadraticBezierCurveExports = requireQuadraticBezierCurve();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    _schema$1Q = new Schema( {
-        v0: Vector2,
-        v1: Vector2,
-        v2: Vector2
-    } );
-
-}
-
-function getModelFrom$1H ( Mongoose ) {
-
-    if ( !_model$1H ) {
-        _createModel$1H( Mongoose );
-    }
-
-    return _model$1H
-
-}
-
-function _createModel$1H ( Mongoose ) {
-
-    const CurveBaseModel = Curve$2.getModelFrom( Mongoose );
-    _model$1H               = CurveBaseModel.discriminator( 'QuadraticBezierCurve', getSchemaFrom$1Q( Mongoose ) );
-
-}
-
-function registerModelTo$1H ( Mongoose ) {
-
-    if ( !_model$1H ) {
-        _createModel$1H( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var QuadraticBezierCurve_1 = {
-    name:            'QuadraticBezierCurve',
-    getSchemaFrom:   getSchemaFrom$1Q,
-    getModelFrom:    getModelFrom$1H,
-    registerModelTo: registerModelTo$1H
-};
+var QuadraticBezierCurve3 = {};
 
 /**
  * @module Schemas/Curves/QuadraticBezierCurve3
@@ -5434,68 +5742,79 @@ var QuadraticBezierCurve_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve: Curve$1 } = Curve$g;
+var hasRequiredQuadraticBezierCurve3;
 
-let _schema$1P = undefined;
-let _model$1G  = undefined;
+function requireQuadraticBezierCurve3 () {
+	if (hasRequiredQuadraticBezierCurve3) return QuadraticBezierCurve3;
+	hasRequiredQuadraticBezierCurve3 = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1P ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1P ) {
-        _createSchema$1P( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1P
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        v0: Vector3,
+	        v1: Vector3,
+	        v2: Vector3
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'QuadraticBezierCurve3', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	QuadraticBezierCurve3.QuadraticBezierCurve3 = {
+	    name:            'QuadraticBezierCurve3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return QuadraticBezierCurve3;
 }
 
-function _createSchema$1P ( Mongoose ) {
+var QuadraticBezierCurve3Exports = requireQuadraticBezierCurve3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$1P = new Schema( {
-        v0: Vector3,
-        v1: Vector3,
-        v2: Vector3
-    } );
-
-}
-
-function getModelFrom$1G ( Mongoose ) {
-
-    if ( !_model$1G ) {
-        _createModel$1G( Mongoose );
-    }
-
-    return _model$1G
-
-}
-
-function _createModel$1G ( Mongoose ) {
-
-    const CurveBaseModel = Curve$1.getModelFrom( Mongoose );
-    _model$1G               = CurveBaseModel.discriminator( 'QuadraticBezierCurve3', getSchemaFrom$1P( Mongoose ) );
-
-}
-
-function registerModelTo$1G ( Mongoose ) {
-
-    if ( !_model$1G ) {
-        _createModel$1G( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var QuadraticBezierCurve3_1 = {
-    name:            'QuadraticBezierCurve3',
-    getSchemaFrom:   getSchemaFrom$1P,
-    getModelFrom:    getModelFrom$1G,
-    registerModelTo: registerModelTo$1G
-};
+var SplineCurve = {};
 
 /**
  * @module Schemas/Curves/SplineCurve
@@ -5507,68 +5826,79 @@ var QuadraticBezierCurve3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Curve } = Curve$g;
+var hasRequiredSplineCurve;
 
-let _schema$1O = undefined;
-let _model$1F  = undefined;
+function requireSplineCurve () {
+	if (hasRequiredSplineCurve) return SplineCurve;
+	hasRequiredSplineCurve = 1;
+	const { Curve } = requireCurve();
 
-function getSchemaFrom$1O ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1O ) {
-        _createSchema$1O( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1O
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        points: [ Vector3 ]
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const CurveBaseModel = Curve.getModelFrom( Mongoose );
+	    _model               = CurveBaseModel.discriminator( 'SplineCurve', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SplineCurve.SplineCurve = {
+	    name:            'SplineCurve',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SplineCurve;
 }
 
-function _createSchema$1O ( Mongoose ) {
+var SplineCurveExports = requireSplineCurve();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
+var BoxBufferGeometry = {};
 
-    _schema$1O = new Schema( {
-        points: [ Vector3 ]
-    } );
-
-}
-
-function getModelFrom$1F ( Mongoose ) {
-
-    if ( !_model$1F ) {
-        _createModel$1F( Mongoose );
-    }
-
-    return _model$1F
-
-}
-
-function _createModel$1F ( Mongoose ) {
-
-    const CurveBaseModel = Curve.getModelFrom( Mongoose );
-    _model$1F               = CurveBaseModel.discriminator( 'SplineCurve', getSchemaFrom$1O( Mongoose ) );
-
-}
-
-function registerModelTo$1F ( Mongoose ) {
-
-    if ( !_model$1F ) {
-        _createModel$1F( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SplineCurve_1 = {
-    name:            'SplineCurve',
-    getSchemaFrom:   getSchemaFrom$1O,
-    getModelFrom:    getModelFrom$1F,
-    registerModelTo: registerModelTo$1F
-};
-
-var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(BufferGeometry$m);
+var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(BufferGeometry$1);
 
 /**
  * @module Schemas/Geometries/BoxBufferGeometry
@@ -5580,64 +5910,75 @@ var require$$0$1 = /*@__PURE__*/getAugmentedNamespace(BufferGeometry$m);
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$k } = require$$0$1;
+var hasRequiredBoxBufferGeometry;
 
-let _schema$1N = undefined;
-let _model$1E  = undefined;
+function requireBoxBufferGeometry () {
+	if (hasRequiredBoxBufferGeometry) return BoxBufferGeometry;
+	hasRequiredBoxBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1N ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1N ) {
-        _createSchema$1N( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1N
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	BoxBufferGeometry.BoxBufferGeometry = {
+	    name:            'BoxBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return BoxBufferGeometry;
 }
 
-function _createSchema$1N ( Mongoose ) {
+var BoxBufferGeometryExports = requireBoxBufferGeometry();
 
-    const Schema = Mongoose.Schema;
+var BoxGeometry = {};
 
-    _schema$1N = new Schema( {} );
-
-}
-
-function getModelFrom$1E ( Mongoose ) {
-
-    if ( !_model$1E ) {
-        _createModel$1E( Mongoose );
-    }
-
-    return _model$1E
-
-}
-
-function _createModel$1E ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$k.getModelFrom( Mongoose );
-    _model$1E                        = BufferGeometryBaseModel.discriminator( 'BoxBufferGeometry', getSchemaFrom$1N( Mongoose ) );
-
-}
-
-function registerModelTo$1E ( Mongoose ) {
-
-    if ( !_model$1E ) {
-        _createModel$1E( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var BoxBufferGeometry_1 = {
-    name:            'BoxBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1N,
-    getModelFrom:    getModelFrom$1E,
-    registerModelTo: registerModelTo$1E
-};
-
-var require$$0 = /*@__PURE__*/getAugmentedNamespace(Geometry$p);
+var require$$0 = /*@__PURE__*/getAugmentedNamespace(Geometry$1);
 
 /**
  * @module Schemas/Geometries/BoxGeometry
@@ -5649,62 +5990,73 @@ var require$$0 = /*@__PURE__*/getAugmentedNamespace(Geometry$p);
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$n } = require$$0;
+var hasRequiredBoxGeometry;
 
-let _schema$1M = undefined;
-let _model$1D  = undefined;
+function requireBoxGeometry () {
+	if (hasRequiredBoxGeometry) return BoxGeometry;
+	hasRequiredBoxGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1M ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1M ) {
-        _createSchema$1M( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1M
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'BoxGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	BoxGeometry.BoxGeometry = {
+	    name:            'BoxGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return BoxGeometry;
 }
 
-function _createSchema$1M ( Mongoose ) {
+var BoxGeometryExports = requireBoxGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1M = new Schema( {} );
-
-}
-
-function getModelFrom$1D ( Mongoose ) {
-
-    if ( !_model$1D ) {
-        _createModel$1D( Mongoose );
-    }
-
-    return _model$1D
-
-}
-
-function _createModel$1D ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$n.getModelFrom( Mongoose );
-    _model$1D                  = GeometryBaseModel.discriminator( 'BoxGeometry', getSchemaFrom$1M( Mongoose ) );
-
-}
-
-function registerModelTo$1D ( Mongoose ) {
-
-    if ( !_model$1D ) {
-        _createModel$1D( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var BoxGeometry_1 = {
-    name:            'BoxGeometry',
-    getSchemaFrom:   getSchemaFrom$1M,
-    getModelFrom:    getModelFrom$1D,
-    registerModelTo: registerModelTo$1D
-};
+var CircleBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/CircleBufferGeometry
@@ -5716,62 +6068,73 @@ var BoxGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$j } = require$$0$1;
+var hasRequiredCircleBufferGeometry;
 
-let _schema$1L = undefined;
-let _model$1C  = undefined;
+function requireCircleBufferGeometry () {
+	if (hasRequiredCircleBufferGeometry) return CircleBufferGeometry;
+	hasRequiredCircleBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1L ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1L ) {
-        _createSchema$1L( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1L
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CircleBufferGeometry.CircleBufferGeometry = {
+	    name:            'CircleBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CircleBufferGeometry;
 }
 
-function _createSchema$1L ( Mongoose ) {
+var CircleBufferGeometryExports = requireCircleBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1L = new Schema( {} );
-
-}
-
-function getModelFrom$1C ( Mongoose ) {
-
-    if ( !_model$1C ) {
-        _createModel$1C( Mongoose );
-    }
-
-    return _model$1C
-
-}
-
-function _createModel$1C ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$j.getModelFrom( Mongoose );
-    _model$1C                        = BufferGeometryBaseModel.discriminator( 'CircleBufferGeometry', getSchemaFrom$1L( Mongoose ) );
-
-}
-
-function registerModelTo$1C ( Mongoose ) {
-
-    if ( !_model$1C ) {
-        _createModel$1C( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CircleBufferGeometry_1 = {
-    name:            'CircleBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1L,
-    getModelFrom:    getModelFrom$1C,
-    registerModelTo: registerModelTo$1C
-};
+var CircleGeometry = {};
 
 /**
  * @module Schemas/Geometries/CircleGeometry
@@ -5783,62 +6146,73 @@ var CircleBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$m } = require$$0;
+var hasRequiredCircleGeometry;
 
-let _schema$1K = undefined;
-let _model$1B  = undefined;
+function requireCircleGeometry () {
+	if (hasRequiredCircleGeometry) return CircleGeometry;
+	hasRequiredCircleGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1K ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1K ) {
-        _createSchema$1K( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1K
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'CircleGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CircleGeometry.CircleGeometry = {
+	    name:            'CircleGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CircleGeometry;
 }
 
-function _createSchema$1K ( Mongoose ) {
+var CircleGeometryExports = requireCircleGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1K = new Schema( {} );
-
-}
-
-function getModelFrom$1B ( Mongoose ) {
-
-    if ( !_model$1B ) {
-        _createModel$1B( Mongoose );
-    }
-
-    return _model$1B
-
-}
-
-function _createModel$1B ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$m.getModelFrom( Mongoose );
-    _model$1B                  = GeometryBaseModel.discriminator( 'CircleGeometry', getSchemaFrom$1K( Mongoose ) );
-
-}
-
-function registerModelTo$1B ( Mongoose ) {
-
-    if ( !_model$1B ) {
-        _createModel$1B( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CircleGeometry_1 = {
-    name:            'CircleGeometry',
-    getSchemaFrom:   getSchemaFrom$1K,
-    getModelFrom:    getModelFrom$1B,
-    registerModelTo: registerModelTo$1B
-};
+var ConeBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/ConeBufferGeometry
@@ -5850,62 +6224,73 @@ var CircleGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$i } = require$$0$1;
+var hasRequiredConeBufferGeometry;
 
-let _schema$1J = undefined;
-let _model$1A  = undefined;
+function requireConeBufferGeometry () {
+	if (hasRequiredConeBufferGeometry) return ConeBufferGeometry;
+	hasRequiredConeBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1J ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1J ) {
-        _createSchema$1J( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1J
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ConeBufferGeometry.ConeBufferGeometry = {
+	    name:            'ConeBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ConeBufferGeometry;
 }
 
-function _createSchema$1J ( Mongoose ) {
+var ConeBufferGeometryExports = requireConeBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1J = new Schema( {} );
-
-}
-
-function getModelFrom$1A ( Mongoose ) {
-
-    if ( !_model$1A ) {
-        _createModel$1A( Mongoose );
-    }
-
-    return _model$1A
-
-}
-
-function _createModel$1A ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$i.getModelFrom( Mongoose );
-    _model$1A                        = BufferGeometryBaseModel.discriminator( 'ConeBufferGeometry', getSchemaFrom$1J( Mongoose ) );
-
-}
-
-function registerModelTo$1A ( Mongoose ) {
-
-    if ( !_model$1A ) {
-        _createModel$1A( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ConeBufferGeometry_1 = {
-    name:            'ConeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1J,
-    getModelFrom:    getModelFrom$1A,
-    registerModelTo: registerModelTo$1A
-};
+var ConeGeometry = {};
 
 /**
  * @module Schemas/Geometries/ConeGeometry
@@ -5917,62 +6302,73 @@ var ConeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$l } = require$$0;
+var hasRequiredConeGeometry;
 
-let _schema$1I = undefined;
-let _model$1z  = undefined;
+function requireConeGeometry () {
+	if (hasRequiredConeGeometry) return ConeGeometry;
+	hasRequiredConeGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1I ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1I ) {
-        _createSchema$1I( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1I
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'ConeGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ConeGeometry.ConeGeometry = {
+	    name:            'ConeGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ConeGeometry;
 }
 
-function _createSchema$1I ( Mongoose ) {
+var ConeGeometryExports = requireConeGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1I = new Schema( {} );
-
-}
-
-function getModelFrom$1z ( Mongoose ) {
-
-    if ( !_model$1z ) {
-        _createModel$1z( Mongoose );
-    }
-
-    return _model$1z
-
-}
-
-function _createModel$1z ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$l.getModelFrom( Mongoose );
-    _model$1z                  = GeometryBaseModel.discriminator( 'ConeGeometry', getSchemaFrom$1I( Mongoose ) );
-
-}
-
-function registerModelTo$1z ( Mongoose ) {
-
-    if ( !_model$1z ) {
-        _createModel$1z( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ConeGeometry_1 = {
-    name:            'ConeGeometry',
-    getSchemaFrom:   getSchemaFrom$1I,
-    getModelFrom:    getModelFrom$1z,
-    registerModelTo: registerModelTo$1z
-};
+var ConvexGeometry = {};
 
 /**
  * @module Schemas/Geometries/ConvexGeometry
@@ -5984,62 +6380,73 @@ var ConeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$k } = require$$0;
+var hasRequiredConvexGeometry;
 
-let _schema$1H = undefined;
-let _model$1y  = undefined;
+function requireConvexGeometry () {
+	if (hasRequiredConvexGeometry) return ConvexGeometry;
+	hasRequiredConvexGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1H ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1H ) {
-        _createSchema$1H( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1H
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'ConvexGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ConvexGeometry.ConvexGeometry = {
+	    name:            'ConvexGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ConvexGeometry;
 }
 
-function _createSchema$1H ( Mongoose ) {
+var ConvexGeometryExports = requireConvexGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1H = new Schema( {} );
-
-}
-
-function getModelFrom$1y ( Mongoose ) {
-
-    if ( !_model$1y ) {
-        _createModel$1y( Mongoose );
-    }
-
-    return _model$1y
-
-}
-
-function _createModel$1y ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$k.getModelFrom( Mongoose );
-    _model$1y                  = GeometryBaseModel.discriminator( 'ConvexGeometry', getSchemaFrom$1H( Mongoose ) );
-
-}
-
-function registerModelTo$1y ( Mongoose ) {
-
-    if ( !_model$1y ) {
-        _createModel$1y( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ConvexGeometry_1 = {
-    name:            'ConvexGeometry',
-    getSchemaFrom:   getSchemaFrom$1H,
-    getModelFrom:    getModelFrom$1y,
-    registerModelTo: registerModelTo$1y
-};
+var CylinderBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/CylinderBufferGeometry
@@ -6051,62 +6458,73 @@ var ConvexGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$h } = require$$0$1;
+var hasRequiredCylinderBufferGeometry;
 
-let _schema$1G = undefined;
-let _model$1x  = undefined;
+function requireCylinderBufferGeometry () {
+	if (hasRequiredCylinderBufferGeometry) return CylinderBufferGeometry;
+	hasRequiredCylinderBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1G ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1G ) {
-        _createSchema$1G( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1G
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CylinderBufferGeometry.CylinderBufferGeometry = {
+	    name:            'CylinderBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CylinderBufferGeometry;
 }
 
-function _createSchema$1G ( Mongoose ) {
+var CylinderBufferGeometryExports = requireCylinderBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1G = new Schema( {} );
-
-}
-
-function getModelFrom$1x ( Mongoose ) {
-
-    if ( !_model$1x ) {
-        _createModel$1x( Mongoose );
-    }
-
-    return _model$1x
-
-}
-
-function _createModel$1x ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$h.getModelFrom( Mongoose );
-    _model$1x                        = BufferGeometryBaseModel.discriminator( 'CylinderBufferGeometry', getSchemaFrom$1G( Mongoose ) );
-
-}
-
-function registerModelTo$1x ( Mongoose ) {
-
-    if ( !_model$1x ) {
-        _createModel$1x( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CylinderBufferGeometry_1 = {
-    name:            'CylinderBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1G,
-    getModelFrom:    getModelFrom$1x,
-    registerModelTo: registerModelTo$1x
-};
+var CylinderGeometry = {};
 
 /**
  * @module Schemas/Geometries/CylinderGeometry
@@ -6118,62 +6536,73 @@ var CylinderBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$j } = require$$0;
+var hasRequiredCylinderGeometry;
 
-let _schema$1F = undefined;
-let _model$1w  = undefined;
+function requireCylinderGeometry () {
+	if (hasRequiredCylinderGeometry) return CylinderGeometry;
+	hasRequiredCylinderGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1F ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1F ) {
-        _createSchema$1F( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1F
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'CylinderGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CylinderGeometry.CylinderGeometry = {
+	    name:            'CylinderGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CylinderGeometry;
 }
 
-function _createSchema$1F ( Mongoose ) {
+var CylinderGeometryExports = requireCylinderGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1F = new Schema( {} );
-
-}
-
-function getModelFrom$1w ( Mongoose ) {
-
-    if ( !_model$1w ) {
-        _createModel$1w( Mongoose );
-    }
-
-    return _model$1w
-
-}
-
-function _createModel$1w ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$j.getModelFrom( Mongoose );
-    _model$1w                  = GeometryBaseModel.discriminator( 'CylinderGeometry', getSchemaFrom$1F( Mongoose ) );
-
-}
-
-function registerModelTo$1w ( Mongoose ) {
-
-    if ( !_model$1w ) {
-        _createModel$1w( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CylinderGeometry_1 = {
-    name:            'CylinderGeometry',
-    getSchemaFrom:   getSchemaFrom$1F,
-    getModelFrom:    getModelFrom$1w,
-    registerModelTo: registerModelTo$1w
-};
+var DecalGeometry = {};
 
 /**
  * @module Schemas/Geometries/DecalGeometry
@@ -6185,62 +6614,73 @@ var CylinderGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$i } = require$$0;
+var hasRequiredDecalGeometry;
 
-let _schema$1E = undefined;
-let _model$1v  = undefined;
+function requireDecalGeometry () {
+	if (hasRequiredDecalGeometry) return DecalGeometry;
+	hasRequiredDecalGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1E ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1E ) {
-        _createSchema$1E( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1E
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'DecalGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DecalGeometry.DecalGeometry = {
+	    name:            'DecalGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DecalGeometry;
 }
 
-function _createSchema$1E ( Mongoose ) {
+var DecalGeometryExports = requireDecalGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1E = new Schema( {} );
-
-}
-
-function getModelFrom$1v ( Mongoose ) {
-
-    if ( !_model$1v ) {
-        _createModel$1v( Mongoose );
-    }
-
-    return _model$1v
-
-}
-
-function _createModel$1v ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$i.getModelFrom( Mongoose );
-    _model$1v                  = GeometryBaseModel.discriminator( 'DecalGeometry', getSchemaFrom$1E( Mongoose ) );
-
-}
-
-function registerModelTo$1v ( Mongoose ) {
-
-    if ( !_model$1v ) {
-        _createModel$1v( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DecalGeometry_1 = {
-    name:            'DecalGeometry',
-    getSchemaFrom:   getSchemaFrom$1E,
-    getModelFrom:    getModelFrom$1v,
-    registerModelTo: registerModelTo$1v
-};
+var DodecahedronGeometry = {};
 
 /**
  * @module Schemas/Geometries/DodecahedronGeometry
@@ -6252,62 +6692,73 @@ var DecalGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$h } = require$$0;
+var hasRequiredDodecahedronGeometry;
 
-let _schema$1D = undefined;
-let _model$1u  = undefined;
+function requireDodecahedronGeometry () {
+	if (hasRequiredDodecahedronGeometry) return DodecahedronGeometry;
+	hasRequiredDodecahedronGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1D ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1D ) {
-        _createSchema$1D( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1D
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'DodecahedronGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DodecahedronGeometry.DodecahedronGeometry = {
+	    name:            'DodecahedronGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DodecahedronGeometry;
 }
 
-function _createSchema$1D ( Mongoose ) {
+var DodecahedronGeometryExports = requireDodecahedronGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1D = new Schema( {} );
-
-}
-
-function getModelFrom$1u ( Mongoose ) {
-
-    if ( !_model$1u ) {
-        _createModel$1u( Mongoose );
-    }
-
-    return _model$1u
-
-}
-
-function _createModel$1u ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$h.getModelFrom( Mongoose );
-    _model$1u                  = GeometryBaseModel.discriminator( 'DodecahedronGeometry', getSchemaFrom$1D( Mongoose ) );
-
-}
-
-function registerModelTo$1u ( Mongoose ) {
-
-    if ( !_model$1u ) {
-        _createModel$1u( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DodecahedronGeometry_1 = {
-    name:            'DodecahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$1D,
-    getModelFrom:    getModelFrom$1u,
-    registerModelTo: registerModelTo$1u
-};
+var EdgesGeometry = {};
 
 /**
  * @module Schemas/Geometries/EdgesGeometry
@@ -6319,62 +6770,73 @@ var DodecahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$g } = require$$0;
+var hasRequiredEdgesGeometry;
 
-let _schema$1C = undefined;
-let _model$1t  = undefined;
+function requireEdgesGeometry () {
+	if (hasRequiredEdgesGeometry) return EdgesGeometry;
+	hasRequiredEdgesGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1C ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1C ) {
-        _createSchema$1C( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1C
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'EdgesGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	EdgesGeometry.EdgesGeometry = {
+	    name:            'EdgesGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return EdgesGeometry;
 }
 
-function _createSchema$1C ( Mongoose ) {
+var EdgesGeometryExports = requireEdgesGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1C = new Schema( {} );
-
-}
-
-function getModelFrom$1t ( Mongoose ) {
-
-    if ( !_model$1t ) {
-        _createModel$1t( Mongoose );
-    }
-
-    return _model$1t
-
-}
-
-function _createModel$1t ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$g.getModelFrom( Mongoose );
-    _model$1t                  = GeometryBaseModel.discriminator( 'EdgesGeometry', getSchemaFrom$1C( Mongoose ) );
-
-}
-
-function registerModelTo$1t ( Mongoose ) {
-
-    if ( !_model$1t ) {
-        _createModel$1t( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var EdgesGeometry_1 = {
-    name:            'EdgesGeometry',
-    getSchemaFrom:   getSchemaFrom$1C,
-    getModelFrom:    getModelFrom$1t,
-    registerModelTo: registerModelTo$1t
-};
+var ExtrudeBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/ExtrudeBufferGeometry
@@ -6386,62 +6848,73 @@ var EdgesGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$g } = require$$0$1;
+var hasRequiredExtrudeBufferGeometry;
 
-let _schema$1B = undefined;
-let _model$1s  = undefined;
+function requireExtrudeBufferGeometry () {
+	if (hasRequiredExtrudeBufferGeometry) return ExtrudeBufferGeometry;
+	hasRequiredExtrudeBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1B ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1B ) {
-        _createSchema$1B( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1B
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ExtrudeBufferGeometry.ExtrudeBufferGeometry = {
+	    name:            'ExtrudeBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ExtrudeBufferGeometry;
 }
 
-function _createSchema$1B ( Mongoose ) {
+var ExtrudeBufferGeometryExports = requireExtrudeBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1B = new Schema( {} );
-
-}
-
-function getModelFrom$1s ( Mongoose ) {
-
-    if ( !_model$1s ) {
-        _createModel$1s( Mongoose );
-    }
-
-    return _model$1s
-
-}
-
-function _createModel$1s ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$g.getModelFrom( Mongoose );
-    _model$1s                        = BufferGeometryBaseModel.discriminator( 'ExtrudeBufferGeometry', getSchemaFrom$1B( Mongoose ) );
-
-}
-
-function registerModelTo$1s ( Mongoose ) {
-
-    if ( !_model$1s ) {
-        _createModel$1s( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ExtrudeBufferGeometry_1 = {
-    name:            'ExtrudeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1B,
-    getModelFrom:    getModelFrom$1s,
-    registerModelTo: registerModelTo$1s
-};
+var ExtrudeGeometry = {};
 
 /**
  * @module Schemas/Geometries/ExtrudeGeometry
@@ -6453,62 +6926,73 @@ var ExtrudeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$f } = require$$0;
+var hasRequiredExtrudeGeometry;
 
-let _schema$1A = undefined;
-let _model$1r  = undefined;
+function requireExtrudeGeometry () {
+	if (hasRequiredExtrudeGeometry) return ExtrudeGeometry;
+	hasRequiredExtrudeGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1A ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1A ) {
-        _createSchema$1A( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1A
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'ExtrudeGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ExtrudeGeometry.ExtrudeGeometry = {
+	    name:            'ExtrudeGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ExtrudeGeometry;
 }
 
-function _createSchema$1A ( Mongoose ) {
+var ExtrudeGeometryExports = requireExtrudeGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1A = new Schema( {} );
-
-}
-
-function getModelFrom$1r ( Mongoose ) {
-
-    if ( !_model$1r ) {
-        _createModel$1r( Mongoose );
-    }
-
-    return _model$1r
-
-}
-
-function _createModel$1r ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$f.getModelFrom( Mongoose );
-    _model$1r                  = GeometryBaseModel.discriminator( 'ExtrudeGeometry', getSchemaFrom$1A( Mongoose ) );
-
-}
-
-function registerModelTo$1r ( Mongoose ) {
-
-    if ( !_model$1r ) {
-        _createModel$1r( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ExtrudeGeometry_1 = {
-    name:            'ExtrudeGeometry',
-    getSchemaFrom:   getSchemaFrom$1A,
-    getModelFrom:    getModelFrom$1r,
-    registerModelTo: registerModelTo$1r
-};
+var IcosahedronBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/IcosahedronBufferGeometry
@@ -6520,62 +7004,73 @@ var ExtrudeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$f } = require$$0$1;
+var hasRequiredIcosahedronBufferGeometry;
 
-let _schema$1z = undefined;
-let _model$1q  = undefined;
+function requireIcosahedronBufferGeometry () {
+	if (hasRequiredIcosahedronBufferGeometry) return IcosahedronBufferGeometry;
+	hasRequiredIcosahedronBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1z ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1z ) {
-        _createSchema$1z( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1z
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	IcosahedronBufferGeometry.IcosahedronBufferGeometry = {
+	    name:            'IcosahedronBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return IcosahedronBufferGeometry;
 }
 
-function _createSchema$1z ( Mongoose ) {
+var IcosahedronBufferGeometryExports = requireIcosahedronBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1z = new Schema( {} );
-
-}
-
-function getModelFrom$1q ( Mongoose ) {
-
-    if ( !_model$1q ) {
-        _createModel$1q( Mongoose );
-    }
-
-    return _model$1q
-
-}
-
-function _createModel$1q ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$f.getModelFrom( Mongoose );
-    _model$1q                        = BufferGeometryBaseModel.discriminator( 'IcosahedronBufferGeometry', getSchemaFrom$1z( Mongoose ) );
-
-}
-
-function registerModelTo$1q ( Mongoose ) {
-
-    if ( !_model$1q ) {
-        _createModel$1q( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var IcosahedronBufferGeometry_1 = {
-    name:            'IcosahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1z,
-    getModelFrom:    getModelFrom$1q,
-    registerModelTo: registerModelTo$1q
-};
+var IcosahedronGeometry = {};
 
 /**
  * @module Schemas/Geometries/IcosahedronGeometry
@@ -6587,62 +7082,73 @@ var IcosahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$e } = require$$0;
+var hasRequiredIcosahedronGeometry;
 
-let _schema$1y = undefined;
-let _model$1p  = undefined;
+function requireIcosahedronGeometry () {
+	if (hasRequiredIcosahedronGeometry) return IcosahedronGeometry;
+	hasRequiredIcosahedronGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1y ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1y ) {
-        _createSchema$1y( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1y
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'IcosahedronGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	IcosahedronGeometry.IcosahedronGeometry = {
+	    name:            'IcosahedronGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return IcosahedronGeometry;
 }
 
-function _createSchema$1y ( Mongoose ) {
+var IcosahedronGeometryExports = requireIcosahedronGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1y = new Schema( {} );
-
-}
-
-function getModelFrom$1p ( Mongoose ) {
-
-    if ( !_model$1p ) {
-        _createModel$1p( Mongoose );
-    }
-
-    return _model$1p
-
-}
-
-function _createModel$1p ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$e.getModelFrom( Mongoose );
-    _model$1p                  = GeometryBaseModel.discriminator( 'IcosahedronGeometry', getSchemaFrom$1y( Mongoose ) );
-
-}
-
-function registerModelTo$1p ( Mongoose ) {
-
-    if ( !_model$1p ) {
-        _createModel$1p( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var IcosahedronGeometry_1 = {
-    name:            'IcosahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$1y,
-    getModelFrom:    getModelFrom$1p,
-    registerModelTo: registerModelTo$1p
-};
+var InstancedBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/InstancedBufferGeometry
@@ -6654,62 +7160,73 @@ var IcosahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$e } = require$$0$1;
+var hasRequiredInstancedBufferGeometry;
 
-let _schema$1x = undefined;
-let _model$1o  = undefined;
+function requireInstancedBufferGeometry () {
+	if (hasRequiredInstancedBufferGeometry) return InstancedBufferGeometry;
+	hasRequiredInstancedBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1x ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1x ) {
-        _createSchema$1x( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1x
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	InstancedBufferGeometry.InstancedBufferGeometry = {
+	    name:            'InstancedBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return InstancedBufferGeometry;
 }
 
-function _createSchema$1x ( Mongoose ) {
+var InstancedBufferGeometryExports = requireInstancedBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1x = new Schema( {} );
-
-}
-
-function getModelFrom$1o ( Mongoose ) {
-
-    if ( !_model$1o ) {
-        _createModel$1o( Mongoose );
-    }
-
-    return _model$1o
-
-}
-
-function _createModel$1o ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$e.getModelFrom( Mongoose );
-    _model$1o                        = BufferGeometryBaseModel.discriminator( 'InstancedBufferGeometry', getSchemaFrom$1x( Mongoose ) );
-
-}
-
-function registerModelTo$1o ( Mongoose ) {
-
-    if ( !_model$1o ) {
-        _createModel$1o( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var InstancedBufferGeometry_1 = {
-    name:            'InstancedBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1x,
-    getModelFrom:    getModelFrom$1o,
-    registerModelTo: registerModelTo$1o
-};
+var LatheBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/LatheBufferGeometry
@@ -6721,62 +7238,73 @@ var InstancedBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$d } = require$$0$1;
+var hasRequiredLatheBufferGeometry;
 
-let _schema$1w = undefined;
-let _model$1n  = undefined;
+function requireLatheBufferGeometry () {
+	if (hasRequiredLatheBufferGeometry) return LatheBufferGeometry;
+	hasRequiredLatheBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1w ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1w ) {
-        _createSchema$1w( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1w
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LatheBufferGeometry.LatheBufferGeometry = {
+	    name:            'LatheBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LatheBufferGeometry;
 }
 
-function _createSchema$1w ( Mongoose ) {
+var LatheBufferGeometryExports = requireLatheBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1w = new Schema( {} );
-
-}
-
-function getModelFrom$1n ( Mongoose ) {
-
-    if ( !_model$1n ) {
-        _createModel$1n( Mongoose );
-    }
-
-    return _model$1n
-
-}
-
-function _createModel$1n ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$d.getModelFrom( Mongoose );
-    _model$1n                        = BufferGeometryBaseModel.discriminator( 'LatheBufferGeometry', getSchemaFrom$1w( Mongoose ) );
-
-}
-
-function registerModelTo$1n ( Mongoose ) {
-
-    if ( !_model$1n ) {
-        _createModel$1n( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LatheBufferGeometry_1 = {
-    name:            'LatheBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1w,
-    getModelFrom:    getModelFrom$1n,
-    registerModelTo: registerModelTo$1n
-};
+var LatheGeometry = {};
 
 /**
  * @module Schemas/Geometries/LatheGeometry
@@ -6788,62 +7316,73 @@ var LatheBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$d } = require$$0;
+var hasRequiredLatheGeometry;
 
-let _schema$1v = undefined;
-let _model$1m  = undefined;
+function requireLatheGeometry () {
+	if (hasRequiredLatheGeometry) return LatheGeometry;
+	hasRequiredLatheGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1v ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1v ) {
-        _createSchema$1v( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1v
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'LatheGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LatheGeometry.LatheGeometry = {
+	    name:            'LatheGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LatheGeometry;
 }
 
-function _createSchema$1v ( Mongoose ) {
+var LatheGeometryExports = requireLatheGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1v = new Schema( {} );
-
-}
-
-function getModelFrom$1m ( Mongoose ) {
-
-    if ( !_model$1m ) {
-        _createModel$1m( Mongoose );
-    }
-
-    return _model$1m
-
-}
-
-function _createModel$1m ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$d.getModelFrom( Mongoose );
-    _model$1m                  = GeometryBaseModel.discriminator( 'LatheGeometry', getSchemaFrom$1v( Mongoose ) );
-
-}
-
-function registerModelTo$1m ( Mongoose ) {
-
-    if ( !_model$1m ) {
-        _createModel$1m( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LatheGeometry_1 = {
-    name:            'LatheGeometry',
-    getSchemaFrom:   getSchemaFrom$1v,
-    getModelFrom:    getModelFrom$1m,
-    registerModelTo: registerModelTo$1m
-};
+var OctahedronBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/OctahedronBufferGeometry
@@ -6855,62 +7394,73 @@ var LatheGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$c } = require$$0$1;
+var hasRequiredOctahedronBufferGeometry;
 
-let _schema$1u = undefined;
-let _model$1l  = undefined;
+function requireOctahedronBufferGeometry () {
+	if (hasRequiredOctahedronBufferGeometry) return OctahedronBufferGeometry;
+	hasRequiredOctahedronBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1u ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1u ) {
-        _createSchema$1u( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1u
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	OctahedronBufferGeometry.OctahedronBufferGeometry = {
+	    name:            'OctahedronBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return OctahedronBufferGeometry;
 }
 
-function _createSchema$1u ( Mongoose ) {
+var OctahedronBufferGeometryExports = requireOctahedronBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1u = new Schema( {} );
-
-}
-
-function getModelFrom$1l ( Mongoose ) {
-
-    if ( !_model$1l ) {
-        _createModel$1l( Mongoose );
-    }
-
-    return _model$1l
-
-}
-
-function _createModel$1l ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$c.getModelFrom( Mongoose );
-    _model$1l                        = BufferGeometryBaseModel.discriminator( 'OctahedronBufferGeometry', getSchemaFrom$1u( Mongoose ) );
-
-}
-
-function registerModelTo$1l ( Mongoose ) {
-
-    if ( !_model$1l ) {
-        _createModel$1l( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var OctahedronBufferGeometry_1 = {
-    name:            'OctahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1u,
-    getModelFrom:    getModelFrom$1l,
-    registerModelTo: registerModelTo$1l
-};
+var OctahedronGeometry = {};
 
 /**
  * @module Schemas/Geometries/OctahedronGeometry
@@ -6922,62 +7472,73 @@ var OctahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$c } = require$$0;
+var hasRequiredOctahedronGeometry;
 
-let _schema$1t = undefined;
-let _model$1k  = undefined;
+function requireOctahedronGeometry () {
+	if (hasRequiredOctahedronGeometry) return OctahedronGeometry;
+	hasRequiredOctahedronGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1t ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1t ) {
-        _createSchema$1t( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1t
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'OctahedronGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	OctahedronGeometry.OctahedronGeometry = {
+	    name:            'OctahedronGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return OctahedronGeometry;
 }
 
-function _createSchema$1t ( Mongoose ) {
+var OctahedronGeometryExports = requireOctahedronGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1t = new Schema( {} );
-
-}
-
-function getModelFrom$1k ( Mongoose ) {
-
-    if ( !_model$1k ) {
-        _createModel$1k( Mongoose );
-    }
-
-    return _model$1k
-
-}
-
-function _createModel$1k ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$c.getModelFrom( Mongoose );
-    _model$1k                  = GeometryBaseModel.discriminator( 'OctahedronGeometry', getSchemaFrom$1t( Mongoose ) );
-
-}
-
-function registerModelTo$1k ( Mongoose ) {
-
-    if ( !_model$1k ) {
-        _createModel$1k( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var OctahedronGeometry_1 = {
-    name:            'OctahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$1t,
-    getModelFrom:    getModelFrom$1k,
-    registerModelTo: registerModelTo$1k
-};
+var ParametricBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/ParametricBufferGeometry
@@ -6989,62 +7550,73 @@ var OctahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$b } = require$$0$1;
+var hasRequiredParametricBufferGeometry;
 
-let _schema$1s = undefined;
-let _model$1j  = undefined;
+function requireParametricBufferGeometry () {
+	if (hasRequiredParametricBufferGeometry) return ParametricBufferGeometry;
+	hasRequiredParametricBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1s ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1s ) {
-        _createSchema$1s( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1s
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ParametricBufferGeometry.ParametricBufferGeometry = {
+	    name:            'ParametricBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ParametricBufferGeometry;
 }
 
-function _createSchema$1s ( Mongoose ) {
+var ParametricBufferGeometryExports = requireParametricBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1s = new Schema( {} );
-
-}
-
-function getModelFrom$1j ( Mongoose ) {
-
-    if ( !_model$1j ) {
-        _createModel$1j( Mongoose );
-    }
-
-    return _model$1j
-
-}
-
-function _createModel$1j ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$b.getModelFrom( Mongoose );
-    _model$1j                        = BufferGeometryBaseModel.discriminator( 'ParametricBufferGeometry', getSchemaFrom$1s( Mongoose ) );
-
-}
-
-function registerModelTo$1j ( Mongoose ) {
-
-    if ( !_model$1j ) {
-        _createModel$1j( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ParametricBufferGeometry_1 = {
-    name:            'ParametricBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1s,
-    getModelFrom:    getModelFrom$1j,
-    registerModelTo: registerModelTo$1j
-};
+var ParametricGeometry = {};
 
 /**
  * @module Schemas/Geometries/ParametricGeometry
@@ -7056,62 +7628,73 @@ var ParametricBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$b } = require$$0;
+var hasRequiredParametricGeometry;
 
-let _schema$1r = undefined;
-let _model$1i  = undefined;
+function requireParametricGeometry () {
+	if (hasRequiredParametricGeometry) return ParametricGeometry;
+	hasRequiredParametricGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1r ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1r ) {
-        _createSchema$1r( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1r
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'ParametricGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ParametricGeometry.ParametricGeometry = {
+	    name:            'ParametricGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ParametricGeometry;
 }
 
-function _createSchema$1r ( Mongoose ) {
+var ParametricGeometryExports = requireParametricGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1r = new Schema( {} );
-
-}
-
-function getModelFrom$1i ( Mongoose ) {
-
-    if ( !_model$1i ) {
-        _createModel$1i( Mongoose );
-    }
-
-    return _model$1i
-
-}
-
-function _createModel$1i ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$b.getModelFrom( Mongoose );
-    _model$1i                  = GeometryBaseModel.discriminator( 'ParametricGeometry', getSchemaFrom$1r( Mongoose ) );
-
-}
-
-function registerModelTo$1i ( Mongoose ) {
-
-    if ( !_model$1i ) {
-        _createModel$1i( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ParametricGeometry_1 = {
-    name:            'ParametricGeometry',
-    getSchemaFrom:   getSchemaFrom$1r,
-    getModelFrom:    getModelFrom$1i,
-    registerModelTo: registerModelTo$1i
-};
+var PlaneBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/PlaneBufferGeometry
@@ -7123,62 +7706,73 @@ var ParametricGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$a } = require$$0$1;
+var hasRequiredPlaneBufferGeometry;
 
-let _schema$1q = undefined;
-let _model$1h  = undefined;
+function requirePlaneBufferGeometry () {
+	if (hasRequiredPlaneBufferGeometry) return PlaneBufferGeometry;
+	hasRequiredPlaneBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1q ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1q ) {
-        _createSchema$1q( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1q
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PlaneBufferGeometry.PlaneBufferGeometry = {
+	    name:            'PlaneBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PlaneBufferGeometry;
 }
 
-function _createSchema$1q ( Mongoose ) {
+var PlaneBufferGeometryExports = requirePlaneBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1q = new Schema( {} );
-
-}
-
-function getModelFrom$1h ( Mongoose ) {
-
-    if ( !_model$1h ) {
-        _createModel$1h( Mongoose );
-    }
-
-    return _model$1h
-
-}
-
-function _createModel$1h ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$a.getModelFrom( Mongoose );
-    _model$1h                        = BufferGeometryBaseModel.discriminator( 'PlaneBufferGeometry', getSchemaFrom$1q( Mongoose ) );
-
-}
-
-function registerModelTo$1h ( Mongoose ) {
-
-    if ( !_model$1h ) {
-        _createModel$1h( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PlaneBufferGeometry_1 = {
-    name:            'PlaneBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1q,
-    getModelFrom:    getModelFrom$1h,
-    registerModelTo: registerModelTo$1h
-};
+var PlaneGeometry = {};
 
 /**
  * @module Schemas/Geometries/PlaneGeometry
@@ -7190,62 +7784,73 @@ var PlaneBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$a } = require$$0;
+var hasRequiredPlaneGeometry;
 
-let _schema$1p = undefined;
-let _model$1g  = undefined;
+function requirePlaneGeometry () {
+	if (hasRequiredPlaneGeometry) return PlaneGeometry;
+	hasRequiredPlaneGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1p ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1p ) {
-        _createSchema$1p( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1p
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'PlaneGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PlaneGeometry.PlaneGeometry = {
+	    name:            'PlaneGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PlaneGeometry;
 }
 
-function _createSchema$1p ( Mongoose ) {
+var PlaneGeometryExports = requirePlaneGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1p = new Schema( {} );
-
-}
-
-function getModelFrom$1g ( Mongoose ) {
-
-    if ( !_model$1g ) {
-        _createModel$1g( Mongoose );
-    }
-
-    return _model$1g
-
-}
-
-function _createModel$1g ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$a.getModelFrom( Mongoose );
-    _model$1g                  = GeometryBaseModel.discriminator( 'PlaneGeometry', getSchemaFrom$1p( Mongoose ) );
-
-}
-
-function registerModelTo$1g ( Mongoose ) {
-
-    if ( !_model$1g ) {
-        _createModel$1g( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PlaneGeometry_1 = {
-    name:            'PlaneGeometry',
-    getSchemaFrom:   getSchemaFrom$1p,
-    getModelFrom:    getModelFrom$1g,
-    registerModelTo: registerModelTo$1g
-};
+var PolyhedronBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/PolyhedronBufferGeometry
@@ -7257,62 +7862,73 @@ var PlaneGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$9 } = require$$0$1;
+var hasRequiredPolyhedronBufferGeometry;
 
-let _schema$1o = undefined;
-let _model$1f  = undefined;
+function requirePolyhedronBufferGeometry () {
+	if (hasRequiredPolyhedronBufferGeometry) return PolyhedronBufferGeometry;
+	hasRequiredPolyhedronBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1o ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1o ) {
-        _createSchema$1o( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1o
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PolyhedronBufferGeometry.PolyhedronBufferGeometry = {
+	    name:            'PolyhedronBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PolyhedronBufferGeometry;
 }
 
-function _createSchema$1o ( Mongoose ) {
+var PolyhedronBufferGeometryExports = requirePolyhedronBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1o = new Schema( {} );
-
-}
-
-function getModelFrom$1f ( Mongoose ) {
-
-    if ( !_model$1f ) {
-        _createModel$1f( Mongoose );
-    }
-
-    return _model$1f
-
-}
-
-function _createModel$1f ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$9.getModelFrom( Mongoose );
-    _model$1f                        = BufferGeometryBaseModel.discriminator( 'PolyhedronBufferGeometry', getSchemaFrom$1o( Mongoose ) );
-
-}
-
-function registerModelTo$1f ( Mongoose ) {
-
-    if ( !_model$1f ) {
-        _createModel$1f( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PolyhedronBufferGeometry_1 = {
-    name:            'PolyhedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1o,
-    getModelFrom:    getModelFrom$1f,
-    registerModelTo: registerModelTo$1f
-};
+var PolyhedronGeometry = {};
 
 /**
  * @module Schemas/Geometries/PolyhedronGeometry
@@ -7324,62 +7940,73 @@ var PolyhedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$9 } = require$$0;
+var hasRequiredPolyhedronGeometry;
 
-let _schema$1n = undefined;
-let _model$1e  = undefined;
+function requirePolyhedronGeometry () {
+	if (hasRequiredPolyhedronGeometry) return PolyhedronGeometry;
+	hasRequiredPolyhedronGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1n ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1n ) {
-        _createSchema$1n( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1n
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'PolyhedronGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PolyhedronGeometry.PolyhedronGeometry = {
+	    name:            'PolyhedronGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PolyhedronGeometry;
 }
 
-function _createSchema$1n ( Mongoose ) {
+var PolyhedronGeometryExports = requirePolyhedronGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1n = new Schema( {} );
-
-}
-
-function getModelFrom$1e ( Mongoose ) {
-
-    if ( !_model$1e ) {
-        _createModel$1e( Mongoose );
-    }
-
-    return _model$1e
-
-}
-
-function _createModel$1e ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$9.getModelFrom( Mongoose );
-    _model$1e                  = GeometryBaseModel.discriminator( 'PolyhedronGeometry', getSchemaFrom$1n( Mongoose ) );
-
-}
-
-function registerModelTo$1e ( Mongoose ) {
-
-    if ( !_model$1e ) {
-        _createModel$1e( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PolyhedronGeometry_1 = {
-    name:            'PolyhedronGeometry',
-    getSchemaFrom:   getSchemaFrom$1n,
-    getModelFrom:    getModelFrom$1e,
-    registerModelTo: registerModelTo$1e
-};
+var RingBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/RingBufferGeometry
@@ -7391,62 +8018,73 @@ var PolyhedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$8 } = require$$0$1;
+var hasRequiredRingBufferGeometry;
 
-let _schema$1m = undefined;
-let _model$1d  = undefined;
+function requireRingBufferGeometry () {
+	if (hasRequiredRingBufferGeometry) return RingBufferGeometry;
+	hasRequiredRingBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1m ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1m ) {
-        _createSchema$1m( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1m
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	RingBufferGeometry.RingBufferGeometry = {
+	    name:            'RingBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return RingBufferGeometry;
 }
 
-function _createSchema$1m ( Mongoose ) {
+var RingBufferGeometryExports = requireRingBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1m = new Schema( {} );
-
-}
-
-function getModelFrom$1d ( Mongoose ) {
-
-    if ( !_model$1d ) {
-        _createModel$1d( Mongoose );
-    }
-
-    return _model$1d
-
-}
-
-function _createModel$1d ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$8.getModelFrom( Mongoose );
-    _model$1d                        = BufferGeometryBaseModel.discriminator( 'RingBufferGeometry', getSchemaFrom$1m( Mongoose ) );
-
-}
-
-function registerModelTo$1d ( Mongoose ) {
-
-    if ( !_model$1d ) {
-        _createModel$1d( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var RingBufferGeometry_1 = {
-    name:            'RingBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1m,
-    getModelFrom:    getModelFrom$1d,
-    registerModelTo: registerModelTo$1d
-};
+var RingGeometry = {};
 
 /**
  * @module Schemas/Geometries/RingGeometry
@@ -7458,62 +8096,73 @@ var RingBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$8 } = require$$0;
+var hasRequiredRingGeometry;
 
-let _schema$1l = undefined;
-let _model$1c  = undefined;
+function requireRingGeometry () {
+	if (hasRequiredRingGeometry) return RingGeometry;
+	hasRequiredRingGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1l ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1l ) {
-        _createSchema$1l( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1l
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'RingGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	RingGeometry.RingGeometry = {
+	    name:            'RingGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return RingGeometry;
 }
 
-function _createSchema$1l ( Mongoose ) {
+var RingGeometryExports = requireRingGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1l = new Schema( {} );
-
-}
-
-function getModelFrom$1c ( Mongoose ) {
-
-    if ( !_model$1c ) {
-        _createModel$1c( Mongoose );
-    }
-
-    return _model$1c
-
-}
-
-function _createModel$1c ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$8.getModelFrom( Mongoose );
-    _model$1c                  = GeometryBaseModel.discriminator( 'RingGeometry', getSchemaFrom$1l( Mongoose ) );
-
-}
-
-function registerModelTo$1c ( Mongoose ) {
-
-    if ( !_model$1c ) {
-        _createModel$1c( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var RingGeometry_1 = {
-    name:            'RingGeometry',
-    getSchemaFrom:   getSchemaFrom$1l,
-    getModelFrom:    getModelFrom$1c,
-    registerModelTo: registerModelTo$1c
-};
+var ShapeBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/ShapeBufferGeometry
@@ -7525,116 +8174,127 @@ var RingGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$7 } = require$$0$1;
+var hasRequiredShapeBufferGeometry;
 
-let _schema$1k = undefined;
-let _model$1b  = undefined;
+function requireShapeBufferGeometry () {
+	if (hasRequiredShapeBufferGeometry) return ShapeBufferGeometry;
+	hasRequiredShapeBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1k ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1k ) {
-        _createSchema$1k( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1k
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    const NestedCurveSchema = new Schema( {
+	        type: {
+	            type:    String,
+	            default: 'Curve'
+	        },
+	        arcLengthDivisions: Number
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    const NestedPathSchema = new Schema( {
+
+	        // CurvePath inheritance
+	        curves:    [ NestedCurveSchema ], // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        },
+
+	        // Path inheritance
+	        currentPoint: Vector2
+
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    const NestedShapeSchema = new Schema( {
+
+	        // CurvePath inheritance
+	        curves:    [ NestedCurveSchema ], // Curve
+	        autoClose: {
+	            type:    Boolean,
+	            default: false
+	        },
+
+	        // Path inheritance
+	        currentPoint: Vector2,
+
+	        // Shape inheritance
+	        uuid:  String,
+	        holes: [ NestedPathSchema ] // Path
+
+	    }, {
+	        id:  false,
+	        _id: false
+	    } );
+
+	    _schema = new Schema( {
+	        shapes:        [ NestedShapeSchema ],
+	        curveSegments: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ShapeBufferGeometry.ShapeBufferGeometry = {
+	    name:            'ShapeBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ShapeBufferGeometry;
 }
 
-function _createSchema$1k ( Mongoose ) {
+var ShapeBufferGeometryExports = requireShapeBufferGeometry();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    const NestedCurveSchema = new Schema( {
-        type: {
-            type:    String,
-            default: 'Curve'
-        },
-        arcLengthDivisions: Number
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    const NestedPathSchema = new Schema( {
-
-        // CurvePath inheritance
-        curves:    [ NestedCurveSchema ], // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        },
-
-        // Path inheritance
-        currentPoint: Vector2
-
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    const NestedShapeSchema = new Schema( {
-
-        // CurvePath inheritance
-        curves:    [ NestedCurveSchema ], // Curve
-        autoClose: {
-            type:    Boolean,
-            default: false
-        },
-
-        // Path inheritance
-        currentPoint: Vector2,
-
-        // Shape inheritance
-        uuid:  String,
-        holes: [ NestedPathSchema ] // Path
-
-    }, {
-        id:  false,
-        _id: false
-    } );
-
-    _schema$1k = new Schema( {
-        shapes:        [ NestedShapeSchema ],
-        curveSegments: Number
-    } );
-
-}
-
-function getModelFrom$1b ( Mongoose ) {
-
-    if ( !_model$1b ) {
-        _createModel$1b( Mongoose );
-    }
-
-    return _model$1b
-
-}
-
-function _createModel$1b ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$7.getModelFrom( Mongoose );
-    _model$1b                        = BufferGeometryBaseModel.discriminator( 'ShapeBufferGeometry', getSchemaFrom$1k( Mongoose ) );
-
-}
-
-function registerModelTo$1b ( Mongoose ) {
-
-    if ( !_model$1b ) {
-        _createModel$1b( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShapeBufferGeometry_1 = {
-    name:            'ShapeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1k,
-    getModelFrom:    getModelFrom$1b,
-    registerModelTo: registerModelTo$1b
-};
+var ShapeGeometry = {};
 
 /**
  * @module Schemas/Geometries/ShapeGeometry
@@ -7646,62 +8306,73 @@ var ShapeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$7 } = require$$0;
+var hasRequiredShapeGeometry;
 
-let _schema$1j = undefined;
-let _model$1a  = undefined;
+function requireShapeGeometry () {
+	if (hasRequiredShapeGeometry) return ShapeGeometry;
+	hasRequiredShapeGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1j ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1j ) {
-        _createSchema$1j( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1j
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'ShapeGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ShapeGeometry.ShapeGeometry = {
+	    name:            'ShapeGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ShapeGeometry;
 }
 
-function _createSchema$1j ( Mongoose ) {
+var ShapeGeometryExports = requireShapeGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1j = new Schema( {} );
-
-}
-
-function getModelFrom$1a ( Mongoose ) {
-
-    if ( !_model$1a ) {
-        _createModel$1a( Mongoose );
-    }
-
-    return _model$1a
-
-}
-
-function _createModel$1a ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$7.getModelFrom( Mongoose );
-    _model$1a                  = GeometryBaseModel.discriminator( 'ShapeGeometry', getSchemaFrom$1j( Mongoose ) );
-
-}
-
-function registerModelTo$1a ( Mongoose ) {
-
-    if ( !_model$1a ) {
-        _createModel$1a( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShapeGeometry_1 = {
-    name:            'ShapeGeometry',
-    getSchemaFrom:   getSchemaFrom$1j,
-    getModelFrom:    getModelFrom$1a,
-    registerModelTo: registerModelTo$1a
-};
+var SphereBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/SphereBufferGeometry
@@ -7713,62 +8384,73 @@ var ShapeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$6 } = require$$0$1;
+var hasRequiredSphereBufferGeometry;
 
-let _schema$1i = undefined;
-let _model$19  = undefined;
+function requireSphereBufferGeometry () {
+	if (hasRequiredSphereBufferGeometry) return SphereBufferGeometry;
+	hasRequiredSphereBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1i ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1i ) {
-        _createSchema$1i( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1i
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SphereBufferGeometry.SphereBufferGeometry = {
+	    name:            'SphereBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SphereBufferGeometry;
 }
 
-function _createSchema$1i ( Mongoose ) {
+var SphereBufferGeometryExports = requireSphereBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1i = new Schema( {} );
-
-}
-
-function getModelFrom$19 ( Mongoose ) {
-
-    if ( !_model$19 ) {
-        _createModel$19( Mongoose );
-    }
-
-    return _model$19
-
-}
-
-function _createModel$19 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$6.getModelFrom( Mongoose );
-    _model$19                        = BufferGeometryBaseModel.discriminator( 'SphereBufferGeometry', getSchemaFrom$1i( Mongoose ) );
-
-}
-
-function registerModelTo$19 ( Mongoose ) {
-
-    if ( !_model$19 ) {
-        _createModel$19( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SphereBufferGeometry_1 = {
-    name:            'SphereBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1i,
-    getModelFrom:    getModelFrom$19,
-    registerModelTo: registerModelTo$19
-};
+var SphereGeometry = {};
 
 /**
  * @module Schemas/Geometries/SphereGeometry
@@ -7780,62 +8462,73 @@ var SphereBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$6 } = require$$0;
+var hasRequiredSphereGeometry;
 
-let _schema$1h = undefined;
-let _model$18  = undefined;
+function requireSphereGeometry () {
+	if (hasRequiredSphereGeometry) return SphereGeometry;
+	hasRequiredSphereGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1h ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1h ) {
-        _createSchema$1h( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1h
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'SphereGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SphereGeometry.SphereGeometry = {
+	    name:            'SphereGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SphereGeometry;
 }
 
-function _createSchema$1h ( Mongoose ) {
+var SphereGeometryExports = requireSphereGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1h = new Schema( {} );
-
-}
-
-function getModelFrom$18 ( Mongoose ) {
-
-    if ( !_model$18 ) {
-        _createModel$18( Mongoose );
-    }
-
-    return _model$18
-
-}
-
-function _createModel$18 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$6.getModelFrom( Mongoose );
-    _model$18                  = GeometryBaseModel.discriminator( 'SphereGeometry', getSchemaFrom$1h( Mongoose ) );
-
-}
-
-function registerModelTo$18 ( Mongoose ) {
-
-    if ( !_model$18 ) {
-        _createModel$18( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SphereGeometry_1 = {
-    name:            'SphereGeometry',
-    getSchemaFrom:   getSchemaFrom$1h,
-    getModelFrom:    getModelFrom$18,
-    registerModelTo: registerModelTo$18
-};
+var TeopotBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TeapotBufferGeometry
@@ -7847,62 +8540,73 @@ var SphereGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$5 } = require$$0$1;
+var hasRequiredTeopotBufferGeometry;
 
-let _schema$1g = undefined;
-let _model$17  = undefined;
+function requireTeopotBufferGeometry () {
+	if (hasRequiredTeopotBufferGeometry) return TeopotBufferGeometry;
+	hasRequiredTeopotBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1g ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1g ) {
-        _createSchema$1g( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1g
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TeopotBufferGeometry.TeapotBufferGeometry = {
+	    name:            'TeapotBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TeopotBufferGeometry;
 }
 
-function _createSchema$1g ( Mongoose ) {
+var TeopotBufferGeometryExports = requireTeopotBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1g = new Schema( {} );
-
-}
-
-function getModelFrom$17 ( Mongoose ) {
-
-    if ( !_model$17 ) {
-        _createModel$17( Mongoose );
-    }
-
-    return _model$17
-
-}
-
-function _createModel$17 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$5.getModelFrom( Mongoose );
-    _model$17                        = BufferGeometryBaseModel.discriminator( 'TeapotBufferGeometry', getSchemaFrom$1g( Mongoose ) );
-
-}
-
-function registerModelTo$17 ( Mongoose ) {
-
-    if ( !_model$17 ) {
-        _createModel$17( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TeapotBufferGeometry = {
-    name:            'TeapotBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1g,
-    getModelFrom:    getModelFrom$17,
-    registerModelTo: registerModelTo$17
-};
+var TetrahedronBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TetrahedronBufferGeometry
@@ -7914,62 +8618,73 @@ var TeapotBufferGeometry = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$4 } = require$$0$1;
+var hasRequiredTetrahedronBufferGeometry;
 
-let _schema$1f = undefined;
-let _model$16  = undefined;
+function requireTetrahedronBufferGeometry () {
+	if (hasRequiredTetrahedronBufferGeometry) return TetrahedronBufferGeometry;
+	hasRequiredTetrahedronBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1f ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1f ) {
-        _createSchema$1f( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1f
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TetrahedronBufferGeometry.TetrahedronBufferGeometry = {
+	    name:            'TetrahedronBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TetrahedronBufferGeometry;
 }
 
-function _createSchema$1f ( Mongoose ) {
+var TetrahedronBufferGeometryExports = requireTetrahedronBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1f = new Schema( {} );
-
-}
-
-function getModelFrom$16 ( Mongoose ) {
-
-    if ( !_model$16 ) {
-        _createModel$16( Mongoose );
-    }
-
-    return _model$16
-
-}
-
-function _createModel$16 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$4.getModelFrom( Mongoose );
-    _model$16                        = BufferGeometryBaseModel.discriminator( 'TetrahedronBufferGeometry', getSchemaFrom$1f( Mongoose ) );
-
-}
-
-function registerModelTo$16 ( Mongoose ) {
-
-    if ( !_model$16 ) {
-        _createModel$16( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TetrahedronBufferGeometry_1 = {
-    name:            'TetrahedronBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1f,
-    getModelFrom:    getModelFrom$16,
-    registerModelTo: registerModelTo$16
-};
+var TetrahedronGeometry = {};
 
 /**
  * @module Schemas/Geometries/TetrahedronGeometry
@@ -7981,62 +8696,73 @@ var TetrahedronBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$5 } = require$$0;
+var hasRequiredTetrahedronGeometry;
 
-let _schema$1e = undefined;
-let _model$15  = undefined;
+function requireTetrahedronGeometry () {
+	if (hasRequiredTetrahedronGeometry) return TetrahedronGeometry;
+	hasRequiredTetrahedronGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1e ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1e ) {
-        _createSchema$1e( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1e
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'TetrahedronGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TetrahedronGeometry.TetrahedronGeometry = {
+	    name:            'TetrahedronGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TetrahedronGeometry;
 }
 
-function _createSchema$1e ( Mongoose ) {
+var TetrahedronGeometryExports = requireTetrahedronGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1e = new Schema( {} );
-
-}
-
-function getModelFrom$15 ( Mongoose ) {
-
-    if ( !_model$15 ) {
-        _createModel$15( Mongoose );
-    }
-
-    return _model$15
-
-}
-
-function _createModel$15 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$5.getModelFrom( Mongoose );
-    _model$15                  = GeometryBaseModel.discriminator( 'TetrahedronGeometry', getSchemaFrom$1e( Mongoose ) );
-
-}
-
-function registerModelTo$15 ( Mongoose ) {
-
-    if ( !_model$15 ) {
-        _createModel$15( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TetrahedronGeometry_1 = {
-    name:            'TetrahedronGeometry',
-    getSchemaFrom:   getSchemaFrom$1e,
-    getModelFrom:    getModelFrom$15,
-    registerModelTo: registerModelTo$15
-};
+var TextBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TextBufferGeometry
@@ -8048,62 +8774,73 @@ var TetrahedronGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$3 } = require$$0$1;
+var hasRequiredTextBufferGeometry;
 
-let _schema$1d = undefined;
-let _model$14  = undefined;
+function requireTextBufferGeometry () {
+	if (hasRequiredTextBufferGeometry) return TextBufferGeometry;
+	hasRequiredTextBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1d ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1d ) {
-        _createSchema$1d( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1d
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TextBufferGeometry.TextBufferGeometry = {
+	    name:            'TextBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TextBufferGeometry;
 }
 
-function _createSchema$1d ( Mongoose ) {
+var TextBufferGeometryExports = requireTextBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1d = new Schema( {} );
-
-}
-
-function getModelFrom$14 ( Mongoose ) {
-
-    if ( !_model$14 ) {
-        _createModel$14( Mongoose );
-    }
-
-    return _model$14
-
-}
-
-function _createModel$14 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$3.getModelFrom( Mongoose );
-    _model$14                        = BufferGeometryBaseModel.discriminator( 'TextBufferGeometry', getSchemaFrom$1d( Mongoose ) );
-
-}
-
-function registerModelTo$14 ( Mongoose ) {
-
-    if ( !_model$14 ) {
-        _createModel$14( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TextBufferGeometry_1 = {
-    name:            'TextBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1d,
-    getModelFrom:    getModelFrom$14,
-    registerModelTo: registerModelTo$14
-};
+var TextGeometry = {};
 
 /**
  * @module Schemas/Geometries/TextGeometry
@@ -8115,62 +8852,73 @@ var TextBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$4 } = require$$0;
+var hasRequiredTextGeometry;
 
-let _schema$1c = undefined;
-let _model$13  = undefined;
+function requireTextGeometry () {
+	if (hasRequiredTextGeometry) return TextGeometry;
+	hasRequiredTextGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1c ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1c ) {
-        _createSchema$1c( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1c
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'TextGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TextGeometry.TextGeometry = {
+	    name:            'TextGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TextGeometry;
 }
 
-function _createSchema$1c ( Mongoose ) {
+var TextGeometryExports = requireTextGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1c = new Schema( {} );
-
-}
-
-function getModelFrom$13 ( Mongoose ) {
-
-    if ( !_model$13 ) {
-        _createModel$13( Mongoose );
-    }
-
-    return _model$13
-
-}
-
-function _createModel$13 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$4.getModelFrom( Mongoose );
-    _model$13                  = GeometryBaseModel.discriminator( 'TextGeometry', getSchemaFrom$1c( Mongoose ) );
-
-}
-
-function registerModelTo$13 ( Mongoose ) {
-
-    if ( !_model$13 ) {
-        _createModel$13( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TextGeometry_1 = {
-    name:            'TextGeometry',
-    getSchemaFrom:   getSchemaFrom$1c,
-    getModelFrom:    getModelFrom$13,
-    registerModelTo: registerModelTo$13
-};
+var TorusBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TorusBufferGeometry
@@ -8182,62 +8930,73 @@ var TextGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$2 } = require$$0$1;
+var hasRequiredTorusBufferGeometry;
 
-let _schema$1b = undefined;
-let _model$12  = undefined;
+function requireTorusBufferGeometry () {
+	if (hasRequiredTorusBufferGeometry) return TorusBufferGeometry;
+	hasRequiredTorusBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$1b ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1b ) {
-        _createSchema$1b( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1b
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TorusBufferGeometry.TorusBufferGeometry = {
+	    name:            'TorusBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TorusBufferGeometry;
 }
 
-function _createSchema$1b ( Mongoose ) {
+var TorusBufferGeometryExports = requireTorusBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1b = new Schema( {} );
-
-}
-
-function getModelFrom$12 ( Mongoose ) {
-
-    if ( !_model$12 ) {
-        _createModel$12( Mongoose );
-    }
-
-    return _model$12
-
-}
-
-function _createModel$12 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$2.getModelFrom( Mongoose );
-    _model$12                        = BufferGeometryBaseModel.discriminator( 'TorusBufferGeometry', getSchemaFrom$1b( Mongoose ) );
-
-}
-
-function registerModelTo$12 ( Mongoose ) {
-
-    if ( !_model$12 ) {
-        _createModel$12( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusBufferGeometry_1 = {
-    name:            'TorusBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$1b,
-    getModelFrom:    getModelFrom$12,
-    registerModelTo: registerModelTo$12
-};
+var TorusGeometry = {};
 
 /**
  * @module Schemas/Geometries/TorusGeometry
@@ -8249,62 +9008,73 @@ var TorusBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$3 } = require$$0;
+var hasRequiredTorusGeometry;
 
-let _schema$1a = undefined;
-let _model$11  = undefined;
+function requireTorusGeometry () {
+	if (hasRequiredTorusGeometry) return TorusGeometry;
+	hasRequiredTorusGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$1a ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1a ) {
-        _createSchema$1a( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1a
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'TorusGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TorusGeometry.TorusGeometry = {
+	    name:            'TorusGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TorusGeometry;
 }
 
-function _createSchema$1a ( Mongoose ) {
+var TorusGeometryExports = requireTorusGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$1a = new Schema( {} );
-
-}
-
-function getModelFrom$11 ( Mongoose ) {
-
-    if ( !_model$11 ) {
-        _createModel$11( Mongoose );
-    }
-
-    return _model$11
-
-}
-
-function _createModel$11 ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$3.getModelFrom( Mongoose );
-    _model$11                  = GeometryBaseModel.discriminator( 'TorusGeometry', getSchemaFrom$1a( Mongoose ) );
-
-}
-
-function registerModelTo$11 ( Mongoose ) {
-
-    if ( !_model$11 ) {
-        _createModel$11( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusGeometry_1 = {
-    name:            'TorusGeometry',
-    getSchemaFrom:   getSchemaFrom$1a,
-    getModelFrom:    getModelFrom$11,
-    registerModelTo: registerModelTo$11
-};
+var TorusKnotBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TorusKnotBufferGeometry
@@ -8316,62 +9086,73 @@ var TorusGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry: BufferGeometry$1 } = require$$0$1;
+var hasRequiredTorusKnotBufferGeometry;
 
-let _schema$19 = undefined;
-let _model$10  = undefined;
+function requireTorusKnotBufferGeometry () {
+	if (hasRequiredTorusKnotBufferGeometry) return TorusKnotBufferGeometry;
+	hasRequiredTorusKnotBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$19 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$19 ) {
-        _createSchema$19( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$19
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TorusKnotBufferGeometry.TorusKnotBufferGeometry = {
+	    name:            'TorusKnotBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TorusKnotBufferGeometry;
 }
 
-function _createSchema$19 ( Mongoose ) {
+var TorusKnotBufferGeometryExports = requireTorusKnotBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$19 = new Schema( {} );
-
-}
-
-function getModelFrom$10 ( Mongoose ) {
-
-    if ( !_model$10 ) {
-        _createModel$10( Mongoose );
-    }
-
-    return _model$10
-
-}
-
-function _createModel$10 ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry$1.getModelFrom( Mongoose );
-    _model$10                        = BufferGeometryBaseModel.discriminator( 'TorusKnotBufferGeometry', getSchemaFrom$19( Mongoose ) );
-
-}
-
-function registerModelTo$10 ( Mongoose ) {
-
-    if ( !_model$10 ) {
-        _createModel$10( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusKnotBufferGeometry_1 = {
-    name:            'TorusKnotBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$19,
-    getModelFrom:    getModelFrom$10,
-    registerModelTo: registerModelTo$10
-};
+var TorusKnotGeometry = {};
 
 /**
  * @module Schemas/Geometries/TorusKnotGeometry
@@ -8383,62 +9164,73 @@ var TorusKnotBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$2 } = require$$0;
+var hasRequiredTorusKnotGeometry;
 
-let _schema$18 = undefined;
-let _model$$  = undefined;
+function requireTorusKnotGeometry () {
+	if (hasRequiredTorusKnotGeometry) return TorusKnotGeometry;
+	hasRequiredTorusKnotGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$18 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$18 ) {
-        _createSchema$18( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$18
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'TorusKnotGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TorusKnotGeometry.TorusKnotGeometry = {
+	    name:            'TorusKnotGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TorusKnotGeometry;
 }
 
-function _createSchema$18 ( Mongoose ) {
+var TorusKnotGeometryExports = requireTorusKnotGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$18 = new Schema( {} );
-
-}
-
-function getModelFrom$$ ( Mongoose ) {
-
-    if ( !_model$$ ) {
-        _createModel$$( Mongoose );
-    }
-
-    return _model$$
-
-}
-
-function _createModel$$ ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$2.getModelFrom( Mongoose );
-    _model$$                  = GeometryBaseModel.discriminator( 'TorusKnotGeometry', getSchemaFrom$18( Mongoose ) );
-
-}
-
-function registerModelTo$$ ( Mongoose ) {
-
-    if ( !_model$$ ) {
-        _createModel$$( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TorusKnotGeometry_1 = {
-    name:            'TorusKnotGeometry',
-    getSchemaFrom:   getSchemaFrom$18,
-    getModelFrom:    getModelFrom$$,
-    registerModelTo: registerModelTo$$
-};
+var TubeBufferGeometry = {};
 
 /**
  * @module Schemas/Geometries/TubeBufferGeometry
@@ -8450,62 +9242,73 @@ var TorusKnotGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { BufferGeometry } = require$$0$1;
+var hasRequiredTubeBufferGeometry;
 
-let _schema$17 = undefined;
-let _model$_  = undefined;
+function requireTubeBufferGeometry () {
+	if (hasRequiredTubeBufferGeometry) return TubeBufferGeometry;
+	hasRequiredTubeBufferGeometry = 1;
+	const { BufferGeometry } = require$$0$1;
 
-function getSchemaFrom$17 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$17 ) {
-        _createSchema$17( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$17
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
+	    _model                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TubeBufferGeometry.TubeBufferGeometry = {
+	    name:            'TubeBufferGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TubeBufferGeometry;
 }
 
-function _createSchema$17 ( Mongoose ) {
+var TubeBufferGeometryExports = requireTubeBufferGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$17 = new Schema( {} );
-
-}
-
-function getModelFrom$_ ( Mongoose ) {
-
-    if ( !_model$_ ) {
-        _createModel$_( Mongoose );
-    }
-
-    return _model$_
-
-}
-
-function _createModel$_ ( Mongoose ) {
-
-    const BufferGeometryBaseModel = BufferGeometry.getModelFrom( Mongoose );
-    _model$_                        = BufferGeometryBaseModel.discriminator( 'TubeBufferGeometry', getSchemaFrom$17( Mongoose ) );
-
-}
-
-function registerModelTo$_ ( Mongoose ) {
-
-    if ( !_model$_ ) {
-        _createModel$_( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TubeBufferGeometry_1 = {
-    name:            'TubeBufferGeometry',
-    getSchemaFrom:   getSchemaFrom$17,
-    getModelFrom:    getModelFrom$_,
-    registerModelTo: registerModelTo$_
-};
+var TubeGeometry = {};
 
 /**
  * @module Schemas/Geometries/TubeGeometry
@@ -8517,62 +9320,73 @@ var TubeBufferGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry: Geometry$1 } = require$$0;
+var hasRequiredTubeGeometry;
 
-let _schema$16 = undefined;
-let _model$Z  = undefined;
+function requireTubeGeometry () {
+	if (hasRequiredTubeGeometry) return TubeGeometry;
+	hasRequiredTubeGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$16 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$16 ) {
-        _createSchema$16( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$16
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'TubeGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	TubeGeometry.TubeGeometry = {
+	    name:            'TubeGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return TubeGeometry;
 }
 
-function _createSchema$16 ( Mongoose ) {
+var TubeGeometryExports = requireTubeGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$16 = new Schema( {} );
-
-}
-
-function getModelFrom$Z ( Mongoose ) {
-
-    if ( !_model$Z ) {
-        _createModel$Z( Mongoose );
-    }
-
-    return _model$Z
-
-}
-
-function _createModel$Z ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry$1.getModelFrom( Mongoose );
-    _model$Z                  = GeometryBaseModel.discriminator( 'TubeGeometry', getSchemaFrom$16( Mongoose ) );
-
-}
-
-function registerModelTo$Z ( Mongoose ) {
-
-    if ( !_model$Z ) {
-        _createModel$Z( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var TubeGeometry_1 = {
-    name:            'TubeGeometry',
-    getSchemaFrom:   getSchemaFrom$16,
-    getModelFrom:    getModelFrom$Z,
-    registerModelTo: registerModelTo$Z
-};
+var WireframeGeometry = {};
 
 /**
  * @module Schemas/Geometries/WireframeGeometry
@@ -8584,62 +9398,73 @@ var TubeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Geometry } = require$$0;
+var hasRequiredWireframeGeometry;
 
-let _schema$15 = undefined;
-let _model$Y  = undefined;
+function requireWireframeGeometry () {
+	if (hasRequiredWireframeGeometry) return WireframeGeometry;
+	hasRequiredWireframeGeometry = 1;
+	const { Geometry } = require$$0;
 
-function getSchemaFrom$15 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$15 ) {
-        _createSchema$15( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$15
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
+	    _model                  = GeometryBaseModel.discriminator( 'WireframeGeometry', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	WireframeGeometry.WireframeGeometry = {
+	    name:            'WireframeGeometry',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return WireframeGeometry;
 }
 
-function _createSchema$15 ( Mongoose ) {
+var WireframeGeometryExports = requireWireframeGeometry();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$15 = new Schema( {} );
-
-}
-
-function getModelFrom$Y ( Mongoose ) {
-
-    if ( !_model$Y ) {
-        _createModel$Y( Mongoose );
-    }
-
-    return _model$Y
-
-}
-
-function _createModel$Y ( Mongoose ) {
-
-    const GeometryBaseModel = Geometry.getModelFrom( Mongoose );
-    _model$Y                  = GeometryBaseModel.discriminator( 'WireframeGeometry', getSchemaFrom$15( Mongoose ) );
-
-}
-
-function registerModelTo$Y ( Mongoose ) {
-
-    if ( !_model$Y ) {
-        _createModel$Y( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var WireframeGeometry_1 = {
-    name:            'WireframeGeometry',
-    getSchemaFrom:   getSchemaFrom$15,
-    getModelFrom:    getModelFrom$Y,
-    registerModelTo: registerModelTo$Y
-};
+var ArrowHelper = {};
 
 /**
  * @module Schemas/Helpers/ArrowHelper
@@ -8651,62 +9476,73 @@ var WireframeGeometry_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$z } = require$$0$2;
+var hasRequiredArrowHelper;
 
-let _schema$14 = undefined;
-let _model$X  = undefined;
+function requireArrowHelper () {
+	if (hasRequiredArrowHelper) return ArrowHelper;
+	hasRequiredArrowHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$14 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$14 ) {
-        _createSchema$14( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$14
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'ArrowHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ArrowHelper.ArrowHelper = {
+	    name:            'ArrowHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ArrowHelper;
 }
 
-function _createSchema$14 ( Mongoose ) {
+var ArrowHelperExports = requireArrowHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$14 = new Schema( {} );
-
-}
-
-function getModelFrom$X ( Mongoose ) {
-
-    if ( !_model$X ) {
-        _createModel$X( Mongoose );
-    }
-
-    return _model$X
-
-}
-
-function _createModel$X ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$z.getModelFrom( Mongoose );
-    _model$X                  = Object3DBaseModel.discriminator( 'ArrowHelper', getSchemaFrom$14( Mongoose ) );
-
-}
-
-function registerModelTo$X ( Mongoose ) {
-
-    if ( !_model$X ) {
-        _createModel$X( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ArrowHelper_1 = {
-    name:            'ArrowHelper',
-    getSchemaFrom:   getSchemaFrom$14,
-    getModelFrom:    getModelFrom$X,
-    registerModelTo: registerModelTo$X
-};
+var AxesHelper = {};
 
 /**
  * @module Schemas/Helpers/AxesHelper
@@ -8718,62 +9554,73 @@ var ArrowHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$y } = require$$0$2;
+var hasRequiredAxesHelper;
 
-let _schema$13 = undefined;
-let _model$W  = undefined;
+function requireAxesHelper () {
+	if (hasRequiredAxesHelper) return AxesHelper;
+	hasRequiredAxesHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$13 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$13 ) {
-        _createSchema$13( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$13
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'AxesHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	AxesHelper.AxesHelper = {
+	    name:            'AxesHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return AxesHelper;
 }
 
-function _createSchema$13 ( Mongoose ) {
+var AxesHelperExports = requireAxesHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$13 = new Schema( {} );
-
-}
-
-function getModelFrom$W ( Mongoose ) {
-
-    if ( !_model$W ) {
-        _createModel$W( Mongoose );
-    }
-
-    return _model$W
-
-}
-
-function _createModel$W ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$y.getModelFrom( Mongoose );
-    _model$W                  = Object3DBaseModel.discriminator( 'AxesHelper', getSchemaFrom$13( Mongoose ) );
-
-}
-
-function registerModelTo$W ( Mongoose ) {
-
-    if ( !_model$W ) {
-        _createModel$W( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var AxesHelper_1 = {
-    name:            'AxesHelper',
-    getSchemaFrom:   getSchemaFrom$13,
-    getModelFrom:    getModelFrom$W,
-    registerModelTo: registerModelTo$W
-};
+var Box3Helper = {};
 
 /**
  * @module Schemas/Helpers/Box3Helper
@@ -8785,62 +9632,73 @@ var AxesHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$x } = require$$0$2;
+var hasRequiredBox3Helper;
 
-let _schema$12 = undefined;
-let _model$V  = undefined;
+function requireBox3Helper () {
+	if (hasRequiredBox3Helper) return Box3Helper;
+	hasRequiredBox3Helper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$12 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$12 ) {
-        _createSchema$12( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$12
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Box3Helper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Box3Helper.Box3Helper = {
+	    name:            'Box3Helper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Box3Helper;
 }
 
-function _createSchema$12 ( Mongoose ) {
+var Box3HelperExports = requireBox3Helper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$12 = new Schema( {} );
-
-}
-
-function getModelFrom$V ( Mongoose ) {
-
-    if ( !_model$V ) {
-        _createModel$V( Mongoose );
-    }
-
-    return _model$V
-
-}
-
-function _createModel$V ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$x.getModelFrom( Mongoose );
-    _model$V                  = Object3DBaseModel.discriminator( 'Box3Helper', getSchemaFrom$12( Mongoose ) );
-
-}
-
-function registerModelTo$V ( Mongoose ) {
-
-    if ( !_model$V ) {
-        _createModel$V( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Box3Helper_1 = {
-    name:            'Box3Helper',
-    getSchemaFrom:   getSchemaFrom$12,
-    getModelFrom:    getModelFrom$V,
-    registerModelTo: registerModelTo$V
-};
+var BoxHelper = {};
 
 /**
  * @module Schemas/Helpers/BoxHelper
@@ -8852,62 +9710,73 @@ var Box3Helper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$w } = require$$0$2;
+var hasRequiredBoxHelper;
 
-let _schema$11 = undefined;
-let _model$U  = undefined;
+function requireBoxHelper () {
+	if (hasRequiredBoxHelper) return BoxHelper;
+	hasRequiredBoxHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$11 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$11 ) {
-        _createSchema$11( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$11
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'BoxHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	BoxHelper.BoxHelper = {
+	    name:            'BoxHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return BoxHelper;
 }
 
-function _createSchema$11 ( Mongoose ) {
+var BoxHelperExports = requireBoxHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$11 = new Schema( {} );
-
-}
-
-function getModelFrom$U ( Mongoose ) {
-
-    if ( !_model$U ) {
-        _createModel$U( Mongoose );
-    }
-
-    return _model$U
-
-}
-
-function _createModel$U ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$w.getModelFrom( Mongoose );
-    _model$U                  = Object3DBaseModel.discriminator( 'BoxHelper', getSchemaFrom$11( Mongoose ) );
-
-}
-
-function registerModelTo$U ( Mongoose ) {
-
-    if ( !_model$U ) {
-        _createModel$U( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var BoxHelper_1 = {
-    name:            'BoxHelper',
-    getSchemaFrom:   getSchemaFrom$11,
-    getModelFrom:    getModelFrom$U,
-    registerModelTo: registerModelTo$U
-};
+var CameraHelper = {};
 
 /**
  * @module Schemas/Helpers/CameraHelper
@@ -8919,62 +9788,73 @@ var BoxHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$v } = require$$0$2;
+var hasRequiredCameraHelper;
 
-let _schema$10 = undefined;
-let _model$T  = undefined;
+function requireCameraHelper () {
+	if (hasRequiredCameraHelper) return CameraHelper;
+	hasRequiredCameraHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$10 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$10 ) {
-        _createSchema$10( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$10
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'CameraHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CameraHelper.CameraHelper = {
+	    name:            'CameraHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CameraHelper;
 }
 
-function _createSchema$10 ( Mongoose ) {
+var CameraHelperExports = requireCameraHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$10 = new Schema( {} );
-
-}
-
-function getModelFrom$T ( Mongoose ) {
-
-    if ( !_model$T ) {
-        _createModel$T( Mongoose );
-    }
-
-    return _model$T
-
-}
-
-function _createModel$T ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$v.getModelFrom( Mongoose );
-    _model$T                  = Object3DBaseModel.discriminator( 'CameraHelper', getSchemaFrom$10( Mongoose ) );
-
-}
-
-function registerModelTo$T ( Mongoose ) {
-
-    if ( !_model$T ) {
-        _createModel$T( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CameraHelper_1 = {
-    name:            'CameraHelper',
-    getSchemaFrom:   getSchemaFrom$10,
-    getModelFrom:    getModelFrom$T,
-    registerModelTo: registerModelTo$T
-};
+var DirectionalLightHelper = {};
 
 /**
  * @module Schemas/Helpers/DirectionalLightHelper
@@ -8986,62 +9866,73 @@ var CameraHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$u } = require$$0$2;
+var hasRequiredDirectionalLightHelper;
 
-let _schema$$ = undefined;
-let _model$S  = undefined;
+function requireDirectionalLightHelper () {
+	if (hasRequiredDirectionalLightHelper) return DirectionalLightHelper;
+	hasRequiredDirectionalLightHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$$ ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$$ ) {
-        _createSchema$$( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$$
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'DirectionalLightHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DirectionalLightHelper.DirectionalLightHelper = {
+	    name:            'DirectionalLightHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DirectionalLightHelper;
 }
 
-function _createSchema$$ ( Mongoose ) {
+var DirectionalLightHelperExports = requireDirectionalLightHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$$ = new Schema( {} );
-
-}
-
-function getModelFrom$S ( Mongoose ) {
-
-    if ( !_model$S ) {
-        _createModel$S( Mongoose );
-    }
-
-    return _model$S
-
-}
-
-function _createModel$S ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$u.getModelFrom( Mongoose );
-    _model$S                  = Object3DBaseModel.discriminator( 'DirectionalLightHelper', getSchemaFrom$$( Mongoose ) );
-
-}
-
-function registerModelTo$S ( Mongoose ) {
-
-    if ( !_model$S ) {
-        _createModel$S( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DirectionalLightHelper_1 = {
-    name:            'DirectionalLightHelper',
-    getSchemaFrom:   getSchemaFrom$$,
-    getModelFrom:    getModelFrom$S,
-    registerModelTo: registerModelTo$S
-};
+var FaceNormalsHelper = {};
 
 /**
  * @module Schemas/Helpers/FaceNormalsHelper
@@ -9053,62 +9944,73 @@ var DirectionalLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$t } = require$$0$2;
+var hasRequiredFaceNormalsHelper;
 
-let _schema$_ = undefined;
-let _model$R  = undefined;
+function requireFaceNormalsHelper () {
+	if (hasRequiredFaceNormalsHelper) return FaceNormalsHelper;
+	hasRequiredFaceNormalsHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$_ ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$_ ) {
-        _createSchema$_( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$_
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'FaceNormalsHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	FaceNormalsHelper.FaceNormalsHelper = {
+	    name:            'FaceNormalsHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return FaceNormalsHelper;
 }
 
-function _createSchema$_ ( Mongoose ) {
+var FaceNormalsHelperExports = requireFaceNormalsHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$_ = new Schema( {} );
-
-}
-
-function getModelFrom$R ( Mongoose ) {
-
-    if ( !_model$R ) {
-        _createModel$R( Mongoose );
-    }
-
-    return _model$R
-
-}
-
-function _createModel$R ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$t.getModelFrom( Mongoose );
-    _model$R                  = Object3DBaseModel.discriminator( 'FaceNormalsHelper', getSchemaFrom$_( Mongoose ) );
-
-}
-
-function registerModelTo$R ( Mongoose ) {
-
-    if ( !_model$R ) {
-        _createModel$R( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var FaceNormalsHelper_1 = {
-    name:            'FaceNormalsHelper',
-    getSchemaFrom:   getSchemaFrom$_,
-    getModelFrom:    getModelFrom$R,
-    registerModelTo: registerModelTo$R
-};
+var GridHelper = {};
 
 /**
  * @module Schemas/Helpers/GridHelper
@@ -9120,62 +10022,73 @@ var FaceNormalsHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$s } = require$$0$2;
+var hasRequiredGridHelper;
 
-let _schema$Z = undefined;
-let _model$Q  = undefined;
+function requireGridHelper () {
+	if (hasRequiredGridHelper) return GridHelper;
+	hasRequiredGridHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$Z ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$Z ) {
-        _createSchema$Z( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$Z
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'GridHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	GridHelper.GridHelper = {
+	    name:            'GridHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return GridHelper;
 }
 
-function _createSchema$Z ( Mongoose ) {
+var GridHelperExports = requireGridHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$Z = new Schema( {} );
-
-}
-
-function getModelFrom$Q ( Mongoose ) {
-
-    if ( !_model$Q ) {
-        _createModel$Q( Mongoose );
-    }
-
-    return _model$Q
-
-}
-
-function _createModel$Q ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$s.getModelFrom( Mongoose );
-    _model$Q                  = Object3DBaseModel.discriminator( 'GridHelper', getSchemaFrom$Z( Mongoose ) );
-
-}
-
-function registerModelTo$Q ( Mongoose ) {
-
-    if ( !_model$Q ) {
-        _createModel$Q( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var GridHelper_1 = {
-    name:            'GridHelper',
-    getSchemaFrom:   getSchemaFrom$Z,
-    getModelFrom:    getModelFrom$Q,
-    registerModelTo: registerModelTo$Q
-};
+var HemisphereLightHelper = {};
 
 /**
  * @module Schemas/Helpers/HemisphereLightHelper
@@ -9187,62 +10100,73 @@ var GridHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$r } = require$$0$2;
+var hasRequiredHemisphereLightHelper;
 
-let _schema$Y = undefined;
-let _model$P  = undefined;
+function requireHemisphereLightHelper () {
+	if (hasRequiredHemisphereLightHelper) return HemisphereLightHelper;
+	hasRequiredHemisphereLightHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$Y ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$Y ) {
-        _createSchema$Y( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$Y
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'HemisphereLightHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	HemisphereLightHelper.HemisphereLightHelper = {
+	    name:            'HemisphereLightHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return HemisphereLightHelper;
 }
 
-function _createSchema$Y ( Mongoose ) {
+var HemisphereLightHelperExports = requireHemisphereLightHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$Y = new Schema( {} );
-
-}
-
-function getModelFrom$P ( Mongoose ) {
-
-    if ( !_model$P ) {
-        _createModel$P( Mongoose );
-    }
-
-    return _model$P
-
-}
-
-function _createModel$P ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$r.getModelFrom( Mongoose );
-    _model$P                  = Object3DBaseModel.discriminator( 'HemisphereLightHelper', getSchemaFrom$Y( Mongoose ) );
-
-}
-
-function registerModelTo$P ( Mongoose ) {
-
-    if ( !_model$P ) {
-        _createModel$P( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var HemisphereLightHelper_1 = {
-    name:            'HemisphereLightHelper',
-    getSchemaFrom:   getSchemaFrom$Y,
-    getModelFrom:    getModelFrom$P,
-    registerModelTo: registerModelTo$P
-};
+var PlaneHelper = {};
 
 /**
  * @module Schemas/Helpers/PlaneHelper
@@ -9254,62 +10178,73 @@ var HemisphereLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$q } = require$$0$2;
+var hasRequiredPlaneHelper;
 
-let _schema$X = undefined;
-let _model$O  = undefined;
+function requirePlaneHelper () {
+	if (hasRequiredPlaneHelper) return PlaneHelper;
+	hasRequiredPlaneHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$X ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$X ) {
-        _createSchema$X( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$X
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PlaneHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PlaneHelper.PlaneHelper = {
+	    name:            'PlaneHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PlaneHelper;
 }
 
-function _createSchema$X ( Mongoose ) {
+var PlaneHelperExports = requirePlaneHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$X = new Schema( {} );
-
-}
-
-function getModelFrom$O ( Mongoose ) {
-
-    if ( !_model$O ) {
-        _createModel$O( Mongoose );
-    }
-
-    return _model$O
-
-}
-
-function _createModel$O ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$q.getModelFrom( Mongoose );
-    _model$O                  = Object3DBaseModel.discriminator( 'PlaneHelper', getSchemaFrom$X( Mongoose ) );
-
-}
-
-function registerModelTo$O ( Mongoose ) {
-
-    if ( !_model$O ) {
-        _createModel$O( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PlaneHelper_1 = {
-    name:            'PlaneHelper',
-    getSchemaFrom:   getSchemaFrom$X,
-    getModelFrom:    getModelFrom$O,
-    registerModelTo: registerModelTo$O
-};
+var PointLightHelper = {};
 
 /**
  * @module Schemas/Helpers/PointLightHelper
@@ -9321,62 +10256,73 @@ var PlaneHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$p } = require$$0$2;
+var hasRequiredPointLightHelper;
 
-let _schema$W = undefined;
-let _model$N  = undefined;
+function requirePointLightHelper () {
+	if (hasRequiredPointLightHelper) return PointLightHelper;
+	hasRequiredPointLightHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$W ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$W ) {
-        _createSchema$W( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$W
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PointLightHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PointLightHelper.PointLightHelper = {
+	    name:            'PointLightHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PointLightHelper;
 }
 
-function _createSchema$W ( Mongoose ) {
+var PointLightHelperExports = requirePointLightHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$W = new Schema( {} );
-
-}
-
-function getModelFrom$N ( Mongoose ) {
-
-    if ( !_model$N ) {
-        _createModel$N( Mongoose );
-    }
-
-    return _model$N
-
-}
-
-function _createModel$N ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$p.getModelFrom( Mongoose );
-    _model$N                  = Object3DBaseModel.discriminator( 'PointLightHelper', getSchemaFrom$W( Mongoose ) );
-
-}
-
-function registerModelTo$N ( Mongoose ) {
-
-    if ( !_model$N ) {
-        _createModel$N( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PointLightHelper_1 = {
-    name:            'PointLightHelper',
-    getSchemaFrom:   getSchemaFrom$W,
-    getModelFrom:    getModelFrom$N,
-    registerModelTo: registerModelTo$N
-};
+var PolarGridHelper = {};
 
 /**
  * @module Schemas/Helpers/PolarGridHelper
@@ -9388,62 +10334,73 @@ var PointLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$o } = require$$0$2;
+var hasRequiredPolarGridHelper;
 
-let _schema$V = undefined;
-let _model$M  = undefined;
+function requirePolarGridHelper () {
+	if (hasRequiredPolarGridHelper) return PolarGridHelper;
+	hasRequiredPolarGridHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$V ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$V ) {
-        _createSchema$V( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$V
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PolarGridHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PolarGridHelper.PolarGridHelper = {
+	    name:            'PolarGridHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PolarGridHelper;
 }
 
-function _createSchema$V ( Mongoose ) {
+var PolarGridHelperExports = requirePolarGridHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$V = new Schema( {} );
-
-}
-
-function getModelFrom$M ( Mongoose ) {
-
-    if ( !_model$M ) {
-        _createModel$M( Mongoose );
-    }
-
-    return _model$M
-
-}
-
-function _createModel$M ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$o.getModelFrom( Mongoose );
-    _model$M                  = Object3DBaseModel.discriminator( 'PolarGridHelper', getSchemaFrom$V( Mongoose ) );
-
-}
-
-function registerModelTo$M ( Mongoose ) {
-
-    if ( !_model$M ) {
-        _createModel$M( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PolarGridHelper_1 = {
-    name:            'PolarGridHelper',
-    getSchemaFrom:   getSchemaFrom$V,
-    getModelFrom:    getModelFrom$M,
-    registerModelTo: registerModelTo$M
-};
+var RectAreaLightHelper = {};
 
 /**
  * @module Schemas/Helpers/RectAreaLightHelper
@@ -9455,62 +10412,73 @@ var PolarGridHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$n } = require$$0$2;
+var hasRequiredRectAreaLightHelper;
 
-let _schema$U = undefined;
-let _model$L  = undefined;
+function requireRectAreaLightHelper () {
+	if (hasRequiredRectAreaLightHelper) return RectAreaLightHelper;
+	hasRequiredRectAreaLightHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$U ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$U ) {
-        _createSchema$U( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$U
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'RectAreaLightHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	RectAreaLightHelper.RectAreaLightHelper = {
+	    name:            'RectAreaLightHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return RectAreaLightHelper;
 }
 
-function _createSchema$U ( Mongoose ) {
+var RectAreaLightHelperExports = requireRectAreaLightHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$U = new Schema( {} );
-
-}
-
-function getModelFrom$L ( Mongoose ) {
-
-    if ( !_model$L ) {
-        _createModel$L( Mongoose );
-    }
-
-    return _model$L
-
-}
-
-function _createModel$L ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$n.getModelFrom( Mongoose );
-    _model$L                  = Object3DBaseModel.discriminator( 'RectAreaLightHelper', getSchemaFrom$U( Mongoose ) );
-
-}
-
-function registerModelTo$L ( Mongoose ) {
-
-    if ( !_model$L ) {
-        _createModel$L( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var RectAreaLightHelper_1 = {
-    name:            'RectAreaLightHelper',
-    getSchemaFrom:   getSchemaFrom$U,
-    getModelFrom:    getModelFrom$L,
-    registerModelTo: registerModelTo$L
-};
+var SkeletonHelper = {};
 
 /**
  * @module Schemas/Helpers/SkeletonHelper
@@ -9522,62 +10490,73 @@ var RectAreaLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$m } = require$$0$2;
+var hasRequiredSkeletonHelper;
 
-let _schema$T = undefined;
-let _model$K  = undefined;
+function requireSkeletonHelper () {
+	if (hasRequiredSkeletonHelper) return SkeletonHelper;
+	hasRequiredSkeletonHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$T ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$T ) {
-        _createSchema$T( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$T
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'SkeletonHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SkeletonHelper.SkeletonHelper = {
+	    name:            'SkeletonHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SkeletonHelper;
 }
 
-function _createSchema$T ( Mongoose ) {
+var SkeletonHelperExports = requireSkeletonHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$T = new Schema( {} );
-
-}
-
-function getModelFrom$K ( Mongoose ) {
-
-    if ( !_model$K ) {
-        _createModel$K( Mongoose );
-    }
-
-    return _model$K
-
-}
-
-function _createModel$K ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$m.getModelFrom( Mongoose );
-    _model$K                  = Object3DBaseModel.discriminator( 'SkeletonHelper', getSchemaFrom$T( Mongoose ) );
-
-}
-
-function registerModelTo$K ( Mongoose ) {
-
-    if ( !_model$K ) {
-        _createModel$K( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SkeletonHelper_1 = {
-    name:            'SkeletonHelper',
-    getSchemaFrom:   getSchemaFrom$T,
-    getModelFrom:    getModelFrom$K,
-    registerModelTo: registerModelTo$K
-};
+var SpotLightHelper = {};
 
 /**
  * @module Schemas/Helpers/SpotLightHelper
@@ -9589,62 +10568,73 @@ var SkeletonHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$l } = require$$0$2;
+var hasRequiredSpotLightHelper;
 
-let _schema$S = undefined;
-let _model$J  = undefined;
+function requireSpotLightHelper () {
+	if (hasRequiredSpotLightHelper) return SpotLightHelper;
+	hasRequiredSpotLightHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$S ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$S ) {
-        _createSchema$S( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$S
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'SpotLightHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SpotLightHelper.SpotLightHelper = {
+	    name:            'SpotLightHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SpotLightHelper;
 }
 
-function _createSchema$S ( Mongoose ) {
+var SpotLightHelperExports = requireSpotLightHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$S = new Schema( {} );
-
-}
-
-function getModelFrom$J ( Mongoose ) {
-
-    if ( !_model$J ) {
-        _createModel$J( Mongoose );
-    }
-
-    return _model$J
-
-}
-
-function _createModel$J ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$l.getModelFrom( Mongoose );
-    _model$J                  = Object3DBaseModel.discriminator( 'SpotLightHelper', getSchemaFrom$S( Mongoose ) );
-
-}
-
-function registerModelTo$J ( Mongoose ) {
-
-    if ( !_model$J ) {
-        _createModel$J( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SpotLightHelper_1 = {
-    name:            'SpotLightHelper',
-    getSchemaFrom:   getSchemaFrom$S,
-    getModelFrom:    getModelFrom$J,
-    registerModelTo: registerModelTo$J
-};
+var VertexNormalsHelper = {};
 
 /**
  * @module Schemas/Helpers/VertexNormalsHelper
@@ -9656,62 +10646,73 @@ var SpotLightHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$k } = require$$0$2;
+var hasRequiredVertexNormalsHelper;
 
-let _schema$R = undefined;
-let _model$I  = undefined;
+function requireVertexNormalsHelper () {
+	if (hasRequiredVertexNormalsHelper) return VertexNormalsHelper;
+	hasRequiredVertexNormalsHelper = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$R ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$R ) {
-        _createSchema$R( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$R
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'VertexNormalsHelper', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	VertexNormalsHelper.VertexNormalsHelper = {
+	    name:            'VertexNormalsHelper',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return VertexNormalsHelper;
 }
 
-function _createSchema$R ( Mongoose ) {
+var VertexNormalsHelperExports = requireVertexNormalsHelper();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$R = new Schema( {} );
-
-}
-
-function getModelFrom$I ( Mongoose ) {
-
-    if ( !_model$I ) {
-        _createModel$I( Mongoose );
-    }
-
-    return _model$I
-
-}
-
-function _createModel$I ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$k.getModelFrom( Mongoose );
-    _model$I                  = Object3DBaseModel.discriminator( 'VertexNormalsHelper', getSchemaFrom$R( Mongoose ) );
-
-}
-
-function registerModelTo$I ( Mongoose ) {
-
-    if ( !_model$I ) {
-        _createModel$I( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var VertexNormalsHelper_1 = {
-    name:            'VertexNormalsHelper',
-    getSchemaFrom:   getSchemaFrom$R,
-    getModelFrom:    getModelFrom$I,
-    registerModelTo: registerModelTo$I
-};
+var AmbientLight = {};
 
 /**
  * @module Schemas/Lights/AmbientLight
@@ -9723,62 +10724,73 @@ var VertexNormalsHelper_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$j } = require$$0$2;
+var hasRequiredAmbientLight;
 
-let _schema$Q = undefined;
-let _model$H  = undefined;
+function requireAmbientLight () {
+	if (hasRequiredAmbientLight) return AmbientLight;
+	hasRequiredAmbientLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$Q ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$Q ) {
-        _createSchema$Q( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$Q
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'AmbientLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	AmbientLight.AmbientLight = {
+	    name:            'AmbientLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return AmbientLight;
 }
 
-function _createSchema$Q ( Mongoose ) {
+var AmbientLightExports = requireAmbientLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$Q = new Schema( {} );
-
-}
-
-function getModelFrom$H ( Mongoose ) {
-
-    if ( !_model$H ) {
-        _createModel$H( Mongoose );
-    }
-
-    return _model$H
-
-}
-
-function _createModel$H ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$j.getModelFrom( Mongoose );
-    _model$H                  = Object3DBaseModel.discriminator( 'AmbientLight', getSchemaFrom$Q( Mongoose ) );
-
-}
-
-function registerModelTo$H ( Mongoose ) {
-
-    if ( !_model$H ) {
-        _createModel$H( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var AmbientLight_1 = {
-    name:            'AmbientLight',
-    getSchemaFrom:   getSchemaFrom$Q,
-    getModelFrom:    getModelFrom$H,
-    registerModelTo: registerModelTo$H
-};
+var DirectionalLight = {};
 
 /**
  * @module Schemas/Lights/DirectionalLight
@@ -9790,62 +10802,73 @@ var AmbientLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$i } = require$$0$2;
+var hasRequiredDirectionalLight;
 
-let _schema$P = undefined;
-let _model$G  = undefined;
+function requireDirectionalLight () {
+	if (hasRequiredDirectionalLight) return DirectionalLight;
+	hasRequiredDirectionalLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$P ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$P ) {
-        _createSchema$P( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$P
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'DirectionalLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DirectionalLight.DirectionalLight = {
+	    name:            'DirectionalLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DirectionalLight;
 }
 
-function _createSchema$P ( Mongoose ) {
+var DirectionalLightExports = requireDirectionalLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$P = new Schema( {} );
-
-}
-
-function getModelFrom$G ( Mongoose ) {
-
-    if ( !_model$G ) {
-        _createModel$G( Mongoose );
-    }
-
-    return _model$G
-
-}
-
-function _createModel$G ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$i.getModelFrom( Mongoose );
-    _model$G                  = Object3DBaseModel.discriminator( 'DirectionalLight', getSchemaFrom$P( Mongoose ) );
-
-}
-
-function registerModelTo$G ( Mongoose ) {
-
-    if ( !_model$G ) {
-        _createModel$G( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DirectionalLight_1 = {
-    name:            'DirectionalLight',
-    getSchemaFrom:   getSchemaFrom$P,
-    getModelFrom:    getModelFrom$G,
-    registerModelTo: registerModelTo$G
-};
+var HemisphereLight = {};
 
 /**
  * @module Schemas/Lights/HemisphereLight
@@ -9857,62 +10880,73 @@ var DirectionalLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$h } = require$$0$2;
+var hasRequiredHemisphereLight;
 
-let _schema$O = undefined;
-let _model$F  = undefined;
+function requireHemisphereLight () {
+	if (hasRequiredHemisphereLight) return HemisphereLight;
+	hasRequiredHemisphereLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$O ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$O ) {
-        _createSchema$O( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$O
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'HemisphereLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	HemisphereLight.HemisphereLight = {
+	    name:            'HemisphereLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return HemisphereLight;
 }
 
-function _createSchema$O ( Mongoose ) {
+var HemisphereLightExports = requireHemisphereLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$O = new Schema( {} );
-
-}
-
-function getModelFrom$F ( Mongoose ) {
-
-    if ( !_model$F ) {
-        _createModel$F( Mongoose );
-    }
-
-    return _model$F
-
-}
-
-function _createModel$F ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$h.getModelFrom( Mongoose );
-    _model$F                  = Object3DBaseModel.discriminator( 'HemisphereLight', getSchemaFrom$O( Mongoose ) );
-
-}
-
-function registerModelTo$F ( Mongoose ) {
-
-    if ( !_model$F ) {
-        _createModel$F( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var HemisphereLight_1 = {
-    name:            'HemisphereLight',
-    getSchemaFrom:   getSchemaFrom$O,
-    getModelFrom:    getModelFrom$F,
-    registerModelTo: registerModelTo$F
-};
+var Light = {};
 
 /**
  * @module Schemas/Lights/Light
@@ -9924,62 +10958,73 @@ var HemisphereLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$g } = require$$0$2;
+var hasRequiredLight;
 
-let _schema$N = undefined;
-let _model$E  = undefined;
+function requireLight () {
+	if (hasRequiredLight) return Light;
+	hasRequiredLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$N ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$N ) {
-        _createSchema$N( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$N
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Light', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Light.Light = {
+	    name:            'Light',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Light;
 }
 
-function _createSchema$N ( Mongoose ) {
+var LightExports = requireLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$N = new Schema( {} );
-
-}
-
-function getModelFrom$E ( Mongoose ) {
-
-    if ( !_model$E ) {
-        _createModel$E( Mongoose );
-    }
-
-    return _model$E
-
-}
-
-function _createModel$E ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$g.getModelFrom( Mongoose );
-    _model$E                  = Object3DBaseModel.discriminator( 'Light', getSchemaFrom$N( Mongoose ) );
-
-}
-
-function registerModelTo$E ( Mongoose ) {
-
-    if ( !_model$E ) {
-        _createModel$E( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Light_1 = {
-    name:            'Light',
-    getSchemaFrom:   getSchemaFrom$N,
-    getModelFrom:    getModelFrom$E,
-    registerModelTo: registerModelTo$E
-};
+var PointLight = {};
 
 /**
  * @module Schemas/Lights/PointLight
@@ -9991,62 +11036,73 @@ var Light_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$f } = require$$0$2;
+var hasRequiredPointLight;
 
-let _schema$M = undefined;
-let _model$D  = undefined;
+function requirePointLight () {
+	if (hasRequiredPointLight) return PointLight;
+	hasRequiredPointLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$M ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$M ) {
-        _createSchema$M( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$M
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'PointLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PointLight.PointLight = {
+	    name:            'PointLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PointLight;
 }
 
-function _createSchema$M ( Mongoose ) {
+var PointLightExports = requirePointLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$M = new Schema( {} );
-
-}
-
-function getModelFrom$D ( Mongoose ) {
-
-    if ( !_model$D ) {
-        _createModel$D( Mongoose );
-    }
-
-    return _model$D
-
-}
-
-function _createModel$D ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$f.getModelFrom( Mongoose );
-    _model$D                  = Object3DBaseModel.discriminator( 'PointLight', getSchemaFrom$M( Mongoose ) );
-
-}
-
-function registerModelTo$D ( Mongoose ) {
-
-    if ( !_model$D ) {
-        _createModel$D( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PointLight_1 = {
-    name:            'PointLight',
-    getSchemaFrom:   getSchemaFrom$M,
-    getModelFrom:    getModelFrom$D,
-    registerModelTo: registerModelTo$D
-};
+var RectAreaLight = {};
 
 /**
  * @module Schemas/Lights/RectAreaLight
@@ -10058,62 +11114,73 @@ var PointLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$e } = require$$0$2;
+var hasRequiredRectAreaLight;
 
-let _schema$L = undefined;
-let _model$C  = undefined;
+function requireRectAreaLight () {
+	if (hasRequiredRectAreaLight) return RectAreaLight;
+	hasRequiredRectAreaLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$L ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$L ) {
-        _createSchema$L( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$L
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'RectAreaLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	RectAreaLight.RectAreaLight = {
+	    name:            'RectAreaLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return RectAreaLight;
 }
 
-function _createSchema$L ( Mongoose ) {
+var RectAreaLightExports = requireRectAreaLight();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$L = new Schema( {} );
-
-}
-
-function getModelFrom$C ( Mongoose ) {
-
-    if ( !_model$C ) {
-        _createModel$C( Mongoose );
-    }
-
-    return _model$C
-
-}
-
-function _createModel$C ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$e.getModelFrom( Mongoose );
-    _model$C                  = Object3DBaseModel.discriminator( 'RectAreaLight', getSchemaFrom$L( Mongoose ) );
-
-}
-
-function registerModelTo$C ( Mongoose ) {
-
-    if ( !_model$C ) {
-        _createModel$C( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var RectAreaLight_1 = {
-    name:            'RectAreaLight',
-    getSchemaFrom:   getSchemaFrom$L,
-    getModelFrom:    getModelFrom$C,
-    registerModelTo: registerModelTo$C
-};
+var SpotLight = {};
 
 /**
  * @module Schemas/Lights/SpotLight
@@ -10125,64 +11192,75 @@ var RectAreaLight_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$d } = require$$0$2;
+var hasRequiredSpotLight;
 
-let _schema$K = undefined;
-let _model$B  = undefined;
+function requireSpotLight () {
+	if (hasRequiredSpotLight) return SpotLight;
+	hasRequiredSpotLight = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$K ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$K ) {
-        _createSchema$K( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$K
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'SpotLight', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SpotLight.SpotLight = {
+	    name:            'SpotLight',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SpotLight;
 }
 
-function _createSchema$K ( Mongoose ) {
+var SpotLightExports = requireSpotLight();
 
-    const Schema = Mongoose.Schema;
+var LineBasicMaterial = {};
 
-    _schema$K = new Schema( {} );
-
-}
-
-function getModelFrom$B ( Mongoose ) {
-
-    if ( !_model$B ) {
-        _createModel$B( Mongoose );
-    }
-
-    return _model$B
-
-}
-
-function _createModel$B ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$d.getModelFrom( Mongoose );
-    _model$B                  = Object3DBaseModel.discriminator( 'SpotLight', getSchemaFrom$K( Mongoose ) );
-
-}
-
-function registerModelTo$B ( Mongoose ) {
-
-    if ( !_model$B ) {
-        _createModel$B( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SpotLight_1 = {
-    name:            'SpotLight',
-    getSchemaFrom:   getSchemaFrom$K,
-    getModelFrom:    getModelFrom$B,
-    registerModelTo: registerModelTo$B
-};
-
-var Material$f = {};
+var Material = {};
 
 /**
  * @module Schemas/Materials/Material
@@ -10192,104 +11270,111 @@ var Material$f = {};
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$J = undefined;
-let _model$A  = undefined;
+var hasRequiredMaterial;
 
-function getSchemaFrom$J ( Mongoose ) {
+function requireMaterial () {
+	if (hasRequiredMaterial) return Material;
+	hasRequiredMaterial = 1;
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$J ) {
-        _createSchema$J( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$J
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        uuid:                String,
+	        name:                String,
+	        type:                String,
+	        fog:                 Boolean,
+	        lights:              Boolean,
+	        blending:            Number,
+	        side:                Number,
+	        flatShading:         Boolean,
+	        vertexColors:        Number,
+	        opacity:             Number,
+	        transparent:         Boolean,
+	        blendSrc:            Number,
+	        blendDst:            Number,
+	        blendEquation:       Number,
+	        blendSrcAlpha:       String,
+	        blendDstAlpha:       String,
+	        blendEquationAlpha:  String,
+	        depthFunc:           Number,
+	        depthTest:           Boolean,
+	        depthWrite:          Boolean,
+	        clippingPlanes:      Mixed,
+	        clipIntersection:    Boolean,
+	        clipShadows:         Boolean,
+	        colorWrite:          Boolean,
+	        precision:           Number,
+	        polygonOffset:       Boolean,
+	        polygonOffsetFactor: Number,
+	        polygonOffsetUnits:  Number,
+	        dithering:           Boolean,
+	        alphaTest:           Number,
+	        premultipliedAlpha:  Boolean,
+	        overdraw:            Number,
+	        visible:             Boolean,
+	        userData:            Mixed,
+	        needsUpdate:         Boolean
+	    }, {
+	        collection:       'materials',
+	        discriminatorKey: 'type'
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    // We need to pre-declare the base model to be able to use correctly
+	    // the discriminator 'type' correctly with the main type, instead of
+	    // directly register the model as it
+	    _model = Mongoose.model( 'Materials', getSchemaFrom( Mongoose ) );
+	    _model.discriminator( 'Material', new Mongoose.Schema( {} ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Material.Material = {
+	    name:            'Material',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Material;
 }
-
-function _createSchema$J ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    _schema$J = new Schema( {
-        uuid:                String,
-        name:                String,
-        type:                String,
-        fog:                 Boolean,
-        lights:              Boolean,
-        blending:            Number,
-        side:                Number,
-        flatShading:         Boolean,
-        vertexColors:        Number,
-        opacity:             Number,
-        transparent:         Boolean,
-        blendSrc:            Number,
-        blendDst:            Number,
-        blendEquation:       Number,
-        blendSrcAlpha:       String,
-        blendDstAlpha:       String,
-        blendEquationAlpha:  String,
-        depthFunc:           Number,
-        depthTest:           Boolean,
-        depthWrite:          Boolean,
-        clippingPlanes:      Mixed,
-        clipIntersection:    Boolean,
-        clipShadows:         Boolean,
-        colorWrite:          Boolean,
-        precision:           Number,
-        polygonOffset:       Boolean,
-        polygonOffsetFactor: Number,
-        polygonOffsetUnits:  Number,
-        dithering:           Boolean,
-        alphaTest:           Number,
-        premultipliedAlpha:  Boolean,
-        overdraw:            Number,
-        visible:             Boolean,
-        userData:            Mixed,
-        needsUpdate:         Boolean
-    }, {
-        collection:       'materials',
-        discriminatorKey: 'type'
-    } );
-
-}
-
-function getModelFrom$A ( Mongoose ) {
-
-    if ( !_model$A ) {
-        _createModel$A( Mongoose );
-    }
-
-    return _model$A
-
-}
-
-function _createModel$A ( Mongoose ) {
-
-    // We need to pre-declare the base model to be able to use correctly
-    // the discriminator 'type' correctly with the main type, instead of
-    // directly register the model as it
-    _model$A = Mongoose.model( 'Materials', getSchemaFrom$J( Mongoose ) );
-    _model$A.discriminator( 'Material', new Mongoose.Schema( {} ) );
-
-}
-
-function registerModelTo$A ( Mongoose ) {
-
-    if ( !_model$A ) {
-        _createModel$A( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Material_1 = Material$f.Material = {
-    name:            'Material',
-    getSchemaFrom:   getSchemaFrom$J,
-    getModelFrom:    getModelFrom$A,
-    registerModelTo: registerModelTo$A
-};
 
 /**
  * @module Schemas/Materials/LineBasicMaterial
@@ -10301,70 +11386,81 @@ var Material_1 = Material$f.Material = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$e } = Material$f;
+var hasRequiredLineBasicMaterial;
 
-let _schema$I = undefined;
-let _model$z  = undefined;
+function requireLineBasicMaterial () {
+	if (hasRequiredLineBasicMaterial) return LineBasicMaterial;
+	hasRequiredLineBasicMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$I ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$I ) {
-        _createSchema$I( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$I
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+
+	    _schema = new Schema( {
+	        color:     Color,
+	        light:     Boolean,
+	        lineWidth: Number,
+	        linecap:   String,
+	        linejoin:  String
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'LineBasicMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineBasicMaterial.LineBasicMaterial = {
+	    name:            'LineBasicMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineBasicMaterial;
 }
 
-function _createSchema$I ( Mongoose ) {
+var LineBasicMaterialExports = requireLineBasicMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
-
-    _schema$I = new Schema( {
-        color:     Color,
-        light:     Boolean,
-        lineWidth: Number,
-        linecap:   String,
-        linejoin:  String
-    } );
-
-}
-
-function getModelFrom$z ( Mongoose ) {
-
-    if ( !_model$z ) {
-        _createModel$z( Mongoose );
-    }
-
-    return _model$z
-
-}
-
-function _createModel$z ( Mongoose ) {
-
-    const MaterialBaseModel = Material$e.getModelFrom( Mongoose );
-    _model$z                  = MaterialBaseModel.discriminator( 'LineBasicMaterial', getSchemaFrom$I( Mongoose ) );
-
-}
-
-function registerModelTo$z ( Mongoose ) {
-
-    if ( !_model$z ) {
-        _createModel$z( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineBasicMaterial_1 = {
-    name:            'LineBasicMaterial',
-    getSchemaFrom:   getSchemaFrom$I,
-    getModelFrom:    getModelFrom$z,
-    registerModelTo: registerModelTo$z
-};
+var LineDashedMaterial = {};
 
 /**
  * @module Schemas/Materials/LineDashedMaterial
@@ -10376,76 +11472,89 @@ var LineBasicMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$d } = Material$f;
+var hasRequiredLineDashedMaterial;
 
-let _schema$H = undefined;
-let _model$y  = undefined;
+function requireLineDashedMaterial () {
+	if (hasRequiredLineDashedMaterial) return LineDashedMaterial;
+	hasRequiredLineDashedMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$H ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$H ) {
-        _createSchema$H( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$H
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+
+	    _schema = new Schema( {
+	        // LineBasicMaterial
+	        color:     Color,
+	        light:     Boolean,
+	        lineWidth: Number,
+	        linecap:   String,
+	        linejoin:  String,
+
+	        // LineDashedMaterial
+	        dashSize: Number,
+	        gapSize:  Number,
+	        scale:    Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'LineDashedMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineDashedMaterial.LineDashedMaterial = {
+	    name:            'LineDashedMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineDashedMaterial;
 }
 
-function _createSchema$H ( Mongoose ) {
+var LineDashedMaterialExports = requireLineDashedMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
+var MaterialExports = requireMaterial();
 
-    _schema$H = new Schema( {
-        // LineBasicMaterial
-        color:     Color,
-        light:     Boolean,
-        lineWidth: Number,
-        linecap:   String,
-        linejoin:  String,
-
-        // LineDashedMaterial
-        dashSize: Number,
-        gapSize:  Number,
-        scale:    Number
-    } );
-
-}
-
-function getModelFrom$y ( Mongoose ) {
-
-    if ( !_model$y ) {
-        _createModel$y( Mongoose );
-    }
-
-    return _model$y
-
-}
-
-function _createModel$y ( Mongoose ) {
-
-    const MaterialBaseModel = Material$d.getModelFrom( Mongoose );
-    _model$y                  = MaterialBaseModel.discriminator( 'LineDashedMaterial', getSchemaFrom$H( Mongoose ) );
-
-}
-
-function registerModelTo$y ( Mongoose ) {
-
-    if ( !_model$y ) {
-        _createModel$y( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineDashedMaterial_1 = {
-    name:            'LineDashedMaterial',
-    getSchemaFrom:   getSchemaFrom$H,
-    getModelFrom:    getModelFrom$y,
-    registerModelTo: registerModelTo$y
-};
+var MeshBasicMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshBasicMaterial
@@ -10457,85 +11566,96 @@ var LineDashedMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$c } = Material$f;
+var hasRequiredMeshBasicMaterial;
 
-let _schema$G = undefined;
-let _model$x  = undefined;
+function requireMeshBasicMaterial () {
+	if (hasRequiredMeshBasicMaterial) return MeshBasicMaterial;
+	hasRequiredMeshBasicMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$G ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$G ) {
-        _createSchema$G( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$G
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+	    const Color  = Types.Color;
+
+	    _schema = new Schema( {
+	        color:              Color,
+	        map:                Mixed, // Unknown yet
+	        lightMap:           Mixed, // Unknown yet
+	        lightMapIntensity:  Number,
+	        aoMap:              Mixed, // Unknown yet
+	        aoMapIntensity:     Number,
+	        specularMap:        Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        envMap:             Mixed, // Unknown yet
+	        combine:            Number,
+	        reflectivity:       Number,
+	        refractionRatio:    Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        wireframeLinecap:   String,
+	        wireframeLinejoin:  String,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        light:              Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshBasicMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshBasicMaterial.MeshBasicMaterial = {
+	    name:            'MeshBasicMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshBasicMaterial;
 }
 
-function _createSchema$G ( Mongoose ) {
+var MeshBasicMaterialExports = requireMeshBasicMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-    const Color  = Types.Color;
-
-    _schema$G = new Schema( {
-        color:              Color,
-        map:                Mixed, // Unknown yet
-        lightMap:           Mixed, // Unknown yet
-        lightMapIntensity:  Number,
-        aoMap:              Mixed, // Unknown yet
-        aoMapIntensity:     Number,
-        specularMap:        Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        envMap:             Mixed, // Unknown yet
-        combine:            Number,
-        reflectivity:       Number,
-        refractionRatio:    Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        wireframeLinecap:   String,
-        wireframeLinejoin:  String,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        light:              Boolean
-    } );
-
-}
-
-function getModelFrom$x ( Mongoose ) {
-
-    if ( !_model$x ) {
-        _createModel$x( Mongoose );
-    }
-
-    return _model$x
-
-}
-
-function _createModel$x ( Mongoose ) {
-
-    const MaterialBaseModel = Material$c.getModelFrom( Mongoose );
-    _model$x                  = MaterialBaseModel.discriminator( 'MeshBasicMaterial', getSchemaFrom$G( Mongoose ) );
-
-}
-
-function registerModelTo$x ( Mongoose ) {
-
-    if ( !_model$x ) {
-        _createModel$x( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshBasicMaterial_1 = {
-    name:            'MeshBasicMaterial',
-    getSchemaFrom:   getSchemaFrom$G,
-    getModelFrom:    getModelFrom$x,
-    registerModelTo: registerModelTo$x
-};
+var MeshDepthMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshDepthMaterial
@@ -10547,77 +11667,88 @@ var MeshBasicMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$b } = Material$f;
+var hasRequiredMeshDepthMaterial;
 
-let _schema$F = undefined;
-let _model$w  = undefined;
+function requireMeshDepthMaterial () {
+	if (hasRequiredMeshDepthMaterial) return MeshDepthMaterial;
+	hasRequiredMeshDepthMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$F ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$F ) {
-        _createSchema$F( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$F
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        depthPacking:       Number,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        map:                Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        displacementMap:    Mixed, // Unknown yet
+	        displacementScale:  Number,
+	        displacementBias:   Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        fog:                Boolean,
+	        light:              Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshDepthMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshDepthMaterial.MeshDepthMaterial = {
+	    name:            'MeshDepthMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshDepthMaterial;
 }
 
-function _createSchema$F ( Mongoose ) {
+var MeshDepthMaterialExports = requireMeshDepthMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    _schema$F = new Schema( {
-        depthPacking:       Number,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        map:                Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        displacementMap:    Mixed, // Unknown yet
-        displacementScale:  Number,
-        displacementBias:   Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        fog:                Boolean,
-        light:              Boolean
-    } );
-
-}
-
-function getModelFrom$w ( Mongoose ) {
-
-    if ( !_model$w ) {
-        _createModel$w( Mongoose );
-    }
-
-    return _model$w
-
-}
-
-function _createModel$w ( Mongoose ) {
-
-    const MaterialBaseModel = Material$b.getModelFrom( Mongoose );
-    _model$w                  = MaterialBaseModel.discriminator( 'MeshDepthMaterial', getSchemaFrom$F( Mongoose ) );
-
-}
-
-function registerModelTo$w ( Mongoose ) {
-
-    if ( !_model$w ) {
-        _createModel$w( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshDepthMaterial_1 = {
-    name:            'MeshDepthMaterial',
-    getSchemaFrom:   getSchemaFrom$F,
-    getModelFrom:    getModelFrom$w,
-    registerModelTo: registerModelTo$w
-};
+var MeshLambertMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshLambertMaterial
@@ -10629,88 +11760,99 @@ var MeshDepthMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$a } = Material$f;
+var hasRequiredMeshLambertMaterial;
 
-let _schema$E = undefined;
-let _model$v  = undefined;
+function requireMeshLambertMaterial () {
+	if (hasRequiredMeshLambertMaterial) return MeshLambertMaterial;
+	hasRequiredMeshLambertMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$E ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$E ) {
-        _createSchema$E( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$E
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        color:              Color,
+	        map:                Mixed, // Unknown yet
+	        lightMap:           Mixed, // Unknown yet
+	        lightMapIntensity:  Number,
+	        aoMap:              Mixed, // Unknown yet
+	        aoMapIntensity:     Number,
+	        emissive:           Color,
+	        emissiveIntensity:  Number,
+	        emissiveMap:        Mixed, // Unknown yet
+	        specularMap:        Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        envMap:             Mixed, // Unknown yet
+	        combine:            Number,
+	        reflectivity:       Number,
+	        refractionRatio:    Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        wireframeLinecap:   String,
+	        wireframeLinejoin:  String,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshLambertMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshLambertMaterial.MeshLambertMaterial = {
+	    name:            'MeshLambertMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshLambertMaterial;
 }
 
-function _createSchema$E ( Mongoose ) {
+var MeshLambertMaterialExports = requireMeshLambertMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
-    const Mixed  = Types.Mixed;
-
-    _schema$E = new Schema( {
-        color:              Color,
-        map:                Mixed, // Unknown yet
-        lightMap:           Mixed, // Unknown yet
-        lightMapIntensity:  Number,
-        aoMap:              Mixed, // Unknown yet
-        aoMapIntensity:     Number,
-        emissive:           Color,
-        emissiveIntensity:  Number,
-        emissiveMap:        Mixed, // Unknown yet
-        specularMap:        Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        envMap:             Mixed, // Unknown yet
-        combine:            Number,
-        reflectivity:       Number,
-        refractionRatio:    Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        wireframeLinecap:   String,
-        wireframeLinejoin:  String,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean
-    } );
-
-}
-
-function getModelFrom$v ( Mongoose ) {
-
-    if ( !_model$v ) {
-        _createModel$v( Mongoose );
-    }
-
-    return _model$v
-
-}
-
-function _createModel$v ( Mongoose ) {
-
-    const MaterialBaseModel = Material$a.getModelFrom( Mongoose );
-    _model$v                  = MaterialBaseModel.discriminator( 'MeshLambertMaterial', getSchemaFrom$E( Mongoose ) );
-
-}
-
-function registerModelTo$v ( Mongoose ) {
-
-    if ( !_model$v ) {
-        _createModel$v( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshLambertMaterial_1 = {
-    name:            'MeshLambertMaterial',
-    getSchemaFrom:   getSchemaFrom$E,
-    getModelFrom:    getModelFrom$v,
-    registerModelTo: registerModelTo$v
-};
+var MeshNormalMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshNormalMaterial
@@ -10722,80 +11864,91 @@ var MeshLambertMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$9 } = Material$f;
+var hasRequiredMeshNormalMaterial;
 
-let _schema$D = undefined;
-let _model$u  = undefined;
+function requireMeshNormalMaterial () {
+	if (hasRequiredMeshNormalMaterial) return MeshNormalMaterial;
+	hasRequiredMeshNormalMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$D ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$D ) {
-        _createSchema$D( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$D
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Mixed   = Types.Mixed;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        bumpMap:            Mixed, // Unknown yet
+	        bumpScale:          Number,
+	        normalMap:          Mixed, // Unknown yet
+	        normalScale:        Vector2,
+	        displacementMap:    Mixed, // Unknown yet
+	        displacementScale:  Number,
+	        displacementBias:   Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        fog:                Boolean,
+	        light:              Boolean,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshNormalMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshNormalMaterial.MeshNormalMaterial = {
+	    name:            'MeshNormalMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshNormalMaterial;
 }
 
-function _createSchema$D ( Mongoose ) {
+var MeshNormalMaterialExports = requireMeshNormalMaterial();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Mixed   = Types.Mixed;
-    const Vector2 = Types.Vector2;
-
-    _schema$D = new Schema( {
-        bumpMap:            Mixed, // Unknown yet
-        bumpScale:          Number,
-        normalMap:          Mixed, // Unknown yet
-        normalScale:        Vector2,
-        displacementMap:    Mixed, // Unknown yet
-        displacementScale:  Number,
-        displacementBias:   Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        fog:                Boolean,
-        light:              Boolean,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean
-    } );
-
-}
-
-function getModelFrom$u ( Mongoose ) {
-
-    if ( !_model$u ) {
-        _createModel$u( Mongoose );
-    }
-
-    return _model$u
-
-}
-
-function _createModel$u ( Mongoose ) {
-
-    const MaterialBaseModel = Material$9.getModelFrom( Mongoose );
-    _model$u                  = MaterialBaseModel.discriminator( 'MeshNormalMaterial', getSchemaFrom$D( Mongoose ) );
-
-}
-
-function registerModelTo$u ( Mongoose ) {
-
-    if ( !_model$u ) {
-        _createModel$u( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshNormalMaterial_1 = {
-    name:            'MeshNormalMaterial',
-    getSchemaFrom:   getSchemaFrom$D,
-    getModelFrom:    getModelFrom$u,
-    registerModelTo: registerModelTo$u
-};
+var MeshPhongMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshPhongMaterial
@@ -10807,98 +11960,109 @@ var MeshNormalMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$8 } = Material$f;
+var hasRequiredMeshPhongMaterial;
 
-let _schema$C = undefined;
-let _model$t  = undefined;
+function requireMeshPhongMaterial () {
+	if (hasRequiredMeshPhongMaterial) return MeshPhongMaterial;
+	hasRequiredMeshPhongMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$C ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$C ) {
-        _createSchema$C( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$C
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Mixed   = Types.Mixed;
+	    const Color   = Types.Color;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        color:              Color,
+	        specular:           Color,
+	        shininess:          Number,
+	        map:                Mixed, // Unknown yet
+	        lightMap:           Mixed, // Unknown yet
+	        lightMapIntensity:  Number,
+	        aoMap:              Mixed, // Unknown yet
+	        aoMapIntensity:     Number,
+	        emissive:           Color,
+	        emissiveIntensity:  Number,
+	        emissiveMap:        Mixed, // Unknown yet
+	        bumpMap:            Mixed, // Unknown yet
+	        bumpScale:          Number,
+	        normalMap:          Mixed, // Unknown yet
+	        normalScale:        Vector2,
+	        displacementMap:    Mixed, // Unknown yet
+	        displacementScale:  Number,
+	        displacementBias:   Number,
+	        specularMap:        Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        envMap:             Mixed, // Unknown yet
+	        combine:            Number,
+	        reflectivity:       Number,
+	        refractionRatio:    Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        wireframeLinecap:   String,
+	        wireframeLinejoin:  String,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshPhongMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshPhongMaterial.MeshPhongMaterial = {
+	    name:            'MeshPhongMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshPhongMaterial;
 }
 
-function _createSchema$C ( Mongoose ) {
+var MeshPhongMaterialExports = requireMeshPhongMaterial();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Mixed   = Types.Mixed;
-    const Color   = Types.Color;
-    const Vector2 = Types.Vector2;
-
-    _schema$C = new Schema( {
-        color:              Color,
-        specular:           Color,
-        shininess:          Number,
-        map:                Mixed, // Unknown yet
-        lightMap:           Mixed, // Unknown yet
-        lightMapIntensity:  Number,
-        aoMap:              Mixed, // Unknown yet
-        aoMapIntensity:     Number,
-        emissive:           Color,
-        emissiveIntensity:  Number,
-        emissiveMap:        Mixed, // Unknown yet
-        bumpMap:            Mixed, // Unknown yet
-        bumpScale:          Number,
-        normalMap:          Mixed, // Unknown yet
-        normalScale:        Vector2,
-        displacementMap:    Mixed, // Unknown yet
-        displacementScale:  Number,
-        displacementBias:   Number,
-        specularMap:        Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        envMap:             Mixed, // Unknown yet
-        combine:            Number,
-        reflectivity:       Number,
-        refractionRatio:    Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        wireframeLinecap:   String,
-        wireframeLinejoin:  String,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean
-    } );
-
-}
-
-function getModelFrom$t ( Mongoose ) {
-
-    if ( !_model$t ) {
-        _createModel$t( Mongoose );
-    }
-
-    return _model$t
-
-}
-
-function _createModel$t ( Mongoose ) {
-
-    const MaterialBaseModel = Material$8.getModelFrom( Mongoose );
-    _model$t                  = MaterialBaseModel.discriminator( 'MeshPhongMaterial', getSchemaFrom$C( Mongoose ) );
-
-}
-
-function registerModelTo$t ( Mongoose ) {
-
-    if ( !_model$t ) {
-        _createModel$t( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshPhongMaterial_1 = {
-    name:            'MeshPhongMaterial',
-    getSchemaFrom:   getSchemaFrom$C,
-    getModelFrom:    getModelFrom$t,
-    registerModelTo: registerModelTo$t
-};
+var MeshPhysicalMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshPhysicalMaterial
@@ -10910,66 +12074,77 @@ var MeshPhongMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$7 } = Material$f;
+var hasRequiredMeshPhysicalMaterial;
 
-let _schema$B = undefined;
-let _model$s  = undefined;
+function requireMeshPhysicalMaterial () {
+	if (hasRequiredMeshPhysicalMaterial) return MeshPhysicalMaterial;
+	hasRequiredMeshPhysicalMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$B ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$B ) {
-        _createSchema$B( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$B
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        reflectivity:       Number,
+	        clearCoat:          Number,
+	        clearCoatRoughness: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshPhysicalMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshPhysicalMaterial.MeshPhysicalMaterial = {
+	    name:            'MeshPhysicalMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshPhysicalMaterial;
 }
 
-function _createSchema$B ( Mongoose ) {
+var MeshPhysicalMaterialExports = requireMeshPhysicalMaterial();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$B = new Schema( {
-        reflectivity:       Number,
-        clearCoat:          Number,
-        clearCoatRoughness: Number
-    } );
-
-}
-
-function getModelFrom$s ( Mongoose ) {
-
-    if ( !_model$s ) {
-        _createModel$s( Mongoose );
-    }
-
-    return _model$s
-
-}
-
-function _createModel$s ( Mongoose ) {
-
-    const MaterialBaseModel = Material$7.getModelFrom( Mongoose );
-    _model$s                  = MaterialBaseModel.discriminator( 'MeshPhysicalMaterial', getSchemaFrom$B( Mongoose ) );
-
-}
-
-function registerModelTo$s ( Mongoose ) {
-
-    if ( !_model$s ) {
-        _createModel$s( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshPhysicalMaterial_1 = {
-    name:            'MeshPhysicalMaterial',
-    getSchemaFrom:   getSchemaFrom$B,
-    getModelFrom:    getModelFrom$s,
-    registerModelTo: registerModelTo$s
-};
+var MeshStandardMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshStandardMaterial
@@ -10981,98 +12156,109 @@ var MeshPhysicalMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$6 } = Material$f;
+var hasRequiredMeshStandardMaterial;
 
-let _schema$A = undefined;
-let _model$r  = undefined;
+function requireMeshStandardMaterial () {
+	if (hasRequiredMeshStandardMaterial) return MeshStandardMaterial;
+	hasRequiredMeshStandardMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$A ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$A ) {
-        _createSchema$A( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$A
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Mixed   = Types.Mixed;
+	    const Color   = Types.Color;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        color:              Color,
+	        roughness:          Number,
+	        metalness:          Number,
+	        map:                Mixed, // Unknown yet
+	        lightMap:           Mixed, // Unknown yet
+	        lightMapIntensity:  Number,
+	        aoMap:              Mixed, // Unknown yet
+	        aoMapIntensity:     Number,
+	        emissive:           Color,
+	        emissiveIntensity:  Number,
+	        emissiveMap:        Mixed, // Unknown yet
+	        bumpMap:            Mixed, // Unknown yet
+	        bumpScale:          Number,
+	        normalMap:          Mixed, // Unknown yet
+	        normalScale:        Vector2,
+	        displacementMap:    Mixed, // Unknown yet
+	        displacementScale:  Number,
+	        displacementBias:   Number,
+	        roughnessMap:       Mixed, // Unknown yet
+	        metalnessMap:       Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        envMap:             Mixed, // Unknown yet
+	        envMapIntensity:    Number,
+	        refractionRatio:    Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        wireframeLinecap:   String,
+	        wireframeLinejoin:  String,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshStandardMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshStandardMaterial.MeshStandardMaterial = {
+	    name:            'MeshStandardMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshStandardMaterial;
 }
 
-function _createSchema$A ( Mongoose ) {
+var MeshStandardMaterialExports = requireMeshStandardMaterial();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Mixed   = Types.Mixed;
-    const Color   = Types.Color;
-    const Vector2 = Types.Vector2;
-
-    _schema$A = new Schema( {
-        color:              Color,
-        roughness:          Number,
-        metalness:          Number,
-        map:                Mixed, // Unknown yet
-        lightMap:           Mixed, // Unknown yet
-        lightMapIntensity:  Number,
-        aoMap:              Mixed, // Unknown yet
-        aoMapIntensity:     Number,
-        emissive:           Color,
-        emissiveIntensity:  Number,
-        emissiveMap:        Mixed, // Unknown yet
-        bumpMap:            Mixed, // Unknown yet
-        bumpScale:          Number,
-        normalMap:          Mixed, // Unknown yet
-        normalScale:        Vector2,
-        displacementMap:    Mixed, // Unknown yet
-        displacementScale:  Number,
-        displacementBias:   Number,
-        roughnessMap:       Mixed, // Unknown yet
-        metalnessMap:       Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        envMap:             Mixed, // Unknown yet
-        envMapIntensity:    Number,
-        refractionRatio:    Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        wireframeLinecap:   String,
-        wireframeLinejoin:  String,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean
-    } );
-
-}
-
-function getModelFrom$r ( Mongoose ) {
-
-    if ( !_model$r ) {
-        _createModel$r( Mongoose );
-    }
-
-    return _model$r
-
-}
-
-function _createModel$r ( Mongoose ) {
-
-    const MaterialBaseModel = Material$6.getModelFrom( Mongoose );
-    _model$r                  = MaterialBaseModel.discriminator( 'MeshStandardMaterial', getSchemaFrom$A( Mongoose ) );
-
-}
-
-function registerModelTo$r ( Mongoose ) {
-
-    if ( !_model$r ) {
-        _createModel$r( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshStandardMaterial_1 = {
-    name:            'MeshStandardMaterial',
-    getSchemaFrom:   getSchemaFrom$A,
-    getModelFrom:    getModelFrom$r,
-    registerModelTo: registerModelTo$r
-};
+var MeshToonMaterial = {};
 
 /**
  * @module Schemas/Materials/MeshToonMaterial
@@ -11084,102 +12270,113 @@ var MeshStandardMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$5 } = Material$f;
+var hasRequiredMeshToonMaterial;
 
-let _schema$z = undefined;
-let _model$q  = undefined;
+function requireMeshToonMaterial () {
+	if (hasRequiredMeshToonMaterial) return MeshToonMaterial;
+	hasRequiredMeshToonMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$z ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$z ) {
-        _createSchema$z( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$z
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Mixed   = Types.Mixed;
+	    const Color   = Types.Color;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        // MeshPhongMaterial
+	        color:              Color,
+	        specular:           Color,
+	        shininess:          Number,
+	        map:                Mixed, // Unknown yet
+	        lightMap:           Mixed, // Unknown yet
+	        lightMapIntensity:  Number,
+	        aoMap:              Mixed, // Unknown yet
+	        aoMapIntensity:     Number,
+	        emissive:           Color,
+	        emissiveIntensity:  Number,
+	        emissiveMap:        Mixed, // Unknown yet
+	        bumpMap:            Mixed, // Unknown yet
+	        bumpScale:          Number,
+	        normalMap:          Mixed, // Unknown yet
+	        normalScale:        Vector2,
+	        displacementMap:    Mixed, // Unknown yet
+	        displacementScale:  Number,
+	        displacementBias:   Number,
+	        specularMap:        Mixed, // Unknown yet
+	        alphaMap:           Mixed, // Unknown yet
+	        envMap:             Mixed, // Unknown yet
+	        combine:            Number,
+	        reflectivity:       Number,
+	        refractionRatio:    Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        wireframeLinecap:   String,
+	        wireframeLinejoin:  String,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean,
+
+	        // MeshToonMaterial
+	        gradientMap: Mixed
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'MeshToonMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	MeshToonMaterial.MeshToonMaterial = {
+	    name:            'MeshToonMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return MeshToonMaterial;
 }
 
-function _createSchema$z ( Mongoose ) {
+var MeshToonMaterialExports = requireMeshToonMaterial();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Mixed   = Types.Mixed;
-    const Color   = Types.Color;
-    const Vector2 = Types.Vector2;
-
-    _schema$z = new Schema( {
-        // MeshPhongMaterial
-        color:              Color,
-        specular:           Color,
-        shininess:          Number,
-        map:                Mixed, // Unknown yet
-        lightMap:           Mixed, // Unknown yet
-        lightMapIntensity:  Number,
-        aoMap:              Mixed, // Unknown yet
-        aoMapIntensity:     Number,
-        emissive:           Color,
-        emissiveIntensity:  Number,
-        emissiveMap:        Mixed, // Unknown yet
-        bumpMap:            Mixed, // Unknown yet
-        bumpScale:          Number,
-        normalMap:          Mixed, // Unknown yet
-        normalScale:        Vector2,
-        displacementMap:    Mixed, // Unknown yet
-        displacementScale:  Number,
-        displacementBias:   Number,
-        specularMap:        Mixed, // Unknown yet
-        alphaMap:           Mixed, // Unknown yet
-        envMap:             Mixed, // Unknown yet
-        combine:            Number,
-        reflectivity:       Number,
-        refractionRatio:    Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        wireframeLinecap:   String,
-        wireframeLinejoin:  String,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean,
-
-        // MeshToonMaterial
-        gradientMap: Mixed
-    } );
-
-}
-
-function getModelFrom$q ( Mongoose ) {
-
-    if ( !_model$q ) {
-        _createModel$q( Mongoose );
-    }
-
-    return _model$q
-
-}
-
-function _createModel$q ( Mongoose ) {
-
-    const MaterialBaseModel = Material$5.getModelFrom( Mongoose );
-    _model$q                  = MaterialBaseModel.discriminator( 'MeshToonMaterial', getSchemaFrom$z( Mongoose ) );
-
-}
-
-function registerModelTo$q ( Mongoose ) {
-
-    if ( !_model$q ) {
-        _createModel$q( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var MeshToonMaterial_1 = {
-    name:            'MeshToonMaterial',
-    getSchemaFrom:   getSchemaFrom$z,
-    getModelFrom:    getModelFrom$q,
-    registerModelTo: registerModelTo$q
-};
+var PointsMaterial = {};
 
 /**
  * @module Schemas/Materials/PointsMaterial
@@ -11191,71 +12388,82 @@ var MeshToonMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$4 } = Material$f;
+var hasRequiredPointsMaterial;
 
-let _schema$y = undefined;
-let _model$p  = undefined;
+function requirePointsMaterial () {
+	if (hasRequiredPointsMaterial) return PointsMaterial;
+	hasRequiredPointsMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$y ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$y ) {
-        _createSchema$y( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$y
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        color:           Color,
+	        map:             Mixed, // Unknown yet
+	        size:            Number,
+	        sizeAttenuation: Boolean,
+	        lights:          Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'PointsMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	PointsMaterial.PointsMaterial = {
+	    name:            'PointsMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return PointsMaterial;
 }
 
-function _createSchema$y ( Mongoose ) {
+var PointsMaterialExports = requirePointsMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
-    const Mixed  = Types.Mixed;
-
-    _schema$y = new Schema( {
-        color:           Color,
-        map:             Mixed, // Unknown yet
-        size:            Number,
-        sizeAttenuation: Boolean,
-        lights:          Boolean
-    } );
-
-}
-
-function getModelFrom$p ( Mongoose ) {
-
-    if ( !_model$p ) {
-        _createModel$p( Mongoose );
-    }
-
-    return _model$p
-
-}
-
-function _createModel$p ( Mongoose ) {
-
-    const MaterialBaseModel = Material$4.getModelFrom( Mongoose );
-    _model$p                  = MaterialBaseModel.discriminator( 'PointsMaterial', getSchemaFrom$y( Mongoose ) );
-
-}
-
-function registerModelTo$p ( Mongoose ) {
-
-    if ( !_model$p ) {
-        _createModel$p( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var PointsMaterial_1 = {
-    name:            'PointsMaterial',
-    getSchemaFrom:   getSchemaFrom$y,
-    getModelFrom:    getModelFrom$p,
-    registerModelTo: registerModelTo$p
-};
+var RawShaderMaterial = {};
 
 /**
  * @module Schemas/Materials/RawShaderMaterial
@@ -11267,85 +12475,96 @@ var PointsMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$3 } = Material$f;
+var hasRequiredRawShaderMaterial;
 
-let _schema$x = undefined;
-let _model$o  = undefined;
+function requireRawShaderMaterial () {
+	if (hasRequiredRawShaderMaterial) return RawShaderMaterial;
+	hasRequiredRawShaderMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$x ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$x ) {
-        _createSchema$x( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$x
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        // ShaderMaterial
+	        defines:            Mixed, // Unknown yet
+	        uniforms:           Mixed, // Unknown yet
+	        vertexShader:       String,
+	        fragmentShader:     String,
+	        linewidth:          Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        fog:                Boolean,
+	        light:              Boolean,
+	        clipping:           Boolean,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean,
+	        derivatives:        Boolean,
+	        fragDepth:          Boolean,
+	        drawBuffers:        Boolean,
+	        shaderTextureLOD:   Boolean
+
+	        // What else...
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'RawShaderMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	RawShaderMaterial.RawShaderMaterial = {
+	    name:            'RawShaderMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return RawShaderMaterial;
 }
 
-function _createSchema$x ( Mongoose ) {
+var RawShaderMaterialExports = requireRawShaderMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    _schema$x = new Schema( {
-        // ShaderMaterial
-        defines:            Mixed, // Unknown yet
-        uniforms:           Mixed, // Unknown yet
-        vertexShader:       String,
-        fragmentShader:     String,
-        linewidth:          Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        fog:                Boolean,
-        light:              Boolean,
-        clipping:           Boolean,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean,
-        derivatives:        Boolean,
-        fragDepth:          Boolean,
-        drawBuffers:        Boolean,
-        shaderTextureLOD:   Boolean
-
-        // What else...
-    } );
-
-}
-
-function getModelFrom$o ( Mongoose ) {
-
-    if ( !_model$o ) {
-        _createModel$o( Mongoose );
-    }
-
-    return _model$o
-
-}
-
-function _createModel$o ( Mongoose ) {
-
-    const MaterialBaseModel = Material$3.getModelFrom( Mongoose );
-    _model$o                  = MaterialBaseModel.discriminator( 'RawShaderMaterial', getSchemaFrom$x( Mongoose ) );
-
-}
-
-function registerModelTo$o ( Mongoose ) {
-
-    if ( !_model$o ) {
-        _createModel$o( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var RawShaderMaterial_1 = {
-    name:            'RawShaderMaterial',
-    getSchemaFrom:   getSchemaFrom$x,
-    getModelFrom:    getModelFrom$o,
-    registerModelTo: registerModelTo$o
-};
+var ShaderMaterial = {};
 
 /**
  * @module Schemas/Materials/ShaderMaterial
@@ -11357,82 +12576,93 @@ var RawShaderMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$2 } = Material$f;
+var hasRequiredShaderMaterial;
 
-let _schema$w = undefined;
-let _model$n  = undefined;
+function requireShaderMaterial () {
+	if (hasRequiredShaderMaterial) return ShaderMaterial;
+	hasRequiredShaderMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$w ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$w ) {
-        _createSchema$w( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$w
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        defines:            Mixed, // Unknown yet
+	        uniforms:           Mixed, // Unknown yet
+	        vertexShader:       String,
+	        fragmentShader:     String,
+	        linewidth:          Number,
+	        wireframe:          Boolean,
+	        wireframeLinewidth: Number,
+	        fog:                Boolean,
+	        light:              Boolean,
+	        clipping:           Boolean,
+	        skinning:           Boolean,
+	        morphTargets:       Boolean,
+	        morphNormals:       Boolean,
+	        derivatives:        Boolean,
+	        fragDepth:          Boolean,
+	        drawBuffers:        Boolean,
+	        shaderTextureLOD:   Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'ShaderMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ShaderMaterial.ShaderMaterial = {
+	    name:            'ShaderMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ShaderMaterial;
 }
 
-function _createSchema$w ( Mongoose ) {
+var ShaderMaterialExports = requireShaderMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    _schema$w = new Schema( {
-        defines:            Mixed, // Unknown yet
-        uniforms:           Mixed, // Unknown yet
-        vertexShader:       String,
-        fragmentShader:     String,
-        linewidth:          Number,
-        wireframe:          Boolean,
-        wireframeLinewidth: Number,
-        fog:                Boolean,
-        light:              Boolean,
-        clipping:           Boolean,
-        skinning:           Boolean,
-        morphTargets:       Boolean,
-        morphNormals:       Boolean,
-        derivatives:        Boolean,
-        fragDepth:          Boolean,
-        drawBuffers:        Boolean,
-        shaderTextureLOD:   Boolean
-    } );
-
-}
-
-function getModelFrom$n ( Mongoose ) {
-
-    if ( !_model$n ) {
-        _createModel$n( Mongoose );
-    }
-
-    return _model$n
-
-}
-
-function _createModel$n ( Mongoose ) {
-
-    const MaterialBaseModel = Material$2.getModelFrom( Mongoose );
-    _model$n                  = MaterialBaseModel.discriminator( 'ShaderMaterial', getSchemaFrom$w( Mongoose ) );
-
-}
-
-function registerModelTo$n ( Mongoose ) {
-
-    if ( !_model$n ) {
-        _createModel$n( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShaderMaterial_1 = {
-    name:            'ShaderMaterial',
-    getSchemaFrom:   getSchemaFrom$w,
-    getModelFrom:    getModelFrom$n,
-    registerModelTo: registerModelTo$n
-};
+var ShadowMaterial = {};
 
 /**
  * @module Schemas/Materials/ShadowMaterial
@@ -11444,69 +12674,80 @@ var ShaderMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material: Material$1 } = Material$f;
+var hasRequiredShadowMaterial;
 
-let _schema$v = undefined;
-let _model$m  = undefined;
+function requireShadowMaterial () {
+	if (hasRequiredShadowMaterial) return ShadowMaterial;
+	hasRequiredShadowMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$v ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$v ) {
-        _createSchema$v( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$v
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+
+	    _schema = new Schema( {
+	        color:       Color,
+	        opacity:     Number,
+	        lights:      Boolean,
+	        transparent: Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'ShadowMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ShadowMaterial.ShadowMaterial = {
+	    name:            'ShadowMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ShadowMaterial;
 }
 
-function _createSchema$v ( Mongoose ) {
+var ShadowMaterialExports = requireShadowMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
-
-    _schema$v = new Schema( {
-        color:       Color,
-        opacity:     Number,
-        lights:      Boolean,
-        transparent: Boolean
-    } );
-
-}
-
-function getModelFrom$m ( Mongoose ) {
-
-    if ( !_model$m ) {
-        _createModel$m( Mongoose );
-    }
-
-    return _model$m
-
-}
-
-function _createModel$m ( Mongoose ) {
-
-    const MaterialBaseModel = Material$1.getModelFrom( Mongoose );
-    _model$m                  = MaterialBaseModel.discriminator( 'ShadowMaterial', getSchemaFrom$v( Mongoose ) );
-
-}
-
-function registerModelTo$m ( Mongoose ) {
-
-    if ( !_model$m ) {
-        _createModel$m( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ShadowMaterial_1 = {
-    name:            'ShadowMaterial',
-    getSchemaFrom:   getSchemaFrom$v,
-    getModelFrom:    getModelFrom$m,
-    registerModelTo: registerModelTo$m
-};
+var SpriteMaterial = {};
 
 /**
  * @module Schemas/Materials/SpriteMaterial
@@ -11518,71 +12759,82 @@ var ShadowMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Material } = Material$f;
+var hasRequiredSpriteMaterial;
 
-let _schema$u = undefined;
-let _model$l  = undefined;
+function requireSpriteMaterial () {
+	if (hasRequiredSpriteMaterial) return SpriteMaterial;
+	hasRequiredSpriteMaterial = 1;
+	const { Material } = requireMaterial();
 
-function getSchemaFrom$u ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$u ) {
-        _createSchema$u( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$u
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Color  = Types.Color;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        color:    Color,
+	        map:      Mixed, // Unknown yet
+	        rotation: Number,
+	        fog:      Boolean,
+	        lights:   Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const MaterialBaseModel = Material.getModelFrom( Mongoose );
+	    _model                  = MaterialBaseModel.discriminator( 'SpriteMaterial', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SpriteMaterial.SpriteMaterial = {
+	    name:            'SpriteMaterial',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SpriteMaterial;
 }
 
-function _createSchema$u ( Mongoose ) {
+var SpriteMaterialExports = requireSpriteMaterial();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Color  = Types.Color;
-    const Mixed  = Types.Mixed;
-
-    _schema$u = new Schema( {
-        color:    Color,
-        map:      Mixed, // Unknown yet
-        rotation: Number,
-        fog:      Boolean,
-        lights:   Boolean
-    } );
-
-}
-
-function getModelFrom$l ( Mongoose ) {
-
-    if ( !_model$l ) {
-        _createModel$l( Mongoose );
-    }
-
-    return _model$l
-
-}
-
-function _createModel$l ( Mongoose ) {
-
-    const MaterialBaseModel = Material.getModelFrom( Mongoose );
-    _model$l                  = MaterialBaseModel.discriminator( 'SpriteMaterial', getSchemaFrom$u( Mongoose ) );
-
-}
-
-function registerModelTo$l ( Mongoose ) {
-
-    if ( !_model$l ) {
-        _createModel$l( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SpriteMaterial_1 = {
-    name:            'SpriteMaterial',
-    getSchemaFrom:   getSchemaFrom$u,
-    getModelFrom:    getModelFrom$l,
-    registerModelTo: registerModelTo$l
-};
+var Box2 = {};
 
 /**
  * @module Schemas/Math/Box2
@@ -11592,40 +12844,51 @@ var SpriteMaterial_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$t = undefined;
+var hasRequiredBox2;
 
-function getSchemaFrom$t ( Mongoose ) {
+function requireBox2 () {
+	if (hasRequiredBox2) return Box2;
+	hasRequiredBox2 = 1;
+	let _schema = undefined;
 
-    if ( !_schema$t ) {
-        _createSchema$t( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$t
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector2 = Types.Vector2;
+
+	    _schema = new Schema( {
+	        min: Vector2,
+	        max: Vector2
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Box2.Box2 = {
+	    name:            'Box2',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Box2;
 }
 
-function _createSchema$t ( Mongoose ) {
+var Box2Exports = requireBox2();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector2 = Types.Vector2;
-
-    _schema$t = new Schema( {
-        min: Vector2,
-        max: Vector2
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Box2_1 = {
-    name:            'Box2',
-    getSchemaFrom:   getSchemaFrom$t,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Box3 = {};
 
 /**
  * @module Schemas/Math/Box3
@@ -11635,40 +12898,51 @@ var Box2_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$s = undefined;
+var hasRequiredBox3;
 
-function getSchemaFrom$s ( Mongoose ) {
+function requireBox3 () {
+	if (hasRequiredBox3) return Box3;
+	hasRequiredBox3 = 1;
+	let _schema = undefined;
 
-    if ( !_schema$s ) {
-        _createSchema$s( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$s
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        min: Vector3,
+	        max: Vector3
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Box3.Box3 = {
+	    name:            'Box3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Box3;
 }
 
-function _createSchema$s ( Mongoose ) {
+var Box3Exports = requireBox3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$s = new Schema( {
-        min: Vector3,
-        max: Vector3
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Box3_1 = {
-    name:            'Box3',
-    getSchemaFrom:   getSchemaFrom$s,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Line3 = {};
 
 /**
  * @module Schemas/Math/Line3
@@ -11678,40 +12952,51 @@ var Box3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$r = undefined;
+var hasRequiredLine3;
 
-function getSchemaFrom$r ( Mongoose ) {
+function requireLine3 () {
+	if (hasRequiredLine3) return Line3;
+	hasRequiredLine3 = 1;
+	let _schema = undefined;
 
-    if ( !_schema$r ) {
-        _createSchema$r( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$r
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        start: Vector3,
+	        end:   Vector3
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Line3.Line3 = {
+	    name:            'Line3',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Line3;
 }
 
-function _createSchema$r ( Mongoose ) {
+var Line3Exports = requireLine3();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$r = new Schema( {
-        start: Vector3,
-        end:   Vector3
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Line3_1 = {
-    name:            'Line3',
-    getSchemaFrom:   getSchemaFrom$r,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Plane = {};
 
 /**
  * @module Schemas/Math/Plane
@@ -11721,40 +13006,51 @@ var Line3_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$q = undefined;
+var hasRequiredPlane;
 
-function getSchemaFrom$q ( Mongoose ) {
+function requirePlane () {
+	if (hasRequiredPlane) return Plane;
+	hasRequiredPlane = 1;
+	let _schema = undefined;
 
-    if ( !_schema$q ) {
-        _createSchema$q( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$q
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        normal:   Vector3,
+	        constant: Number
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Plane.Plane = {
+	    name:            'Plane',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Plane;
 }
 
-function _createSchema$q ( Mongoose ) {
+var PlaneExports = requirePlane();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$q = new Schema( {
-        normal:   Vector3,
-        constant: Number
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Plane_1 = {
-    name:            'Plane',
-    getSchemaFrom:   getSchemaFrom$q,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Ray = {};
 
 /**
  * @module Schemas/Math/Ray
@@ -11764,40 +13060,51 @@ var Plane_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$p = undefined;
+var hasRequiredRay;
 
-function getSchemaFrom$p ( Mongoose ) {
+function requireRay () {
+	if (hasRequiredRay) return Ray;
+	hasRequiredRay = 1;
+	let _schema = undefined;
 
-    if ( !_schema$p ) {
-        _createSchema$p( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$p
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        origin:    Vector3,
+	        direction: Vector3
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Ray.Ray = {
+	    name:            'Ray',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Ray;
 }
 
-function _createSchema$p ( Mongoose ) {
+var RayExports = requireRay();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$p = new Schema( {
-        origin:    Vector3,
-        direction: Vector3
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Ray_1 = {
-    name:            'Ray',
-    getSchemaFrom:   getSchemaFrom$p,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Sphere = {};
 
 /**
  * @module Schemas/Math/Sphere
@@ -11807,40 +13114,51 @@ var Ray_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$o = undefined;
+var hasRequiredSphere;
 
-function getSchemaFrom$o ( Mongoose ) {
+function requireSphere () {
+	if (hasRequiredSphere) return Sphere;
+	hasRequiredSphere = 1;
+	let _schema = undefined;
 
-    if ( !_schema$o ) {
-        _createSchema$o( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$o
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        center: Vector3,
+	        radius: Number
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Sphere.Sphere = {
+	    name:            'Sphere',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Sphere;
 }
 
-function _createSchema$o ( Mongoose ) {
+var SphereExports = requireSphere();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$o = new Schema( {
-        center: Vector3,
-        radius: Number
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Sphere_1 = {
-    name:            'Sphere',
-    getSchemaFrom:   getSchemaFrom$o,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Spherical = {};
 
 /**
  * @module Schemas/Math/Spherical
@@ -11850,39 +13168,50 @@ var Sphere_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$n = undefined;
+var hasRequiredSpherical;
 
-function getSchemaFrom$n ( Mongoose ) {
+function requireSpherical () {
+	if (hasRequiredSpherical) return Spherical;
+	hasRequiredSpherical = 1;
+	let _schema = undefined;
 
-    if ( !_schema$n ) {
-        _createSchema$n( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$n
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        radius: Number,
+	        phi:    Number,
+	        theta:  Number
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Spherical.Spherical = {
+	    name:            'Spherical',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Spherical;
 }
 
-function _createSchema$n ( Mongoose ) {
+var SphericalExports = requireSpherical();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$n = new Schema( {
-        radius: Number,
-        phi:    Number,
-        theta:  Number
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Spherical_1 = {
-    name:            'Spherical',
-    getSchemaFrom:   getSchemaFrom$n,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Triangle = {};
 
 /**
  * @module Schemas/Math/Triangle
@@ -11892,41 +13221,52 @@ var Spherical_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$m = undefined;
+var hasRequiredTriangle;
 
-function getSchemaFrom$m ( Mongoose ) {
+function requireTriangle () {
+	if (hasRequiredTriangle) return Triangle;
+	hasRequiredTriangle = 1;
+	let _schema = undefined;
 
-    if ( !_schema$m ) {
-        _createSchema$m( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$m
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema  = Mongoose.Schema;
+	    const Types   = Schema.Types;
+	    const Vector3 = Types.Vector3;
+
+	    _schema = new Schema( {
+	        a: Vector3,
+	        b: Vector3,
+	        c: Vector3
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Triangle.Triangle = {
+	    name:            'Triangle',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Triangle;
 }
 
-function _createSchema$m ( Mongoose ) {
+var TriangleExports = requireTriangle();
 
-    const Schema  = Mongoose.Schema;
-    const Types   = Schema.Types;
-    const Vector3 = Types.Vector3;
-
-    _schema$m = new Schema( {
-        a: Vector3,
-        b: Vector3,
-        c: Vector3
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Triangle_1 = {
-    name:            'Triangle',
-    getSchemaFrom:   getSchemaFrom$m,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Bone = {};
 
 /**
  * @module Schemas/Objects/Bone
@@ -11938,62 +13278,71 @@ var Triangle_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$c } = require$$0$2;
+var hasRequiredBone;
 
-let _schema$l = undefined;
-let _model$k  = undefined;
+function requireBone () {
+	if (hasRequiredBone) return Bone;
+	hasRequiredBone = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$l ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$l ) {
-        _createSchema$l( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$l
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Bone', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Bone.Bone = {
+	    name:            'Bone',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Bone;
 }
 
-function _createSchema$l ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema$l = new Schema( {} );
-
-}
-
-function getModelFrom$k ( Mongoose ) {
-
-    if ( !_model$k ) {
-        _createModel$k( Mongoose );
-    }
-
-    return _model$k
-
-}
-
-function _createModel$k ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$c.getModelFrom( Mongoose );
-    _model$k                  = Object3DBaseModel.discriminator( 'Bone', getSchemaFrom$l( Mongoose ) );
-
-}
-
-function registerModelTo$k ( Mongoose ) {
-
-    if ( !_model$k ) {
-        _createModel$k( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Bone_1 = {
-    name:            'Bone',
-    getSchemaFrom:   getSchemaFrom$l,
-    getModelFrom:    getModelFrom$k,
-    registerModelTo: registerModelTo$k
-};
+var BoneExports = requireBone();
 
 /**
  * @module Schemas/Objects/Group
@@ -12005,48 +13354,49 @@ var Bone_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$k = undefined;
-let _model$j  = undefined;
 
-function getSchemaFrom$k ( Mongoose ) {
+let _schema = undefined;
+let _model  = undefined;
 
-    if ( !_schema$k ) {
-        _createSchema$k( Mongoose );
+function getSchemaFrom( Mongoose ) {
+
+    if ( !_schema ) {
+        _createSchema( Mongoose );
     }
 
-    return _schema$k
+    return _schema
 
 }
 
-function _createSchema$k ( Mongoose ) {
+function _createSchema( Mongoose ) {
 
     const Schema = Mongoose.Schema;
 
-    _schema$k = new Schema( {} );
+    _schema = new Schema( {} );
 
 }
 
-function getModelFrom$j ( Mongoose ) {
+function getModelFrom( Mongoose ) {
 
-    if ( !_model$j ) {
-        _createModel$j( Mongoose );
+    if ( !_model ) {
+        _createModel( Mongoose );
     }
 
-    return _model$j
+    return _model
 
 }
 
-function _createModel$j ( Mongoose ) {
+function _createModel( Mongoose ) {
 
-    const Object3DBaseModel = Object3D$I.getModelFrom( Mongoose );
-    _model$j                  = Object3DBaseModel.discriminator( 'Group', getSchemaFrom$k( Mongoose ) );
+    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+    _model                  = Object3DBaseModel.discriminator( 'Group', getSchemaFrom( Mongoose ) );
 
 }
 
-function registerModelTo$j ( Mongoose ) {
+function registerModelTo( Mongoose ) {
 
-    if ( !_model$j ) {
-        _createModel$j( Mongoose );
+    if ( !_model ) {
+        _createModel( Mongoose );
     }
 
     return Mongoose
@@ -12055,10 +13405,12 @@ function registerModelTo$j ( Mongoose ) {
 
 const Group = {
     name:            'Group',
-    getSchemaFrom:   getSchemaFrom$k,
-    getModelFrom:    getModelFrom$j,
-    registerModelTo: registerModelTo$j
+    getSchemaFrom:   getSchemaFrom,
+    getModelFrom:    getModelFrom,
+    registerModelTo: registerModelTo
 };
+
+var ImmediateRenderObject = {};
 
 /**
  * @module Schemas/Objects/ImmediateRenderObject
@@ -12070,62 +13422,73 @@ const Group = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$b } = require$$0$2;
+var hasRequiredImmediateRenderObject;
 
-let _schema$j = undefined;
-let _model$i  = undefined;
+function requireImmediateRenderObject () {
+	if (hasRequiredImmediateRenderObject) return ImmediateRenderObject;
+	hasRequiredImmediateRenderObject = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$j ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$j ) {
-        _createSchema$j( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$j
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'ImmediateRenderObject', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	ImmediateRenderObject.ImmediateRenderObject = {
+	    name:            'ImmediateRenderObject',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return ImmediateRenderObject;
 }
 
-function _createSchema$j ( Mongoose ) {
+var ImmediateRenderObjectExports = requireImmediateRenderObject();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$j = new Schema( {} );
-
-}
-
-function getModelFrom$i ( Mongoose ) {
-
-    if ( !_model$i ) {
-        _createModel$i( Mongoose );
-    }
-
-    return _model$i
-
-}
-
-function _createModel$i ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$b.getModelFrom( Mongoose );
-    _model$i                  = Object3DBaseModel.discriminator( 'ImmediateRenderObject', getSchemaFrom$j( Mongoose ) );
-
-}
-
-function registerModelTo$i ( Mongoose ) {
-
-    if ( !_model$i ) {
-        _createModel$i( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var ImmediateRenderObject_1 = {
-    name:            'ImmediateRenderObject',
-    getSchemaFrom:   getSchemaFrom$j,
-    getModelFrom:    getModelFrom$i,
-    registerModelTo: registerModelTo$i
-};
+var Lensflare = {};
 
 /**
  * @module Schemas/Objects/LensFlare
@@ -12137,81 +13500,94 @@ var ImmediateRenderObject_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$a } = require$$0$2;
+var hasRequiredLensflare;
 
-let _schema$i = undefined;
-let _model$h  = undefined;
+function requireLensflare () {
+	if (hasRequiredLensflare) return Lensflare;
+	hasRequiredLensflare = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$i ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$i ) {
-        _createSchema$i( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$i
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+	    const Color    = Types.Color;
+	    const Vector3  = Types.Vector3;
+
+	    _schema = new Schema( {
+	        lensFlares: [
+	            {
+	                texture:  ObjectId,
+	                size:     Number,
+	                distance: Number,
+	                x:        Number,
+	                y:        Number,
+	                z:        Number,
+	                scale:    Number,
+	                rotation: Number,
+	                opacity:  Number,
+	                color:    Color,
+	                blending: Number
+	            }
+	        ],
+	        positionScreen: Vector3
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'LensFlare', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Lensflare.LensFlare = {
+	    name:            'LensFlare',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Lensflare;
 }
 
-function _createSchema$i ( Mongoose ) {
+var LensflareExports = requireLensflare();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-    const Color    = Types.Color;
-    const Vector3  = Types.Vector3;
-
-    _schema$i = new Schema( {
-        lensFlares: [ {
-            texture:  ObjectId,
-            size:     Number,
-            distance: Number,
-            x:        Number,
-            y:        Number,
-            z:        Number,
-            scale:    Number,
-            rotation: Number,
-            opacity:  Number,
-            color:    Color,
-            blending: Number
-        } ],
-        positionScreen: Vector3
-    } );
-
-}
-
-function getModelFrom$h ( Mongoose ) {
-
-    if ( !_model$h ) {
-        _createModel$h( Mongoose );
-    }
-
-    return _model$h
-
-}
-
-function _createModel$h ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$a.getModelFrom( Mongoose );
-    _model$h                  = Object3DBaseModel.discriminator( 'LensFlare', getSchemaFrom$i( Mongoose ) );
-
-}
-
-function registerModelTo$h ( Mongoose ) {
-
-    if ( !_model$h ) {
-        _createModel$h( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LensFlare = {
-    name:            'LensFlare',
-    getSchemaFrom:   getSchemaFrom$i,
-    getModelFrom:    getModelFrom$h,
-    registerModelTo: registerModelTo$h
-};
+var Line = {};
 
 /**
  * @module Schemas/Objects/Line
@@ -12223,74 +13599,87 @@ var LensFlare = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$9 } = require$$0$2;
+var hasRequiredLine;
 
-let _schema$h = undefined;
-let _model$g  = undefined;
+function requireLine () {
+	if (hasRequiredLine) return Line;
+	hasRequiredLine = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$h ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$h ) {
-        _createSchema$h( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$h
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'LineBasicMaterial'
+	            }
+	        ],
+	        drawMode: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Line', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Line.Line = {
+	    name:            'Line',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Line;
 }
 
-function _createSchema$h ( Mongoose ) {
+var LineExports = requireLine();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$h = new Schema( {
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
-        drawMode: Number
-    } );
-
-}
-
-function getModelFrom$g ( Mongoose ) {
-
-    if ( !_model$g ) {
-        _createModel$g( Mongoose );
-    }
-
-    return _model$g
-
-}
-
-function _createModel$g ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$9.getModelFrom( Mongoose );
-    _model$g                  = Object3DBaseModel.discriminator( 'Line', getSchemaFrom$h( Mongoose ) );
-
-}
-
-function registerModelTo$g ( Mongoose ) {
-
-    if ( !_model$g ) {
-        _createModel$g( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Line_1 = {
-    name:            'Line',
-    getSchemaFrom:   getSchemaFrom$h,
-    getModelFrom:    getModelFrom$g,
-    registerModelTo: registerModelTo$g
-};
+var LineLoop = {};
 
 /**
  * @module Schemas/Objects/LineLoop
@@ -12302,74 +13691,87 @@ var Line_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$8 } = require$$0$2;
+var hasRequiredLineLoop;
 
-let _schema$g = undefined;
-let _model$f  = undefined;
+function requireLineLoop () {
+	if (hasRequiredLineLoop) return LineLoop;
+	hasRequiredLineLoop = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$g ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$g ) {
-        _createSchema$g( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$g
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'LineBasicMaterial'
+	            }
+	        ],
+	        drawMode: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'LineLoop', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineLoop.LineLoop = {
+	    name:            'LineLoop',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineLoop;
 }
 
-function _createSchema$g ( Mongoose ) {
+var LineLoopExports = requireLineLoop();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$g = new Schema( {
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
-        drawMode: Number
-    } );
-
-}
-
-function getModelFrom$f ( Mongoose ) {
-
-    if ( !_model$f ) {
-        _createModel$f( Mongoose );
-    }
-
-    return _model$f
-
-}
-
-function _createModel$f ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$8.getModelFrom( Mongoose );
-    _model$f                  = Object3DBaseModel.discriminator( 'LineLoop', getSchemaFrom$g( Mongoose ) );
-
-}
-
-function registerModelTo$f ( Mongoose ) {
-
-    if ( !_model$f ) {
-        _createModel$f( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineLoop_1 = {
-    name:            'LineLoop',
-    getSchemaFrom:   getSchemaFrom$g,
-    getModelFrom:    getModelFrom$f,
-    registerModelTo: registerModelTo$f
-};
+var LineSegments = {};
 
 /**
  * @module Schemas/Objects/LineSegments
@@ -12381,74 +13783,87 @@ var LineLoop_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$7 } = require$$0$2;
+var hasRequiredLineSegments;
 
-let _schema$f = undefined;
-let _model$e  = undefined;
+function requireLineSegments () {
+	if (hasRequiredLineSegments) return LineSegments;
+	hasRequiredLineSegments = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$f ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$f ) {
-        _createSchema$f( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$f
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'LineBasicMaterial'
+	            }
+	        ],
+	        drawMode: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'LineSegments', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LineSegments.LineSegments = {
+	    name:            'LineSegments',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LineSegments;
 }
 
-function _createSchema$f ( Mongoose ) {
+var LineSegmentsExports = requireLineSegments();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$f = new Schema( {
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'LineBasicMaterial'
-        } ],
-        drawMode: Number
-    } );
-
-}
-
-function getModelFrom$e ( Mongoose ) {
-
-    if ( !_model$e ) {
-        _createModel$e( Mongoose );
-    }
-
-    return _model$e
-
-}
-
-function _createModel$e ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$7.getModelFrom( Mongoose );
-    _model$e                  = Object3DBaseModel.discriminator( 'LineSegments', getSchemaFrom$f( Mongoose ) );
-
-}
-
-function registerModelTo$e ( Mongoose ) {
-
-    if ( !_model$e ) {
-        _createModel$e( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LineSegments_1 = {
-    name:            'LineSegments',
-    getSchemaFrom:   getSchemaFrom$f,
-    getModelFrom:    getModelFrom$e,
-    registerModelTo: registerModelTo$e
-};
+var LOD = {};
 
 /**
  * @module Schemas/Objects/LOD
@@ -12460,66 +13875,77 @@ var LineSegments_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$6 } = require$$0$2;
+var hasRequiredLOD;
 
-let _schema$e = undefined;
-let _model$d  = undefined;
+function requireLOD () {
+	if (hasRequiredLOD) return LOD;
+	hasRequiredLOD = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$e ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$e ) {
-        _createSchema$e( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$e
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+	    const Types  = Schema.Types;
+	    const Mixed  = Types.Mixed;
+
+	    _schema = new Schema( {
+	        levels: [ Mixed ]
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'LOD', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	LOD.LOD = {
+	    name:            'LOD',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return LOD;
 }
 
-function _createSchema$e ( Mongoose ) {
+var LODExports = requireLOD();
 
-    const Schema = Mongoose.Schema;
-    const Types  = Schema.Types;
-    const Mixed  = Types.Mixed;
-
-    _schema$e = new Schema( {
-        levels: [ Mixed ]
-    } );
-
-}
-
-function getModelFrom$d ( Mongoose ) {
-
-    if ( !_model$d ) {
-        _createModel$d( Mongoose );
-    }
-
-    return _model$d
-
-}
-
-function _createModel$d ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$6.getModelFrom( Mongoose );
-    _model$d                  = Object3DBaseModel.discriminator( 'LOD', getSchemaFrom$e( Mongoose ) );
-
-}
-
-function registerModelTo$d ( Mongoose ) {
-
-    if ( !_model$d ) {
-        _createModel$d( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var LOD_1 = {
-    name:            'LOD',
-    getSchemaFrom:   getSchemaFrom$e,
-    getModelFrom:    getModelFrom$d,
-    registerModelTo: registerModelTo$d
-};
+var Mesh = {};
 
 /**
  * @module Schemas/Objects/Mesh
@@ -12531,74 +13957,87 @@ var LOD_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$5 } = require$$0$2;
+var hasRequiredMesh;
 
-let _schema$d = undefined;
-let _model$c  = undefined;
+function requireMesh () {
+	if (hasRequiredMesh) return Mesh;
+	hasRequiredMesh = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$d ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$d ) {
-        _createSchema$d( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$d
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'Material'
+	            }
+	        ],
+	        drawMode: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Mesh', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Mesh.Mesh = {
+	    name:            'Mesh',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Mesh;
 }
 
-function _createSchema$d ( Mongoose ) {
+var MeshExports = requireMesh();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$d = new Schema( {
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'Material'
-        } ],
-        drawMode: Number
-    } );
-
-}
-
-function getModelFrom$c ( Mongoose ) {
-
-    if ( !_model$c ) {
-        _createModel$c( Mongoose );
-    }
-
-    return _model$c
-
-}
-
-function _createModel$c ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$5.getModelFrom( Mongoose );
-    _model$c                  = Object3DBaseModel.discriminator( 'Mesh', getSchemaFrom$d( Mongoose ) );
-
-}
-
-function registerModelTo$c ( Mongoose ) {
-
-    if ( !_model$c ) {
-        _createModel$c( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Mesh_1 = {
-    name:            'Mesh',
-    getSchemaFrom:   getSchemaFrom$d,
-    getModelFrom:    getModelFrom$c,
-    registerModelTo: registerModelTo$c
-};
+var Points = {};
 
 /**
  * @module Schemas/Objects/Points
@@ -12610,74 +14049,87 @@ var Mesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$4 } = require$$0$2;
+var hasRequiredPoints;
 
-let _schema$c = undefined;
-let _model$b  = undefined;
+function requirePoints () {
+	if (hasRequiredPoints) return Points;
+	hasRequiredPoints = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$c ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$c ) {
-        _createSchema$c( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$c
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'PointsMaterial'
+	            }
+	        ],
+	        drawMode: Number
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Points', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Points.Points = {
+	    name:            'Points',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Points;
 }
 
-function _createSchema$c ( Mongoose ) {
+var PointsExports = requirePoints();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$c = new Schema( {
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'PointsMaterial'
-        } ],
-        drawMode: Number
-    } );
-
-}
-
-function getModelFrom$b ( Mongoose ) {
-
-    if ( !_model$b ) {
-        _createModel$b( Mongoose );
-    }
-
-    return _model$b
-
-}
-
-function _createModel$b ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$4.getModelFrom( Mongoose );
-    _model$b                  = Object3DBaseModel.discriminator( 'Points', getSchemaFrom$c( Mongoose ) );
-
-}
-
-function registerModelTo$b ( Mongoose ) {
-
-    if ( !_model$b ) {
-        _createModel$b( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Points_1 = {
-    name:            'Points',
-    getSchemaFrom:   getSchemaFrom$c,
-    getModelFrom:    getModelFrom$b,
-    registerModelTo: registerModelTo$b
-};
+var Skeleton = {};
 
 /**
  * @module Schemas/Objects/Skeleton
@@ -12689,67 +14141,78 @@ var Points_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$3 } = require$$0$2;
+var hasRequiredSkeleton;
 
-let _schema$b = undefined;
-let _model$a  = undefined;
+function requireSkeleton () {
+	if (hasRequiredSkeleton) return Skeleton;
+	hasRequiredSkeleton = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$b ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$b ) {
-        _createSchema$b( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$b
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        bones:        [ ObjectId ],
+	        boneMatrices: [ Number ] // Float32Array( this.bones.length * 16 )
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Skeleton', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Skeleton.Skeleton = {
+	    name:            'Skeleton',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Skeleton;
 }
 
-function _createSchema$b ( Mongoose ) {
+var SkeletonExports = requireSkeleton();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$b = new Schema( {
-        bones:        [ ObjectId ],
-        boneMatrices: [ Number ] // Float32Array( this.bones.length * 16 )
-    } );
-
-}
-
-function getModelFrom$a ( Mongoose ) {
-
-    if ( !_model$a ) {
-        _createModel$a( Mongoose );
-    }
-
-    return _model$a
-
-}
-
-function _createModel$a ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$3.getModelFrom( Mongoose );
-    _model$a                  = Object3DBaseModel.discriminator( 'Skeleton', getSchemaFrom$b( Mongoose ) );
-
-}
-
-function registerModelTo$a ( Mongoose ) {
-
-    if ( !_model$a ) {
-        _createModel$a( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Skeleton_1 = {
-    name:            'Skeleton',
-    getSchemaFrom:   getSchemaFrom$b,
-    getModelFrom:    getModelFrom$a,
-    registerModelTo: registerModelTo$a
-};
+var SkinnedMesh = {};
 
 /**
  * @module Schemas/Objects/SkinnedMesh
@@ -12761,81 +14224,94 @@ var Skeleton_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$2 } = require$$0$2;
+var hasRequiredSkinnedMesh;
 
-let _schema$a = undefined;
-let _model$9  = undefined;
+function requireSkinnedMesh () {
+	if (hasRequiredSkinnedMesh) return SkinnedMesh;
+	hasRequiredSkinnedMesh = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$a ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$a ) {
-        _createSchema$a( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$a
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        // Mesh
+	        geometry: {
+	            type: ObjectId,
+	            ref:  'Geometry'
+	        },
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'Material'
+	            }
+	        ],
+	        drawMode: Number,
+
+	        // SkinnedMesh
+	        bindMode:          String,
+	        bindMatrix:        [ Number ],
+	        bindMatrixInverse: [ Number ]
+
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'SkinnedMesh', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	SkinnedMesh.SkinnedMesh = {
+	    name:            'SkinnedMesh',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return SkinnedMesh;
 }
 
-function _createSchema$a ( Mongoose ) {
+var SkinnedMeshExports = requireSkinnedMesh();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$a = new Schema( {
-        // Mesh
-        geometry: {
-            type: ObjectId,
-            ref:  'Geometry'
-        },
-        material: [ {
-            type: ObjectId,
-            ref:  'Material'
-        } ],
-        drawMode: Number,
-
-        // SkinnedMesh
-        bindMode:          String,
-        bindMatrix:        [ Number ],
-        bindMatrixInverse: [ Number ]
-
-    } );
-
-}
-
-function getModelFrom$9 ( Mongoose ) {
-
-    if ( !_model$9 ) {
-        _createModel$9( Mongoose );
-    }
-
-    return _model$9
-
-}
-
-function _createModel$9 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$2.getModelFrom( Mongoose );
-    _model$9                  = Object3DBaseModel.discriminator( 'SkinnedMesh', getSchemaFrom$a( Mongoose ) );
-
-}
-
-function registerModelTo$9 ( Mongoose ) {
-
-    if ( !_model$9 ) {
-        _createModel$9( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var SkinnedMesh_1 = {
-    name:            'SkinnedMesh',
-    getSchemaFrom:   getSchemaFrom$a,
-    getModelFrom:    getModelFrom$9,
-    registerModelTo: registerModelTo$9
-};
+var Sprite = {};
 
 /**
  * @module Schemas/Objects/Sprite
@@ -12847,71 +14323,82 @@ var SkinnedMesh_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D: Object3D$1 } = require$$0$2;
+var hasRequiredSprite;
 
-let _schema$9 = undefined;
-let _model$8  = undefined;
+function requireSprite () {
+	if (hasRequiredSprite) return Sprite;
+	hasRequiredSprite = 1;
+	const { Object3D } = require$$0$2;
 
-function getSchemaFrom$9 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$9 ) {
-        _createSchema$9( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$9
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+
+	    _schema = new Schema( {
+	        material: [
+	            {
+	                type: ObjectId,
+	                ref:  'SpriteMaterial'
+	            }
+	        ]
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Sprite', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Sprite.Sprite = {
+	    name:            'Sprite',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return Sprite;
 }
 
-function _createSchema$9 ( Mongoose ) {
+var SpriteExports = requireSprite();
 
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-
-    _schema$9 = new Schema( {
-        material: [ {
-            type: ObjectId,
-            ref:  'SpriteMaterial'
-        } ]
-    } );
-
-}
-
-function getModelFrom$8 ( Mongoose ) {
-
-    if ( !_model$8 ) {
-        _createModel$8( Mongoose );
-    }
-
-    return _model$8
-
-}
-
-function _createModel$8 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D$1.getModelFrom( Mongoose );
-    _model$8                  = Object3DBaseModel.discriminator( 'Sprite', getSchemaFrom$9( Mongoose ) );
-
-}
-
-function registerModelTo$8 ( Mongoose ) {
-
-    if ( !_model$8 ) {
-        _createModel$8( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Sprite_1 = {
-    name:            'Sprite',
-    getSchemaFrom:   getSchemaFrom$9,
-    getModelFrom:    getModelFrom$8,
-    registerModelTo: registerModelTo$8
-};
-
-var Fog$1 = {};
+var Fog = {};
 
 /**
  * @module Schemas/Scenes/Fog
@@ -12923,48 +14410,59 @@ var Fog$1 = {};
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$8 = undefined;
+var hasRequiredFog;
 
-function getSchemaFrom$8 ( Mongoose ) {
+function requireFog () {
+	if (hasRequiredFog) return Fog;
+	hasRequiredFog = 1;
+	let _schema = undefined;
 
-    if ( !_schema$8 ) {
-        _createSchema$8( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$8
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        coordinates: {
+	            x: Number,
+	            y: Number,
+	            z: Number
+	        },
+	        orientation: {
+	            x: Number,
+	            y: Number,
+	            z: Number
+	        },
+	        thumbnail: Buffer,
+	        path:      String
+	    }, {
+	        _id: false,
+	        id:  false
+	    } );
+
+	}
+
+	Fog.Fog = {
+	    name:            'Fog',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    () => null,
+	    registerModelTo: Mongoose => Mongoose
+	};
+	return Fog;
 }
 
-function _createSchema$8 ( Mongoose ) {
+var FogExports = requireFog();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$8 = new Schema( {
-        coordinates: {
-            x: Number,
-            y: Number,
-            z: Number
-        },
-        orientation: {
-            x: Number,
-            y: Number,
-            z: Number
-        },
-        thumbnail: Buffer,
-        path:      String
-    }, {
-        _id: false,
-        id:  false
-    } );
-
-}
-
-var Fog_1 = Fog$1.Fog = {
-    name:            'Fog',
-    getSchemaFrom:   getSchemaFrom$8,
-    getModelFrom:    () => null,
-    registerModelTo: Mongoose => Mongoose
-};
+var Scene = {};
 
 /**
  * @module Schemas/Scenes/FogExp2
@@ -12977,73 +14475,84 @@ var Fog_1 = Fog$1.Fog = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Object3D } = require$$0$2;
-const { Fog }      = Fog$1;
+var hasRequiredScene;
 
-let _schema$7 = undefined;
-let _model$7  = undefined;
+function requireScene () {
+	if (hasRequiredScene) return Scene;
+	hasRequiredScene = 1;
+	const { Object3D } = require$$0$2;
+	const { Fog }      = requireFog();
 
-function getSchemaFrom$7 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$7 ) {
-        _createSchema$7( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$7
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const FogSchema = Fog.getSchemaFrom( Mongoose );
+	    const Schema    = Mongoose.Schema;
+	    const Types     = Schema.Types;
+	    const Color     = Types.Color;
+
+	    _schema = new Schema( {
+	        background:       Color,
+	        fog:              FogSchema,
+	        overrideMaterial: String,
+	        autoUpdate:       Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
+	    _model                  = Object3DBaseModel.discriminator( 'Scene', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Scene.Scene = {
+	    name: 'Scene',
+	    getSchemaFrom,
+	    getModelFrom,
+	    registerModelTo
+	};
+	return Scene;
 }
 
-function _createSchema$7 ( Mongoose ) {
+var SceneExports = requireScene();
 
-    const FogSchema = Fog.getSchemaFrom( Mongoose );
-    const Schema    = Mongoose.Schema;
-    const Types     = Schema.Types;
-    const Color     = Types.Color;
+var CanvasTexture = {};
 
-    _schema$7 = new Schema( {
-        background:       Color,
-        fog:              FogSchema,
-        overrideMaterial: String,
-        autoUpdate:       Boolean
-    } );
-
-}
-
-function getModelFrom$7 ( Mongoose ) {
-
-    if ( !_model$7 ) {
-        _createModel$7( Mongoose );
-    }
-
-    return _model$7
-
-}
-
-function _createModel$7 ( Mongoose ) {
-
-    const Object3DBaseModel = Object3D.getModelFrom( Mongoose );
-    _model$7                  = Object3DBaseModel.discriminator( 'Scene', getSchemaFrom$7( Mongoose ) );
-
-}
-
-function registerModelTo$7 ( Mongoose ) {
-
-    if ( !_model$7 ) {
-        _createModel$7( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Scene_1 = {
-    name: 'Scene',
-    getSchemaFrom: getSchemaFrom$7,
-    getModelFrom: getModelFrom$7,
-    registerModelTo: registerModelTo$7
-};
-
-var Texture$6 = {};
+var Texture = {};
 
 /**
  * @module Schemas/Textures/Texture
@@ -13052,95 +14561,102 @@ var Texture$6 = {};
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-let _schema$6 = undefined;
-let _model$6  = undefined;
+var hasRequiredTexture;
 
-function getSchemaFrom$6 ( Mongoose ) {
+function requireTexture () {
+	if (hasRequiredTexture) return Texture;
+	hasRequiredTexture = 1;
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$6 ) {
-        _createSchema$6( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$6
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema   = Mongoose.Schema;
+	    const Types    = Schema.Types;
+	    const ObjectId = Types.ObjectId;
+	    const Vector2  = Types.Vector2;
+	    const Matrix3  = Types.Matrix3;
+
+	    _schema = new Schema( {
+	        uuid:             String,
+	        name:             String,
+	        image:            ObjectId,
+	        mipmaps:          [],
+	        mapping:          Number,
+	        wrapS:            Number,
+	        wrapT:            Number,
+	        magFilter:        Number,
+	        minFilter:        Number,
+	        anisotropy:       Number,
+	        format:           Number,
+	        type:             Number,
+	        offset:           Vector2,
+	        repeat:           Vector2,
+	        center:           Vector2,
+	        rotation:         Number,
+	        matrixAutoUpdate: Boolean,
+	        matrix:           Matrix3,
+	        generateMipmaps:  Boolean,
+	        premultiplyAlpha: Boolean,
+	        flipY:            Boolean,
+	        unpackAlignment:  Number,
+	        encoding:         Number,
+	        version:          Number
+	    }, {
+	        collection:       'textures',
+	        discriminatorKey: 'type'
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    // We need to pre-declare the base model to be able to use correctly
+	    // the discriminator 'type' correctly with the main type, instead of
+	    // directly register the model as it
+	    _model = Mongoose.model( 'Textures', getSchemaFrom( Mongoose ) );
+	    _model.discriminator( 'Texture', new Mongoose.Schema( {} ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	Texture.Texture = {
+	    name: 'Texture',
+	    getSchemaFrom,
+	    getModelFrom,
+	    registerModelTo
+	};
+	return Texture;
 }
-
-function _createSchema$6 ( Mongoose ) {
-
-    const Schema   = Mongoose.Schema;
-    const Types    = Schema.Types;
-    const ObjectId = Types.ObjectId;
-    const Vector2  = Types.Vector2;
-    const Matrix3  = Types.Matrix3;
-
-    _schema$6 = new Schema( {
-        uuid:             String,
-        name:             String,
-        image:            ObjectId,
-        mipmaps:          [],
-        mapping:          Number,
-        wrapS:            Number,
-        wrapT:            Number,
-        magFilter:        Number,
-        minFilter:        Number,
-        anisotropy:       Number,
-        format:           Number,
-        type:             Number,
-        offset:           Vector2,
-        repeat:           Vector2,
-        center:           Vector2,
-        rotation:         Number,
-        matrixAutoUpdate: Boolean,
-        matrix:           Matrix3,
-        generateMipmaps:  Boolean,
-        premultiplyAlpha: Boolean,
-        flipY:            Boolean,
-        unpackAlignment:  Number,
-        encoding:         Number,
-        version:          Number
-    }, {
-        collection:       'textures',
-        discriminatorKey: 'type'
-    } );
-
-}
-
-function getModelFrom$6 ( Mongoose ) {
-
-    if ( !_model$6 ) {
-        _createModel$6( Mongoose );
-    }
-
-    return _model$6
-
-}
-
-function _createModel$6 ( Mongoose ) {
-
-    // We need to pre-declare the base model to be able to use correctly
-    // the discriminator 'type' correctly with the main type, instead of
-    // directly register the model as it
-    _model$6 = Mongoose.model( 'Textures', getSchemaFrom$6( Mongoose ) );
-    _model$6.discriminator( 'Texture', new Mongoose.Schema( {} ) );
-
-}
-
-function registerModelTo$6 ( Mongoose ) {
-
-    if ( !_model$6 ) {
-        _createModel$6( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var Texture_1 = Texture$6.Texture = {
-    name: 'Texture',
-    getSchemaFrom: getSchemaFrom$6,
-    getModelFrom: getModelFrom$6,
-    registerModelTo: registerModelTo$6
-};
 
 /**
  * @module Schemas/Textures/CanvasTexture
@@ -13152,64 +14668,75 @@ var Texture_1 = Texture$6.Texture = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$5 } = Texture$6;
+var hasRequiredCanvasTexture;
 
-let _schema$5 = undefined;
-let _model$5  = undefined;
+function requireCanvasTexture () {
+	if (hasRequiredCanvasTexture) return CanvasTexture;
+	hasRequiredCanvasTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom$5 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$5 ) {
-        _createSchema$5( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$5
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {
+	        needsUpdate: Boolean
+	    } );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'CanvasTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CanvasTexture.CanvasTexture = {
+	    name:            'CanvasTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CanvasTexture;
 }
 
-function _createSchema$5 ( Mongoose ) {
+var CanvasTextureExports = requireCanvasTexture();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$5 = new Schema( {
-        needsUpdate: Boolean
-    } );
-
-}
-
-function getModelFrom$5 ( Mongoose ) {
-
-    if ( !_model$5 ) {
-        _createModel$5( Mongoose );
-    }
-
-    return _model$5
-
-}
-
-function _createModel$5 ( Mongoose ) {
-
-    const TextureBaseModel = Texture$5.getModelFrom( Mongoose );
-    _model$5                 = TextureBaseModel.discriminator( 'CanvasTexture', getSchemaFrom$5( Mongoose ) );
-
-}
-
-function registerModelTo$5 ( Mongoose ) {
-
-    if ( !_model$5 ) {
-        _createModel$5( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CanvasTexture_1 = {
-    name:            'CanvasTexture',
-    getSchemaFrom:   getSchemaFrom$5,
-    getModelFrom:    getModelFrom$5,
-    registerModelTo: registerModelTo$5
-};
+var CompressedTexture = {};
 
 /**
  * @module Schemas/Textures/CompressedTexture
@@ -13221,62 +14748,73 @@ var CanvasTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$4 } = Texture$6;
+var hasRequiredCompressedTexture;
 
-let _schema$4 = undefined;
-let _model$4  = undefined;
+function requireCompressedTexture () {
+	if (hasRequiredCompressedTexture) return CompressedTexture;
+	hasRequiredCompressedTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom$4 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$4 ) {
-        _createSchema$4( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$4
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'CompressedTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CompressedTexture.CompressedTexture = {
+	    name:            'CompressedTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CompressedTexture;
 }
 
-function _createSchema$4 ( Mongoose ) {
+var CompressedTextureExports = requireCompressedTexture();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$4 = new Schema( {} );
-
-}
-
-function getModelFrom$4 ( Mongoose ) {
-
-    if ( !_model$4 ) {
-        _createModel$4( Mongoose );
-    }
-
-    return _model$4
-
-}
-
-function _createModel$4 ( Mongoose ) {
-
-    const TextureBaseModel = Texture$4.getModelFrom( Mongoose );
-    _model$4                 = TextureBaseModel.discriminator( 'CompressedTexture', getSchemaFrom$4( Mongoose ) );
-
-}
-
-function registerModelTo$4 ( Mongoose ) {
-
-    if ( !_model$4 ) {
-        _createModel$4( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CompressedTexture_1 = {
-    name:            'CompressedTexture',
-    getSchemaFrom:   getSchemaFrom$4,
-    getModelFrom:    getModelFrom$4,
-    registerModelTo: registerModelTo$4
-};
+var CubeTexture = {};
 
 /**
  * @module Schemas/Textures/CubeTexture
@@ -13288,62 +14826,73 @@ var CompressedTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$3 } = Texture$6;
+var hasRequiredCubeTexture;
 
-let _schema$3 = undefined;
-let _model$3  = undefined;
+function requireCubeTexture () {
+	if (hasRequiredCubeTexture) return CubeTexture;
+	hasRequiredCubeTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom$3 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$3 ) {
-        _createSchema$3( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$3
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'CubeTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	CubeTexture.CubeTexture = {
+	    name:            'CubeTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return CubeTexture;
 }
 
-function _createSchema$3 ( Mongoose ) {
+var CubeTextureExports = requireCubeTexture();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$3 = new Schema( {} );
-
-}
-
-function getModelFrom$3 ( Mongoose ) {
-
-    if ( !_model$3 ) {
-        _createModel$3( Mongoose );
-    }
-
-    return _model$3
-
-}
-
-function _createModel$3 ( Mongoose ) {
-
-    const TextureBaseModel = Texture$3.getModelFrom( Mongoose );
-    _model$3                 = TextureBaseModel.discriminator( 'CubeTexture', getSchemaFrom$3( Mongoose ) );
-
-}
-
-function registerModelTo$3 ( Mongoose ) {
-
-    if ( !_model$3 ) {
-        _createModel$3( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var CubeTexture_1 = {
-    name:            'CubeTexture',
-    getSchemaFrom:   getSchemaFrom$3,
-    getModelFrom:    getModelFrom$3,
-    registerModelTo: registerModelTo$3
-};
+var DataTexture = {};
 
 /**
  * @module Schemas/Textures/DataTexture
@@ -13355,62 +14904,73 @@ var CubeTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$2 } = Texture$6;
+var hasRequiredDataTexture;
 
-let _schema$2 = undefined;
-let _model$2  = undefined;
+function requireDataTexture () {
+	if (hasRequiredDataTexture) return DataTexture;
+	hasRequiredDataTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom$2 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$2 ) {
-        _createSchema$2( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$2
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'DataTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DataTexture.DataTexture = {
+	    name:            'DataTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DataTexture;
 }
 
-function _createSchema$2 ( Mongoose ) {
+var DataTextureExports = requireDataTexture();
 
-    const Schema = Mongoose.Schema;
-
-    _schema$2 = new Schema( {} );
-
-}
-
-function getModelFrom$2 ( Mongoose ) {
-
-    if ( !_model$2 ) {
-        _createModel$2( Mongoose );
-    }
-
-    return _model$2
-
-}
-
-function _createModel$2 ( Mongoose ) {
-
-    const TextureBaseModel = Texture$2.getModelFrom( Mongoose );
-    _model$2                 = TextureBaseModel.discriminator( 'DataTexture', getSchemaFrom$2( Mongoose ) );
-
-}
-
-function registerModelTo$2 ( Mongoose ) {
-
-    if ( !_model$2 ) {
-        _createModel$2( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DataTexture_1 = {
-    name:            'DataTexture',
-    getSchemaFrom:   getSchemaFrom$2,
-    getModelFrom:    getModelFrom$2,
-    registerModelTo: registerModelTo$2
-};
+var DepthTexture = {};
 
 /**
  * @module Schemas/Textures/DepthTexture
@@ -13422,62 +14982,75 @@ var DataTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture: Texture$1 } = Texture$6;
+var hasRequiredDepthTexture;
 
-let _schema$1 = undefined;
-let _model$1  = undefined;
+function requireDepthTexture () {
+	if (hasRequiredDepthTexture) return DepthTexture;
+	hasRequiredDepthTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom$1 ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema$1 ) {
-        _createSchema$1( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema$1
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'DepthTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	DepthTexture.DepthTexture = {
+	    name:            'DepthTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return DepthTexture;
 }
 
-function _createSchema$1 ( Mongoose ) {
+var DepthTextureExports = requireDepthTexture();
 
-    const Schema = Mongoose.Schema;
+var TextureExports = requireTexture();
 
-    _schema$1 = new Schema( {} );
-
-}
-
-function getModelFrom$1 ( Mongoose ) {
-
-    if ( !_model$1 ) {
-        _createModel$1( Mongoose );
-    }
-
-    return _model$1
-
-}
-
-function _createModel$1 ( Mongoose ) {
-
-    const TextureBaseModel = Texture$1.getModelFrom( Mongoose );
-    _model$1                 = TextureBaseModel.discriminator( 'DepthTexture', getSchemaFrom$1( Mongoose ) );
-
-}
-
-function registerModelTo$1 ( Mongoose ) {
-
-    if ( !_model$1 ) {
-        _createModel$1( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var DepthTexture_1 = {
-    name:            'DepthTexture',
-    getSchemaFrom:   getSchemaFrom$1,
-    getModelFrom:    getModelFrom$1,
-    registerModelTo: registerModelTo$1
-};
+var VideoTexture = {};
 
 /**
  * @module Schemas/Textures/VideoTexture
@@ -13489,62 +15062,71 @@ var DepthTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-const { Texture } = Texture$6;
+var hasRequiredVideoTexture;
 
-let _schema = undefined;
-let _model  = undefined;
+function requireVideoTexture () {
+	if (hasRequiredVideoTexture) return VideoTexture;
+	hasRequiredVideoTexture = 1;
+	const { Texture } = requireTexture();
 
-function getSchemaFrom ( Mongoose ) {
+	let _schema = undefined;
+	let _model  = undefined;
 
-    if ( !_schema ) {
-        _createSchema( Mongoose );
-    }
+	function getSchemaFrom( Mongoose ) {
 
-    return _schema
+	    if ( !_schema ) {
+	        _createSchema( Mongoose );
+	    }
 
+	    return _schema
+
+	}
+
+	function _createSchema( Mongoose ) {
+
+	    const Schema = Mongoose.Schema;
+
+	    _schema = new Schema( {} );
+
+	}
+
+	function getModelFrom( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return _model
+
+	}
+
+	function _createModel( Mongoose ) {
+
+	    const TextureBaseModel = Texture.getModelFrom( Mongoose );
+	    _model                 = TextureBaseModel.discriminator( 'VideoTexture', getSchemaFrom( Mongoose ) );
+
+	}
+
+	function registerModelTo( Mongoose ) {
+
+	    if ( !_model ) {
+	        _createModel( Mongoose );
+	    }
+
+	    return Mongoose
+
+	}
+
+	VideoTexture.VideoTexture = {
+	    name:            'VideoTexture',
+	    getSchemaFrom:   getSchemaFrom,
+	    getModelFrom:    getModelFrom,
+	    registerModelTo: registerModelTo
+	};
+	return VideoTexture;
 }
 
-function _createSchema ( Mongoose ) {
-
-    const Schema = Mongoose.Schema;
-
-    _schema = new Schema( {} );
-
-}
-
-function getModelFrom ( Mongoose ) {
-
-    if ( !_model ) {
-        _createModel( Mongoose );
-    }
-
-    return _model
-
-}
-
-function _createModel ( Mongoose ) {
-
-    const TextureBaseModel = Texture.getModelFrom( Mongoose );
-    _model                 = TextureBaseModel.discriminator( 'VideoTexture', getSchemaFrom( Mongoose ) );
-
-}
-
-function registerModelTo ( Mongoose ) {
-
-    if ( !_model ) {
-        _createModel( Mongoose );
-    }
-
-    return Mongoose
-
-}
-
-var VideoTexture_1 = {
-    name:            'VideoTexture',
-    getSchemaFrom:   getSchemaFrom,
-    getModelFrom:    getModelFrom,
-    registerModelTo: registerModelTo
-};
+var VideoTextureExports = requireVideoTexture();
 
 /**
  * @module Types/Color
@@ -13556,13 +15138,14 @@ var VideoTexture_1 = {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Color type
  * @returns {Mongoose}
  */
-function ColorType ( Mongoose ) {
+function ColorType( Mongoose ) {
 
     /**
      * The Color type definition class
@@ -13580,7 +15163,7 @@ function ColorType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Color' );
 
@@ -13600,7 +15183,7 @@ function ColorType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument b property is not a number.
          * @returns {{r: Number, b: Number, g: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isColor ) { throw new Mongoose.SchemaType.CastError( `Color: ${ value } is not a object or Three.Color instance` ) }
@@ -13648,13 +15231,14 @@ function ColorType ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Euler type
  * @returns {Mongoose}
  */
-function EulerType ( Mongoose ) {
+function EulerType( Mongoose ) {
 
     /**
      * The Euler type definition class
@@ -13671,7 +15255,7 @@ function EulerType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Euler' );
 
@@ -13693,7 +15277,7 @@ function EulerType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument order property is not a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'].
          * @returns {{x: Number, y: Number, z: Number, order: String}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isEuler ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } is not a object or Euler instance` ) }
@@ -13709,7 +15293,9 @@ function EulerType ( Mongoose ) {
 
             if ( !( 'order' in value ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } does not contain order property` ) }
             if ( require$$0$3.isNotString( value.order ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string` ) }
-            if ( ![ 'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX' ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
+            if ( ![
+                'XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX'
+            ].includes( value.order.toUpperCase() ) ) { throw new Mongoose.SchemaType.CastError( `Euler: ${ value } expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']` ) }
 
             return {
                 x:     value.x,
@@ -13747,13 +15333,14 @@ function EulerType ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix3 type
  * @returns {Mongoose}
  */
-function Matrix3Type ( Mongoose ) {
+function Matrix3Type( Mongoose ) {
 
     /**
      * The Matrix3 type definition class
@@ -13770,7 +15357,7 @@ function Matrix3Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Matrix3' );
 
@@ -13786,7 +15373,7 @@ function Matrix3Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
          * @returns {Array.<Number>} The validated array of length 9
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotArray( value ) && !value.isMatrix3 ) { throw new Mongoose.SchemaType.CastError( `Matrix3: ${ value } is not an array or Matrix3 instance` ) }
@@ -13850,13 +15437,14 @@ function Matrix3Type ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Matrix4 type
  * @returns {Mongoose}
  */
-function Matrix4Type ( Mongoose ) {
+function Matrix4Type( Mongoose ) {
 
     /**
      * The Matrix4 type definition class
@@ -13873,7 +15461,7 @@ function Matrix4Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Matrix4' );
 
@@ -13889,7 +15477,7 @@ function Matrix4Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument internal array contains NaN or not number values.
          * @returns {Array.<Number>} The validated array of length 9
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotArray( value ) && !value.isMatrix4 ) { throw new Mongoose.SchemaType.CastError( `Matrix4: ${ value } is not an array or Matrix4 instance` ) }
@@ -13953,13 +15541,14 @@ function Matrix4Type ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Quaternion type
  * @returns {Mongoose}
  */
-function QuaternionType ( Mongoose ) {
+function QuaternionType( Mongoose ) {
 
     /**
      * The Quaternion type definition class
@@ -13976,7 +15565,7 @@ function QuaternionType ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Quaternion' );
 
@@ -13998,7 +15587,7 @@ function QuaternionType ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
          * @returns {{x: Number, y: Number, z: Number, w: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isQuaternion ) { throw new Mongoose.SchemaType.CastError( `Quaternion: ${ value } is not a object or Quaternion instance` ) }
@@ -14051,13 +15640,14 @@ function QuaternionType ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector2 type
  * @returns {Mongoose}
  */
-function Vector2Type ( Mongoose ) {
+function Vector2Type( Mongoose ) {
 
     /**
      * The Vector2 type definition class
@@ -14074,7 +15664,7 @@ function Vector2Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector2' );
 
@@ -14092,7 +15682,7 @@ function Vector2Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument y property is not a number.
          * @returns {{x: Number, y: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector2 ) { throw new Mongoose.SchemaType.CastError( `Vector2: ${ value } is not a object or Vector2 instance` ) }
@@ -14137,13 +15727,14 @@ function Vector2Type ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector3 type
  * @returns {Mongoose}
  */
-function Vector3Type ( Mongoose ) {
+function Vector3Type( Mongoose ) {
 
     /**
      * The Vector3 type definition class
@@ -14160,7 +15751,7 @@ function Vector3Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector3' );
 
@@ -14180,7 +15771,7 @@ function Vector3Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument z property is not a number.
          * @returns {{x: Number, y: Number, z: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector3 ) { throw new Mongoose.SchemaType.CastError( `Vector3: ${ value } is not a object or Vector3 instance` ) }
@@ -14229,13 +15820,14 @@ function Vector3Type ( Mongoose ) {
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+
 /**
  * The type registering function.
  *
  * @param Mongoose {Mongoose} - A mongoose instance where register the Vector4 type
  * @returns {Mongoose}
  */
-function Vector4Type ( Mongoose ) {
+function Vector4Type( Mongoose ) {
 
     /**
      * The Vector4 type definition class
@@ -14252,7 +15844,7 @@ function Vector4Type ( Mongoose ) {
          * @param {String} path
          * @param {Mongoose~SchemaTypeOptions} [options] See {@link https://mongoosejs.com/docs/api/schematypeoptions.html|SchemaTypeOptions docs }
          */
-        constructor ( path, options ) {
+        constructor( path, options ) {
 
             super( path, options, 'Vector4' );
 
@@ -14274,7 +15866,7 @@ function Vector4Type ( Mongoose ) {
          * @throws {Mongoose~CastError} Will throw an error if the argument w property is not a number.
          * @returns {{x: Number, y: Number, z: Number, w: Number}}
          */
-        cast ( value ) {
+        cast( value ) {
 
             if ( require$$0$3.isNotDefined( value ) ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is null or undefined` ) }
             if ( require$$0$3.isNotObject( value ) && !value.isVector4 ) { throw new Mongoose.SchemaType.CastError( `Vector4: ${ value } is not a object or Vector4 instance` ) }
@@ -14328,6 +15920,7 @@ function Vector4Type ( Mongoose ) {
  * @license [MIT]{@link https://opensource.org/licenses/MIT}
  */
 
+
 function registerPlugin( parameters ) {
 
     return new iteeMongodb.TMongoDBPlugin( parameters )
@@ -14342,178 +15935,178 @@ function registerPlugin( parameters ) {
         //    .addSchema( KeyframeTrack )
         //    .addSchema( BooleanKeyframeTrack )
         //    .addSchema( ColorKeyframeTrack )
-        .addSchema( Audio_1 )
-        .addSchema( AudioListener_1 )
-        .addSchema( PositionalAudio_1 )
-        .addSchema( ArrayCamera_1 )
-        .addSchema( Camera_1 )
-        .addSchema( CubeCamera_1 )
-        .addSchema( OrthographicCamera_1 )
-        .addSchema( PerspectiveCamera_1 )
-        .addSchema( BufferAttribute_1 )
-        .addSchema( BufferGeometry$l )
-        .addSchema( CurvePath_1 )
-        .addSchema( Face3_1 )
-        .addSchema( Geometry$o )
-        .addSchema( Object3D$I )
-        .addSchema( Path_1 )
-        .addSchema( Shape_1 )
-        .addSchema( ArcCurve_1 )
-        .addSchema( CatmullRomCurve3_1 )
-        .addSchema( CubicBezierCurve_1 )
-        .addSchema( CubicBezierCurve3_1 )
-        .addSchema( Curve_1 )
-        .addSchema( CurveExtras_1 )
-        .addSchema( EllipseCurve_1 )
-        .addSchema( LineCurve_1 )
-        .addSchema( LineCurve3_1 )
-        .addSchema( NURBSCurve_1 )
-        .addSchema( NURBSSurface_1 )
-        .addSchema( QuadraticBezierCurve_1 )
-        .addSchema( QuadraticBezierCurve3_1 )
-        .addSchema( SplineCurve_1 )
-        .addSchema( BoxBufferGeometry_1 )
-        .addSchema( BoxGeometry_1 )
-        .addSchema( CircleBufferGeometry_1 )
-        .addSchema( CircleGeometry_1 )
-        .addSchema( ConeBufferGeometry_1 )
-        .addSchema( ConeGeometry_1 )
-        .addSchema( ConvexGeometry_1 )
-        .addSchema( CylinderBufferGeometry_1 )
-        .addSchema( CylinderGeometry_1 )
-        .addSchema( DecalGeometry_1 )
-        .addSchema( DodecahedronGeometry_1 )
-        .addSchema( EdgesGeometry_1 )
-        .addSchema( ExtrudeBufferGeometry_1 )
-        .addSchema( ExtrudeGeometry_1 )
-        .addSchema( IcosahedronBufferGeometry_1 )
-        .addSchema( IcosahedronGeometry_1 )
-        .addSchema( InstancedBufferGeometry_1 )
-        .addSchema( LatheBufferGeometry_1 )
-        .addSchema( LatheGeometry_1 )
-        .addSchema( OctahedronBufferGeometry_1 )
-        .addSchema( OctahedronGeometry_1 )
-        .addSchema( ParametricBufferGeometry_1 )
-        .addSchema( ParametricGeometry_1 )
-        .addSchema( PlaneBufferGeometry_1 )
-        .addSchema( PlaneGeometry_1 )
-        .addSchema( PolyhedronBufferGeometry_1 )
-        .addSchema( PolyhedronGeometry_1 )
-        .addSchema( RingBufferGeometry_1 )
-        .addSchema( RingGeometry_1 )
-        .addSchema( ShapeBufferGeometry_1 )
-        .addSchema( ShapeGeometry_1 )
-        .addSchema( SphereBufferGeometry_1 )
-        .addSchema( SphereGeometry_1 )
-        .addSchema( TeapotBufferGeometry )
-        .addSchema( TetrahedronBufferGeometry_1 )
-        .addSchema( TetrahedronGeometry_1 )
-        .addSchema( TextBufferGeometry_1 )
-        .addSchema( TextGeometry_1 )
-        .addSchema( TorusBufferGeometry_1 )
-        .addSchema( TorusGeometry_1 )
-        .addSchema( TorusKnotBufferGeometry_1 )
-        .addSchema( TorusKnotGeometry_1 )
-        .addSchema( TubeBufferGeometry_1 )
-        .addSchema( TubeGeometry_1 )
-        .addSchema( WireframeGeometry_1 )
-        .addSchema( ArrowHelper_1 )
-        .addSchema( AxesHelper_1 )
-        .addSchema( Box3Helper_1 )
-        .addSchema( BoxHelper_1 )
-        .addSchema( CameraHelper_1 )
-        .addSchema( DirectionalLightHelper_1 )
-        .addSchema( FaceNormalsHelper_1 )
-        .addSchema( GridHelper_1 )
-        .addSchema( HemisphereLightHelper_1 )
-        .addSchema( PlaneHelper_1 )
-        .addSchema( PointLightHelper_1 )
-        .addSchema( PolarGridHelper_1 )
-        .addSchema( RectAreaLightHelper_1 )
-        .addSchema( SkeletonHelper_1 )
-        .addSchema( SpotLightHelper_1 )
-        .addSchema( VertexNormalsHelper_1 )
-        .addSchema( AmbientLight_1 )
-        .addSchema( DirectionalLight_1 )
+        .addSchema( AudioExports.Audio )
+        .addSchema( AudioListenerExports.AudioListener )
+        .addSchema( PositionalAudioExports.PositionalAudio )
+        .addSchema( ArrayCameraExports.ArrayCamera )
+        .addSchema( CameraExports.Camera )
+        .addSchema( CubeCameraExports.CubeCamera )
+        .addSchema( OrthographicCameraExports.OrthographicCamera )
+        .addSchema( PerspectiveCameraExports.PerspectiveCamera )
+        .addSchema( BufferAttributeExports.BufferAttribute )
+        .addSchema( BufferGeometry )
+        .addSchema( CurvePathExports.CurvePath )
+        .addSchema( Face3Exports.Face3 )
+        .addSchema( Geometry )
+        .addSchema( Object3D )
+        .addSchema( PathExports.Path )
+        .addSchema( ShapeExports.Shape )
+        .addSchema( ArcCurveExports.ArcCurve )
+        .addSchema( CatmullRomCurve3Exports.CatmullRomCurve3 )
+        .addSchema( CubicBezierCurveExports.CubicBezierCurve )
+        .addSchema( CubicBezierCurve3Exports.CubicBezierCurve3 )
+        .addSchema( CurveExports.Curve )
+        .addSchema( CurveExtrasExports.CurveExtras )
+        .addSchema( EllipseCurveExports.EllipseCurve )
+        .addSchema( LineCurveExports.LineCurve )
+        .addSchema( LineCurve3Exports.LineCurve3 )
+        .addSchema( NURBSCurveExports.NURBSCurve )
+        .addSchema( NURBSSurfaceExports.NURBSSurface )
+        .addSchema( QuadraticBezierCurveExports.QuadraticBezierCurve )
+        .addSchema( QuadraticBezierCurve3Exports.QuadraticBezierCurve3 )
+        .addSchema( SplineCurveExports.SplineCurve )
+        .addSchema( BoxBufferGeometryExports.BoxBufferGeometry )
+        .addSchema( BoxGeometryExports.BoxGeometry )
+        .addSchema( CircleBufferGeometryExports.CircleBufferGeometry )
+        .addSchema( CircleGeometryExports.CircleGeometry )
+        .addSchema( ConeBufferGeometryExports.ConeBufferGeometry )
+        .addSchema( ConeGeometryExports.ConeGeometry )
+        .addSchema( ConvexGeometryExports.ConvexGeometry )
+        .addSchema( CylinderBufferGeometryExports.CylinderBufferGeometry )
+        .addSchema( CylinderGeometryExports.CylinderGeometry )
+        .addSchema( DecalGeometryExports.DecalGeometry )
+        .addSchema( DodecahedronGeometryExports.DodecahedronGeometry )
+        .addSchema( EdgesGeometryExports.EdgesGeometry )
+        .addSchema( ExtrudeBufferGeometryExports.ExtrudeBufferGeometry )
+        .addSchema( ExtrudeGeometryExports.ExtrudeGeometry )
+        .addSchema( IcosahedronBufferGeometryExports.IcosahedronBufferGeometry )
+        .addSchema( IcosahedronGeometryExports.IcosahedronGeometry )
+        .addSchema( InstancedBufferGeometryExports.InstancedBufferGeometry )
+        .addSchema( LatheBufferGeometryExports.LatheBufferGeometry )
+        .addSchema( LatheGeometryExports.LatheGeometry )
+        .addSchema( OctahedronBufferGeometryExports.OctahedronBufferGeometry )
+        .addSchema( OctahedronGeometryExports.OctahedronGeometry )
+        .addSchema( ParametricBufferGeometryExports.ParametricBufferGeometry )
+        .addSchema( ParametricGeometryExports.ParametricGeometry )
+        .addSchema( PlaneBufferGeometryExports.PlaneBufferGeometry )
+        .addSchema( PlaneGeometryExports.PlaneGeometry )
+        .addSchema( PolyhedronBufferGeometryExports.PolyhedronBufferGeometry )
+        .addSchema( PolyhedronGeometryExports.PolyhedronGeometry )
+        .addSchema( RingBufferGeometryExports.RingBufferGeometry )
+        .addSchema( RingGeometryExports.RingGeometry )
+        .addSchema( ShapeBufferGeometryExports.ShapeBufferGeometry )
+        .addSchema( ShapeGeometryExports.ShapeGeometry )
+        .addSchema( SphereBufferGeometryExports.SphereBufferGeometry )
+        .addSchema( SphereGeometryExports.SphereGeometry )
+        .addSchema( TeopotBufferGeometryExports.TeapotBufferGeometry )
+        .addSchema( TetrahedronBufferGeometryExports.TetrahedronBufferGeometry )
+        .addSchema( TetrahedronGeometryExports.TetrahedronGeometry )
+        .addSchema( TextBufferGeometryExports.TextBufferGeometry )
+        .addSchema( TextGeometryExports.TextGeometry )
+        .addSchema( TorusBufferGeometryExports.TorusBufferGeometry )
+        .addSchema( TorusGeometryExports.TorusGeometry )
+        .addSchema( TorusKnotBufferGeometryExports.TorusKnotBufferGeometry )
+        .addSchema( TorusKnotGeometryExports.TorusKnotGeometry )
+        .addSchema( TubeBufferGeometryExports.TubeBufferGeometry )
+        .addSchema( TubeGeometryExports.TubeGeometry )
+        .addSchema( WireframeGeometryExports.WireframeGeometry )
+        .addSchema( ArrowHelperExports.ArrowHelper )
+        .addSchema( AxesHelperExports.AxesHelper )
+        .addSchema( Box3HelperExports.Box3Helper )
+        .addSchema( BoxHelperExports.BoxHelper )
+        .addSchema( CameraHelperExports.CameraHelper )
+        .addSchema( DirectionalLightHelperExports.DirectionalLightHelper )
+        .addSchema( FaceNormalsHelperExports.FaceNormalsHelper )
+        .addSchema( GridHelperExports.GridHelper )
+        .addSchema( HemisphereLightHelperExports.HemisphereLightHelper )
+        .addSchema( PlaneHelperExports.PlaneHelper )
+        .addSchema( PointLightHelperExports.PointLightHelper )
+        .addSchema( PolarGridHelperExports.PolarGridHelper )
+        .addSchema( RectAreaLightHelperExports.RectAreaLightHelper )
+        .addSchema( SkeletonHelperExports.SkeletonHelper )
+        .addSchema( SpotLightHelperExports.SpotLightHelper )
+        .addSchema( VertexNormalsHelperExports.VertexNormalsHelper )
+        .addSchema( AmbientLightExports.AmbientLight )
+        .addSchema( DirectionalLightExports.DirectionalLight )
         //    .addSchema( DirectionalLightShadow )
-        .addSchema( HemisphereLight_1 )
-        .addSchema( Light_1 )
+        .addSchema( HemisphereLightExports.HemisphereLight )
+        .addSchema( LightExports.Light )
         //    .addSchema( LightShadow )
-        .addSchema( PointLight_1 )
-        .addSchema( RectAreaLight_1 )
-        .addSchema( SpotLight_1 )
+        .addSchema( PointLightExports.PointLight )
+        .addSchema( RectAreaLightExports.RectAreaLight )
+        .addSchema( SpotLightExports.SpotLight )
         //    .addSchema( SpotLightShadow )
-        .addSchema( MeshPhongMaterial_1 )
-        .addSchema( LineBasicMaterial_1 )
-        .addSchema( LineDashedMaterial_1 )
-        .addSchema( Material_1 )
-        .addSchema( MeshBasicMaterial_1 )
-        .addSchema( MeshDepthMaterial_1 )
-        .addSchema( MeshLambertMaterial_1 )
-        .addSchema( MeshNormalMaterial_1 )
-        .addSchema( MeshPhysicalMaterial_1 )
-        .addSchema( MeshStandardMaterial_1 )
-        .addSchema( MeshToonMaterial_1 )
-        .addSchema( PointsMaterial_1 )
-        .addSchema( RawShaderMaterial_1 )
-        .addSchema( ShaderMaterial_1 )
-        .addSchema( ShadowMaterial_1 )
-        .addSchema( SpriteMaterial_1 )
-        .addSchema( Box2_1 )
-        .addSchema( Box3_1 )
+        .addSchema( MeshPhongMaterialExports.MeshPhongMaterial )
+        .addSchema( LineBasicMaterialExports.LineBasicMaterial )
+        .addSchema( LineDashedMaterialExports.LineDashedMaterial )
+        .addSchema( MaterialExports.Material )
+        .addSchema( MeshBasicMaterialExports.MeshBasicMaterial )
+        .addSchema( MeshDepthMaterialExports.MeshDepthMaterial )
+        .addSchema( MeshLambertMaterialExports.MeshLambertMaterial )
+        .addSchema( MeshNormalMaterialExports.MeshNormalMaterial )
+        .addSchema( MeshPhysicalMaterialExports.MeshPhysicalMaterial )
+        .addSchema( MeshStandardMaterialExports.MeshStandardMaterial )
+        .addSchema( MeshToonMaterialExports.MeshToonMaterial )
+        .addSchema( PointsMaterialExports.PointsMaterial )
+        .addSchema( RawShaderMaterialExports.RawShaderMaterial )
+        .addSchema( ShaderMaterialExports.ShaderMaterial )
+        .addSchema( ShadowMaterialExports.ShadowMaterial )
+        .addSchema( SpriteMaterialExports.SpriteMaterial )
+        .addSchema( Box2Exports.Box2 )
+        .addSchema( Box3Exports.Box3 )
         //    .addSchema( ColorConverter )
         //    .addSchema( Cylindrical )
         //    .addSchema( Frustum )
         //    .addSchema( Interpolant )
-        .addSchema( Line3_1 )
+        .addSchema( Line3Exports.Line3 )
         //    .addSchema( Lut )
         //    .addSchema( Math )
-        .addSchema( Plane_1 )
-        .addSchema( Ray_1 )
-        .addSchema( Sphere_1 )
-        .addSchema( Spherical_1 )
-        .addSchema( Triangle_1 )
-        .addSchema( Bone_1 )
+        .addSchema( PlaneExports.Plane )
+        .addSchema( RayExports.Ray )
+        .addSchema( SphereExports.Sphere )
+        .addSchema( SphericalExports.Spherical )
+        .addSchema( TriangleExports.Triangle )
+        .addSchema( BoneExports.Bone )
         //    .addSchema( Car )
         //    .addSchema( GPUParticleSystem )
         .addSchema( Group )
         //    .addSchema( Gyroscope )
-        .addSchema( ImmediateRenderObject_1 )
-        .addSchema( LensFlare )
-        .addSchema( Line_1 )
-        .addSchema( LineLoop_1 )
-        .addSchema( LineSegments_1 )
-        .addSchema( LOD_1 )
+        .addSchema( ImmediateRenderObjectExports.ImmediateRenderObject )
+        .addSchema( LensflareExports.LensFlare )
+        .addSchema( LineExports.Line )
+        .addSchema( LineLoopExports.LineLoop )
+        .addSchema( LineSegmentsExports.LineSegments )
+        .addSchema( LODExports.LOD )
         //    .addSchema( MarchingCubes )
         //    .addSchema( MD2Character )
         //    .addSchema( MD2CharacterComplex )
-        .addSchema( Mesh_1 )
+        .addSchema( MeshExports.Mesh )
         //    .addSchema( MorphAnimMesh )
         //    .addSchema( MorphBlendMesh )
         //    .addSchema( Ocean )
-        .addSchema( Points_1 )
+        .addSchema( PointsExports.Points )
         //    .addSchema( Reflector )
         //    .addSchema( ReflectorRTT )
         //    .addSchema( Refractor )
         //    .addSchema( RollerCoaster )
         //    .addSchema( ShadowMesh )
-        .addSchema( Skeleton_1 )
-        .addSchema( SkinnedMesh_1 )
+        .addSchema( SkeletonExports.Skeleton )
+        .addSchema( SkinnedMeshExports.SkinnedMesh )
         //    .addSchema( Sky )
-        .addSchema( Sprite_1 )
+        .addSchema( SpriteExports.Sprite )
         //    .addSchema( UCSCharacter )
         //    .addSchema( Water )
         //    .addSchema( Water2 )
-        .addSchema( Fog_1 )
+        .addSchema( FogExports.Fog )
         //    .addSchema( FogExp2 )
-        .addSchema( Scene_1 )
-        .addSchema( CanvasTexture_1 )
-        .addSchema( CompressedTexture_1 )
-        .addSchema( CubeTexture_1 )
-        .addSchema( DataTexture_1 )
-        .addSchema( DepthTexture_1 )
-        .addSchema( Texture_1 )
-        .addSchema( VideoTexture_1 )
+        .addSchema( SceneExports.Scene )
+        .addSchema( CanvasTextureExports.CanvasTexture )
+        .addSchema( CompressedTextureExports.CompressedTexture )
+        .addSchema( CubeTextureExports.CubeTexture )
+        .addSchema( DataTextureExports.DataTexture )
+        .addSchema( DepthTextureExports.DepthTexture )
+        .addSchema( TextureExports.Texture )
+        .addSchema( VideoTextureExports.VideoTexture )
         .addController( TObjects3DController )
         .addDescriptor( {
             route:      '/objects',
@@ -14669,40 +16262,42 @@ function registerPlugin( parameters ) {
                         MtlToThree:     new MtlToThree(),
                         ObjToThree:     new Obj2ToThree()
                     },
-                    rules: [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
+                    rules: [
+                        {
+                            on:  '.json',
+                            use: 'JsonToThree'
+                        }, {
+                            on:  '.dae',
+                            use: 'ColladaToThree'
+                        }, {
+                            on:  '.fbx',
+                            use: 'FbxToThree'
+                        }, {
+                            on:  '.stl',
+                            use: 'StlToThree'
+                        }, {
+                            on:  '.3ds',
+                            use: 'TdsToThree'
+                        }, {
+                            on:  '.shp',
+                            use: 'ShpToThree'
+                        }, {
+                            on:  '.dbf',
+                            use: 'DbfToThree'
+                        }, {
+                            on:  [ '.shp', '.dbf' ],
+                            use: [ 'ShpToThree', 'DbfToThree' ]
+                        }, {
+                            on:  '.mtl',
+                            use: 'MtlToThree'
+                        }, {
+                            on:  '.obj',
+                            use: 'ObjToThree'
+                        }, {
+                            on:  [ '.mtl', '.obj' ],
+                            use: [ 'MtlToThree', 'ObjToThree' ]
+                        }
+                    ],
                     inserter: ThreeToMongoDB
                 },
                 can: {
@@ -14717,392 +16312,2808 @@ function registerPlugin( parameters ) {
 }
 
 /*
-export default ( parameters ) => {
-    return new TMongoDBPlugin( parameters )
-        .addType( ColorType )
-        .addType( EulerType )
-        .addType( Matrix3Type )
-        .addType( Matrix4Type )
-        .addType( QuaternionType )
-        .addType( Vector2Type )
-        .addType( Vector3Type )
-        .addType( Vector4Type )
-        //    .addSchema( KeyframeTrack )
-        //    .addSchema( BooleanKeyframeTrack )
-        //    .addSchema( ColorKeyframeTrack )
-        .addSchema( Audio )
-        .addSchema( AudioListener )
-        .addSchema( PositionalAudio )
-        .addSchema( ArrayCamera )
-        .addSchema( Camera )
-        .addSchema( CubeCamera )
-        .addSchema( OrthographicCamera )
-        .addSchema( PerspectiveCamera )
-        .addSchema( BufferAttribute )
-        .addSchema( BufferGeometry )
-        .addSchema( CurvePath )
-        .addSchema( Face3 )
-        .addSchema( Geometry )
-        .addSchema( Object3D )
-        .addSchema( Path )
-        .addSchema( Shape )
-        .addSchema( ArcCurve )
-        .addSchema( CatmullRomCurve3 )
-        .addSchema( CubicBezierCurve )
-        .addSchema( CubicBezierCurve3 )
-        .addSchema( Curve )
-        .addSchema( CurveExtras )
-        .addSchema( EllipseCurve )
-        .addSchema( LineCurve )
-        .addSchema( LineCurve3 )
-        .addSchema( NURBSCurve )
-        .addSchema( NURBSSurface )
-        .addSchema( QuadraticBezierCurve )
-        .addSchema( QuadraticBezierCurve3 )
-        .addSchema( SplineCurve )
-        .addSchema( BoxBufferGeometry )
-        .addSchema( BoxGeometry )
-        .addSchema( CircleBufferGeometry )
-        .addSchema( CircleGeometry )
-        .addSchema( ConeBufferGeometry )
-        .addSchema( ConeGeometry )
-        .addSchema( ConvexGeometry )
-        .addSchema( CylinderBufferGeometry )
-        .addSchema( CylinderGeometry )
-        .addSchema( DecalGeometry )
-        .addSchema( DodecahedronGeometry )
-        .addSchema( EdgesGeometry )
-        .addSchema( ExtrudeBufferGeometry )
-        .addSchema( ExtrudeGeometry )
-        .addSchema( IcosahedronBufferGeometry )
-        .addSchema( IcosahedronGeometry )
-        .addSchema( InstancedBufferGeometry )
-        .addSchema( LatheBufferGeometry )
-        .addSchema( LatheGeometry )
-        .addSchema( OctahedronBufferGeometry )
-        .addSchema( OctahedronGeometry )
-        .addSchema( ParametricBufferGeometry )
-        .addSchema( ParametricGeometry )
-        .addSchema( PlaneBufferGeometry )
-        .addSchema( PlaneGeometry )
-        .addSchema( PolyhedronBufferGeometry )
-        .addSchema( PolyhedronGeometry )
-        .addSchema( RingBufferGeometry )
-        .addSchema( RingGeometry )
-        .addSchema( ShapeBufferGeometry )
-        .addSchema( ShapeGeometry )
-        .addSchema( SphereBufferGeometry )
-        .addSchema( SphereGeometry )
-        .addSchema( TeapotBufferGeometry )
-        .addSchema( TetrahedronBufferGeometry )
-        .addSchema( TetrahedronGeometry )
-        .addSchema( TextBufferGeometry )
-        .addSchema( TextGeometry )
-        .addSchema( TorusBufferGeometry )
-        .addSchema( TorusGeometry )
-        .addSchema( TorusKnotBufferGeometry )
-        .addSchema( TorusKnotGeometry )
-        .addSchema( TubeBufferGeometry )
-        .addSchema( TubeGeometry )
-        .addSchema( WireframeGeometry )
-        .addSchema( ArrowHelper )
-        .addSchema( AxesHelper )
-        .addSchema( Box3Helper )
-        .addSchema( BoxHelper )
-        .addSchema( CameraHelper )
-        .addSchema( DirectionalLightHelper )
-        .addSchema( FaceNormalsHelper )
-        .addSchema( GridHelper )
-        .addSchema( HemisphereLightHelper )
-        .addSchema( PlaneHelper )
-        .addSchema( PointLightHelper )
-        .addSchema( PolarGridHelper )
-        .addSchema( RectAreaLightHelper )
-        .addSchema( SkeletonHelper )
-        .addSchema( SpotLightHelper )
-        .addSchema( VertexNormalsHelper )
-        .addSchema( AmbientLight )
-        .addSchema( DirectionalLight )
-        //    .addSchema( DirectionalLightShadow )
-        .addSchema( HemisphereLight )
-        .addSchema( Light )
-        //    .addSchema( LightShadow )
-        .addSchema( PointLight )
-        .addSchema( RectAreaLight )
-        .addSchema( SpotLight )
-        //    .addSchema( SpotLightShadow )
-        .addSchema( MeshPhongMaterial )
-        .addSchema( LineBasicMaterial )
-        .addSchema( LineDashedMaterial )
-        .addSchema( Material )
-        .addSchema( MeshBasicMaterial )
-        .addSchema( MeshDepthMaterial )
-        .addSchema( MeshLambertMaterial )
-        .addSchema( MeshNormalMaterial )
-        .addSchema( MeshPhysicalMaterial )
-        .addSchema( MeshStandardMaterial )
-        .addSchema( MeshToonMaterial )
-        .addSchema( PointsMaterial )
-        .addSchema( RawShaderMaterial )
-        .addSchema( ShaderMaterial )
-        .addSchema( ShadowMaterial )
-        .addSchema( SpriteMaterial )
-        .addSchema( Box2 )
-        .addSchema( Box3 )
-        //    .addSchema( ColorConverter )
-        //    .addSchema( Cylindrical )
-        //    .addSchema( Frustum )
-        //    .addSchema( Interpolant )
-        .addSchema( Line3 )
-        //    .addSchema( Lut )
-        //    .addSchema( Math )
-        .addSchema( Plane )
-        .addSchema( Ray )
-        .addSchema( Sphere )
-        .addSchema( Spherical )
-        .addSchema( Triangle )
-        .addSchema( Bone )
-        //    .addSchema( Car )
-        //    .addSchema( GPUParticleSystem )
-        .addSchema( Group )
-        //    .addSchema( Gyroscope )
-        .addSchema( ImmediateRenderObject )
-        .addSchema( LensFlare )
-        .addSchema( Line )
-        .addSchema( LineLoop )
-        .addSchema( LineSegments )
-        .addSchema( LOD )
-        //    .addSchema( MarchingCubes )
-        //    .addSchema( MD2Character )
-        //    .addSchema( MD2CharacterComplex )
-        .addSchema( Mesh )
-        //    .addSchema( MorphAnimMesh )
-        //    .addSchema( MorphBlendMesh )
-        //    .addSchema( Ocean )
-        .addSchema( Points )
-        //    .addSchema( Reflector )
-        //    .addSchema( ReflectorRTT )
-        //    .addSchema( Refractor )
-        //    .addSchema( RollerCoaster )
-        //    .addSchema( ShadowMesh )
-        .addSchema( Skeleton )
-        .addSchema( SkinnedMesh )
-        //    .addSchema( Sky )
-        .addSchema( Sprite )
-        //    .addSchema( UCSCharacter )
-        //    .addSchema( Water )
-        //    .addSchema( Water2 )
-        .addSchema( Fog )
-        //    .addSchema( FogExp2 )
-        .addSchema( Scene )
-        .addSchema( CanvasTexture )
-        .addSchema( CompressedTexture )
-        .addSchema( CubeTexture )
-        .addSchema( DataTexture )
-        .addSchema( DepthTexture )
-        .addSchema( Texture )
-        .addSchema( VideoTexture )
-        .addController( TObjects3DController )
-        .addDescriptor( {
-            route:      '/objects',
-            controller: {
-                name:    'TObjects3DController',
-                options: {
-                    schemaName: 'Objects3D'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TMongooseController )
-        .addDescriptor( {
-            route:      '/curves',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Curves'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/geometries',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Geometries'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/materials',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Materials'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addDescriptor( {
-            route:      '/textures',
-            controller: {
-                name:    'TMongooseController',
-                options: {
-                    schemaName: 'Textures'
-                },
-                can:     {
-                    create: {
-                        on:   'put',
-                        over: '/(:id)?'
-                    },
-                    read:   {
-                        on:   'post',
-                        over: '/(:id)?'
-                    },
-                    update: {
-                        on:   'patch',
-                        over: '/(:id)?'
-                    },
-                    delete: {
-                        on:   'delete',
-                        over: '/(:id)?'
-                    }
-                }
-            }
-        } )
-        .addController( TAbstractConverterManager )
-        .addDescriptor( {
-            route:      '/uploads',
-            controller: {
-                name:    'TAbstractConverterManager',
-                options: {
-                    useNext:    true,
-                    converters: {
-                        JsonToThree:    new JsonToThree(),
-                        ShpToThree:     new ShpToThree(),
-                        DbfToThree:     new DbfToThree(),
-                        FbxToThree:     new FbxToThree(),
-                        ColladaToThree: new ColladaToThree(),
-                        StlToThree:     new StlToThree(),
-                        TdsToThree:     new TdsToThree(),
-                        MtlToThree:     new MtlToThree(),
-                        ObjToThree:     new Obj2ToThree()
-                    },
-                    rules:      [ {
-                        on:  '.json',
-                        use: 'JsonToThree'
-                    }, {
-                        on:  '.dae',
-                        use: 'ColladaToThree'
-                    }, {
-                        on:  '.fbx',
-                        use: 'FbxToThree'
-                    }, {
-                        on:  '.stl',
-                        use: 'StlToThree'
-                    }, {
-                        on:  '.3ds',
-                        use: 'TdsToThree'
-                    }, {
-                        on:  '.shp',
-                        use: 'ShpToThree'
-                    }, {
-                        on:  '.dbf',
-                        use: 'DbfToThree'
-                    }, {
-                        on:  [ '.shp', '.dbf' ],
-                        use: [ 'ShpToThree', 'DbfToThree' ]
-                    }, {
-                        on:  '.mtl',
-                        use: 'MtlToThree'
-                    }, {
-                        on:  '.obj',
-                        use: 'ObjToThree'
-                    }, {
-                        on:  [ '.mtl', '.obj' ],
-                        use: [ 'MtlToThree', 'ObjToThree' ]
-                    } ],
-                    inserter:   ThreeToMongoDB
-                },
-                can:     {
-                    processFiles: {
-                        on:   'post',
-                        over: '/'
-                    }
-                }
-            }
-        } )
+ export default ( parameters ) => {
+ return new TMongoDBPlugin( parameters )
+ .addType( ColorType )
+ .addType( EulerType )
+ .addType( Matrix3Type )
+ .addType( Matrix4Type )
+ .addType( QuaternionType )
+ .addType( Vector2Type )
+ .addType( Vector3Type )
+ .addType( Vector4Type )
+ //    .addSchema( KeyframeTrack )
+ //    .addSchema( BooleanKeyframeTrack )
+ //    .addSchema( ColorKeyframeTrack )
+ .addSchema( Audio )
+ .addSchema( AudioListener )
+ .addSchema( PositionalAudio )
+ .addSchema( ArrayCamera )
+ .addSchema( Camera )
+ .addSchema( CubeCamera )
+ .addSchema( OrthographicCamera )
+ .addSchema( PerspectiveCamera )
+ .addSchema( BufferAttribute )
+ .addSchema( BufferGeometry )
+ .addSchema( CurvePath )
+ .addSchema( Face3 )
+ .addSchema( Geometry )
+ .addSchema( Object3D )
+ .addSchema( Path )
+ .addSchema( Shape )
+ .addSchema( ArcCurve )
+ .addSchema( CatmullRomCurve3 )
+ .addSchema( CubicBezierCurve )
+ .addSchema( CubicBezierCurve3 )
+ .addSchema( Curve )
+ .addSchema( CurveExtras )
+ .addSchema( EllipseCurve )
+ .addSchema( LineCurve )
+ .addSchema( LineCurve3 )
+ .addSchema( NURBSCurve )
+ .addSchema( NURBSSurface )
+ .addSchema( QuadraticBezierCurve )
+ .addSchema( QuadraticBezierCurve3 )
+ .addSchema( SplineCurve )
+ .addSchema( BoxBufferGeometry )
+ .addSchema( BoxGeometry )
+ .addSchema( CircleBufferGeometry )
+ .addSchema( CircleGeometry )
+ .addSchema( ConeBufferGeometry )
+ .addSchema( ConeGeometry )
+ .addSchema( ConvexGeometry )
+ .addSchema( CylinderBufferGeometry )
+ .addSchema( CylinderGeometry )
+ .addSchema( DecalGeometry )
+ .addSchema( DodecahedronGeometry )
+ .addSchema( EdgesGeometry )
+ .addSchema( ExtrudeBufferGeometry )
+ .addSchema( ExtrudeGeometry )
+ .addSchema( IcosahedronBufferGeometry )
+ .addSchema( IcosahedronGeometry )
+ .addSchema( InstancedBufferGeometry )
+ .addSchema( LatheBufferGeometry )
+ .addSchema( LatheGeometry )
+ .addSchema( OctahedronBufferGeometry )
+ .addSchema( OctahedronGeometry )
+ .addSchema( ParametricBufferGeometry )
+ .addSchema( ParametricGeometry )
+ .addSchema( PlaneBufferGeometry )
+ .addSchema( PlaneGeometry )
+ .addSchema( PolyhedronBufferGeometry )
+ .addSchema( PolyhedronGeometry )
+ .addSchema( RingBufferGeometry )
+ .addSchema( RingGeometry )
+ .addSchema( ShapeBufferGeometry )
+ .addSchema( ShapeGeometry )
+ .addSchema( SphereBufferGeometry )
+ .addSchema( SphereGeometry )
+ .addSchema( TeapotBufferGeometry )
+ .addSchema( TetrahedronBufferGeometry )
+ .addSchema( TetrahedronGeometry )
+ .addSchema( TextBufferGeometry )
+ .addSchema( TextGeometry )
+ .addSchema( TorusBufferGeometry )
+ .addSchema( TorusGeometry )
+ .addSchema( TorusKnotBufferGeometry )
+ .addSchema( TorusKnotGeometry )
+ .addSchema( TubeBufferGeometry )
+ .addSchema( TubeGeometry )
+ .addSchema( WireframeGeometry )
+ .addSchema( ArrowHelper )
+ .addSchema( AxesHelper )
+ .addSchema( Box3Helper )
+ .addSchema( BoxHelper )
+ .addSchema( CameraHelper )
+ .addSchema( DirectionalLightHelper )
+ .addSchema( FaceNormalsHelper )
+ .addSchema( GridHelper )
+ .addSchema( HemisphereLightHelper )
+ .addSchema( PlaneHelper )
+ .addSchema( PointLightHelper )
+ .addSchema( PolarGridHelper )
+ .addSchema( RectAreaLightHelper )
+ .addSchema( SkeletonHelper )
+ .addSchema( SpotLightHelper )
+ .addSchema( VertexNormalsHelper )
+ .addSchema( AmbientLight )
+ .addSchema( DirectionalLight )
+ //    .addSchema( DirectionalLightShadow )
+ .addSchema( HemisphereLight )
+ .addSchema( Light )
+ //    .addSchema( LightShadow )
+ .addSchema( PointLight )
+ .addSchema( RectAreaLight )
+ .addSchema( SpotLight )
+ //    .addSchema( SpotLightShadow )
+ .addSchema( MeshPhongMaterial )
+ .addSchema( LineBasicMaterial )
+ .addSchema( LineDashedMaterial )
+ .addSchema( Material )
+ .addSchema( MeshBasicMaterial )
+ .addSchema( MeshDepthMaterial )
+ .addSchema( MeshLambertMaterial )
+ .addSchema( MeshNormalMaterial )
+ .addSchema( MeshPhysicalMaterial )
+ .addSchema( MeshStandardMaterial )
+ .addSchema( MeshToonMaterial )
+ .addSchema( PointsMaterial )
+ .addSchema( RawShaderMaterial )
+ .addSchema( ShaderMaterial )
+ .addSchema( ShadowMaterial )
+ .addSchema( SpriteMaterial )
+ .addSchema( Box2 )
+ .addSchema( Box3 )
+ //    .addSchema( ColorConverter )
+ //    .addSchema( Cylindrical )
+ //    .addSchema( Frustum )
+ //    .addSchema( Interpolant )
+ .addSchema( Line3 )
+ //    .addSchema( Lut )
+ //    .addSchema( Math )
+ .addSchema( Plane )
+ .addSchema( Ray )
+ .addSchema( Sphere )
+ .addSchema( Spherical )
+ .addSchema( Triangle )
+ .addSchema( Bone )
+ //    .addSchema( Car )
+ //    .addSchema( GPUParticleSystem )
+ .addSchema( Group )
+ //    .addSchema( Gyroscope )
+ .addSchema( ImmediateRenderObject )
+ .addSchema( LensFlare )
+ .addSchema( Line )
+ .addSchema( LineLoop )
+ .addSchema( LineSegments )
+ .addSchema( LOD )
+ //    .addSchema( MarchingCubes )
+ //    .addSchema( MD2Character )
+ //    .addSchema( MD2CharacterComplex )
+ .addSchema( Mesh )
+ //    .addSchema( MorphAnimMesh )
+ //    .addSchema( MorphBlendMesh )
+ //    .addSchema( Ocean )
+ .addSchema( Points )
+ //    .addSchema( Reflector )
+ //    .addSchema( ReflectorRTT )
+ //    .addSchema( Refractor )
+ //    .addSchema( RollerCoaster )
+ //    .addSchema( ShadowMesh )
+ .addSchema( Skeleton )
+ .addSchema( SkinnedMesh )
+ //    .addSchema( Sky )
+ .addSchema( Sprite )
+ //    .addSchema( UCSCharacter )
+ //    .addSchema( Water )
+ //    .addSchema( Water2 )
+ .addSchema( Fog )
+ //    .addSchema( FogExp2 )
+ .addSchema( Scene )
+ .addSchema( CanvasTexture )
+ .addSchema( CompressedTexture )
+ .addSchema( CubeTexture )
+ .addSchema( DataTexture )
+ .addSchema( DepthTexture )
+ .addSchema( Texture )
+ .addSchema( VideoTexture )
+ .addController( TObjects3DController )
+ .addDescriptor( {
+ route:      '/objects',
+ controller: {
+ name:    'TObjects3DController',
+ options: {
+ schemaName: 'Objects3D'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TMongooseController )
+ .addDescriptor( {
+ route:      '/curves',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Curves'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/geometries',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Geometries'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/materials',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Materials'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addDescriptor( {
+ route:      '/textures',
+ controller: {
+ name:    'TMongooseController',
+ options: {
+ schemaName: 'Textures'
+ },
+ can:     {
+ create: {
+ on:   'put',
+ over: '/(:id)?'
+ },
+ read:   {
+ on:   'post',
+ over: '/(:id)?'
+ },
+ update: {
+ on:   'patch',
+ over: '/(:id)?'
+ },
+ delete: {
+ on:   'delete',
+ over: '/(:id)?'
+ }
+ }
+ }
+ } )
+ .addController( TAbstractConverterManager )
+ .addDescriptor( {
+ route:      '/uploads',
+ controller: {
+ name:    'TAbstractConverterManager',
+ options: {
+ useNext:    true,
+ converters: {
+ JsonToThree:    new JsonToThree(),
+ ShpToThree:     new ShpToThree(),
+ DbfToThree:     new DbfToThree(),
+ FbxToThree:     new FbxToThree(),
+ ColladaToThree: new ColladaToThree(),
+ StlToThree:     new StlToThree(),
+ TdsToThree:     new TdsToThree(),
+ MtlToThree:     new MtlToThree(),
+ ObjToThree:     new Obj2ToThree()
+ },
+ rules:      [ {
+ on:  '.json',
+ use: 'JsonToThree'
+ }, {
+ on:  '.dae',
+ use: 'ColladaToThree'
+ }, {
+ on:  '.fbx',
+ use: 'FbxToThree'
+ }, {
+ on:  '.stl',
+ use: 'StlToThree'
+ }, {
+ on:  '.3ds',
+ use: 'TdsToThree'
+ }, {
+ on:  '.shp',
+ use: 'ShpToThree'
+ }, {
+ on:  '.dbf',
+ use: 'DbfToThree'
+ }, {
+ on:  [ '.shp', '.dbf' ],
+ use: [ 'ShpToThree', 'DbfToThree' ]
+ }, {
+ on:  '.mtl',
+ use: 'MtlToThree'
+ }, {
+ on:  '.obj',
+ use: 'ObjToThree'
+ }, {
+ on:  [ '.mtl', '.obj' ],
+ use: [ 'MtlToThree', 'ObjToThree' ]
+ } ],
+ inserter:   ThreeToMongoDB
+ },
+ can:     {
+ processFiles: {
+ on:   'post',
+ over: '/'
+ }
+ }
+ }
+ } )
+ }
+ */
+
+/**
+ * @license
+ * Copyright 2010-2023 Three.js Authors
+ * SPDX-License-Identifier: MIT
+ */
+const REVISION = '149';
+const SRGBColorSpace = 'srgb';
+const LinearSRGBColorSpace = 'srgb-linear';
+
+function clamp( value, min, max ) {
+
+	return Math.max( min, Math.min( max, value ) );
+
 }
-*/
+
+// compute euclidean modulo of m % n
+// https://en.wikipedia.org/wiki/Modulo_operation
+function euclideanModulo( n, m ) {
+
+	return ( ( n % m ) + m ) % m;
+
+}
+
+// https://en.wikipedia.org/wiki/Linear_interpolation
+function lerp( x, y, t ) {
+
+	return ( 1 - t ) * x + t * y;
+
+}
+
+function SRGBToLinear( c ) {
+
+	return ( c < 0.04045 ) ? c * 0.0773993808 : Math.pow( c * 0.9478672986 + 0.0521327014, 2.4 );
+
+}
+
+function LinearToSRGB( c ) {
+
+	return ( c < 0.0031308 ) ? c * 12.92 : 1.055 * ( Math.pow( c, 0.41666 ) ) - 0.055;
+
+}
+
+// JavaScript RGB-to-RGB transforms, defined as
+// FN[InputColorSpace][OutputColorSpace] callback functions.
+const FN = {
+	[ SRGBColorSpace ]: { [ LinearSRGBColorSpace ]: SRGBToLinear },
+	[ LinearSRGBColorSpace ]: { [ SRGBColorSpace ]: LinearToSRGB },
+};
+
+const ColorManagement = {
+
+	legacyMode: true,
+
+	get workingColorSpace() {
+
+		return LinearSRGBColorSpace;
+
+	},
+
+	set workingColorSpace( colorSpace ) {
+
+		console.warn( 'THREE.ColorManagement: .workingColorSpace is readonly.' );
+
+	},
+
+	convert: function ( color, sourceColorSpace, targetColorSpace ) {
+
+		if ( this.legacyMode || sourceColorSpace === targetColorSpace || ! sourceColorSpace || ! targetColorSpace ) {
+
+			return color;
+
+		}
+
+		if ( FN[ sourceColorSpace ] && FN[ sourceColorSpace ][ targetColorSpace ] !== undefined ) {
+
+			const fn = FN[ sourceColorSpace ][ targetColorSpace ];
+
+			color.r = fn( color.r );
+			color.g = fn( color.g );
+			color.b = fn( color.b );
+
+			return color;
+
+		}
+
+		throw new Error( 'Unsupported color space conversion.' );
+
+	},
+
+	fromWorkingColorSpace: function ( color, targetColorSpace ) {
+
+		return this.convert( color, this.workingColorSpace, targetColorSpace );
+
+	},
+
+	toWorkingColorSpace: function ( color, sourceColorSpace ) {
+
+		return this.convert( color, sourceColorSpace, this.workingColorSpace );
+
+	},
+
+};
+
+const _colorKeywords = { 'aliceblue': 0xF0F8FF, 'antiquewhite': 0xFAEBD7, 'aqua': 0x00FFFF, 'aquamarine': 0x7FFFD4, 'azure': 0xF0FFFF,
+	'beige': 0xF5F5DC, 'bisque': 0xFFE4C4, 'black': 0x000000, 'blanchedalmond': 0xFFEBCD, 'blue': 0x0000FF, 'blueviolet': 0x8A2BE2,
+	'brown': 0xA52A2A, 'burlywood': 0xDEB887, 'cadetblue': 0x5F9EA0, 'chartreuse': 0x7FFF00, 'chocolate': 0xD2691E, 'coral': 0xFF7F50,
+	'cornflowerblue': 0x6495ED, 'cornsilk': 0xFFF8DC, 'crimson': 0xDC143C, 'cyan': 0x00FFFF, 'darkblue': 0x00008B, 'darkcyan': 0x008B8B,
+	'darkgoldenrod': 0xB8860B, 'darkgray': 0xA9A9A9, 'darkgreen': 0x006400, 'darkgrey': 0xA9A9A9, 'darkkhaki': 0xBDB76B, 'darkmagenta': 0x8B008B,
+	'darkolivegreen': 0x556B2F, 'darkorange': 0xFF8C00, 'darkorchid': 0x9932CC, 'darkred': 0x8B0000, 'darksalmon': 0xE9967A, 'darkseagreen': 0x8FBC8F,
+	'darkslateblue': 0x483D8B, 'darkslategray': 0x2F4F4F, 'darkslategrey': 0x2F4F4F, 'darkturquoise': 0x00CED1, 'darkviolet': 0x9400D3,
+	'deeppink': 0xFF1493, 'deepskyblue': 0x00BFFF, 'dimgray': 0x696969, 'dimgrey': 0x696969, 'dodgerblue': 0x1E90FF, 'firebrick': 0xB22222,
+	'floralwhite': 0xFFFAF0, 'forestgreen': 0x228B22, 'fuchsia': 0xFF00FF, 'gainsboro': 0xDCDCDC, 'ghostwhite': 0xF8F8FF, 'gold': 0xFFD700,
+	'goldenrod': 0xDAA520, 'gray': 0x808080, 'green': 0x008000, 'greenyellow': 0xADFF2F, 'grey': 0x808080, 'honeydew': 0xF0FFF0, 'hotpink': 0xFF69B4,
+	'indianred': 0xCD5C5C, 'indigo': 0x4B0082, 'ivory': 0xFFFFF0, 'khaki': 0xF0E68C, 'lavender': 0xE6E6FA, 'lavenderblush': 0xFFF0F5, 'lawngreen': 0x7CFC00,
+	'lemonchiffon': 0xFFFACD, 'lightblue': 0xADD8E6, 'lightcoral': 0xF08080, 'lightcyan': 0xE0FFFF, 'lightgoldenrodyellow': 0xFAFAD2, 'lightgray': 0xD3D3D3,
+	'lightgreen': 0x90EE90, 'lightgrey': 0xD3D3D3, 'lightpink': 0xFFB6C1, 'lightsalmon': 0xFFA07A, 'lightseagreen': 0x20B2AA, 'lightskyblue': 0x87CEFA,
+	'lightslategray': 0x778899, 'lightslategrey': 0x778899, 'lightsteelblue': 0xB0C4DE, 'lightyellow': 0xFFFFE0, 'lime': 0x00FF00, 'limegreen': 0x32CD32,
+	'linen': 0xFAF0E6, 'magenta': 0xFF00FF, 'maroon': 0x800000, 'mediumaquamarine': 0x66CDAA, 'mediumblue': 0x0000CD, 'mediumorchid': 0xBA55D3,
+	'mediumpurple': 0x9370DB, 'mediumseagreen': 0x3CB371, 'mediumslateblue': 0x7B68EE, 'mediumspringgreen': 0x00FA9A, 'mediumturquoise': 0x48D1CC,
+	'mediumvioletred': 0xC71585, 'midnightblue': 0x191970, 'mintcream': 0xF5FFFA, 'mistyrose': 0xFFE4E1, 'moccasin': 0xFFE4B5, 'navajowhite': 0xFFDEAD,
+	'navy': 0x000080, 'oldlace': 0xFDF5E6, 'olive': 0x808000, 'olivedrab': 0x6B8E23, 'orange': 0xFFA500, 'orangered': 0xFF4500, 'orchid': 0xDA70D6,
+	'palegoldenrod': 0xEEE8AA, 'palegreen': 0x98FB98, 'paleturquoise': 0xAFEEEE, 'palevioletred': 0xDB7093, 'papayawhip': 0xFFEFD5, 'peachpuff': 0xFFDAB9,
+	'peru': 0xCD853F, 'pink': 0xFFC0CB, 'plum': 0xDDA0DD, 'powderblue': 0xB0E0E6, 'purple': 0x800080, 'rebeccapurple': 0x663399, 'red': 0xFF0000, 'rosybrown': 0xBC8F8F,
+	'royalblue': 0x4169E1, 'saddlebrown': 0x8B4513, 'salmon': 0xFA8072, 'sandybrown': 0xF4A460, 'seagreen': 0x2E8B57, 'seashell': 0xFFF5EE,
+	'sienna': 0xA0522D, 'silver': 0xC0C0C0, 'skyblue': 0x87CEEB, 'slateblue': 0x6A5ACD, 'slategray': 0x708090, 'slategrey': 0x708090, 'snow': 0xFFFAFA,
+	'springgreen': 0x00FF7F, 'steelblue': 0x4682B4, 'tan': 0xD2B48C, 'teal': 0x008080, 'thistle': 0xD8BFD8, 'tomato': 0xFF6347, 'turquoise': 0x40E0D0,
+	'violet': 0xEE82EE, 'wheat': 0xF5DEB3, 'white': 0xFFFFFF, 'whitesmoke': 0xF5F5F5, 'yellow': 0xFFFF00, 'yellowgreen': 0x9ACD32 };
+
+const _rgb$1 = { r: 0, g: 0, b: 0 };
+const _hslA = { h: 0, s: 0, l: 0 };
+const _hslB = { h: 0, s: 0, l: 0 };
+
+function hue2rgb( p, q, t ) {
+
+	if ( t < 0 ) t += 1;
+	if ( t > 1 ) t -= 1;
+	if ( t < 1 / 6 ) return p + ( q - p ) * 6 * t;
+	if ( t < 1 / 2 ) return q;
+	if ( t < 2 / 3 ) return p + ( q - p ) * 6 * ( 2 / 3 - t );
+	return p;
+
+}
+
+function toComponents( source, target ) {
+
+	target.r = source.r;
+	target.g = source.g;
+	target.b = source.b;
+
+	return target;
+
+}
+
+class Color {
+
+	constructor( r, g, b ) {
+
+		this.isColor = true;
+
+		this.r = 1;
+		this.g = 1;
+		this.b = 1;
+
+		if ( g === undefined && b === undefined ) {
+
+			// r is THREE.Color, hex or string
+			return this.set( r );
+
+		}
+
+		return this.setRGB( r, g, b );
+
+	}
+
+	set( value ) {
+
+		if ( value && value.isColor ) {
+
+			this.copy( value );
+
+		} else if ( typeof value === 'number' ) {
+
+			this.setHex( value );
+
+		} else if ( typeof value === 'string' ) {
+
+			this.setStyle( value );
+
+		}
+
+		return this;
+
+	}
+
+	setScalar( scalar ) {
+
+		this.r = scalar;
+		this.g = scalar;
+		this.b = scalar;
+
+		return this;
+
+	}
+
+	setHex( hex, colorSpace = SRGBColorSpace ) {
+
+		hex = Math.floor( hex );
+
+		this.r = ( hex >> 16 & 255 ) / 255;
+		this.g = ( hex >> 8 & 255 ) / 255;
+		this.b = ( hex & 255 ) / 255;
+
+		ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+		return this;
+
+	}
+
+	setRGB( r, g, b, colorSpace = ColorManagement.workingColorSpace ) {
+
+		this.r = r;
+		this.g = g;
+		this.b = b;
+
+		ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+		return this;
+
+	}
+
+	setHSL( h, s, l, colorSpace = ColorManagement.workingColorSpace ) {
+
+		// h,s,l ranges are in 0.0 - 1.0
+		h = euclideanModulo( h, 1 );
+		s = clamp( s, 0, 1 );
+		l = clamp( l, 0, 1 );
+
+		if ( s === 0 ) {
+
+			this.r = this.g = this.b = l;
+
+		} else {
+
+			const p = l <= 0.5 ? l * ( 1 + s ) : l + s - ( l * s );
+			const q = ( 2 * l ) - p;
+
+			this.r = hue2rgb( q, p, h + 1 / 3 );
+			this.g = hue2rgb( q, p, h );
+			this.b = hue2rgb( q, p, h - 1 / 3 );
+
+		}
+
+		ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+		return this;
+
+	}
+
+	setStyle( style, colorSpace = SRGBColorSpace ) {
+
+		function handleAlpha( string ) {
+
+			if ( string === undefined ) return;
+
+			if ( parseFloat( string ) < 1 ) {
+
+				console.warn( 'THREE.Color: Alpha component of ' + style + ' will be ignored.' );
+
+			}
+
+		}
+
+
+		let m;
+
+		if ( m = /^((?:rgb|hsl)a?)\(([^\)]*)\)/.exec( style ) ) {
+
+			// rgb / hsl
+
+			let color;
+			const name = m[ 1 ];
+			const components = m[ 2 ];
+
+			switch ( name ) {
+
+				case 'rgb':
+				case 'rgba':
+
+					if ( color = /^\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+						// rgb(255,0,0) rgba(255,0,0,0.5)
+						this.r = Math.min( 255, parseInt( color[ 1 ], 10 ) ) / 255;
+						this.g = Math.min( 255, parseInt( color[ 2 ], 10 ) ) / 255;
+						this.b = Math.min( 255, parseInt( color[ 3 ], 10 ) ) / 255;
+
+						ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+						handleAlpha( color[ 4 ] );
+
+						return this;
+
+					}
+
+					if ( color = /^\s*(\d+)\%\s*,\s*(\d+)\%\s*,\s*(\d+)\%\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+						// rgb(100%,0%,0%) rgba(100%,0%,0%,0.5)
+						this.r = Math.min( 100, parseInt( color[ 1 ], 10 ) ) / 100;
+						this.g = Math.min( 100, parseInt( color[ 2 ], 10 ) ) / 100;
+						this.b = Math.min( 100, parseInt( color[ 3 ], 10 ) ) / 100;
+
+						ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+						handleAlpha( color[ 4 ] );
+
+						return this;
+
+					}
+
+					break;
+
+				case 'hsl':
+				case 'hsla':
+
+					if ( color = /^\s*(\d*\.?\d+)\s*,\s*(\d*\.?\d+)\%\s*,\s*(\d*\.?\d+)\%\s*(?:,\s*(\d*\.?\d+)\s*)?$/.exec( components ) ) {
+
+						// hsl(120,50%,50%) hsla(120,50%,50%,0.5)
+						const h = parseFloat( color[ 1 ] ) / 360;
+						const s = parseFloat( color[ 2 ] ) / 100;
+						const l = parseFloat( color[ 3 ] ) / 100;
+
+						handleAlpha( color[ 4 ] );
+
+						return this.setHSL( h, s, l, colorSpace );
+
+					}
+
+					break;
+
+			}
+
+		} else if ( m = /^\#([A-Fa-f\d]+)$/.exec( style ) ) {
+
+			// hex color
+
+			const hex = m[ 1 ];
+			const size = hex.length;
+
+			if ( size === 3 ) {
+
+				// #ff0
+				this.r = parseInt( hex.charAt( 0 ) + hex.charAt( 0 ), 16 ) / 255;
+				this.g = parseInt( hex.charAt( 1 ) + hex.charAt( 1 ), 16 ) / 255;
+				this.b = parseInt( hex.charAt( 2 ) + hex.charAt( 2 ), 16 ) / 255;
+
+				ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+				return this;
+
+			} else if ( size === 6 ) {
+
+				// #ff0000
+				this.r = parseInt( hex.charAt( 0 ) + hex.charAt( 1 ), 16 ) / 255;
+				this.g = parseInt( hex.charAt( 2 ) + hex.charAt( 3 ), 16 ) / 255;
+				this.b = parseInt( hex.charAt( 4 ) + hex.charAt( 5 ), 16 ) / 255;
+
+				ColorManagement.toWorkingColorSpace( this, colorSpace );
+
+				return this;
+
+			}
+
+		}
+
+		if ( style && style.length > 0 ) {
+
+			return this.setColorName( style, colorSpace );
+
+		}
+
+		return this;
+
+	}
+
+	setColorName( style, colorSpace = SRGBColorSpace ) {
+
+		// color keywords
+		const hex = _colorKeywords[ style.toLowerCase() ];
+
+		if ( hex !== undefined ) {
+
+			// red
+			this.setHex( hex, colorSpace );
+
+		} else {
+
+			// unknown color
+			console.warn( 'THREE.Color: Unknown color ' + style );
+
+		}
+
+		return this;
+
+	}
+
+	clone() {
+
+		return new this.constructor( this.r, this.g, this.b );
+
+	}
+
+	copy( color ) {
+
+		this.r = color.r;
+		this.g = color.g;
+		this.b = color.b;
+
+		return this;
+
+	}
+
+	copySRGBToLinear( color ) {
+
+		this.r = SRGBToLinear( color.r );
+		this.g = SRGBToLinear( color.g );
+		this.b = SRGBToLinear( color.b );
+
+		return this;
+
+	}
+
+	copyLinearToSRGB( color ) {
+
+		this.r = LinearToSRGB( color.r );
+		this.g = LinearToSRGB( color.g );
+		this.b = LinearToSRGB( color.b );
+
+		return this;
+
+	}
+
+	convertSRGBToLinear() {
+
+		this.copySRGBToLinear( this );
+
+		return this;
+
+	}
+
+	convertLinearToSRGB() {
+
+		this.copyLinearToSRGB( this );
+
+		return this;
+
+	}
+
+	getHex( colorSpace = SRGBColorSpace ) {
+
+		ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+		return clamp( _rgb$1.r * 255, 0, 255 ) << 16 ^ clamp( _rgb$1.g * 255, 0, 255 ) << 8 ^ clamp( _rgb$1.b * 255, 0, 255 ) << 0;
+
+	}
+
+	getHexString( colorSpace = SRGBColorSpace ) {
+
+		return ( '000000' + this.getHex( colorSpace ).toString( 16 ) ).slice( -6 );
+
+	}
+
+	getHSL( target, colorSpace = ColorManagement.workingColorSpace ) {
+
+		// h,s,l ranges are in 0.0 - 1.0
+
+		ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+		const r = _rgb$1.r, g = _rgb$1.g, b = _rgb$1.b;
+
+		const max = Math.max( r, g, b );
+		const min = Math.min( r, g, b );
+
+		let hue, saturation;
+		const lightness = ( min + max ) / 2.0;
+
+		if ( min === max ) {
+
+			hue = 0;
+			saturation = 0;
+
+		} else {
+
+			const delta = max - min;
+
+			saturation = lightness <= 0.5 ? delta / ( max + min ) : delta / ( 2 - max - min );
+
+			switch ( max ) {
+
+				case r: hue = ( g - b ) / delta + ( g < b ? 6 : 0 ); break;
+				case g: hue = ( b - r ) / delta + 2; break;
+				case b: hue = ( r - g ) / delta + 4; break;
+
+			}
+
+			hue /= 6;
+
+		}
+
+		target.h = hue;
+		target.s = saturation;
+		target.l = lightness;
+
+		return target;
+
+	}
+
+	getRGB( target, colorSpace = ColorManagement.workingColorSpace ) {
+
+		ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+		target.r = _rgb$1.r;
+		target.g = _rgb$1.g;
+		target.b = _rgb$1.b;
+
+		return target;
+
+	}
+
+	getStyle( colorSpace = SRGBColorSpace ) {
+
+		ColorManagement.fromWorkingColorSpace( toComponents( this, _rgb$1 ), colorSpace );
+
+		if ( colorSpace !== SRGBColorSpace ) {
+
+			// Requires CSS Color Module Level 4 (https://www.w3.org/TR/css-color-4/).
+			return `color(${ colorSpace } ${ _rgb$1.r } ${ _rgb$1.g } ${ _rgb$1.b })`;
+
+		}
+
+		return `rgb(${( _rgb$1.r * 255 ) | 0},${( _rgb$1.g * 255 ) | 0},${( _rgb$1.b * 255 ) | 0})`;
+
+	}
+
+	offsetHSL( h, s, l ) {
+
+		this.getHSL( _hslA );
+
+		_hslA.h += h; _hslA.s += s; _hslA.l += l;
+
+		this.setHSL( _hslA.h, _hslA.s, _hslA.l );
+
+		return this;
+
+	}
+
+	add( color ) {
+
+		this.r += color.r;
+		this.g += color.g;
+		this.b += color.b;
+
+		return this;
+
+	}
+
+	addColors( color1, color2 ) {
+
+		this.r = color1.r + color2.r;
+		this.g = color1.g + color2.g;
+		this.b = color1.b + color2.b;
+
+		return this;
+
+	}
+
+	addScalar( s ) {
+
+		this.r += s;
+		this.g += s;
+		this.b += s;
+
+		return this;
+
+	}
+
+	sub( color ) {
+
+		this.r = Math.max( 0, this.r - color.r );
+		this.g = Math.max( 0, this.g - color.g );
+		this.b = Math.max( 0, this.b - color.b );
+
+		return this;
+
+	}
+
+	multiply( color ) {
+
+		this.r *= color.r;
+		this.g *= color.g;
+		this.b *= color.b;
+
+		return this;
+
+	}
+
+	multiplyScalar( s ) {
+
+		this.r *= s;
+		this.g *= s;
+		this.b *= s;
+
+		return this;
+
+	}
+
+	lerp( color, alpha ) {
+
+		this.r += ( color.r - this.r ) * alpha;
+		this.g += ( color.g - this.g ) * alpha;
+		this.b += ( color.b - this.b ) * alpha;
+
+		return this;
+
+	}
+
+	lerpColors( color1, color2, alpha ) {
+
+		this.r = color1.r + ( color2.r - color1.r ) * alpha;
+		this.g = color1.g + ( color2.g - color1.g ) * alpha;
+		this.b = color1.b + ( color2.b - color1.b ) * alpha;
+
+		return this;
+
+	}
+
+	lerpHSL( color, alpha ) {
+
+		this.getHSL( _hslA );
+		color.getHSL( _hslB );
+
+		const h = lerp( _hslA.h, _hslB.h, alpha );
+		const s = lerp( _hslA.s, _hslB.s, alpha );
+		const l = lerp( _hslA.l, _hslB.l, alpha );
+
+		this.setHSL( h, s, l );
+
+		return this;
+
+	}
+
+	equals( c ) {
+
+		return ( c.r === this.r ) && ( c.g === this.g ) && ( c.b === this.b );
+
+	}
+
+	fromArray( array, offset = 0 ) {
+
+		this.r = array[ offset ];
+		this.g = array[ offset + 1 ];
+		this.b = array[ offset + 2 ];
+
+		return this;
+
+	}
+
+	toArray( array = [], offset = 0 ) {
+
+		array[ offset ] = this.r;
+		array[ offset + 1 ] = this.g;
+		array[ offset + 2 ] = this.b;
+
+		return array;
+
+	}
+
+	fromBufferAttribute( attribute, index ) {
+
+		this.r = attribute.getX( index );
+		this.g = attribute.getY( index );
+		this.b = attribute.getZ( index );
+
+		return this;
+
+	}
+
+	toJSON() {
+
+		return this.getHex();
+
+	}
+
+	*[ Symbol.iterator ]() {
+
+		yield this.r;
+		yield this.g;
+		yield this.b;
+
+	}
+
+}
+
+Color.NAMES = _colorKeywords;
+
+class Quaternion {
+
+	constructor( x = 0, y = 0, z = 0, w = 1 ) {
+
+		this.isQuaternion = true;
+
+		this._x = x;
+		this._y = y;
+		this._z = z;
+		this._w = w;
+
+	}
+
+	static slerpFlat( dst, dstOffset, src0, srcOffset0, src1, srcOffset1, t ) {
+
+		// fuzz-free, array-based Quaternion SLERP operation
+
+		let x0 = src0[ srcOffset0 + 0 ],
+			y0 = src0[ srcOffset0 + 1 ],
+			z0 = src0[ srcOffset0 + 2 ],
+			w0 = src0[ srcOffset0 + 3 ];
+
+		const x1 = src1[ srcOffset1 + 0 ],
+			y1 = src1[ srcOffset1 + 1 ],
+			z1 = src1[ srcOffset1 + 2 ],
+			w1 = src1[ srcOffset1 + 3 ];
+
+		if ( t === 0 ) {
+
+			dst[ dstOffset + 0 ] = x0;
+			dst[ dstOffset + 1 ] = y0;
+			dst[ dstOffset + 2 ] = z0;
+			dst[ dstOffset + 3 ] = w0;
+			return;
+
+		}
+
+		if ( t === 1 ) {
+
+			dst[ dstOffset + 0 ] = x1;
+			dst[ dstOffset + 1 ] = y1;
+			dst[ dstOffset + 2 ] = z1;
+			dst[ dstOffset + 3 ] = w1;
+			return;
+
+		}
+
+		if ( w0 !== w1 || x0 !== x1 || y0 !== y1 || z0 !== z1 ) {
+
+			let s = 1 - t;
+			const cos = x0 * x1 + y0 * y1 + z0 * z1 + w0 * w1,
+				dir = ( cos >= 0 ? 1 : -1 ),
+				sqrSin = 1 - cos * cos;
+
+			// Skip the Slerp for tiny steps to avoid numeric problems:
+			if ( sqrSin > Number.EPSILON ) {
+
+				const sin = Math.sqrt( sqrSin ),
+					len = Math.atan2( sin, cos * dir );
+
+				s = Math.sin( s * len ) / sin;
+				t = Math.sin( t * len ) / sin;
+
+			}
+
+			const tDir = t * dir;
+
+			x0 = x0 * s + x1 * tDir;
+			y0 = y0 * s + y1 * tDir;
+			z0 = z0 * s + z1 * tDir;
+			w0 = w0 * s + w1 * tDir;
+
+			// Normalize in case we just did a lerp:
+			if ( s === 1 - t ) {
+
+				const f = 1 / Math.sqrt( x0 * x0 + y0 * y0 + z0 * z0 + w0 * w0 );
+
+				x0 *= f;
+				y0 *= f;
+				z0 *= f;
+				w0 *= f;
+
+			}
+
+		}
+
+		dst[ dstOffset ] = x0;
+		dst[ dstOffset + 1 ] = y0;
+		dst[ dstOffset + 2 ] = z0;
+		dst[ dstOffset + 3 ] = w0;
+
+	}
+
+	static multiplyQuaternionsFlat( dst, dstOffset, src0, srcOffset0, src1, srcOffset1 ) {
+
+		const x0 = src0[ srcOffset0 ];
+		const y0 = src0[ srcOffset0 + 1 ];
+		const z0 = src0[ srcOffset0 + 2 ];
+		const w0 = src0[ srcOffset0 + 3 ];
+
+		const x1 = src1[ srcOffset1 ];
+		const y1 = src1[ srcOffset1 + 1 ];
+		const z1 = src1[ srcOffset1 + 2 ];
+		const w1 = src1[ srcOffset1 + 3 ];
+
+		dst[ dstOffset ] = x0 * w1 + w0 * x1 + y0 * z1 - z0 * y1;
+		dst[ dstOffset + 1 ] = y0 * w1 + w0 * y1 + z0 * x1 - x0 * z1;
+		dst[ dstOffset + 2 ] = z0 * w1 + w0 * z1 + x0 * y1 - y0 * x1;
+		dst[ dstOffset + 3 ] = w0 * w1 - x0 * x1 - y0 * y1 - z0 * z1;
+
+		return dst;
+
+	}
+
+	get x() {
+
+		return this._x;
+
+	}
+
+	set x( value ) {
+
+		this._x = value;
+		this._onChangeCallback();
+
+	}
+
+	get y() {
+
+		return this._y;
+
+	}
+
+	set y( value ) {
+
+		this._y = value;
+		this._onChangeCallback();
+
+	}
+
+	get z() {
+
+		return this._z;
+
+	}
+
+	set z( value ) {
+
+		this._z = value;
+		this._onChangeCallback();
+
+	}
+
+	get w() {
+
+		return this._w;
+
+	}
+
+	set w( value ) {
+
+		this._w = value;
+		this._onChangeCallback();
+
+	}
+
+	set( x, y, z, w ) {
+
+		this._x = x;
+		this._y = y;
+		this._z = z;
+		this._w = w;
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	clone() {
+
+		return new this.constructor( this._x, this._y, this._z, this._w );
+
+	}
+
+	copy( quaternion ) {
+
+		this._x = quaternion.x;
+		this._y = quaternion.y;
+		this._z = quaternion.z;
+		this._w = quaternion.w;
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	setFromEuler( euler, update ) {
+
+		const x = euler._x, y = euler._y, z = euler._z, order = euler._order;
+
+		// http://www.mathworks.com/matlabcentral/fileexchange/
+		// 	20696-function-to-convert-between-dcm-euler-angles-quaternions-and-euler-vectors/
+		//	content/SpinCalc.m
+
+		const cos = Math.cos;
+		const sin = Math.sin;
+
+		const c1 = cos( x / 2 );
+		const c2 = cos( y / 2 );
+		const c3 = cos( z / 2 );
+
+		const s1 = sin( x / 2 );
+		const s2 = sin( y / 2 );
+		const s3 = sin( z / 2 );
+
+		switch ( order ) {
+
+			case 'XYZ':
+				this._x = s1 * c2 * c3 + c1 * s2 * s3;
+				this._y = c1 * s2 * c3 - s1 * c2 * s3;
+				this._z = c1 * c2 * s3 + s1 * s2 * c3;
+				this._w = c1 * c2 * c3 - s1 * s2 * s3;
+				break;
+
+			case 'YXZ':
+				this._x = s1 * c2 * c3 + c1 * s2 * s3;
+				this._y = c1 * s2 * c3 - s1 * c2 * s3;
+				this._z = c1 * c2 * s3 - s1 * s2 * c3;
+				this._w = c1 * c2 * c3 + s1 * s2 * s3;
+				break;
+
+			case 'ZXY':
+				this._x = s1 * c2 * c3 - c1 * s2 * s3;
+				this._y = c1 * s2 * c3 + s1 * c2 * s3;
+				this._z = c1 * c2 * s3 + s1 * s2 * c3;
+				this._w = c1 * c2 * c3 - s1 * s2 * s3;
+				break;
+
+			case 'ZYX':
+				this._x = s1 * c2 * c3 - c1 * s2 * s3;
+				this._y = c1 * s2 * c3 + s1 * c2 * s3;
+				this._z = c1 * c2 * s3 - s1 * s2 * c3;
+				this._w = c1 * c2 * c3 + s1 * s2 * s3;
+				break;
+
+			case 'YZX':
+				this._x = s1 * c2 * c3 + c1 * s2 * s3;
+				this._y = c1 * s2 * c3 + s1 * c2 * s3;
+				this._z = c1 * c2 * s3 - s1 * s2 * c3;
+				this._w = c1 * c2 * c3 - s1 * s2 * s3;
+				break;
+
+			case 'XZY':
+				this._x = s1 * c2 * c3 - c1 * s2 * s3;
+				this._y = c1 * s2 * c3 - s1 * c2 * s3;
+				this._z = c1 * c2 * s3 + s1 * s2 * c3;
+				this._w = c1 * c2 * c3 + s1 * s2 * s3;
+				break;
+
+			default:
+				console.warn( 'THREE.Quaternion: .setFromEuler() encountered an unknown order: ' + order );
+
+		}
+
+		if ( update !== false ) this._onChangeCallback();
+
+		return this;
+
+	}
+
+	setFromAxisAngle( axis, angle ) {
+
+		// http://www.euclideanspace.com/maths/geometry/rotations/conversions/angleToQuaternion/index.htm
+
+		// assumes axis is normalized
+
+		const halfAngle = angle / 2, s = Math.sin( halfAngle );
+
+		this._x = axis.x * s;
+		this._y = axis.y * s;
+		this._z = axis.z * s;
+		this._w = Math.cos( halfAngle );
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	setFromRotationMatrix( m ) {
+
+		// http://www.euclideanspace.com/maths/geometry/rotations/conversions/matrixToQuaternion/index.htm
+
+		// assumes the upper 3x3 of m is a pure rotation matrix (i.e, unscaled)
+
+		const te = m.elements,
+
+			m11 = te[ 0 ], m12 = te[ 4 ], m13 = te[ 8 ],
+			m21 = te[ 1 ], m22 = te[ 5 ], m23 = te[ 9 ],
+			m31 = te[ 2 ], m32 = te[ 6 ], m33 = te[ 10 ],
+
+			trace = m11 + m22 + m33;
+
+		if ( trace > 0 ) {
+
+			const s = 0.5 / Math.sqrt( trace + 1.0 );
+
+			this._w = 0.25 / s;
+			this._x = ( m32 - m23 ) * s;
+			this._y = ( m13 - m31 ) * s;
+			this._z = ( m21 - m12 ) * s;
+
+		} else if ( m11 > m22 && m11 > m33 ) {
+
+			const s = 2.0 * Math.sqrt( 1.0 + m11 - m22 - m33 );
+
+			this._w = ( m32 - m23 ) / s;
+			this._x = 0.25 * s;
+			this._y = ( m12 + m21 ) / s;
+			this._z = ( m13 + m31 ) / s;
+
+		} else if ( m22 > m33 ) {
+
+			const s = 2.0 * Math.sqrt( 1.0 + m22 - m11 - m33 );
+
+			this._w = ( m13 - m31 ) / s;
+			this._x = ( m12 + m21 ) / s;
+			this._y = 0.25 * s;
+			this._z = ( m23 + m32 ) / s;
+
+		} else {
+
+			const s = 2.0 * Math.sqrt( 1.0 + m33 - m11 - m22 );
+
+			this._w = ( m21 - m12 ) / s;
+			this._x = ( m13 + m31 ) / s;
+			this._y = ( m23 + m32 ) / s;
+			this._z = 0.25 * s;
+
+		}
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	setFromUnitVectors( vFrom, vTo ) {
+
+		// assumes direction vectors vFrom and vTo are normalized
+
+		let r = vFrom.dot( vTo ) + 1;
+
+		if ( r < Number.EPSILON ) {
+
+			// vFrom and vTo point in opposite directions
+
+			r = 0;
+
+			if ( Math.abs( vFrom.x ) > Math.abs( vFrom.z ) ) {
+
+				this._x = - vFrom.y;
+				this._y = vFrom.x;
+				this._z = 0;
+				this._w = r;
+
+			} else {
+
+				this._x = 0;
+				this._y = - vFrom.z;
+				this._z = vFrom.y;
+				this._w = r;
+
+			}
+
+		} else {
+
+			// crossVectors( vFrom, vTo ); // inlined to avoid cyclic dependency on Vector3
+
+			this._x = vFrom.y * vTo.z - vFrom.z * vTo.y;
+			this._y = vFrom.z * vTo.x - vFrom.x * vTo.z;
+			this._z = vFrom.x * vTo.y - vFrom.y * vTo.x;
+			this._w = r;
+
+		}
+
+		return this.normalize();
+
+	}
+
+	angleTo( q ) {
+
+		return 2 * Math.acos( Math.abs( clamp( this.dot( q ), -1, 1 ) ) );
+
+	}
+
+	rotateTowards( q, step ) {
+
+		const angle = this.angleTo( q );
+
+		if ( angle === 0 ) return this;
+
+		const t = Math.min( 1, step / angle );
+
+		this.slerp( q, t );
+
+		return this;
+
+	}
+
+	identity() {
+
+		return this.set( 0, 0, 0, 1 );
+
+	}
+
+	invert() {
+
+		// quaternion is assumed to have unit length
+
+		return this.conjugate();
+
+	}
+
+	conjugate() {
+
+		this._x *= -1;
+		this._y *= -1;
+		this._z *= -1;
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	dot( v ) {
+
+		return this._x * v._x + this._y * v._y + this._z * v._z + this._w * v._w;
+
+	}
+
+	lengthSq() {
+
+		return this._x * this._x + this._y * this._y + this._z * this._z + this._w * this._w;
+
+	}
+
+	length() {
+
+		return Math.sqrt( this._x * this._x + this._y * this._y + this._z * this._z + this._w * this._w );
+
+	}
+
+	normalize() {
+
+		let l = this.length();
+
+		if ( l === 0 ) {
+
+			this._x = 0;
+			this._y = 0;
+			this._z = 0;
+			this._w = 1;
+
+		} else {
+
+			l = 1 / l;
+
+			this._x = this._x * l;
+			this._y = this._y * l;
+			this._z = this._z * l;
+			this._w = this._w * l;
+
+		}
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	multiply( q ) {
+
+		return this.multiplyQuaternions( this, q );
+
+	}
+
+	premultiply( q ) {
+
+		return this.multiplyQuaternions( q, this );
+
+	}
+
+	multiplyQuaternions( a, b ) {
+
+		// from http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/code/index.htm
+
+		const qax = a._x, qay = a._y, qaz = a._z, qaw = a._w;
+		const qbx = b._x, qby = b._y, qbz = b._z, qbw = b._w;
+
+		this._x = qax * qbw + qaw * qbx + qay * qbz - qaz * qby;
+		this._y = qay * qbw + qaw * qby + qaz * qbx - qax * qbz;
+		this._z = qaz * qbw + qaw * qbz + qax * qby - qay * qbx;
+		this._w = qaw * qbw - qax * qbx - qay * qby - qaz * qbz;
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	slerp( qb, t ) {
+
+		if ( t === 0 ) return this;
+		if ( t === 1 ) return this.copy( qb );
+
+		const x = this._x, y = this._y, z = this._z, w = this._w;
+
+		// http://www.euclideanspace.com/maths/algebra/realNormedAlgebra/quaternions/slerp/
+
+		let cosHalfTheta = w * qb._w + x * qb._x + y * qb._y + z * qb._z;
+
+		if ( cosHalfTheta < 0 ) {
+
+			this._w = - qb._w;
+			this._x = - qb._x;
+			this._y = - qb._y;
+			this._z = - qb._z;
+
+			cosHalfTheta = - cosHalfTheta;
+
+		} else {
+
+			this.copy( qb );
+
+		}
+
+		if ( cosHalfTheta >= 1.0 ) {
+
+			this._w = w;
+			this._x = x;
+			this._y = y;
+			this._z = z;
+
+			return this;
+
+		}
+
+		const sqrSinHalfTheta = 1.0 - cosHalfTheta * cosHalfTheta;
+
+		if ( sqrSinHalfTheta <= Number.EPSILON ) {
+
+			const s = 1 - t;
+			this._w = s * w + t * this._w;
+			this._x = s * x + t * this._x;
+			this._y = s * y + t * this._y;
+			this._z = s * z + t * this._z;
+
+			this.normalize();
+			this._onChangeCallback();
+
+			return this;
+
+		}
+
+		const sinHalfTheta = Math.sqrt( sqrSinHalfTheta );
+		const halfTheta = Math.atan2( sinHalfTheta, cosHalfTheta );
+		const ratioA = Math.sin( ( 1 - t ) * halfTheta ) / sinHalfTheta,
+			ratioB = Math.sin( t * halfTheta ) / sinHalfTheta;
+
+		this._w = ( w * ratioA + this._w * ratioB );
+		this._x = ( x * ratioA + this._x * ratioB );
+		this._y = ( y * ratioA + this._y * ratioB );
+		this._z = ( z * ratioA + this._z * ratioB );
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	slerpQuaternions( qa, qb, t ) {
+
+		return this.copy( qa ).slerp( qb, t );
+
+	}
+
+	random() {
+
+		// Derived from http://planning.cs.uiuc.edu/node198.html
+		// Note, this source uses w, x, y, z ordering,
+		// so we swap the order below.
+
+		const u1 = Math.random();
+		const sqrt1u1 = Math.sqrt( 1 - u1 );
+		const sqrtu1 = Math.sqrt( u1 );
+
+		const u2 = 2 * Math.PI * Math.random();
+
+		const u3 = 2 * Math.PI * Math.random();
+
+		return this.set(
+			sqrt1u1 * Math.cos( u2 ),
+			sqrtu1 * Math.sin( u3 ),
+			sqrtu1 * Math.cos( u3 ),
+			sqrt1u1 * Math.sin( u2 ),
+		);
+
+	}
+
+	equals( quaternion ) {
+
+		return ( quaternion._x === this._x ) && ( quaternion._y === this._y ) && ( quaternion._z === this._z ) && ( quaternion._w === this._w );
+
+	}
+
+	fromArray( array, offset = 0 ) {
+
+		this._x = array[ offset ];
+		this._y = array[ offset + 1 ];
+		this._z = array[ offset + 2 ];
+		this._w = array[ offset + 3 ];
+
+		this._onChangeCallback();
+
+		return this;
+
+	}
+
+	toArray( array = [], offset = 0 ) {
+
+		array[ offset ] = this._x;
+		array[ offset + 1 ] = this._y;
+		array[ offset + 2 ] = this._z;
+		array[ offset + 3 ] = this._w;
+
+		return array;
+
+	}
+
+	fromBufferAttribute( attribute, index ) {
+
+		this._x = attribute.getX( index );
+		this._y = attribute.getY( index );
+		this._z = attribute.getZ( index );
+		this._w = attribute.getW( index );
+
+		return this;
+
+	}
+
+	_onChange( callback ) {
+
+		this._onChangeCallback = callback;
+
+		return this;
+
+	}
+
+	_onChangeCallback() {}
+
+	*[ Symbol.iterator ]() {
+
+		yield this._x;
+		yield this._y;
+		yield this._z;
+		yield this._w;
+
+	}
+
+}
+
+class Vector3 {
+
+	constructor( x = 0, y = 0, z = 0 ) {
+
+		Vector3.prototype.isVector3 = true;
+
+		this.x = x;
+		this.y = y;
+		this.z = z;
+
+	}
+
+	set( x, y, z ) {
+
+		if ( z === undefined ) z = this.z; // sprite.scale.set(x,y)
+
+		this.x = x;
+		this.y = y;
+		this.z = z;
+
+		return this;
+
+	}
+
+	setScalar( scalar ) {
+
+		this.x = scalar;
+		this.y = scalar;
+		this.z = scalar;
+
+		return this;
+
+	}
+
+	setX( x ) {
+
+		this.x = x;
+
+		return this;
+
+	}
+
+	setY( y ) {
+
+		this.y = y;
+
+		return this;
+
+	}
+
+	setZ( z ) {
+
+		this.z = z;
+
+		return this;
+
+	}
+
+	setComponent( index, value ) {
+
+		switch ( index ) {
+
+			case 0: this.x = value; break;
+			case 1: this.y = value; break;
+			case 2: this.z = value; break;
+			default: throw new Error( 'index is out of range: ' + index );
+
+		}
+
+		return this;
+
+	}
+
+	getComponent( index ) {
+
+		switch ( index ) {
+
+			case 0: return this.x;
+			case 1: return this.y;
+			case 2: return this.z;
+			default: throw new Error( 'index is out of range: ' + index );
+
+		}
+
+	}
+
+	clone() {
+
+		return new this.constructor( this.x, this.y, this.z );
+
+	}
+
+	copy( v ) {
+
+		this.x = v.x;
+		this.y = v.y;
+		this.z = v.z;
+
+		return this;
+
+	}
+
+	add( v ) {
+
+		this.x += v.x;
+		this.y += v.y;
+		this.z += v.z;
+
+		return this;
+
+	}
+
+	addScalar( s ) {
+
+		this.x += s;
+		this.y += s;
+		this.z += s;
+
+		return this;
+
+	}
+
+	addVectors( a, b ) {
+
+		this.x = a.x + b.x;
+		this.y = a.y + b.y;
+		this.z = a.z + b.z;
+
+		return this;
+
+	}
+
+	addScaledVector( v, s ) {
+
+		this.x += v.x * s;
+		this.y += v.y * s;
+		this.z += v.z * s;
+
+		return this;
+
+	}
+
+	sub( v ) {
+
+		this.x -= v.x;
+		this.y -= v.y;
+		this.z -= v.z;
+
+		return this;
+
+	}
+
+	subScalar( s ) {
+
+		this.x -= s;
+		this.y -= s;
+		this.z -= s;
+
+		return this;
+
+	}
+
+	subVectors( a, b ) {
+
+		this.x = a.x - b.x;
+		this.y = a.y - b.y;
+		this.z = a.z - b.z;
+
+		return this;
+
+	}
+
+	multiply( v ) {
+
+		this.x *= v.x;
+		this.y *= v.y;
+		this.z *= v.z;
+
+		return this;
+
+	}
+
+	multiplyScalar( scalar ) {
+
+		this.x *= scalar;
+		this.y *= scalar;
+		this.z *= scalar;
+
+		return this;
+
+	}
+
+	multiplyVectors( a, b ) {
+
+		this.x = a.x * b.x;
+		this.y = a.y * b.y;
+		this.z = a.z * b.z;
+
+		return this;
+
+	}
+
+	applyEuler( euler ) {
+
+		return this.applyQuaternion( _quaternion$4.setFromEuler( euler ) );
+
+	}
+
+	applyAxisAngle( axis, angle ) {
+
+		return this.applyQuaternion( _quaternion$4.setFromAxisAngle( axis, angle ) );
+
+	}
+
+	applyMatrix3( m ) {
+
+		const x = this.x, y = this.y, z = this.z;
+		const e = m.elements;
+
+		this.x = e[ 0 ] * x + e[ 3 ] * y + e[ 6 ] * z;
+		this.y = e[ 1 ] * x + e[ 4 ] * y + e[ 7 ] * z;
+		this.z = e[ 2 ] * x + e[ 5 ] * y + e[ 8 ] * z;
+
+		return this;
+
+	}
+
+	applyNormalMatrix( m ) {
+
+		return this.applyMatrix3( m ).normalize();
+
+	}
+
+	applyMatrix4( m ) {
+
+		const x = this.x, y = this.y, z = this.z;
+		const e = m.elements;
+
+		const w = 1 / ( e[ 3 ] * x + e[ 7 ] * y + e[ 11 ] * z + e[ 15 ] );
+
+		this.x = ( e[ 0 ] * x + e[ 4 ] * y + e[ 8 ] * z + e[ 12 ] ) * w;
+		this.y = ( e[ 1 ] * x + e[ 5 ] * y + e[ 9 ] * z + e[ 13 ] ) * w;
+		this.z = ( e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z + e[ 14 ] ) * w;
+
+		return this;
+
+	}
+
+	applyQuaternion( q ) {
+
+		const x = this.x, y = this.y, z = this.z;
+		const qx = q.x, qy = q.y, qz = q.z, qw = q.w;
+
+		// calculate quat * vector
+
+		const ix = qw * x + qy * z - qz * y;
+		const iy = qw * y + qz * x - qx * z;
+		const iz = qw * z + qx * y - qy * x;
+		const iw = - qx * x - qy * y - qz * z;
+
+		// calculate result * inverse quat
+
+		this.x = ix * qw + iw * - qx + iy * - qz - iz * - qy;
+		this.y = iy * qw + iw * - qy + iz * - qx - ix * - qz;
+		this.z = iz * qw + iw * - qz + ix * - qy - iy * - qx;
+
+		return this;
+
+	}
+
+	project( camera ) {
+
+		return this.applyMatrix4( camera.matrixWorldInverse ).applyMatrix4( camera.projectionMatrix );
+
+	}
+
+	unproject( camera ) {
+
+		return this.applyMatrix4( camera.projectionMatrixInverse ).applyMatrix4( camera.matrixWorld );
+
+	}
+
+	transformDirection( m ) {
+
+		// input: THREE.Matrix4 affine matrix
+		// vector interpreted as a direction
+
+		const x = this.x, y = this.y, z = this.z;
+		const e = m.elements;
+
+		this.x = e[ 0 ] * x + e[ 4 ] * y + e[ 8 ] * z;
+		this.y = e[ 1 ] * x + e[ 5 ] * y + e[ 9 ] * z;
+		this.z = e[ 2 ] * x + e[ 6 ] * y + e[ 10 ] * z;
+
+		return this.normalize();
+
+	}
+
+	divide( v ) {
+
+		this.x /= v.x;
+		this.y /= v.y;
+		this.z /= v.z;
+
+		return this;
+
+	}
+
+	divideScalar( scalar ) {
+
+		return this.multiplyScalar( 1 / scalar );
+
+	}
+
+	min( v ) {
+
+		this.x = Math.min( this.x, v.x );
+		this.y = Math.min( this.y, v.y );
+		this.z = Math.min( this.z, v.z );
+
+		return this;
+
+	}
+
+	max( v ) {
+
+		this.x = Math.max( this.x, v.x );
+		this.y = Math.max( this.y, v.y );
+		this.z = Math.max( this.z, v.z );
+
+		return this;
+
+	}
+
+	clamp( min, max ) {
+
+		// assumes min < max, componentwise
+
+		this.x = Math.max( min.x, Math.min( max.x, this.x ) );
+		this.y = Math.max( min.y, Math.min( max.y, this.y ) );
+		this.z = Math.max( min.z, Math.min( max.z, this.z ) );
+
+		return this;
+
+	}
+
+	clampScalar( minVal, maxVal ) {
+
+		this.x = Math.max( minVal, Math.min( maxVal, this.x ) );
+		this.y = Math.max( minVal, Math.min( maxVal, this.y ) );
+		this.z = Math.max( minVal, Math.min( maxVal, this.z ) );
+
+		return this;
+
+	}
+
+	clampLength( min, max ) {
+
+		const length = this.length();
+
+		return this.divideScalar( length || 1 ).multiplyScalar( Math.max( min, Math.min( max, length ) ) );
+
+	}
+
+	floor() {
+
+		this.x = Math.floor( this.x );
+		this.y = Math.floor( this.y );
+		this.z = Math.floor( this.z );
+
+		return this;
+
+	}
+
+	ceil() {
+
+		this.x = Math.ceil( this.x );
+		this.y = Math.ceil( this.y );
+		this.z = Math.ceil( this.z );
+
+		return this;
+
+	}
+
+	round() {
+
+		this.x = Math.round( this.x );
+		this.y = Math.round( this.y );
+		this.z = Math.round( this.z );
+
+		return this;
+
+	}
+
+	roundToZero() {
+
+		this.x = ( this.x < 0 ) ? Math.ceil( this.x ) : Math.floor( this.x );
+		this.y = ( this.y < 0 ) ? Math.ceil( this.y ) : Math.floor( this.y );
+		this.z = ( this.z < 0 ) ? Math.ceil( this.z ) : Math.floor( this.z );
+
+		return this;
+
+	}
+
+	negate() {
+
+		this.x = - this.x;
+		this.y = - this.y;
+		this.z = - this.z;
+
+		return this;
+
+	}
+
+	dot( v ) {
+
+		return this.x * v.x + this.y * v.y + this.z * v.z;
+
+	}
+
+	// TODO lengthSquared?
+
+	lengthSq() {
+
+		return this.x * this.x + this.y * this.y + this.z * this.z;
+
+	}
+
+	length() {
+
+		return Math.sqrt( this.x * this.x + this.y * this.y + this.z * this.z );
+
+	}
+
+	manhattanLength() {
+
+		return Math.abs( this.x ) + Math.abs( this.y ) + Math.abs( this.z );
+
+	}
+
+	normalize() {
+
+		return this.divideScalar( this.length() || 1 );
+
+	}
+
+	setLength( length ) {
+
+		return this.normalize().multiplyScalar( length );
+
+	}
+
+	lerp( v, alpha ) {
+
+		this.x += ( v.x - this.x ) * alpha;
+		this.y += ( v.y - this.y ) * alpha;
+		this.z += ( v.z - this.z ) * alpha;
+
+		return this;
+
+	}
+
+	lerpVectors( v1, v2, alpha ) {
+
+		this.x = v1.x + ( v2.x - v1.x ) * alpha;
+		this.y = v1.y + ( v2.y - v1.y ) * alpha;
+		this.z = v1.z + ( v2.z - v1.z ) * alpha;
+
+		return this;
+
+	}
+
+	cross( v ) {
+
+		return this.crossVectors( this, v );
+
+	}
+
+	crossVectors( a, b ) {
+
+		const ax = a.x, ay = a.y, az = a.z;
+		const bx = b.x, by = b.y, bz = b.z;
+
+		this.x = ay * bz - az * by;
+		this.y = az * bx - ax * bz;
+		this.z = ax * by - ay * bx;
+
+		return this;
+
+	}
+
+	projectOnVector( v ) {
+
+		const denominator = v.lengthSq();
+
+		if ( denominator === 0 ) return this.set( 0, 0, 0 );
+
+		const scalar = v.dot( this ) / denominator;
+
+		return this.copy( v ).multiplyScalar( scalar );
+
+	}
+
+	projectOnPlane( planeNormal ) {
+
+		_vector$c.copy( this ).projectOnVector( planeNormal );
+
+		return this.sub( _vector$c );
+
+	}
+
+	reflect( normal ) {
+
+		// reflect incident vector off plane orthogonal to normal
+		// normal is assumed to have unit length
+
+		return this.sub( _vector$c.copy( normal ).multiplyScalar( 2 * this.dot( normal ) ) );
+
+	}
+
+	angleTo( v ) {
+
+		const denominator = Math.sqrt( this.lengthSq() * v.lengthSq() );
+
+		if ( denominator === 0 ) return Math.PI / 2;
+
+		const theta = this.dot( v ) / denominator;
+
+		// clamp, to handle numerical problems
+
+		return Math.acos( clamp( theta, -1, 1 ) );
+
+	}
+
+	distanceTo( v ) {
+
+		return Math.sqrt( this.distanceToSquared( v ) );
+
+	}
+
+	distanceToSquared( v ) {
+
+		const dx = this.x - v.x, dy = this.y - v.y, dz = this.z - v.z;
+
+		return dx * dx + dy * dy + dz * dz;
+
+	}
+
+	manhattanDistanceTo( v ) {
+
+		return Math.abs( this.x - v.x ) + Math.abs( this.y - v.y ) + Math.abs( this.z - v.z );
+
+	}
+
+	setFromSpherical( s ) {
+
+		return this.setFromSphericalCoords( s.radius, s.phi, s.theta );
+
+	}
+
+	setFromSphericalCoords( radius, phi, theta ) {
+
+		const sinPhiRadius = Math.sin( phi ) * radius;
+
+		this.x = sinPhiRadius * Math.sin( theta );
+		this.y = Math.cos( phi ) * radius;
+		this.z = sinPhiRadius * Math.cos( theta );
+
+		return this;
+
+	}
+
+	setFromCylindrical( c ) {
+
+		return this.setFromCylindricalCoords( c.radius, c.theta, c.y );
+
+	}
+
+	setFromCylindricalCoords( radius, theta, y ) {
+
+		this.x = radius * Math.sin( theta );
+		this.y = y;
+		this.z = radius * Math.cos( theta );
+
+		return this;
+
+	}
+
+	setFromMatrixPosition( m ) {
+
+		const e = m.elements;
+
+		this.x = e[ 12 ];
+		this.y = e[ 13 ];
+		this.z = e[ 14 ];
+
+		return this;
+
+	}
+
+	setFromMatrixScale( m ) {
+
+		const sx = this.setFromMatrixColumn( m, 0 ).length();
+		const sy = this.setFromMatrixColumn( m, 1 ).length();
+		const sz = this.setFromMatrixColumn( m, 2 ).length();
+
+		this.x = sx;
+		this.y = sy;
+		this.z = sz;
+
+		return this;
+
+	}
+
+	setFromMatrixColumn( m, index ) {
+
+		return this.fromArray( m.elements, index * 4 );
+
+	}
+
+	setFromMatrix3Column( m, index ) {
+
+		return this.fromArray( m.elements, index * 3 );
+
+	}
+
+	setFromEuler( e ) {
+
+		this.x = e._x;
+		this.y = e._y;
+		this.z = e._z;
+
+		return this;
+
+	}
+
+	equals( v ) {
+
+		return ( ( v.x === this.x ) && ( v.y === this.y ) && ( v.z === this.z ) );
+
+	}
+
+	fromArray( array, offset = 0 ) {
+
+		this.x = array[ offset ];
+		this.y = array[ offset + 1 ];
+		this.z = array[ offset + 2 ];
+
+		return this;
+
+	}
+
+	toArray( array = [], offset = 0 ) {
+
+		array[ offset ] = this.x;
+		array[ offset + 1 ] = this.y;
+		array[ offset + 2 ] = this.z;
+
+		return array;
+
+	}
+
+	fromBufferAttribute( attribute, index ) {
+
+		this.x = attribute.getX( index );
+		this.y = attribute.getY( index );
+		this.z = attribute.getZ( index );
+
+		return this;
+
+	}
+
+	random() {
+
+		this.x = Math.random();
+		this.y = Math.random();
+		this.z = Math.random();
+
+		return this;
+
+	}
+
+	randomDirection() {
+
+		// Derived from https://mathworld.wolfram.com/SpherePointPicking.html
+
+		const u = ( Math.random() - 0.5 ) * 2;
+		const t = Math.random() * Math.PI * 2;
+		const f = Math.sqrt( 1 - u ** 2 );
+
+		this.x = f * Math.cos( t );
+		this.y = f * Math.sin( t );
+		this.z = u;
+
+		return this;
+
+	}
+
+	*[ Symbol.iterator ]() {
+
+		yield this.x;
+		yield this.y;
+		yield this.z;
+
+	}
+
+}
+
+const _vector$c = /*@__PURE__*/ new Vector3();
+const _quaternion$4 = /*@__PURE__*/ new Quaternion();
+
+if ( typeof __THREE_DEVTOOLS__ !== 'undefined' ) {
+
+	__THREE_DEVTOOLS__.dispatchEvent( new CustomEvent( 'register', { detail: {
+		revision: REVISION,
+	} } ) );
+
+}
+
+if ( typeof window !== 'undefined' ) {
+
+	if ( window.__THREE__ ) {
+
+		console.warn( 'WARNING: Multiple instances of Three.js being imported.' );
+
+	} else {
+
+		window.__THREE__ = REVISION;
+
+	}
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+
+const Colors = /*#__PURE__*/iteeUtils.toEnum( {
+    Black:                /*#__PURE__*/new Color( '#000000' ),
+    Navy:                 /*#__PURE__*/new Color( '#000080' ),
+    DarkBlue:             /*#__PURE__*/new Color( '#00008b' ),
+    MediumBlue:           /*#__PURE__*/new Color( '#0000cd' ),
+    Blue:                 /*#__PURE__*/new Color( '#0000ff' ),
+    DarkGreen:            /*#__PURE__*/new Color( '#006400' ),
+    Green:                /*#__PURE__*/new Color( '#008000' ),
+    Teal:                 /*#__PURE__*/new Color( '#008080' ),
+    DarkCyan:             /*#__PURE__*/new Color( '#008b8b' ),
+    DeepSkyBlue:          /*#__PURE__*/new Color( '#00bfff' ),
+    DarkTurquoise:        /*#__PURE__*/new Color( '#00ced1' ),
+    MediumSpringGreen:    /*#__PURE__*/new Color( '#00fa9a' ),
+    Lime:                 /*#__PURE__*/new Color( '#00ff00' ),
+    SpringGreen:          /*#__PURE__*/new Color( '#00ff7f' ),
+    Aqua:                 /*#__PURE__*/new Color( '#00ffff' ),
+    Cyan:                 /*#__PURE__*/new Color( '#00ffff' ),
+    MidnightBlue:         /*#__PURE__*/new Color( '#191970' ),
+    DodgerBlue:           /*#__PURE__*/new Color( '#1e90ff' ),
+    LightSeaGreen:        /*#__PURE__*/new Color( '#20b2aa' ),
+    ForestGreen:          /*#__PURE__*/new Color( '#228b22' ),
+    SeaGreen:             /*#__PURE__*/new Color( '#2e8b57' ),
+    DarkSlateGray:        /*#__PURE__*/new Color( '#2f4f4f' ),
+    DarkSlateGrey:        /*#__PURE__*/new Color( '#2f4f4f' ),
+    LimeGreen:            /*#__PURE__*/new Color( '#32cd32' ),
+    MediumSeaGreen:       /*#__PURE__*/new Color( '#3cb371' ),
+    Turquoise:            /*#__PURE__*/new Color( '#40e0d0' ),
+    RoyalBlue:            /*#__PURE__*/new Color( '#4169e1' ),
+    SteelBlue:            /*#__PURE__*/new Color( '#4682b4' ),
+    DarkSlateBlue:        /*#__PURE__*/new Color( '#483d8b' ),
+    MediumTurquoise:      /*#__PURE__*/new Color( '#48d1cc' ),
+    Indigo:               /*#__PURE__*/new Color( '#4b0082' ),
+    DarkOliveGreen:       /*#__PURE__*/new Color( '#556b2f' ),
+    CadetBlue:            /*#__PURE__*/new Color( '#5f9ea0' ),
+    CornflowerBlue:       /*#__PURE__*/new Color( '#6495ed' ),
+    RebeccaPurple:        /*#__PURE__*/new Color( '#663399' ),
+    MediumAquaMarine:     /*#__PURE__*/new Color( '#66cdaa' ),
+    DimGray:              /*#__PURE__*/new Color( '#696969' ),
+    DimGrey:              /*#__PURE__*/new Color( '#696969' ),
+    SlateBlue:            /*#__PURE__*/new Color( '#6a5acd' ),
+    OliveDrab:            /*#__PURE__*/new Color( '#6b8e23' ),
+    SlateGray:            /*#__PURE__*/new Color( '#708090' ),
+    SlateGrey:            /*#__PURE__*/new Color( '#708090' ),
+    LightSlateGray:       /*#__PURE__*/new Color( '#778899' ),
+    LightSlateGrey:       /*#__PURE__*/new Color( '#778899' ),
+    MediumSlateBlue:      /*#__PURE__*/new Color( '#7b68ee' ),
+    LawnGreen:            /*#__PURE__*/new Color( '#7cfc00' ),
+    Chartreuse:           /*#__PURE__*/new Color( '#7fff00' ),
+    Aquamarine:           /*#__PURE__*/new Color( '#7fffd4' ),
+    Maroon:               /*#__PURE__*/new Color( '#800000' ),
+    Purple:               /*#__PURE__*/new Color( '#800080' ),
+    Olive:                /*#__PURE__*/new Color( '#808000' ),
+    Gray:                 /*#__PURE__*/new Color( '#808080' ),
+    Grey:                 /*#__PURE__*/new Color( '#808080' ),
+    SkyBlue:              /*#__PURE__*/new Color( '#87ceeb' ),
+    LightSkyBlue:         /*#__PURE__*/new Color( '#87cefa' ),
+    BlueViolet:           /*#__PURE__*/new Color( '#8a2be2' ),
+    DarkRed:              /*#__PURE__*/new Color( '#8b0000' ),
+    DarkMagenta:          /*#__PURE__*/new Color( '#8b008b' ),
+    SaddleBrown:          /*#__PURE__*/new Color( '#8b4513' ),
+    DarkSeaGreen:         /*#__PURE__*/new Color( '#8fbc8f' ),
+    LightGreen:           /*#__PURE__*/new Color( '#90ee90' ),
+    MediumPurple:         /*#__PURE__*/new Color( '#9370db' ),
+    DarkViolet:           /*#__PURE__*/new Color( '#9400d3' ),
+    PaleGreen:            /*#__PURE__*/new Color( '#98fb98' ),
+    DarkOrchid:           /*#__PURE__*/new Color( '#9932cc' ),
+    YellowGreen:          /*#__PURE__*/new Color( '#9acd32' ),
+    Sienna:               /*#__PURE__*/new Color( '#a0522d' ),
+    Brown:                /*#__PURE__*/new Color( '#a52a2a' ),
+    DarkGray:             /*#__PURE__*/new Color( '#a9a9a9' ),
+    DarkGrey:             /*#__PURE__*/new Color( '#a9a9a9' ),
+    LightBlue:            /*#__PURE__*/new Color( '#add8e6' ),
+    GreenYellow:          /*#__PURE__*/new Color( '#adff2f' ),
+    PaleTurquoise:        /*#__PURE__*/new Color( '#afeeee' ),
+    LightSteelBlue:       /*#__PURE__*/new Color( '#b0c4de' ),
+    PowderBlue:           /*#__PURE__*/new Color( '#b0e0e6' ),
+    FireBrick:            /*#__PURE__*/new Color( '#b22222' ),
+    DarkGoldenRod:        /*#__PURE__*/new Color( '#b8860b' ),
+    MediumOrchid:         /*#__PURE__*/new Color( '#ba55d3' ),
+    RosyBrown:            /*#__PURE__*/new Color( '#bc8f8f' ),
+    DarkKhaki:            /*#__PURE__*/new Color( '#bdb76b' ),
+    Silver:               /*#__PURE__*/new Color( '#c0c0c0' ),
+    MediumVioletRed:      /*#__PURE__*/new Color( '#c71585' ),
+    IndianRed:            /*#__PURE__*/new Color( '#cd5c5c' ),
+    Peru:                 /*#__PURE__*/new Color( '#cd853f' ),
+    Chocolate:            /*#__PURE__*/new Color( '#d2691e' ),
+    Tan:                  /*#__PURE__*/new Color( '#d2b48c' ),
+    LightGray:            /*#__PURE__*/new Color( '#d3d3d3' ),
+    LightGrey:            /*#__PURE__*/new Color( '#d3d3d3' ),
+    Thistle:              /*#__PURE__*/new Color( '#d8bfd8' ),
+    Orchid:               /*#__PURE__*/new Color( '#da70d6' ),
+    GoldenRod:            /*#__PURE__*/new Color( '#daa520' ),
+    PaleVioletRed:        /*#__PURE__*/new Color( '#db7093' ),
+    Crimson:              /*#__PURE__*/new Color( '#dc143c' ),
+    Gainsboro:            /*#__PURE__*/new Color( '#dcdcdc' ),
+    Plum:                 /*#__PURE__*/new Color( '#dda0dd' ),
+    BurlyWood:            /*#__PURE__*/new Color( '#deb887' ),
+    LightCyan:            /*#__PURE__*/new Color( '#e0ffff' ),
+    Lavender:             /*#__PURE__*/new Color( '#e6e6fa' ),
+    DarkSalmon:           /*#__PURE__*/new Color( '#e9967a' ),
+    Violet:               /*#__PURE__*/new Color( '#ee82ee' ),
+    PaleGoldenRod:        /*#__PURE__*/new Color( '#eee8aa' ),
+    LightCoral:           /*#__PURE__*/new Color( '#f08080' ),
+    Khaki:                /*#__PURE__*/new Color( '#f0e68c' ),
+    AliceBlue:            /*#__PURE__*/new Color( '#f0f8ff' ),
+    HoneyDew:             /*#__PURE__*/new Color( '#f0fff0' ),
+    Azure:                /*#__PURE__*/new Color( '#f0ffff' ),
+    SandyBrown:           /*#__PURE__*/new Color( '#f4a460' ),
+    Wheat:                /*#__PURE__*/new Color( '#f5deb3' ),
+    Beige:                /*#__PURE__*/new Color( '#f5f5dc' ),
+    WhiteSmoke:           /*#__PURE__*/new Color( '#f5f5f5' ),
+    MintCream:            /*#__PURE__*/new Color( '#f5fffa' ),
+    GhostWhite:           /*#__PURE__*/new Color( '#f8f8ff' ),
+    Salmon:               /*#__PURE__*/new Color( '#fa8072' ),
+    AntiqueWhite:         /*#__PURE__*/new Color( '#faebd7' ),
+    Linen:                /*#__PURE__*/new Color( '#faf0e6' ),
+    LightGoldenRodYellow: /*#__PURE__*/new Color( '#fafad2' ),
+    OldLace:              /*#__PURE__*/new Color( '#fdf5e6' ),
+    Red:                  /*#__PURE__*/new Color( '#ff0000' ),
+    Fuchsia:              /*#__PURE__*/new Color( '#ff00ff' ),
+    Magenta:              /*#__PURE__*/new Color( '#ff00ff' ),
+    DeepPink:             /*#__PURE__*/new Color( '#ff1493' ),
+    OrangeRed:            /*#__PURE__*/new Color( '#ff4500' ),
+    Tomato:               /*#__PURE__*/new Color( '#ff6347' ),
+    HotPink:              /*#__PURE__*/new Color( '#ff69b4' ),
+    Coral:                /*#__PURE__*/new Color( '#ff7f50' ),
+    DarkOrange:           /*#__PURE__*/new Color( '#ff8c00' ),
+    LightSalmon:          /*#__PURE__*/new Color( '#ffa07a' ),
+    Orange:               /*#__PURE__*/new Color( '#ffa500' ),
+    LightPink:            /*#__PURE__*/new Color( '#ffb6c1' ),
+    Pink:                 /*#__PURE__*/new Color( '#ffc0cb' ),
+    Gold:                 /*#__PURE__*/new Color( '#ffd700' ),
+    PeachPuff:            /*#__PURE__*/new Color( '#ffdab9' ),
+    NavajoWhite:          /*#__PURE__*/new Color( '#ffdead' ),
+    Moccasin:             /*#__PURE__*/new Color( '#ffe4b5' ),
+    Bisque:               /*#__PURE__*/new Color( '#ffe4c4' ),
+    MistyRose:            /*#__PURE__*/new Color( '#ffe4e1' ),
+    BlanchedAlmond:       /*#__PURE__*/new Color( '#ffebcd' ),
+    PapayaWhip:           /*#__PURE__*/new Color( '#ffefd5' ),
+    LavenderBlush:        /*#__PURE__*/new Color( '#fff0f5' ),
+    SeaShell:             /*#__PURE__*/new Color( '#fff5ee' ),
+    Cornsilk:             /*#__PURE__*/new Color( '#fff8dc' ),
+    LemonChiffon:         /*#__PURE__*/new Color( '#fffacd' ),
+    FloralWhite:          /*#__PURE__*/new Color( '#fffaf0' ),
+    Snow:                 /*#__PURE__*/new Color( '#fffafa' ),
+    Yellow:               /*#__PURE__*/new Color( '#ffff00' ),
+    LightYellow:          /*#__PURE__*/new Color( '#ffffe0' ),
+    Ivory:                /*#__PURE__*/new Color( '#fffff0' ),
+    White:                /*#__PURE__*/new Color( '#ffffff' )
+} );
+
+class ColorPalette {
+
+    constructor( palette ) {
+        if ( palette.default ) {
+            this.default.set( palette.default );
+        } else {
+            this.default.set( Colors.Fuchsia );
+        }
+
+        if ( palette.intersected ) {
+            this.intersected.set( palette.intersected );
+        } else {
+            this.default.set( Colors.PeachPuff );
+        }
+
+        if ( palette.selected ) {
+            this.selected.set( palette.selected );
+        } else {
+            this.default.set( Colors.DarkOrange );
+        }
+
+        if ( palette.active ) {
+            this.active.set( palette.active );
+        } else {
+            this.default.set( Colors.YellowGreen );
+        }
+
+        if ( palette.inactive ) {
+            this.inactive.set( palette.inactive );
+        } else {
+            this.default.set( Colors.LightCyan );
+        }
+
+        if ( palette.enabled ) {
+            this.enabled.set( palette.enabled );
+        } else {
+            this.default.set( Colors.Lavender );
+        }
+
+        if ( palette.disabled ) {
+            this.disabled.set( palette.disabled );
+        } else {
+            this.default.set( Colors.Grey );
+        }
+    }
+
+}
+
+/**
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ */
+
+//[x:LEFT-RIGHT][y:DOWN-UP][z:BACK-FRONT]
+const Left_Down_Back   = /*#__PURE__*/new Vector3( -1, -1, -1 ).normalize();
+const Left_Down        = /*#__PURE__*/new Vector3( -1, -1, 0 ).normalize();
+const Left_Down_Front  = /*#__PURE__*/new Vector3( -1, -1, 1 ).normalize();
+const Left_Back        = /*#__PURE__*/new Vector3( -1, 0, -1 ).normalize();
+const Left             = /*#__PURE__*/new Vector3( -1, 0, 0 ).normalize();
+const Left_Front       = /*#__PURE__*/new Vector3( -1, 0, 1 ).normalize();
+const Left_Up_Back     = /*#__PURE__*/new Vector3( -1, 1, -1 ).normalize();
+const Left_Up          = /*#__PURE__*/new Vector3( -1, 1, 0 ).normalize();
+const Left_Up_Front    = /*#__PURE__*/new Vector3( -1, 1, 1 ).normalize();
+const Down_Back        = /*#__PURE__*/new Vector3( 0, -1, -1 ).normalize();
+const Down             = /*#__PURE__*/new Vector3( 0, -1, 0 ).normalize();
+const Down_Front       = /*#__PURE__*/new Vector3( 0, -1, 1 ).normalize();
+const Back             = /*#__PURE__*/new Vector3( 0, 0, -1 ).normalize();
+const Null             = /*#__PURE__*/new Vector3( 0, 0, 0 ).normalize();
+const Front            = /*#__PURE__*/new Vector3( 0, 0, 1 ).normalize();
+const Up_Back          = /*#__PURE__*/new Vector3( 0, 1, -1 ).normalize();
+const Up               = /*#__PURE__*/new Vector3( 0, 1, 0 ).normalize();
+const Up_Front         = /*#__PURE__*/new Vector3( 0, 1, 1 ).normalize();
+const Right_Down_Back  = /*#__PURE__*/new Vector3( 1, -1, -1 ).normalize();
+const Right_Down       = /*#__PURE__*/new Vector3( 1, -1, 0 ).normalize();
+const Right_Down_Front = /*#__PURE__*/new Vector3( 1, -1, 1 ).normalize();
+const Right_Back       = /*#__PURE__*/new Vector3( 1, 0, -1 ).normalize();
+const Right            = /*#__PURE__*/new Vector3( 1, 0, 0 ).normalize();
+const Right_Front      = /*#__PURE__*/new Vector3( 1, 0, 1 ).normalize();
+const Right_Up_Back    = /*#__PURE__*/new Vector3( 1, 1, -1 ).normalize();
+const Right_Up         = /*#__PURE__*/new Vector3( 1, 1, 0 ).normalize();
+const Right_Up_Front   = /*#__PURE__*/new Vector3( 1, 1, 1 ).normalize();
+
+/*
+
+
+ -Z              nnw N nne
+ /|\            NW   |   NE
+ |          wnw  \  |  /  ene
+ |          W ------x------ E
+ |          wsw  /  |  \  ese
+ |             SW   |   SE
+ |              ssw S sse
+ |
+ _|_________________________________\ +X
+ |                                 /
+
+ */
+const Cardinales = {
+    North:            Back,
+    North_North_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+    North_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+    East_North_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+    East:             Right,
+    East_South_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+    South_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+    South_South_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+    South:            Front,
+    South_South_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+    South_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+    West_South_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+    West:             Left,
+    West_North_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+    North_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
+    North_North_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize()
+};
+
+const Directions = {
+    Left_Down_Back,
+    Left_Down,
+    Left_Down_Front,
+    Left_Back,
+    Left,
+    Left_Front,
+    Left_Up_Back,
+    Left_Up,
+    Left_Up_Front,
+    Down_Back,
+    Down,
+    Down_Front,
+    Back,
+    Null,
+    Front,
+    Up_Back,
+    Up,
+    Up_Front,
+    Right_Down_Back,
+    Right_Down,
+    Right_Down_Front,
+    Right_Back,
+    Right,
+    Right_Front,
+    Right_Up_Back,
+    Right_Up,
+    Right_Up_Front,
+
+    Cardinales
+};
 
 /**
  * @module Loader/ASCLoader
@@ -15135,6 +19146,7 @@ export default ( parameters ) => {
  *
  */
 
+
 /**
  * The ASCLoader class definition.
  * It allow to load and parse an .asc file
@@ -15148,7 +19160,7 @@ class ASCLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
@@ -15183,7 +19195,7 @@ class ASCLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //        //this.logger.time("ASCLoader")
 
@@ -15204,7 +19216,7 @@ class ASCLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -15225,7 +19237,7 @@ class ASCLoader {
      * @param sampling
      * @private
      */
-    _parse ( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
+    _parse( blob, groupToFeed, onLoad, onProgress, onError, sampling ) {
 
         const self = this;
 
@@ -15347,7 +19359,7 @@ class ASCLoader {
         // reader.readAsText(blob);
         seek();
 
-        function seek () {
+        function seek() {
 
             if ( offset >= blob.size ) { return }
 
@@ -15363,7 +19375,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLine ( line ) {
+    _parseLine( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15468,7 +19480,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLines ( lines ) {
+    _parseLines( lines ) {
 
         const firstLine = lines[ 0 ].split( /\s/g ).filter( Boolean );
         const pointType = firstLine.length;
@@ -15512,7 +19524,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZ ( lines ) {
+    _parseLinesAsXYZ( lines ) {
 
         let words = [];
 
@@ -15534,7 +19546,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZI ( lines ) {
+    _parseLinesAsXYZI( lines ) {
 
         this._pointsHaveIntensity = true;
         let words                 = [];
@@ -15559,7 +19571,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGB ( lines ) {
+    _parseLinesAsXYZRGB( lines ) {
 
         this._pointsHaveColor = true;
         let words             = [];
@@ -15586,7 +19598,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZnXnYnZ ( lines ) {
+    _parseLinesAsXYZnXnYnZ( lines ) {
 
         let words = [];
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -15611,7 +19623,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGB ( lines ) {
+    _parseLinesAsXYZIRGB( lines ) {
 
         this._pointsHaveIntensity = true;
         this._pointsHaveColor     = true;
@@ -15639,7 +19651,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZInXnYnZ ( lines ) {
+    _parseLinesAsXYZInXnYnZ( lines ) {
 
         let words = [];
         for ( let lineIndex = 0, numberOfLines = lines.length ; lineIndex < numberOfLines ; lineIndex++ ) {
@@ -15665,7 +19677,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZRGBnXnYnZ( lines ) {
 
         this._pointsHaveColor   = true;
         this._pointsHaveNormals = true;
@@ -15696,7 +19708,7 @@ class ASCLoader {
      * @param lines
      * @private
      */
-    _parseLinesAsXYZIRGBnXnYnZ ( lines ) {
+    _parseLinesAsXYZIRGBnXnYnZ( lines ) {
 
         this._pointsHaveIntensity = true;
         this._pointsHaveColor     = true;
@@ -15728,7 +19740,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineB ( line ) {
+    _parseLineB( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15752,7 +19764,7 @@ class ASCLoader {
      * @param line
      * @private
      */
-    _parseLineC ( line ) {
+    _parseLineC( line ) {
 
         const values        = line.split( /\s/g ).filter( Boolean );
         const numberOfWords = values.length;
@@ -15775,7 +19787,7 @@ class ASCLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -15805,7 +19817,7 @@ class ASCLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoint ( groupToFeed ) {
+    _createCloudPoint( groupToFeed ) {
 
         const SPLIT_LIMIT        = 1000000;
         // var group = new Group();
@@ -15873,7 +19885,7 @@ class ASCLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length;
         const geometry       = new threeFull.BufferGeometry();
@@ -15959,6 +19971,7 @@ class ASCLoader {
  * } );
  *
  */
+
 //import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
@@ -15999,7 +20012,7 @@ class LASLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor ( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
@@ -16086,7 +20099,7 @@ class LASLoader {
      * @param {callback} onError - A error callback
      * @param {Number} [sampling=100] - A sampling in percent to apply over file
      */
-    load ( url, onLoad, onProgress, onError, sampling ) {
+    load( url, onLoad, onProgress, onError, sampling ) {
 
         //this.logger.time("LASLoader")
 
@@ -16105,7 +20118,7 @@ class LASLoader {
      *
      * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
      */
-    setOffset ( offset ) {
+    setOffset( offset ) {
 
         //TODO: check is correct
 
@@ -16123,7 +20136,7 @@ class LASLoader {
      * @param onProgress
      * @param onError
      */
-    parse ( arraybuffer, onLoad, onProgress, onError ) {
+    parse( arraybuffer, onLoad, onProgress, onError ) {
 
         try {
 
@@ -16160,7 +20173,7 @@ class LASLoader {
 
     // Header
 
-    _parseHeader ( lasVersion ) {
+    _parseHeader( lasVersion ) {
 
         switch ( lasVersion ) {
             case '1.0':
@@ -16180,7 +20193,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_0 () {
+    _parseHeader_1_0() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -16218,7 +20231,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_1 () {
+    _parseHeader_1_1() {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
@@ -16257,7 +20270,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_2 () {
+    _parseHeader_1_2() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16299,7 +20312,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_3 () {
+    _parseHeader_1_3() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16345,7 +20358,7 @@ class LASLoader {
 
     }
 
-    _parseHeader_1_4 () {
+    _parseHeader_1_4() {
 
         return {
             FileSignature:  this._reader.getString( 4 ),
@@ -16398,7 +20411,7 @@ class LASLoader {
 
     // VariableLengthRecord
 
-    _parseVariableLengthRecords ( header ) {
+    _parseVariableLengthRecords( header ) {
 
         const fullVersion            = `${ header.VersionMajor }.${ header.VersionMinor }`;
         const variablesLengthRecords = [];
@@ -16428,7 +20441,7 @@ class LASLoader {
 
     }
 
-    _parseVariableLengthRecordHeader () {
+    _parseVariableLengthRecordHeader() {
 
         return {
             Reserved:                this._reader.getUint16(),
@@ -16439,7 +20452,7 @@ class LASLoader {
         }
 
     }
-    _parseVariableLengthRecordContent ( userId, recordId, recordLength ) {
+    _parseVariableLengthRecordContent( userId, recordId, recordLength ) {
 
         switch ( userId ) {
             case 'LASF_Projection':
@@ -16453,7 +20466,7 @@ class LASLoader {
 
     }
 
-    _parseProjectionRecord ( recordId, recordLength ) {
+    _parseProjectionRecord( recordId, recordLength ) {
 
         switch ( recordId ) {
             case 2111:
@@ -16475,20 +20488,20 @@ class LASLoader {
     }
 
     // Todo
-    _parseOGCMathTransformWKT () {
+    _parseOGCMathTransformWKT() {
 
         return undefined
 
     }
 
     // Todo
-    _parseOGCCoordinateTransformWKT () {
+    _parseOGCCoordinateTransformWKT() {
 
         return undefined
 
     }
 
-    _parseGeoKeyDirectoryTag () {
+    _parseGeoKeyDirectoryTag() {
 
         const geoKey = {
             wKeyDirectoryVersion: this._reader.getUint16(),
@@ -16511,7 +20524,7 @@ class LASLoader {
 
     }
 
-    _parseGeoDoubleParamsTag ( recordLength ) {
+    _parseGeoDoubleParamsTag( recordLength ) {
 
         const numberOfEntries = recordLength / iteeClient.Byte.Height;
         const params          = [];
@@ -16524,13 +20537,13 @@ class LASLoader {
 
     }
 
-    _parseGeoASCIIParamsTag ( recordLength ) {
+    _parseGeoASCIIParamsTag( recordLength ) {
 
         return this._reader.getString( recordLength ).replace( NullCharRegex, '' )
 
     }
 
-    _parseSpecRecord ( recordId ) {
+    _parseSpecRecord( recordId ) {
 
         if ( recordId < 100 ) {
 
@@ -16568,7 +20581,7 @@ class LASLoader {
 
     }
 
-    _parseClassificationLookupRecord () {
+    _parseClassificationLookupRecord() {
 
         const records = [];
 
@@ -16583,7 +20596,7 @@ class LASLoader {
 
     }
 
-    _parseHeaderLookupForFlightLinesRecord () {
+    _parseHeaderLookupForFlightLinesRecord() {
 
         return {
             FileMarkerNumber: this._reader.getUint8(),
@@ -16592,47 +20605,47 @@ class LASLoader {
 
     }
 
-    _parseHistogramRecord () {
+    _parseHistogramRecord() {
 
         return undefined
 
     }
 
-    _parseTextAreaDescriptionRecord () {
-
-        return undefined
-
-    }
-
-    // Todo
-    _parseExtraBytesRecord () {
+    _parseTextAreaDescriptionRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseSupersededRecord () {
+    _parseExtraBytesRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformPacketDesciptor () {
+    _parseSupersededRecord() {
 
         return undefined
 
     }
 
     // Todo
-    _parseWaveformDataPacket () {
+    _parseWaveformPacketDesciptor() {
 
         return undefined
 
     }
 
-    _parseCustomRecord ( recordLength ) {
+    // Todo
+    _parseWaveformDataPacket() {
+
+        return undefined
+
+    }
+
+    _parseCustomRecord( recordLength ) {
 
         const record = new Uint8Array( recordLength );
 
@@ -16646,7 +20659,7 @@ class LASLoader {
 
     // PointDataRecords
 
-    _parsePointDataRecords ( header, onProgress ) {
+    _parsePointDataRecords( header, onProgress ) {
 
         const offsetToPointData = header.OffsetToPointData;
         if ( this._reader.offset !== offsetToPointData ) {
@@ -16676,7 +20689,7 @@ class LASLoader {
 
     }
 
-    _getPointDataRecordFormat ( format ) {
+    _getPointDataRecordFormat( format ) {
 
         switch ( format ) {
             case 0:
@@ -16708,7 +20721,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_0 () {
+    _parsePointDataRecordFormat_0() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16732,7 +20745,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_1 () {
+    _parsePointDataRecordFormat_1() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16757,7 +20770,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_2 () {
+    _parsePointDataRecordFormat_2() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16784,7 +20797,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_3 () {
+    _parsePointDataRecordFormat_3() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16812,7 +20825,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_4 () {
+    _parsePointDataRecordFormat_4() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16844,7 +20857,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_5 () {
+    _parsePointDataRecordFormat_5() {
 
         return {
             X:                 this._reader.getInt32(),
@@ -16879,7 +20892,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_6 () {
+    _parsePointDataRecordFormat_6() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16906,7 +20919,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_7 () {
+    _parsePointDataRecordFormat_7() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16936,7 +20949,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_8 () {
+    _parsePointDataRecordFormat_8() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -16967,7 +20980,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_9 () {
+    _parsePointDataRecordFormat_9() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -17001,7 +21014,7 @@ class LASLoader {
 
     }
 
-    _parsePointDataRecordFormat_10 () {
+    _parsePointDataRecordFormat_10() {
 
         return {
             X:                   this._reader.getInt32(),
@@ -17039,7 +21052,7 @@ class LASLoader {
 
     }
 
-    convert ( lasDatas, onLoad, onProgress, onError ) {
+    convert( lasDatas, onLoad, onProgress, onError ) {
 
         try {
 
@@ -17074,7 +21087,7 @@ class LASLoader {
      *
      * @private
      */
-    _offsetPoints () {
+    _offsetPoints() {
 
         // Compute bounding box in view to get his center for auto offseting the cloud point.
         if ( this._autoOffset ) {
@@ -17104,7 +21117,7 @@ class LASLoader {
      * @param groupToFeed
      * @private
      */
-    _createCloudPoints ( groupToFeed, lasDatas, onProgress ) {
+    _createCloudPoints( groupToFeed, lasDatas, onProgress ) {
 
         const classPointReverseMap = {
             0:  'Created',
@@ -17228,7 +21241,7 @@ class LASLoader {
      * @param group
      * @private
      */
-    _createSubCloudPoint ( group ) {
+    _createSubCloudPoint( group ) {
 
         const numberOfPoints = this._points.length;
         const geometry       = new threeFull.BufferGeometry();
@@ -17290,68 +21303,7 @@ class BitArray {
 
     /* PRIVATE STATIC METHODS */
 
-    // Calculate the intersection of two bits
-    static _intersect ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the union of two bits
-    static _union ( bit1, bit2 ) {
-        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Calculate the difference of two bits
-    static _difference ( bit1, bit2 ) {
-        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
-    }
-
-    // Get the longest or shortest (smallest) length of the two bit arrays
-    static _getLen ( bitArray1, bitArray2, smallest ) {
-        var l1 = bitArray1.getLength();
-        var l2 = bitArray2.getLength();
-
-        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
-    }
-
-    /* PUBLIC STATIC METHODS */
-    static getUnion ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static getIntersection ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static getDifference ( bitArray1, bitArray2 ) {
-        var len    = BitArray._getLen( bitArray1, bitArray2, true );
-        var result = new BitArray( len );
-        for ( var i = 0 ; i < len ; i++ ) {
-            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
-        }
-        return result
-    }
-
-    static shred ( number ) {
-        var bits = new Array();
-        var q    = number;
-        do {
-            bits.push( q % 2 );
-            q = Math.floor( q / 2 );
-        } while ( q > 0 )
-        return new BitArray( bits.length, bits.reverse() )
-    }
-
-    constructor ( size, bits ) {
+    constructor( size, bits ) {
         // Private field - array for our bits
         this.m_bits = new Array();
 
@@ -17375,25 +21327,77 @@ class BitArray {
             }
         }
     }
+    // Calculate the intersection of two bits
+    static _intersect( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the union of two bits
+    static _union( bit1, bit2 ) {
+        return bit1 === BitArray._ON || bit2 === BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Calculate the difference of two bits
+    static _difference( bit1, bit2 ) {
+        return bit1 === BitArray._ON && bit2 !== BitArray._ON ? BitArray._ON : BitArray._OFF
+    }
+    // Get the longest or shortest (smallest) length of the two bit arrays
+    static _getLen( bitArray1, bitArray2, smallest ) {
+        var l1 = bitArray1.getLength();
+        var l2 = bitArray2.getLength();
 
-    getLength () {
+        return l1 > l2 ? smallest ? l2 : l1 : smallest ? l2 : l1
+    }
+    /* PUBLIC STATIC METHODS */
+    static getUnion( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._union( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static getIntersection( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._intersect( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static getDifference( bitArray1, bitArray2 ) {
+        var len    = BitArray._getLen( bitArray1, bitArray2, true );
+        var result = new BitArray( len );
+        for ( var i = 0 ; i < len ; i++ ) {
+            result.setAt( i, BitArray._difference( bitArray1.getAt( i ), bitArray2.getAt( i ) ) );
+        }
+        return result
+    }
+    static shred( number ) {
+        var bits = new Array();
+        var q    = number;
+        do {
+            bits.push( q % 2 );
+            q = Math.floor( q / 2 );
+        } while ( q > 0 )
+        return new BitArray( bits.length, bits.reverse() )
+    }
+    getLength() {
         return this.m_bits.length
     }
 
-    getAt ( index ) {
+    getAt( index ) {
         if ( index < this.m_bits.length ) {
             return this.m_bits[ index ]
         }
         return null
     }
 
-    setAt ( index, value ) {
+    setAt( index, value ) {
         if ( index < this.m_bits.length ) {
             this.m_bits[ index ] = value ? BitArray._ON : BitArray._OFF;
         }
     }
 
-    resize ( newSize ) {
+    resize( newSize ) {
         var tmp = new Array();
         for ( var i = 0 ; i < newSize ; i++ ) {
             if ( i < this.m_bits.length ) {
@@ -17405,7 +21409,7 @@ class BitArray {
         this.m_bits = tmp;
     }
 
-    getCompliment () {
+    getCompliment() {
         var result = new BitArray( this.m_bits.length );
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             result.setAt( i, this.m_bits[ i ] ? BitArray._OFF : BitArray._ON );
@@ -17413,7 +21417,7 @@ class BitArray {
         return result
     }
 
-    toString () {
+    toString() {
         var s = new String();
         for ( var i = 0 ; i < this.m_bits.length ; i++ ) {
             s = s.concat( this.m_bits[ i ] === BitArray._ON ? '1' : '0' );
@@ -17421,7 +21425,7 @@ class BitArray {
         return s
     }
 
-    toNumber () {
+    toNumber() {
         var pow = 0;
         var n   = 0;
         for ( var i = this.m_bits.length - 1 ; i >= 0 ; i-- ) {
@@ -17444,26 +21448,26 @@ BitArray._OFF = 0;
 
 class BitManager {
 
-    static getBit ( bitField, bitPosition ) {
+    static getBit( bitField, bitPosition ) {
         return ( bitField & ( 1 << bitPosition ) ) === 0 ? 0 : 1
     }
 
-    static setBit ( bitField, bitPosition ) {
+    static setBit( bitField, bitPosition ) {
         return bitField | ( 1 << bitPosition )
     }
 
-    static clearBit ( bitField, bitPosition ) {
+    static clearBit( bitField, bitPosition ) {
         const mask = ~( 1 << bitPosition );
         return bitField & mask
     }
 
-    static updateBit ( bitField, bitPosition, bitValue ) {
+    static updateBit( bitField, bitPosition, bitValue ) {
         const bitValueNormalized = bitValue ? 1 : 0;
         const clearMask          = ~( 1 << bitPosition );
         return ( bitField & clearMask ) | ( bitValueNormalized << bitPosition )
     }
 
-    static getBits ( bitField, bitPositions ) {
+    static getBits( bitField, bitPositions ) {
         let bits = 0;
         for ( let bitPosition of bitPositions ) {
             if ( BitManager.getBit( bitField, bitPosition ) ) {
@@ -17478,7 +21482,10 @@ class BitManager {
 exports.ASCLoader = ASCLoader;
 exports.BitArray = BitArray;
 exports.BitManager = BitManager;
+exports.ColorPalette = ColorPalette;
+exports.Colors = Colors;
 exports.DBFLoader = DBFLoader;
+exports.Directions = Directions;
 exports.LASLoader = LASLoader;
 exports.PointClasses = PointClasses;
 exports.SHPLoader = SHPLoader;

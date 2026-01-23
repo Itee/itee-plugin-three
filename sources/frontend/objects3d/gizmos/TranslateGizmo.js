@@ -5,15 +5,15 @@
 
 import { degreesToRadians }   from 'itee-utils'
 import { Vector3 }            from 'three-full'
-import { LozengeHandle }      from '../handles/LozengeHandle'
-import { OctahedricalHandle } from '../handles/OctahedricalHandle'
-import { TranslateHandle }    from '../handles/TranslateHandle'
+import { LozengeHandle }      from '../handles/LozengeHandle.js'
+import { OctahedricalHandle } from '../handles/OctahedricalHandle.js'
+import { TranslateHandle }    from '../handles/TranslateHandle.js'
 //import { Vector3 }            from 'three-full/sources/math/Vector3'
-import { AbstractGizmo }      from './AbstractGizmo'
+import { AbstractGizmo }      from './AbstractGizmo.js'
 
 class TranslateGizmo extends AbstractGizmo {
 
-    constructor () {
+    constructor() {
 
         super()
         this.isTranslateGizmo = true
@@ -64,7 +64,7 @@ class TranslateGizmo extends AbstractGizmo {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }

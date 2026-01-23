@@ -13,7 +13,7 @@ const { Object3D } = require( '../core/Object3D' )
 let _schema = undefined
 let _model  = undefined
 
-function getSchemaFrom ( Mongoose ) {
+function getSchemaFrom( Mongoose ) {
     'use strict'
 
     if ( !_schema ) {
@@ -24,7 +24,7 @@ function getSchemaFrom ( Mongoose ) {
 
 }
 
-function _createSchema ( Mongoose ) {
+function _createSchema( Mongoose ) {
     'use strict'
 
     const Schema   = Mongoose.Schema
@@ -34,25 +34,27 @@ function _createSchema ( Mongoose ) {
     const Vector3  = Types.Vector3
 
     _schema = new Schema( {
-        lensFlares: [ {
-            texture:  ObjectId,
-            size:     Number,
-            distance: Number,
-            x:        Number,
-            y:        Number,
-            z:        Number,
-            scale:    Number,
-            rotation: Number,
-            opacity:  Number,
-            color:    Color,
-            blending: Number
-        } ],
+        lensFlares: [
+            {
+                texture:  ObjectId,
+                size:     Number,
+                distance: Number,
+                x:        Number,
+                y:        Number,
+                z:        Number,
+                scale:    Number,
+                rotation: Number,
+                opacity:  Number,
+                color:    Color,
+                blending: Number
+            }
+        ],
         positionScreen: Vector3
     } )
 
 }
 
-function getModelFrom ( Mongoose ) {
+function getModelFrom( Mongoose ) {
     'use strict'
 
     if ( !_model ) {
@@ -63,7 +65,7 @@ function getModelFrom ( Mongoose ) {
 
 }
 
-function _createModel ( Mongoose ) {
+function _createModel( Mongoose ) {
     'use strict'
 
     const Object3DBaseModel = Object3D.getModelFrom( Mongoose )
@@ -71,7 +73,7 @@ function _createModel ( Mongoose ) {
 
 }
 
-function registerModelTo ( Mongoose ) {
+function registerModelTo( Mongoose ) {
     'use strict'
 
     if ( !_model ) {

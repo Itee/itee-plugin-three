@@ -44,7 +44,7 @@ import {
 
 class CurvesManager extends TDataBaseManager {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -57,7 +57,7 @@ class CurvesManager extends TDataBaseManager {
 
     }
 
-    convert ( data ) {
+    convert( data ) {
 
         if ( !data ) {
             throw new Error( 'CurvesManager: Unable to convert null or undefined data !' )
@@ -137,7 +137,7 @@ class CurvesManager extends TDataBaseManager {
 
     }
 
-    _onJson ( jsonData, onSuccess, onProgress, onError ) {
+    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
         // Normalize to array
         const datas   = ( isObject( jsonData ) ) ? [ jsonData ] : jsonData

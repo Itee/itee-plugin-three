@@ -12,7 +12,7 @@ import {
 
 class HighlightableMaterial extends MeshBasicMaterial {
 
-    constructor ( parameters ) {
+    constructor( parameters ) {
         super( parameters )
         this.isHighlightableMaterial = true
         //        this.type                    = 'HighlightableMaterial'
@@ -26,7 +26,7 @@ class HighlightableMaterial extends MeshBasicMaterial {
 
     }
 
-    highlight ( highlighted ) {
+    highlight( highlighted ) {
 
         if ( highlighted ) {
 

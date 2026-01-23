@@ -10,7 +10,7 @@
  */
 
 import { TAbstractFileConverter } from 'itee-database'
-import { DBFLoader }              from '../../common/loaders/DBFLoader'
+import { DBFLoader }              from '../../common/loaders/DBFLoader.js'
 
 /**
  * This class allow to convert .dbf files into ThreeJs types
@@ -23,7 +23,7 @@ class DbfToThree extends TAbstractFileConverter {
     /**
      * @constructor
      */
-    constructor () {
+    constructor() {
         super( { dumpType: TAbstractFileConverter.DumpType.ArrayBuffer } )
     }
 
@@ -38,7 +38,7 @@ class DbfToThree extends TAbstractFileConverter {
      * @return {Object}
      * @private
      */
-    _convert ( data, parameters, onSuccess, onProgress, onError ) {
+    _convert( data, parameters, onSuccess, onProgress, onError ) {
         super._convert( data, parameters, onSuccess, onProgress, onError )
 
         try {

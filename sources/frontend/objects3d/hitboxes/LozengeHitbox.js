@@ -7,13 +7,13 @@ import {
     BufferGeometry,
     Float32BufferAttribute
 }                         from 'three-full'
-import { AbstractHitbox } from './AbstractHitbox'
+import { AbstractHitbox } from './AbstractHitbox.js'
 //import { BufferGeometry }         from 'three-full/sources/core/BufferGeometry'
 //import { Float32BufferAttribute } from 'three-full/sources/core/BufferAttribute'
 
 class LozengeHitbox extends AbstractHitbox {
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         // Lozenge
         const lozengePositions        = [

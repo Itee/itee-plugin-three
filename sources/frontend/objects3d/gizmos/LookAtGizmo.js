@@ -4,16 +4,16 @@
  */
 import { degreesToRadians } from 'itee-utils'
 import { Vector3 }          from 'three-full'
-import { BoxHandle }        from '../handles/BoxHandle'
-import { ConeHandle }       from '../handles/ConeHandle'
-import { AbstractGizmo }    from './AbstractGizmo'
+import { BoxHandle }        from '../handles/BoxHandle.js'
+import { ConeHandle }       from '../handles/ConeHandle.js'
+import { AbstractGizmo }    from './AbstractGizmo.js'
 
 class LookAtGizmo extends AbstractGizmo {
 
 
     //TYPE ENTITY ENUM COLOMNU
 
-    constructor ( parameters = {} ) {
+    constructor( parameters = {} ) {
 
         const _parameters = {
             ...{
@@ -103,7 +103,7 @@ class LookAtGizmo extends AbstractGizmo {
 
     }
 
-    raycast ( raycaster, intersects ) {
+    raycast( raycaster, intersects ) {
 
         const isIntersected = ( raycaster.intersectObject( this.intersectPlane, true ).length > 0 )
         if ( !isIntersected ) { return }
