@@ -8,7 +8,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { BufferAttribute } from './BufferAttribute.js'
+import { BufferAttribute } from './BufferAttribute.cjs'
 
 let _schema = undefined
 let _model  = undefined
@@ -100,6 +100,7 @@ const BufferGeometry = {
     getModelFrom:    getModelFrom,
     registerModelTo: registerModelTo
 }
+
 export { BufferGeometry }
 
 

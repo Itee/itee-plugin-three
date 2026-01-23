@@ -8,7 +8,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { Face3 } from './Face3.js'
+import { Face3 } from './Face3.cjs'
 
 let _schema = undefined
 let _model  = undefined

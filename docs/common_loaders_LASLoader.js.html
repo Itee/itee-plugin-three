@@ -1,0 +1,1621 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Itee Plugin Three v1.7.0 Source: common/loaders/LASLoader.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Itee Plugin Three v1.7.0</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Controllers_CameraControls.html">Controllers/CameraControls</a></li><li><a href="module-Controllers_CameraPathController.html">Controllers/CameraPathController</a></li><li><a href="module-Controllers_ClippingController.html">Controllers/ClippingController</a></li><li><a href="module-Converters_AscToThree.html">Converters/AscToThree</a></li><li><a href="module-Converters_ColladaToThree.html">Converters/ColladaToThree</a></li><li><a href="module-Converters_DbfToThree.html">Converters/DbfToThree</a></li><li><a href="module-Converters_FbxToThree.html">Converters/FbxToThree</a></li><li><a href="module-Converters_JsonToThree.html">Converters/JsonToThree</a></li><li><a href="module-Converters_LasToThree.html">Converters/LasToThree</a></li><li><a href="module-Converters_MtlToThree.html">Converters/MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree.html">Converters/Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree.html">Converters/ObjToThree</a></li><li><a href="module-Converters_ShpToThree.html">Converters/ShpToThree</a></li><li><a href="module-Converters_StlToThree.html">Converters/StlToThree</a></li><li><a href="module-Converters_TdsToThree.html">Converters/TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB.html">Inserters/ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader.html">Loader/ASCLoader</a></li><li><a href="module-Loader_DBFLoader.html">Loader/DBFLoader</a></li><li><a href="module-Loader_LASLoader.html">Loader/LASLoader</a></li><li><a href="module-Loader_SHPLoader.html">Loader/SHPLoader</a></li><li><a href="module-Managers_CurvesManager.html">Managers/CurvesManager</a></li><li><a href="module-Managers_GeometriesManager.html">Managers/GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager.html">Managers/MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager.html">Managers/ObjectsManager</a></li><li><a href="module-Managers_TexturesManager.html">Managers/TexturesManager</a></li><li><a href="module-MongoDBThreePlugin.html">MongoDBThreePlugin</a></li><li><a href="module-Objects3D_OrbitControlsHelper.html">Objects3D/OrbitControlsHelper</a></li><li><a href="module-Schemas_Animation_AnimationAction.html">Schemas/Animation/AnimationAction</a></li><li><a href="module-Schemas_Animation_AnimationClip.html">Schemas/Animation/AnimationClip</a></li><li><a href="module-Schemas_Animation_AnimationClipCreator.html">Schemas/Animation/AnimationClipCreator</a></li><li><a href="module-Schemas_Animation_AnimationMixer.html">Schemas/Animation/AnimationMixer</a></li><li><a href="module-Schemas_Animation_AnimationObjectGroup.html">Schemas/Animation/AnimationObjectGroup</a></li><li><a href="module-Schemas_Animation_Tracks_BooleanKeyframeTrack.html">Schemas/Animation/Tracks/BooleanKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_ColorKeyframeTrack.html">Schemas/Animation/Tracks/ColorKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_KeyframeTrack.html">Schemas/Animation/Tracks/KeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_NumberKeyframeTrack.html">Schemas/Animation/Tracks/NumberKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_QuaternionKeyframeTrack.html">Schemas/Animation/Tracks/QuaternionKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_StringKeyframeTrack.html">Schemas/Animation/Tracks/StringKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_VectorKeyframeTrack.html">Schemas/Animation/Tracks/VectorKeyframeTrack</a></li><li><a href="module-Schemas_Audio_AudioAnalyser.html">Schemas/Audio/AudioAnalyser</a></li><li><a href="module-Schemas_Audio_AudioContext.html">Schemas/Audio/AudioContext</a></li><li><a href="module-Schemas_Audio_VolumeSlice.html">Schemas/Audio/VolumeSlice</a></li><li><a href="module-Schemas_Camera_CinematiqueCamera.html">Schemas/Camera/CinematiqueCamera</a></li><li><a href="module-Schemas_Camera_StereoCamera.html">Schemas/Camera/StereoCamera</a></li><li><a href="module-Schemas_Core_BufferGeometry.html">Schemas/Core/BufferGeometry</a></li><li><a href="module-Schemas_Core_Clock.html">Schemas/Core/Clock</a></li><li><a href="module-Schemas_Core_DirectGeometry.html">Schemas/Core/DirectGeometry</a></li><li><a href="module-Schemas_Core_EventDispatcher.html">Schemas/Core/EventDispatcher</a></li><li><a href="module-Schemas_Core_Font.html">Schemas/Core/Font</a></li><li><a href="module-Schemas_Core_Geometry.html">Schemas/Core/Geometry</a></li><li><a href="module-Schemas_Core_InstancedBufferAttribute.html">Schemas/Core/InstancedBufferAttribute</a></li><li><a href="module-Schemas_Core_InstancedBufferGeometry.html">Schemas/Core/InstancedBufferGeometry</a></li><li><a href="module-Schemas_Core_InstancedInterleavedBuffer.html">Schemas/Core/InstancedInterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBuffer.html">Schemas/Core/InterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBufferAttribute.html">Schemas/Core/InterleavedBufferAttribute</a></li><li><a href="module-Schemas_Core_Interpolations.html">Schemas/Core/Interpolations</a></li><li><a href="module-Schemas_Core_Layers.html">Schemas/Core/Layers</a></li><li><a href="module-Schemas_Core_Raycaster.html">Schemas/Core/Raycaster</a></li><li><a href="module-Schemas_Core_ShapePath.html">Schemas/Core/ShapePath</a></li><li><a href="module-Schemas_Core_Uniform.html">Schemas/Core/Uniform</a></li><li><a href="module-Schemas_Lights_DirectionalLightShadow.html">Schemas/Lights/DirectionalLightShadow</a></li><li><a href="module-Schemas_Lights_LightShadow.html">Schemas/Lights/LightShadow</a></li><li><a href="module-Schemas_Lights_SpotLightShadow.html">Schemas/Lights/SpotLightShadow</a></li><li><a href="module-Schemas_Maths_ColorConverter.html">Schemas/Maths/ColorConverter</a></li><li><a href="module-Schemas_Maths_Cylindrical.html">Schemas/Maths/Cylindrical</a></li><li><a href="module-Schemas_Maths_Frustum.html">Schemas/Maths/Frustum</a></li><li><a href="module-Schemas_Maths_Interpolant.html">Schemas/Maths/Interpolant</a></li><li><a href="module-Schemas_Maths_Lut.html">Schemas/Maths/Lut</a></li><li><a href="module-Schemas_Maths_Math.html">Schemas/Maths/Math</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Objects_Car.html">Schemas/Objects/Car</a></li><li><a href="module-Schemas_Objects_GPUParticleSystem.html">Schemas/Objects/GPUParticleSystem</a></li><li><a href="module-Schemas_Objects_Group.html">Schemas/Objects/Group</a></li><li><a href="module-Schemas_Objects_Gyroscope.html">Schemas/Objects/Gyroscope</a></li><li><a href="module-Schemas_Objects_MD2Character.html">Schemas/Objects/MD2Character</a></li><li><a href="module-Schemas_Objects_MD2CharacterComplex.html">Schemas/Objects/MD2CharacterComplex</a></li><li><a href="module-Schemas_Objects_MarchingCubes.html">Schemas/Objects/MarchingCubes</a></li><li><a href="module-Schemas_Objects_MorphAnimMesh.html">Schemas/Objects/MorphAnimMesh</a></li><li><a href="module-Schemas_Objects_MorphBlendMesh.html">Schemas/Objects/MorphBlendMesh</a></li><li><a href="module-Schemas_Objects_Ocean.html">Schemas/Objects/Ocean</a></li><li><a href="module-Schemas_Objects_Reflector.html">Schemas/Objects/Reflector</a></li><li><a href="module-Schemas_Objects_ReflectorRTT.html">Schemas/Objects/ReflectorRTT</a></li><li><a href="module-Schemas_Objects_Refractor.html">Schemas/Objects/Refractor</a></li><li><a href="module-Schemas_Objects_RollerCoaster.html">Schemas/Objects/RollerCoaster</a></li><li><a href="module-Schemas_Objects_ShadowMesh.html">Schemas/Objects/ShadowMesh</a></li><li><a href="module-Schemas_Objects_Sky.html">Schemas/Objects/Sky</a></li><li><a href="module-Schemas_Objects_UCSCharacter.html">Schemas/Objects/UCSCharacter</a></li><li><a href="module-Schemas_Objects_Water.html">Schemas/Objects/Water</a></li><li><a href="module-Schemas_Objects_Water2.html">Schemas/Objects/Water2</a></li><li><a href="module-Schemas_Scenes_FogExp2.html">Schemas/Scenes/FogExp2</a></li><li><a href="module-Types_Color.html">Types/Color</a></li><li><a href="module-Types_Euler.html">Types/Euler</a></li><li><a href="module-Types_Matrix3.html">Types/Matrix3</a></li><li><a href="module-Types_Matrix4.html">Types/Matrix4</a></li><li><a href="module-Types_Quaternion.html">Types/Quaternion</a></li><li><a href="module-Types_Vector2.html">Types/Vector2</a></li><li><a href="module-Types_Vector3.html">Types/Vector3</a></li><li><a href="module-Types_Vector4.html">Types/Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="AbstractMongooseModel.html">AbstractMongooseModel</a></li><li><a href="BitManager.html">BitManager</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html">Controllers/CameraControls~CameraControls</a></li><li><a href="module-Controllers_CameraPathController-CameraPathController.html">Controllers/CameraPathController~CameraPathController</a></li><li><a href="module-Converters_AscToThree-AscToThree.html">Converters/AscToThree~AscToThree</a></li><li><a href="module-Converters_ColladaToThree-ColladaToThree.html">Converters/ColladaToThree~ColladaToThree</a></li><li><a href="module-Converters_DbfToThree-DbfToThree.html">Converters/DbfToThree~DbfToThree</a></li><li><a href="module-Converters_FbxToThree-FbxToThree.html">Converters/FbxToThree~FbxToThree</a></li><li><a href="module-Converters_JsonToThree-JsonToThree.html">Converters/JsonToThree~JsonToThree</a></li><li><a href="module-Converters_LasToThree-LasToThree.html">Converters/LasToThree~LasToThree</a></li><li><a href="module-Converters_MtlToThree-MtlToThree.html">Converters/MtlToThree~MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree-Obj2ToThree.html">Converters/Obj2ToThree~Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree-ObjToThree.html">Converters/ObjToThree~ObjToThree</a></li><li><a href="module-Converters_ShpToThree-ShpToThree.html">Converters/ShpToThree~ShpToThree</a></li><li><a href="module-Converters_StlToThree-StlToThree.html">Converters/StlToThree~StlToThree</a></li><li><a href="module-Converters_TdsToThree-TdsToThree.html">Converters/TdsToThree~TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB-ThreeToMongoDB.html">Inserters/ThreeToMongoDB~ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader-ASCLoader.html">Loader/ASCLoader~ASCLoader</a></li><li><a href="module-Loader_DBFLoader-DBFLoader.html">Loader/DBFLoader~DBFLoader</a></li><li><a href="module-Loader_LASLoader-LASLoader.html">Loader/LASLoader~LASLoader</a></li><li><a href="module-Loader_SHPLoader-SHPLoader.html">Loader/SHPLoader~SHPLoader</a></li><li><a href="module-Managers_GeometriesManager-GeometriesManager.html">Managers/GeometriesManager~GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager-MaterialsManager.html">Managers/MaterialsManager~MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager-ObjectsManager.html">Managers/ObjectsManager~ObjectsManager</a></li><li><a href="module-Managers_TexturesManager-TexturesManager.html">Managers/TexturesManager~TexturesManager</a></li><li><a href="module-Objects3D_OrbitControlsHelper-OrbitControlsHelper.html">Objects3D/OrbitControlsHelper~OrbitControlsHelper</a></li><li><a href="module-Types_Color-Color.html">Types/Color~Color</a></li><li><a href="module-Types_Euler-Euler.html">Types/Euler~Euler</a></li><li><a href="module-Types_Matrix3-Matrix3.html">Types/Matrix3~Matrix3</a></li><li><a href="module-Types_Matrix4-Matrix4.html">Types/Matrix4~Matrix4</a></li><li><a href="module-Types_Quaternion-Quaternion.html">Types/Quaternion~Quaternion</a></li><li><a href="module-Types_Vector2-Vector2.html">Types/Vector2~Vector2</a></li><li><a href="module-Types_Vector3-Vector3.html">Types/Vector3~Vector3</a></li><li><a href="module-Types_Vector4-Vector4.html">Types/Vector4~Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Controllers_CameraControls-CameraControls.html#event:change">Controllers/CameraControls~CameraControls#event:change</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:move">Controllers/CameraControls~CameraControls#event:move</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:rotate">Controllers/CameraControls~CameraControls#event:rotate</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:scale">Controllers/CameraControls~CameraControls#event:scale</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="Enum.html">Enum</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#Left_Down_Back">Left_Down_Back</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-_Itee.Client_.html">Itee.Client</a></li><li><a href="external-_Itee.Database_.html">Itee.Database</a></li><li><a href="external-_Itee.MongoDB_.html">Itee.MongoDB</a></li><li><a href="external-_Itee.Utils_.html">Itee.Utils</a></li><li><a href="external-_Itee.Validators_.html">Itee.Validators</a></li><li><a href="external-_Three%2520Full_.html">Three Full</a></li><li><a href="external-_mongodb_js-bson_.html">mongodb/js-bson</a></li><li><a href="external-Mongoose.html">Mongoose</a></li><li><a href="external-THREE.html">THREE</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: common/loaders/LASLoader.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * @module Loader/LASLoader
+ * @desc A loader for ASC cloud point files.
+ *
+ * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/three-full three-full}
+ *
+ * @author [Tristan Valcke]{@link https://github.com/Itee}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ * @example
+ *
+ * import { LASLoader } from 'itee-plugin-three'
+ *
+ * const loader = new LASLoader();
+ *
+ * // If the ASC file need to be offseted, it can be set before loading file.
+ * loader.setOffset( {
+ *      x: 1.0,
+ *      y: 52.0,
+ *      z: -5.0
+ * } );
+ *
+ * // Then load the file and get the threejs Point Geometry
+ * loader.load('/path/to/file.asc', function (geometry) {
+ *
+ *      scene.add( new Mesh( geometry ) );
+ *
+ * } );
+ *
+ */
+
+/* eslint-env browser */
+
+import {
+    Byte,
+    TBinaryReader
+}                        from 'itee-client'
+import { DefaultLogger } from 'itee-core'
+import { toEnum }        from 'itee-utils'
+import { isDefined }     from 'itee-validators'
+import {
+    Box3,
+    BufferAttribute,
+    BufferGeometry,
+    DefaultLoadingManager,
+    FileLoader,
+    Group,
+    Points,
+    PointsMaterial
+}                        from 'three-full'
+//import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
+//import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
+//import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
+//import { Box3 }                  from 'three-full/sources/math/Box3'
+//import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'
+//import { PointsMaterial }        from 'three-full/sources/materials/PointsMaterial'
+//import { Group }                 from 'three-full/sources/objects/Group'
+//import { Points }                from 'three-full/sources/objects/Points'
+
+/////////////
+
+const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ) // eslint-disable-line no-control-regex
+
+const PointClasses = /*#__PURE__*/toEnum( {
+    Created:          0,
+    Unclassified:     1,
+    Ground:           2,
+    LowVegetation:    3,
+    MediumVegetation: 4,
+    HighVegetation:   5,
+    Building:         6,
+    LowPoint:         7,
+    ModelKeyPoint:    8,
+    Water:            9,
+    OverlapPoints:    12
+} )
+
+/**
+ * The LASLoader class definition.
+ * It allow to load and parse an .asc file
+ *
+ * @class
+ */
+class LASLoader {
+
+    /**
+     * @constructor
+     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
+     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
+     */
+    constructor( manager = DefaultLoadingManager, logger = DefaultLogger ) {
+
+        this.manager = manager
+        this.logger  = logger
+
+        this._reader         = new TBinaryReader()
+        this._fullVersion    = ''
+        this._boundingBox    = new Box3()
+        this._points         = []
+        this._numberOfPoints = 0
+        this._coloredPoints  = false
+        this._autoOffset     = false // Only for tiny files !!!!!!!
+        this._offset         = {
+            x: 0,
+            y: 0,
+            z: 0
+        }
+
+        // Converter
+        this.colorForPointClass = {
+            Created: {
+                r: 255,
+                g: 255,
+                b: 255
+            },
+            Unclassified: {
+                r: 60,
+                g: 60,
+                b: 60
+            },
+            Ground: {
+                r: 125,
+                g: 95,
+                b: 5
+            },
+            LowVegetation: {
+                r: 153,
+                g: 212,
+                b: 36
+            },
+            MediumVegetation: {
+                r: 52,
+                g: 148,
+                b: 25
+            },
+            HighVegetation: {
+                r: 27,
+                g: 77,
+                b: 13
+            },
+            Building: {
+                r: 153,
+                g: 138,
+                b: 95
+            },
+            LowPoint: {
+                r: 200,
+                g: 200,
+                b: 200
+            },
+            ModelKeyPoint: {
+                r: 237,
+                g: 31,
+                b: 31
+            },
+            Water: {
+                r: 31,
+                g: 186,
+                b: 237
+            },
+            OverlapPoints: {
+                r: 0,
+                g: 0,
+                b: 0
+            }
+        }
+    }
+
+    /**
+     * Will load the file at the given URL then parse it. It will return a Three.Group as onLoad argument.
+     *
+     * @param {DOMString|URL} url - Path to the file to load
+     * @param {callback} onLoad - A success callback
+     * @param {callback} onProgress - A progress callback
+     * @param {callback} onError - A error callback
+     * @param {Number} [sampling=100] - A sampling in percent to apply over file
+     */
+    load( url, onLoad, onProgress, onError, sampling ) {
+
+        //this.logger.time("LASLoader")
+
+        const loader = new FileLoader( this.manager )
+        loader.setResponseType( 'arraybuffer' )
+        loader.load( url, ( arraybuffer ) => {
+
+            this.parse( arraybuffer, onLoad, onProgress, onError, sampling )
+
+        }, onProgress, onError )
+
+    }
+
+    /**
+     * An alternative setter to offset property
+     *
+     * @param {Three.Vector3|Object} offset - An global position offset to apply on the point cloud.
+     */
+    setOffset( offset ) {
+
+        //TODO: check is correct
+
+        this._offset     = offset
+        this._autoOffset = false
+
+        //TODO: that allow chaining.
+
+    }
+
+    /**
+     *
+     * @param arraybuffer
+     * @param onLoad
+     * @param onProgress
+     * @param onError
+     */
+    parse( arraybuffer, onLoad, onProgress, onError ) {
+
+        try {
+
+            this._reader.buffer = arraybuffer
+
+            const fileSignature = this._reader.getString( 4, false )
+            if ( fileSignature !== 'LASF' ) { throw new Error( 'Invalid las file signature. Abort parsing !' ) }
+
+            // Extract version then reset reader cursor position to start
+            this._reader.skipOffsetOf( 24 )
+            const majorVersion = this._reader.getUint8()
+            const minorVersion = this._reader.getUint8()
+            this._reader.skipOffsetTo( 0 )
+
+            const lasVersion = `${ majorVersion }.${ minorVersion }`
+
+            const header                = this._parseHeader( lasVersion )
+            const variableLengthRecords = this._parseVariableLengthRecords( header )
+            const pointDataRecords      = this._parsePointDataRecords( header, onProgress )
+
+            this.convert( {
+                Header:                header,
+                VariableLengthRecords: variableLengthRecords,
+                PointDataRecords:      pointDataRecords
+            }, onLoad, onProgress, onError )
+
+        } catch ( error ) {
+
+            onError( error )
+
+        }
+
+    }
+
+    // Header
+
+    _parseHeader( lasVersion ) {
+
+        switch ( lasVersion ) {
+            case '1.0':
+                return this._parseHeader_1_0()
+            case '1.1':
+                return this._parseHeader_1_1()
+            case '1.2':
+                return this._parseHeader_1_2()
+            case '1.3':
+                return this._parseHeader_1_3()
+            case '1.4':
+                return this._parseHeader_1_4()
+
+            default:
+                throw new Error( `Insupported LAS file version: ${ lasVersion }. Abort parsing !` )
+        }
+
+    }
+
+    _parseHeader_1_0() {
+
+        return {
+            FileSignature:                 this._reader.getString( 4 ),
+            Reserved:                      this._reader.skipOffsetOf( Byte.Four ),
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            GeneratingSoftware:            this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            FlightDateJulian:              this._reader.getUint16(),
+            Year:                          this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToPointData:             this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+
+    }
+
+    _parseHeader_1_1() {
+
+        return {
+            FileSignature:                 this._reader.getString( 4 ),
+            FileSourceId:                  this._reader.getUint16(),
+            Reserved:                      this._reader.skipOffsetOf( Byte.Two ) &amp;&amp; null,
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            GeneratingSoftware:            this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            FileCreationDayOfYear:         this._reader.getUint16(),
+            FileCreationYear:              this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToPointData:             this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+
+    }
+
+    _parseHeader_1_2() {
+
+        return {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
+                GPSTimeType: this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
+                Reserved:    this._reader.skipBitOffsetOf( 15 )
+            },
+            GUID_1:                        this._reader.getUint32(),
+            GUID_2:                        this._reader.getUint16(),
+            GUID_3:                        this._reader.getUint16(),
+            GUID_4:                        this._reader.getUint8Array( 8 ),
+            VersionMajor:                  this._reader.getUint8(),
+            VersionMinor:                  this._reader.getUint8(),
+            SystemIdentifier:              this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            GeneratingSoftware:            this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            FileCreationDayOfYear:         this._reader.getUint16(),
+            FileCreationYear:              this._reader.getUint16(),
+            HeaderSize:                    this._reader.getUint16(),
+            OffsetToPointData:             this._reader.getUint32(),
+            NumberOfVariableLengthRecords: this._reader.getUint32(),
+            PointDataFormatID:             this._reader.getUint8(),
+            PointDataRecordLength:         this._reader.getUint16(),
+            NumberOfPointRecords:          this._reader.getUint32(),
+            NumberOfPointsByReturn:        this._reader.getUint32Array( 5 ),
+            XScaleFactor:                  this._reader.getFloat64(),
+            YScaleFactor:                  this._reader.getFloat64(),
+            ZScaleFactor:                  this._reader.getFloat64(),
+            XOffset:                       this._reader.getFloat64(),
+            YOffset:                       this._reader.getFloat64(),
+            ZOffset:                       this._reader.getFloat64(),
+            MaxX:                          this._reader.getFloat64(),
+            MinX:                          this._reader.getFloat64(),
+            MaxY:                          this._reader.getFloat64(),
+            MinY:                          this._reader.getFloat64(),
+            MaxZ:                          this._reader.getFloat64(),
+            MinZ:                          this._reader.getFloat64()
+        }
+
+    }
+
+    _parseHeader_1_3() {
+
+        return {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
+                GPSTimeType:                                 this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
+                WaveformDataPacketsInternal:                 this._reader.getBit16(),
+                WaveformDataPacketsExternal:                 this._reader.getBit16(),
+                ReturnNumbersHaveBeenSyntheticallyGenerated: this._reader.getBit16(),
+                Reserved:                                    this._reader.skipBitOffsetOf( 12 )
+            },
+            GUID_1:                          this._reader.getUint32(),
+            GUID_2:                          this._reader.getUint16(),
+            GUID_3:                          this._reader.getUint16(),
+            GUID_4:                          this._reader.getUint8Array( 8 ),
+            VersionMajor:                    this._reader.getUint8(),
+            VersionMinor:                    this._reader.getUint8(),
+            SystemIdentifier:                this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            GeneratingSoftware:              this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            FileCreationDayOfYear:           this._reader.getUint16(),
+            FileCreationYear:                this._reader.getUint16(),
+            HeaderSize:                      this._reader.getUint16(),
+            OffsetToPointData:               this._reader.getUint32(),
+            NumberOfVariableLengthRecords:   this._reader.getUint32(),
+            PointDataFormatID:               this._reader.getUint8(),
+            PointDataRecordLength:           this._reader.getUint16(),
+            NumberOfPointRecords:            this._reader.getUint32(),
+            NumberOfPointsByReturn:          this._reader.getUint32Array( 5 ),
+            XScaleFactor:                    this._reader.getFloat64(),
+            YScaleFactor:                    this._reader.getFloat64(),
+            ZScaleFactor:                    this._reader.getFloat64(),
+            XOffset:                         this._reader.getFloat64(),
+            YOffset:                         this._reader.getFloat64(),
+            ZOffset:                         this._reader.getFloat64(),
+            MaxX:                            this._reader.getFloat64(),
+            MinX:                            this._reader.getFloat64(),
+            MaxY:                            this._reader.getFloat64(),
+            MinY:                            this._reader.getFloat64(),
+            MaxZ:                            this._reader.getFloat64(),
+            MinZ:                            this._reader.getFloat64(),
+            StartOfWaveformDataPacketRecord: this._reader.getUint64()
+        }
+
+    }
+
+    _parseHeader_1_4() {
+
+        return {
+            FileSignature:  this._reader.getString( 4 ),
+            FileSourceId:   this._reader.getUint16(),
+            GlobalEncoding: {
+                GPSTimeType:                                 this._reader.getBit16() ? 'AdjustedStandardGPSTime' : 'GPSWeekTime',
+                WaveformDataPacketsInternal:                 this._reader.getBit16(),
+                WaveformDataPacketsExternal:                 this._reader.getBit16(),
+                ReturnNumbersHaveBeenSyntheticallyGenerated: this._reader.getBit16(),
+                WKT:                                         this._reader.getBit16() ? 'WKT' : 'GeoTIFF',
+                Reserved:                                    this._reader.skipBitOffsetOf( 11 )
+            },
+            GUID_1:                                   this._reader.getUint32(),
+            GUID_2:                                   this._reader.getUint16(),
+            GUID_3:                                   this._reader.getUint16(),
+            GUID_4:                                   this._reader.getUint8Array( 8 ),
+            VersionMajor:                             this._reader.getUint8(),
+            VersionMinor:                             this._reader.getUint8(),
+            SystemIdentifier:                         this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            GeneratingSoftware:                       this._reader.getString( 32 ).replace( NullCharRegex, '' ),
+            FileCreationDayOfYear:                    this._reader.getUint16(),
+            FileCreationYear:                         this._reader.getUint16(),
+            HeaderSize:                               this._reader.getUint16(),
+            OffsetToPointData:                        this._reader.getUint32(),
+            NumberOfVariableLengthRecords:            this._reader.getUint32(),
+            PointDataRecordFormat:                    this._reader.getUint8(),
+            PointDataRecordLength:                    this._reader.getUint16(),
+            LegacyNumberOfPointRecords:               this._reader.getUint32(),
+            LegacyNumberOfPointsByReturn:             this._reader.getUint32Array( 5 ),
+            XScaleFactor:                             this._reader.getFloat64(),
+            YScaleFactor:                             this._reader.getFloat64(),
+            ZScaleFactor:                             this._reader.getFloat64(),
+            XOffset:                                  this._reader.getFloat64(),
+            YOffset:                                  this._reader.getFloat64(),
+            ZOffset:                                  this._reader.getFloat64(),
+            MaxX:                                     this._reader.getFloat64(),
+            MinX:                                     this._reader.getFloat64(),
+            MaxY:                                     this._reader.getFloat64(),
+            MinY:                                     this._reader.getFloat64(),
+            MaxZ:                                     this._reader.getFloat64(),
+            MinZ:                                     this._reader.getFloat64(),
+            StartOfWaveformDataPacketRecord:          this._reader.getUint64(),
+            StartOfFirstExtendedVariableLengthRecord: this._reader.getUint64(),
+            NumberOfExtendedVariableLengthRecords:    this._reader.getUint32(),
+            NumberOfPointRecords:                     this._reader.getUint64(),
+            NumberOfPointsByReturn:                   this._reader.getUint64Array( 15 )
+        }
+
+    }
+
+    // VariableLengthRecord
+
+    _parseVariableLengthRecords( header ) {
+
+        const fullVersion            = `${ header.VersionMajor }.${ header.VersionMinor }`
+        const variablesLengthRecords = []
+
+        for ( let i = 0 ; i &lt; header.NumberOfVariableLengthRecords ; i++ ) {
+
+            const header = this._parseVariableLengthRecordHeader()
+
+            //!\ Legacy => RecordSignature = Reserved since las v1.1
+            if ( fullVersion === '1.0' &amp;&amp; header.Reserved !== 0xAABB ) {
+                throw new Error( 'Invalid variable length record header signature... Abort parsing !' )
+            }
+
+            const userId       = header.UserID
+            const recordId     = header.RecordID
+            const recordLength = header.RecordLengthAfterHeader
+            const content      = this._parseVariableLengthRecordContent( userId, recordId, recordLength )
+
+            variablesLengthRecords.push( {
+                Header:  header,
+                Content: content
+            } )
+
+        }
+
+        return variablesLengthRecords
+
+    }
+
+    _parseVariableLengthRecordHeader() {
+
+        return {
+            Reserved:                this._reader.getUint16(),
+            UserID:                  this._reader.getString( 16 ).replace( NullCharRegex, '' ),
+            RecordID:                this._reader.getUint16(),
+            RecordLengthAfterHeader: this._reader.getUint16(),
+            Description:             this._reader.getString( 32 ).replace( NullCharRegex, '' )
+        }
+
+    }
+    _parseVariableLengthRecordContent( userId, recordId, recordLength ) {
+
+        switch ( userId ) {
+            case 'LASF_Projection':
+                return this._parseProjectionRecord( recordId, recordLength )
+            case 'LASF_Spec':
+                return this._parseSpecRecord()
+
+            default:
+                return this._parseCustomRecord( recordLength )
+        }
+
+    }
+
+    _parseProjectionRecord( recordId, recordLength ) {
+
+        switch ( recordId ) {
+            case 2111:
+                return this._parseOGCMathTransformWKT()
+            case 2112:
+                return this._parseOGCCoordinateTransformWKT()
+            case 34735:
+                return this._parseGeoKeyDirectoryTag()
+            case 34736:
+                return this._parseGeoDoubleParamsTag( recordLength )
+            case 34737:
+                return this._parseGeoASCIIParamsTag( recordLength )
+
+            default:
+                console.error( 'Unable to determine LASF_Projection underlying type ! Skip current record.' )
+                this._reader.skipOffsetOf( recordLength )
+        }
+
+    }
+
+    // Todo
+    _parseOGCMathTransformWKT() {
+
+        return undefined
+
+    }
+
+    // Todo
+    _parseOGCCoordinateTransformWKT() {
+
+        return undefined
+
+    }
+
+    _parseGeoKeyDirectoryTag() {
+
+        const geoKey = {
+            wKeyDirectoryVersion: this._reader.getUint16(),
+            wKeyRevision:         this._reader.getUint16(),
+            wMinorRevision:       this._reader.getUint16(),
+            wNumberOfKeys:        this._reader.getUint16(),
+            sKeyEntry:            []
+        }
+
+        for ( let j = 0 ; j &lt; geoKey.wNumberOfKeys ; j++ ) {
+            geoKey.sKeyEntry.push( {
+                wKeyID:           this._reader.getUint16(),
+                wTIFFTagLocation: this._reader.getUint16(),
+                wCount:           this._reader.getUint16(),
+                wValue_Offset:    this._reader.getUint16()
+            } )
+        }
+
+        return geoKey
+
+    }
+
+    _parseGeoDoubleParamsTag( recordLength ) {
+
+        const numberOfEntries = recordLength / Byte.Height
+        const params          = []
+
+        for ( let i = 0 ; i &lt; numberOfEntries ; i++ ) {
+            params[ i ] = this._reader.getFloat64()
+        }
+
+        return params
+
+    }
+
+    _parseGeoASCIIParamsTag( recordLength ) {
+
+        return this._reader.getString( recordLength ).replace( NullCharRegex, '' )
+
+    }
+
+    _parseSpecRecord( recordId ) {
+
+        if ( recordId &lt; 100 ) {
+
+            switch ( recordId ) {
+                case 0:
+                    return this._parseClassificationLookupRecord()
+                case 1:
+                    return this._parseHeaderLookupForFlightLinesRecord()
+                case 2:
+                    return this._parseHistogramRecord()
+                case 3:
+                    return this._parseTextAreaDescriptionRecord()
+                case 4:
+                    return this._parseExtraBytesRecord()
+                case 7:
+                    return this._parseSupersededRecord()
+
+                default:
+                    throw new RangeError( `Invalid spec record id: ${ recordId }` )
+            }
+
+        } else if ( recordId >= 100 &amp;&amp; recordId &lt; 355 ) {
+
+            return this._parseWaveformPacketDesciptor()
+
+        } else if ( recordId === 65535 ) {
+
+            return this._parseWaveformDataPacket()
+
+        } else {
+
+            throw new RangeError( `Invalid spec record id: ${ recordId }` )
+
+        }
+
+    }
+
+    _parseClassificationLookupRecord() {
+
+        const records = []
+
+        for ( let i = 0 ; i &lt; 256 ; i++ ) {
+            records.push( {
+                ClassNumber: this._reader.getUint8(),
+                Description: this._reader.getString( 15 ).replace( NullCharRegex, '' )
+            } )
+        }
+
+        return records
+
+    }
+
+    _parseHeaderLookupForFlightLinesRecord() {
+
+        return {
+            FileMarkerNumber: this._reader.getUint8(),
+            Filename:         this._reader.getString( 256 ).replace( NullCharRegex, '' )
+        }
+
+    }
+
+    _parseHistogramRecord() {
+
+        return undefined
+
+    }
+
+    _parseTextAreaDescriptionRecord() {
+
+        return undefined
+
+    }
+
+    // Todo
+    _parseExtraBytesRecord() {
+
+        return undefined
+
+    }
+
+    // Todo
+    _parseSupersededRecord() {
+
+        return undefined
+
+    }
+
+    // Todo
+    _parseWaveformPacketDesciptor() {
+
+        return undefined
+
+    }
+
+    // Todo
+    _parseWaveformDataPacket() {
+
+        return undefined
+
+    }
+
+    _parseCustomRecord( recordLength ) {
+
+        const record = new Uint8Array( recordLength )
+
+        for ( let i = 0 ; i &lt; recordLength ; i++ ) {
+            record[ i ] = this._reader.getUint8()
+        }
+
+        return record
+
+    }
+
+    // PointDataRecords
+
+    _parsePointDataRecords( header, onProgress ) {
+
+        const offsetToPointData = header.OffsetToPointData
+        if ( this._reader.offset !== offsetToPointData ) {
+            console.error( 'The current reader offset does not match the header offset to point data ! Defaulting to header value.' )
+            this._reader.skipOffsetTo( offsetToPointData )
+        }
+
+        const pointDataRecordFormat              = ( header.VersionMinor &lt; 4 ) ? header.PointDataFormatID : header.PointDataRecordFormat
+        const parsePointDataRecordFormatFunction = this._getPointDataRecordFormat( pointDataRecordFormat )
+
+        const numberOfPointRecords = ( header.VersionMinor &lt; 4 ) ? header.NumberOfPointRecords : header.LegacyNumberOfPointRecords
+        const points               = new Array( numberOfPointRecords )
+
+        for ( let i = 0 ; i &lt; numberOfPointRecords ; i++ ) {
+            points[ i ] = parsePointDataRecordFormatFunction()
+
+            if ( i % 100000 === 0 ) {
+                onProgress( new ProgressEvent( 'ParsePointDataRecords', {
+                    lengthComputable: true,
+                    loaded:           i,
+                    total:            numberOfPointRecords
+                } ) )
+            }
+        }
+
+        return points
+
+    }
+
+    _getPointDataRecordFormat( format ) {
+
+        switch ( format ) {
+            case 0:
+                return this._parsePointDataRecordFormat_0.bind( this )
+            case 1:
+                return this._parsePointDataRecordFormat_1.bind( this )
+            case 2:
+                return this._parsePointDataRecordFormat_2.bind( this )
+            case 3:
+                return this._parsePointDataRecordFormat_3.bind( this )
+            case 4:
+                return this._parsePointDataRecordFormat_4.bind( this )
+            case 5:
+                return this._parsePointDataRecordFormat_5.bind( this )
+            case 6:
+                return this._parsePointDataRecordFormat_6.bind( this )
+            case 7:
+                return this._parsePointDataRecordFormat_7.bind( this )
+            case 8:
+                return this._parsePointDataRecordFormat_8.bind( this )
+            case 9:
+                return this._parsePointDataRecordFormat_9.bind( this )
+            case 10:
+                return this._parsePointDataRecordFormat_10.bind( this )
+
+            default:
+                throw new RangeError( `Invalid PointDataRecordFormat parameter: ${ format }` )
+        }
+
+    }
+
+    _parsePointDataRecordFormat_0() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_1() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_2() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_3() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank: this._reader.getInt8(),
+            UserData:      this._reader.getUint8(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_4() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank:               this._reader.getInt8(),
+            UserData:                    this._reader.getUint8(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_5() {
+
+        return {
+            X:                 this._reader.getInt32(),
+            Y:                 this._reader.getInt32(),
+            Z:                 this._reader.getInt32(),
+            Intensity:         this._reader.getUint16(),
+            ReturnNumber:      this._reader.getBits8( 3 ),
+            NumberOfReturns:   this._reader.getBits8( 3 ),
+            ScanDirectionFlag: this._reader.getBit8(),
+            EdgeOfFlightLine:  this._reader.getBit8(),
+            Classification:    {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            ScanAngleRank:               this._reader.getInt8(),
+            UserData:                    this._reader.getUint8(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            R:                           this._reader.getUint16(),
+            G:                           this._reader.getUint16(),
+            B:                           this._reader.getUint16(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_6() {
+
+        return {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_7() {
+
+        return {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_8() {
+
+        return {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            UserData:      this._reader.getUint8(),
+            ScanAngle:     this._reader.getInt16(),
+            PointSourceId: this._reader.getUint16(),
+            GPSTime:       this._reader.getFloat64(),
+            R:             this._reader.getUint16(),
+            G:             this._reader.getUint16(),
+            B:             this._reader.getUint16(),
+            NIR:           this._reader.getUint16()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_9() {
+
+        return {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            UserData:                    this._reader.getUint8(),
+            ScanAngle:                   this._reader.getInt16(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    _parsePointDataRecordFormat_10() {
+
+        return {
+            X:                   this._reader.getInt32(),
+            Y:                   this._reader.getInt32(),
+            Z:                   this._reader.getInt32(),
+            Intensity:           this._reader.getUint16(),
+            ReturnNumber:        this._reader.getBits16( 4 ),
+            NumberOfReturns:     this._reader.getBits16( 4 ),
+            ClassificationFlags: this._reader.getBits16( 4 ),
+            ScannerChannel:      this._reader.getBits16( 2 ),
+            ScanDirectionFlag:   this._reader.getBit16(),
+            EdgeOfFlightLine:    this._reader.getBit16(),
+            Classification:      {
+                Class:     this._reader.getBits8( 5 ),
+                Synthetic: this._reader.getBit8(),
+                KeyPoint:  this._reader.getBit8(),
+                Withheld:  this._reader.getBit8()
+            },
+            UserData:                    this._reader.getUint8(),
+            ScanAngle:                   this._reader.getInt16(),
+            PointSourceId:               this._reader.getUint16(),
+            GPSTime:                     this._reader.getFloat64(),
+            R:                           this._reader.getUint16(),
+            G:                           this._reader.getUint16(),
+            B:                           this._reader.getUint16(),
+            NIR:                         this._reader.getUint16(),
+            WavePacketDescriptorIndex:   this._reader.getUint8(),
+            ByteOffsetToWaveformData:    this._reader.getUint64(),
+            WaveformPacketSizeInBytes:   this._reader.getUint32(),
+            ReturnPointWaveformLocation: this._reader.getFloat32(),
+            Xt:                          this._reader.getFloat32(),
+            Yt:                          this._reader.getFloat32(),
+            Zt:                          this._reader.getFloat32()
+        }
+
+    }
+
+    convert( lasDatas, onLoad, onProgress, onError ) {
+
+        try {
+
+            const pointsGroup            = new Group()
+            pointsGroup.name             = 'Cloud'
+            pointsGroup.matrixAutoUpdate = false
+            pointsGroup.position.x       = lasDatas.Header.XOffset
+            pointsGroup.position.y       = lasDatas.Header.YOffset
+            pointsGroup.position.z       = lasDatas.Header.ZOffset
+            //            pointsGroup.scale.x          = lasDatas.Header.XScaleFactor
+            //            pointsGroup.scale.y          = lasDatas.Header.YScaleFactor
+            //            pointsGroup.scale.z          = lasDatas.Header.ZScaleFactor
+            //        pointsGroup.rotation.x -= PiOnTwo
+            pointsGroup.userData = {
+                header:  lasDatas.Header,
+                records: lasDatas.VariableLengthRecords
+            }
+
+            this._createCloudPoints( pointsGroup, lasDatas, onProgress )
+
+            onLoad( pointsGroup )
+
+        } catch ( error ) {
+
+            onError( error )
+
+        }
+
+    }
+
+    /**
+     *
+     * @private
+     */
+    _offsetPoints() {
+
+        // Compute bounding box in view to get his center for auto offseting the cloud point.
+        if ( this._autoOffset ) {
+            //this.logger.time("Compute Points");
+            this._boundingBox.setFromPoints( this._points )
+            this.setOffset( this._boundingBox.getCenter() )
+            //this.logger.timeEnd("Compute Points");
+        }
+
+        const offsetX = this._offset.x
+        const offsetY = this._offset.y
+        const offsetZ = this._offset.z
+        let point     = null
+        for ( let i = 0, numberOfPoints = this._points.length ; i &lt; numberOfPoints ; ++i ) {
+
+            point = this._points[ i ]
+            point.x -= offsetX
+            point.y -= offsetY
+            point.z -= offsetZ
+
+        }
+
+    }
+
+    /**
+     *
+     * @param groupToFeed
+     * @private
+     */
+    _createCloudPoints( groupToFeed, lasDatas, onProgress ) {
+
+        const classPointReverseMap = {
+            0:  'Created',
+            1:  'Unclassified',
+            2:  'Ground',
+            3:  'LowVegetation',
+            4:  'MediumVegetation',
+            5:  'HighVegetation',
+            6:  'Building',
+            7:  'LowPoint',
+            8:  'ModelKeyPoint',
+            9:  'Water',
+            12: 'OverlapPoints'
+        }
+
+        // Precompute max intensity for all splits
+        let maxIntensity = -Infinity
+        for ( let pointDataRecord of lasDatas.PointDataRecords ) {
+            const i = pointDataRecord.Intensity
+            if ( i > maxIntensity ) {
+                maxIntensity = i
+            }
+        }
+
+
+        const scaleX                = lasDatas.Header.XScaleFactor
+        const scaleY                = lasDatas.Header.YScaleFactor
+        const scaleZ                = lasDatas.Header.ZScaleFactor
+        const SPLIT_LIMIT           = 1000000
+        const numberOfPoints        = lasDatas.PointDataRecords.length
+        const numberOfSplit         = Math.ceil( numberOfPoints / SPLIT_LIMIT )
+        const pointDataRecordFormat = ( lasDatas.Header.VersionMinor &lt; 4 ) ? lasDatas.Header.PointDataFormatID : lasDatas.Header.PointDataRecordFormat
+        const pointHaveColor        = ![ 0, 1, 4, 6, 9 ].includes( pointDataRecordFormat )
+        const material              = new PointsMaterial( {
+            size:         0.01,
+            vertexColors: true
+        } )
+        let numberOfPointInSplit    = 0
+        let splice                  = null
+        let cloudPoint              = null
+
+        for ( let splitIndex = 0 ; splitIndex &lt; numberOfSplit ; ++splitIndex ) {
+
+            splice               = lasDatas.PointDataRecords.splice( 0, SPLIT_LIMIT )
+            numberOfPointInSplit = splice.length
+            const geometry       = new BufferGeometry()
+            const positions      = new Float32Array( numberOfPointInSplit * 3 )
+            const colors         = new Float32Array( numberOfPointInSplit * 3 )
+            let bufferIndex      = 0
+            let point            = null
+
+            for ( let i = 0 ; i &lt; numberOfPointInSplit ; ++i ) {
+
+                const currentPointIndex = i + ( splitIndex * SPLIT_LIMIT )
+                if ( currentPointIndex % 100000 === 0 ) {
+                    onProgress( new ProgressEvent( 'ConvertPointDataRecords', {
+                        lengthComputable: true,
+                        loaded:           currentPointIndex,
+                        total:            numberOfPoints
+                    } ) )
+                }
+
+                // current point
+                point = splice[ i ]
+
+                // positions
+                //                positions[ bufferIndex ]     = point.X
+                //                positions[ bufferIndex + 1 ] = point.Y
+                //                positions[ bufferIndex + 2 ] = point.Z
+                positions[ bufferIndex ]     = point.X * scaleX
+                positions[ bufferIndex + 1 ] = point.Y * scaleY
+                positions[ bufferIndex + 2 ] = point.Z * scaleZ
+                //                                    const x      = ( record.X * scaleX ) + offsetX
+                //                                    const y      = ( record.Y * scaleY ) + offsetY
+                //                                    const z      = ( record.Z * scaleZ ) + offsetZ
+
+
+                // colors
+                if ( pointHaveColor ) {
+
+                    colors[ bufferIndex ]     = point.R / 65535
+                    colors[ bufferIndex + 1 ] = point.G / 65535
+                    colors[ bufferIndex + 2 ] = point.B / 65535
+
+                } else {
+
+                    const colorPointClass = this.colorForPointClass[ classPointReverseMap[ point.Classification.Class ] ]
+                    if ( isDefined( colorPointClass ) ) {
+
+                        colors[ bufferIndex ]     = colorPointClass.r / 255
+                        colors[ bufferIndex + 1 ] = colorPointClass.g / 255
+                        colors[ bufferIndex + 2 ] = colorPointClass.b / 255
+
+                    } else {
+
+                        const intensity           = point.Intensity
+                        colors[ bufferIndex ]     = intensity / maxIntensity //255
+                        colors[ bufferIndex + 1 ] = intensity / maxIntensity //255
+                        colors[ bufferIndex + 2 ] = intensity / maxIntensity //255
+
+                    }
+
+                }
+
+                bufferIndex += 3
+
+            }
+
+            geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) )
+            geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) )
+
+            cloudPoint = new Points( geometry, material )
+            groupToFeed.add( cloudPoint )
+
+        }
+
+    }
+
+    /**
+     *
+     * @param group
+     * @private
+     */
+    _createSubCloudPoint( group ) {
+
+        const numberOfPoints = this._points.length
+        const geometry       = new BufferGeometry()
+        const positions      = new Float32Array( numberOfPoints * 3 )
+        const colors         = new Float32Array( numberOfPoints * 3 )
+        let bufferIndex      = 0
+        let point            = null
+
+        for ( let i = 0 ; i &lt; numberOfPoints ; ++i ) {
+
+            // current point
+            point = this._points[ i ]
+
+            // positions
+            positions[ bufferIndex ]     = point.x
+            positions[ bufferIndex + 1 ] = point.y
+            positions[ bufferIndex + 2 ] = point.z
+
+            // colors
+            if ( this._pointsHaveColor ) {
+                colors[ bufferIndex ]     = point.r / 255
+                colors[ bufferIndex + 1 ] = point.g / 255
+                colors[ bufferIndex + 2 ] = point.b / 255
+            } else {
+                colors[ bufferIndex ]     = 0.1
+                colors[ bufferIndex + 1 ] = 0.2
+                colors[ bufferIndex + 2 ] = 0.5
+            }
+
+            bufferIndex += 3
+
+        }
+
+        geometry.setAttribute( 'position', new BufferAttribute( positions, 3 ) )
+        geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) )
+
+        const material = new PointsMaterial( {
+            size:         0.005,
+            vertexColors: true
+        } )
+
+        const cloud = new Points( geometry, material )
+
+        //Todo: Apply import coordinates syteme here !
+        cloud.rotation.x -= Math.PI / 2
+
+        group.children.push( cloud )
+
+        // Clear current processed points
+        this._points = []
+
+    }
+
+}
+
+export {
+    LASLoader,
+    PointClasses
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright 2015-Present <a href="https://github.com/Itee">Itee (Tristan Valcke)</a>
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>
