@@ -1,3 +1,0 @@
-const tasksToIgnore = []
-
-export { tasksToIgnore }
