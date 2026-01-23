@@ -1,4 +1,4 @@
-import{TAbstractFileConverter as e,TAbstractDataInserter as t,TAbstractConverterManager as r}from"itee-database";import{TMongooseController as n,TMongoDBPlugin as i}from"itee-mongodb";import o,{isNotDefined as a,isDefined as s,isArray as c,isEmptyArray as h,isNull as l,isNotObject as u,isNotNumber as d,isNotString as m,isNotArray as f,isNaN as p,isUndefined as g,isNotBoolean as _,isObject as y,isEmptyString as w,isBlankString as b,isString as M,isNotEmptyString as S,isNotEmptyArray as v}from"itee-validators";import{ColladaLoader as x,DefaultLoadingManager as F,FileLoader as T,FBXLoader as C,ObjectLoader as B,MTLLoader as E,OBJLoader2 as P,Vector3 as D,Shape as O,STLLoader as A,TDSLoader as G,Box3 as I,Group as z,BufferGeometry as L,BufferAttribute as k,PointsMaterial as N,Points as U,EventDispatcher as R,Object3D as H,Vector2 as j,Spherical as V,LineBasicMaterial as Y,MeshBasicMaterial as W,DoubleSide as $,Mesh as X,OctahedronBufferGeometry as Z,Quaternion as q,EdgesGeometry as K,LineSegments as Q,Float32BufferAttribute as J,Line as ee,ArrowHelper as te,CylinderBufferGeometry as re,BoxBufferGeometry as ne,PlaneBufferGeometry as ie,ConeBufferGeometry as oe,Plane as ae,Raycaster as se,Euler as ce,SplineCurve as he,QuadraticBezierCurve3 as le,QuadraticBezierCurve as ue,Path as de,LineCurve3 as me,LineCurve as fe,EllipseCurve as pe,CurvePath as ge,Curve as _e,CubicBezierCurve3 as ye,CubicBezierCurve as we,CatmullRomCurve3 as be,ArcCurve as Me,WireframeGeometry as Se,SphereGeometry as ve,TubeGeometry as xe,TorusKnotGeometry as Fe,TorusGeometry as Te,TextGeometry as Ce,TetrahedronGeometry as Be,ShapeGeometry as Ee,RingGeometry as Pe,PolyhedronGeometry as De,PlaneGeometry as Oe,ParametricGeometry as Ae,OctahedronGeometry as Ge,LatheGeometry as Ie,IcosahedronGeometry as ze,Geometry as Le,ExtrudeGeometry as ke,DodecahedronGeometry as Ne,ConeGeometry as Ue,CylinderGeometry as Re,CircleGeometry as He,BoxGeometry as je,Face3 as Ve,InstancedBufferGeometry as Ye,SphereBufferGeometry as We,TubeBufferGeometry as $e,TorusKnotBufferGeometry as Xe,TorusBufferGeometry as Ze,TextBufferGeometry as qe,TetrahedronBufferGeometry as Ke,RingBufferGeometry as Qe,PolyhedronBufferGeometry as Je,ParametricBufferGeometry as et,LatheBufferGeometry as tt,IcosahedronBufferGeometry as rt,ExtrudeBufferGeometry as nt,DodecahedronBufferGeometry as it,CircleBufferGeometry as ot,TextureLoader as at,MeshLambertMaterial as st,MeshPhongMaterial as ct,Color as ht,LinearFilter as lt,ImageLoader as ut,Sprite as dt,LineLoop as mt,LOD as ft,SkinnedMesh as pt,HemisphereLight as gt,SpotLight as _t,RectAreaLight as yt,PointLight as wt,DirectionalLight as bt,AmbientLight as Mt,OrthographicCamera as St,PerspectiveCamera as vt,Scene as xt,Fog as Ft,FogExp2 as Tt,VertexColors as Ct}from"three-full";import{TBinaryReader as Bt,Endianness as Et,Byte as Pt,Keys as Dt,Mouse as Ot,TDataBaseManager as At}from"itee-client";import{DefaultLogger as Gt,OneHalf as It,SquareRootOfThreeOnTwo as zt,SquareRootOfTwoOnTwo as Lt}from"itee-core";import{toEnum as kt,ringClockwise as Nt,ringContainsSome as Ut,toArray as Rt,degreesToRadians as Ht}from"itee-utils";import{createRequire as jt}from"node:module";import{BSON_DATA_OBJECT as Vt,BSON_DATA_ARRAY as Yt}from"bson";
+import{TAbstractFileConverter as e,TAbstractDataInserter as t,TAbstractConverterManager as r}from"@itee/database";import{TMongooseController as n,TMongoDBPlugin as i}from"@itee/mongodb";import o,{isNotDefined as a,isDefined as s,isArray as c,isEmptyArray as h,isNull as l,isNotObject as u,isNotNumber as d,isNotString as m,isNotArray as f,isNaN as p,isUndefined as g,isNotBoolean as _,isObject as y,isEmptyString as w,isBlankString as b,isString as M,isNotEmptyString as S,isNotEmptyArray as v}from"@itee/validators";import{ColladaLoader as x,DefaultLoadingManager as F,FileLoader as T,FBXLoader as C,ObjectLoader as B,MTLLoader as E,OBJLoader2 as P,Vector3 as D,Shape as O,STLLoader as A,TDSLoader as G,Box3 as I,Group as z,BufferGeometry as L,BufferAttribute as k,PointsMaterial as N,Points as U,EventDispatcher as R,Object3D as H,Vector2 as j,Spherical as V,LineBasicMaterial as Y,MeshBasicMaterial as W,DoubleSide as $,Mesh as X,OctahedronBufferGeometry as Z,Quaternion as q,EdgesGeometry as K,LineSegments as Q,Float32BufferAttribute as J,Line as ee,ArrowHelper as te,CylinderBufferGeometry as re,BoxBufferGeometry as ne,PlaneBufferGeometry as ie,ConeBufferGeometry as oe,Plane as ae,Raycaster as se,Euler as ce,SplineCurve as he,QuadraticBezierCurve3 as le,QuadraticBezierCurve as ue,Path as de,LineCurve3 as me,LineCurve as fe,EllipseCurve as pe,CurvePath as ge,Curve as _e,CubicBezierCurve3 as ye,CubicBezierCurve as we,CatmullRomCurve3 as be,ArcCurve as Me,WireframeGeometry as Se,SphereGeometry as ve,TubeGeometry as xe,TorusKnotGeometry as Fe,TorusGeometry as Te,TextGeometry as Ce,TetrahedronGeometry as Be,ShapeGeometry as Ee,RingGeometry as Pe,PolyhedronGeometry as De,PlaneGeometry as Oe,ParametricGeometry as Ae,OctahedronGeometry as Ge,LatheGeometry as Ie,IcosahedronGeometry as ze,Geometry as Le,ExtrudeGeometry as ke,DodecahedronGeometry as Ne,ConeGeometry as Ue,CylinderGeometry as Re,CircleGeometry as He,BoxGeometry as je,Face3 as Ve,InstancedBufferGeometry as Ye,SphereBufferGeometry as We,TubeBufferGeometry as $e,TorusKnotBufferGeometry as Xe,TorusBufferGeometry as Ze,TextBufferGeometry as qe,TetrahedronBufferGeometry as Ke,RingBufferGeometry as Qe,PolyhedronBufferGeometry as Je,ParametricBufferGeometry as et,LatheBufferGeometry as tt,IcosahedronBufferGeometry as rt,ExtrudeBufferGeometry as nt,DodecahedronBufferGeometry as it,CircleBufferGeometry as ot,TextureLoader as at,MeshLambertMaterial as st,MeshPhongMaterial as ct,Color as ht,LinearFilter as lt,ImageLoader as ut,Sprite as dt,LineLoop as mt,LOD as ft,SkinnedMesh as pt,HemisphereLight as gt,SpotLight as _t,RectAreaLight as yt,PointLight as wt,DirectionalLight as bt,AmbientLight as Mt,OrthographicCamera as St,PerspectiveCamera as vt,Scene as xt,Fog as Ft,FogExp2 as Tt,VertexColors as Ct}from"three-full";import{TBinaryReader as Bt,Endianness as Et,Byte as Pt,Keys as Dt,Mouse as Ot,TDataBaseManager as At}from"@itee/client";import{DefaultLogger as Gt,OneHalf as It,SquareRootOfThreeOnTwo as zt,SquareRootOfTwoOnTwo as Lt}from"@itee/core";import{toEnum as kt,ringClockwise as Nt,ringContainsSome as Ut,toArray as Rt,degreesToRadians as Ht}from"@itee/utils";import{createRequire as jt}from"node:module";import{BSON_DATA_OBJECT as Vt,BSON_DATA_ARRAY as Yt}from"bson";
 /**
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -10,7 +10,7 @@ import{TAbstractFileConverter as e,TAbstractDataInserter as t,TAbstractConverter
  * @module Converters/ColladaToThree
  * @desc Export JsonToThree converter class about .dae files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -32,7 +32,7 @@ import{TAbstractFileConverter as e,TAbstractDataInserter as t,TAbstractConverter
  * @module Converters/DbfToThree
  * @desc Export JsonToThree converter class about .dbf files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/DBFLoader Loader/DBFLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -43,7 +43,7 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/FbxToThree
  * @desc Export JsonToThree converter class about .fbx files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -53,7 +53,7 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/JsonToThree
  * @desc Export JsonToThree converter class about .json files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -63,7 +63,7 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/MtlToThree
  * @desc Export JsonToThree converter class about .mtl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -73,7 +73,7 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/Obj2ToThree
  * @desc Export JsonToThree converter class about .obj files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -83,8 +83,8 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Loader/SHPLoader
  * @desc Export SHPLoader to load .shp files
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/utils @itee/utils}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -96,7 +96,7 @@ class Kt extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/ShpToThree
  * @desc Export JsonToThree converter class about .shp files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/SHPLoader Loader/SHPLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -107,7 +107,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/StlToThree
  * @desc Export JsonToThree converter class about .stl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -117,7 +117,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Converters/TdsToThree
  * @desc Export JsonToThree converter class about .3ds files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -127,9 +127,9 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-database itee-database}
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -146,7 +146,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Schemas/Core/BufferAttribute
  * @desc Export the ThreeJs BufferAttribute Model and Schema for Mongoose.
  *
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -219,7 +219,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Color
  * @desc Export the three js Color type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -228,7 +228,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Euler
  * @desc Export the three js Euler type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */function Cl(e){class t extends e.SchemaType{constructor(e,t){super(e,t,"Euler")}cast(t){if(a(t))throw new e.SchemaType.CastError(`Euler: ${t} is null or undefined`);if(u(t)&&!t.isEuler)throw new e.SchemaType.CastError(`Euler: ${t} is not a object or Euler instance`);if(!("x"in t))throw new e.SchemaType.CastError(`Euler: ${t} does not contain x property`);if(d(t.x))throw new e.SchemaType.CastError(`Euler: ${t} expected x to be a number`);if(!("y"in t))throw new e.SchemaType.CastError(`Euler: ${t} does not contain y property`);if(d(t.y))throw new e.SchemaType.CastError(`Euler: ${t} expected y to be a number`);if(!("z"in t))throw new e.SchemaType.CastError(`Euler: ${t} does not contain z property`);if(d(t.z))throw new e.SchemaType.CastError(`Euler: ${t} expected z to be a number`);if(!("order"in t))throw new e.SchemaType.CastError(`Euler: ${t} does not contain order property`);if(m(t.order))throw new e.SchemaType.CastError(`Euler: ${t} expected order to be a string`);if(!["XYZ","YZX","ZXY","XZY","YXZ","ZYX"].includes(t.order.toUpperCase()))throw new e.SchemaType.CastError(`Euler: ${t} expected order to be a string in ['XYZ', 'YZX', 'ZXY', 'XZY', 'YXZ', 'ZYX']`);return{x:t.x,y:t.y,z:t.z,order:t.order.toUpperCase()}}}return t.EULER_BSON_TYPE=Vt,e.Schema.Types.Euler=t,e}
@@ -236,7 +236,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Matrix3
  * @desc Export the three js Matrix3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -245,7 +245,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Matrix4
  * @desc Export the three js Matrix4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -254,7 +254,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Quaternion
  * @desc Export the three js Quaternion type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -263,7 +263,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Vector2
  * @desc Export the three js Vector2 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -272,7 +272,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Vector3
  * @desc Export the three js Vector3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -281,7 +281,7 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Types/Vector4
  * @desc Export the three js Vector4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -313,14 +313,14 @@ class ir extends e{constructor(){super({dumpType:e.DumpType.ArrayBuffer})}_conve
  * @module Loader/ASCLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { ASCLoader } from 'itee-plugin-three'
+ * import { ASCLoader } from '@itee/plugin-three'
  *
  * const loader = new ASCLoader();
  *
@@ -344,14 +344,14 @@ class Tu{constructor(e=F,t=Gt){this.manager=e,this.logger=t,this._boundingBox=ne
  * @module Loader/LASLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { LASLoader } from 'itee-plugin-three'
+ * import { LASLoader } from '@itee/plugin-three'
  *
  * const loader = new LASLoader();
  *
@@ -376,9 +376,9 @@ if("1.0"===t&&43707!==e.Reserved)throw new Error("Invalid variable length record
  * @module Controllers/CameraControls
  * @desc This module export CameraControls class and CameraControlMode enum values.
  *
- * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
- * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/client]{@link https://github.com/Itee/@itee/client}}
+ * @requires {@link module: [@itee/utils]{@link https://github.com/Itee/@itee/utils}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -386,7 +386,7 @@ if("1.0"===t&&43707!==e.Reserved)throw new Error("Invalid variable length record
  *
  * @example
  *
- * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
+ * import { CameraControls, CameraControlMode } from '@itee/plugin-three'
  *
  */const Ou=new D(0,0,-1),Au=new D(0,0,1),Gu=new D(0,1,0),Iu=new D(0,-1,0),zu=new D(1,0,0),Lu=new D(-1,0,0),ku=kt({None:0,Rotating:1,Panning:2,Rolling:3,Zooming:4,Moving:5}),Nu=kt({FirstPerson:1,Orbit:2,Fly:3,Path:4});class Uu extends R{constructor(e={}){const t={logger:Gt,camera:null,target:new H,mode:Nu.Orbit,domElement:"function"==typeof importScripts?null:window,...e};super(),this._handlers={onMouseEnter:this._onMouseEnter.bind(this),onMouseLeave:this._onMouseLeave.bind(this),onMouseDown:this._onMouseDown.bind(this),onMouseMove:this._onMouseMove.bind(this),onMouseWheel:this._onMouseWheel.bind(this),onMouseUp:this._onMouseUp.bind(this),onDblClick:this._onDblClick.bind(this),onTouchStart:this._onTouchStart.bind(this),onTouchEnd:this._onTouchEnd.bind(this),onTouchCancel:this._onTouchCancel.bind(this),onTouchLeave:this._onTouchLeave.bind(this),onTouchMove:this._onTouchMove.bind(this),onKeyDown:this._onKeyDown.bind(this),onKeyUp:this._onKeyUp.bind(this)},this.logger=t.logger,this.camera=t.camera,this.target=t.target,this.mode=t.mode,this.domElement=t.domElement,this.enabled=!0,this._paths=[],this._trackPath=!1,this._cameraJump=.1,this._currentPathPosition=null,this._currentPathOffset=0,this._currentPathIndex=0,this._currentPath=null,this._maxJump=1,this._lockedTarget=!0,this.previousTouches=[],this.canMove=!0,this.moveSpeed=1,this.canFront=!0,this.frontMinimum=-1/0,this.frontMaximum=-1/0,this.frontMinSpeed=0,this.frontSpeed=1,this.frontMaxSpeed=1/0,this.frontAcceleration=1,this.canBack=!0,this.backMinimum=-1/0,this.backMaximum=-1/0,this.backMinSpeed=0,this.backSpeed=1,this.backMaxSpeed=1/0,this.backAcceleration=1,this.canUp=!0,this.upMinimum=-1/0,this.upMaximum=-1/0,this.upMinSpeed=0,this.upSpeed=1,this.upMaxSpeed=1/0,this.upAcceleration=1,this.canDown=!0,this.downMinimum=-1/0,this.downMaximum=-1/0,this.downMinSpeed=0,this.downSpeed=1,this.downMaxSpeed=1/0,this.downAcceleration=1,this.canLeft=!0,this.leftMinimum=-1/0,this.leftMaximum=-1/0,this.leftMinSpeed=0,this.leftSpeed=1,this.leftMaxSpeed=1/0,this.leftAcceleration=1,this.canRight=!0,this.rightMinimum=-1/0,this.rightMaximum=-1/0,this.rightMinSpeed=0,this.rightSpeed=1,this.rightMaxSpeed=1/0,this.rightAcceleration=1,this.canRotate=!0,this.minPolarAngle=.001,this.maxPolarAngle=Math.PI-.001,this.minAzimuthAngle=-1/0,this.maxAzimuthAngle=1/0,this.rotateMinSpeed=0,this.rotateSpeed=1,this.rotateMaxSpeed=1/0,this.rotateAcceleration=1,this.canPan=!0,this.panMinimum=-1/0,this.panMaximum=-1/0,this.panMinSpeed=0,this.panSpeed=.001,this.panMaxSpeed=1/0,this.panAcceleration=1,this.canRoll=!0,this.rollMinimum=-1/0,this.rollMaximum=-1/0,this.rollMinSpeed=0,this.rollSpeed=.1,this.rollMaxSpeed=1/0,this.rollAcceleration=1,this.canZoom=!0,this.zoomMinimum=0,this.zoomMaximum=1/0,this.zoomMinSpeed=0,this.zoomSpeed=.001,this.zoomMaxSpeed=1/0,this.zoomAcceleration=1,this.canLookAt=!0,this.actionsMap={front:[Dt.Z.value,Dt.UP_ARROW.value],back:[Dt.S.value,Dt.DOWN_ARROW.value],up:[Dt.A.value,Dt.PAGE_UP.value],down:[Dt.E.value,Dt.PAGE_DOWN.value],left:[Dt.Q.value,Dt.LEFT_ARROW.value],right:[Dt.D.value,Dt.RIGHT_ARROW.value],rotate:[Ot.Left.value],pan:[Ot.Middle.value],roll:{left:[Dt.R.value],right:[Dt.T.value]},zoom:[Ot.Wheel.value],lookAtFront:[Dt.NUMPAD_2.value],lookAtFrontLeft:[Dt.NUMPAD_3.value],lookAtFrontRight:[Dt.NUMPAD_1.value],lookAtBack:[Dt.NUMPAD_8.value],lookAtBackLeft:[Dt.NUMPAD_9.value],lookAtBackRight:[Dt.NUMPAD_7.value],lookAtUp:[Dt.NUMPAD_5.value],lookAtDown:[Dt.NUMPAD_0.value],lookAtLeft:[Dt.NUMPAD_6.value],lookAtRight:[Dt.NUMPAD_4.value]},this._state=ku.None}get camera(){return this._camera}set camera(e){if(l(e))throw new Error("Camera cannot be null ! Expect an instance of Camera");if(g(e))throw new Error("Camera cannot be undefined ! Expect an instance of Camera");if(!e.isCamera)throw new Error(`Camera cannot be an instance of ${e.constructor.name}. Expect an instance of Camera.`);this._camera=e}get target(){return this._target}set target(e){if(l(e))throw new Error("Target cannot be null ! Expect an instance of Object3D.");if(g(e))throw new Error("Target cannot be undefined ! Expect an instance of Object3D.");if(!e.isObject3D)throw new Error(`Target cannot be an instance of ${e.constructor.name}. Expect an instance of Object3D.`);this._target=e}get mode(){return this._mode}set mode(e){if(l(e))throw new Error("Mode cannot be null ! Expect a value from CameraControlMode enum.");if(g(e))throw new Error("Mode cannot be undefined ! Expect a value from CameraControlMode enum.");if(!Nu.includes(e))throw new Error(`Mode cannot be an instance of ${e.constructor.name}. Expect a value from TCameraControlMode enum.`);this._mode=e,this._trackPath&&this._initPathDisplacement()}get paths(){return this._paths}set paths(e){this._paths=e}get trackPath(){return this._trackPath}set trackPath(e){if(_(e))throw new Error(`Track path cannot be an instance of ${e.constructor.name}. Expect a boolean.`);this._trackPath=e,this._trackPath&&this._initPathDisplacement()}get domElement(){return this._domElement}set domElement(e){if(l(e))throw new Error("DomElement cannot be null ! Expect an instance of HTMLDocument.");if(g(e))throw new Error("DomElement cannot be undefined ! Expect an instance of HTMLDocument.");if(!["Window","HTMLDocument","HTMLDivElement","HTMLCanvasElement","OffscreenCanvas"].includes(e.constructor.name))throw new Error(`DomElement cannot be an instance of ${e.constructor.name}. Expect an instance of Window, HTMLDocument or HTMLDivElement.`);this._domElement&&(this._domElement.removeEventListener("mouseenter",this._handlers.onMouseEnter,!1),this._domElement.removeEventListener("mouseleave",this._handlers.onMouseLeave,!1),this.dispose()),this._domElement=e,this._domElement.addEventListener("mouseenter",this._handlers.onMouseEnter,!1),this._domElement.addEventListener("mouseleave",this._handlers.onMouseLeave,!1),this.impose()}get handlers(){return this._handlers}setCamera(e){return this.camera=e,this}setTarget(e){return this.target=e,this}setMode(e){return this.mode=e,this}setPaths(e){return this.paths=e,this}addPath(e){return this._paths.push(e),this}setTrackPath(e){return this.trackPath=e,this}setDomElement(e){return this.domElement=e,this}impose(){this._domElement.addEventListener("keydown",this._handlers.onKeyDown,!1),this._domElement.addEventListener("keyup",this._handlers.onKeyUp,!1),this._domElement.addEventListener("dblclick",this._handlers.onDblClick,!1),this._domElement.addEventListener("mousedown",this._handlers.onMouseDown,!1),this._domElement.addEventListener("mousemove",this._handlers.onMouseMove,!1),this._domElement.addEventListener("mouseup",this._handlers.onMouseUp,!1),this._domElement.addEventListener("wheel",this._handlers.onMouseWheel,{capture:!0,once:!1,passive:!1}),this._domElement.addEventListener("touchcancel",this._handlers.onTouchCancel,!1),this._domElement.addEventListener("touchend",this._handlers.onTouchEnd,!1),this._domElement.addEventListener("touchleave",this._handlers.onTouchLeave,!1),this._domElement.addEventListener("touchmove",this._handlers.onTouchMove,{capture:!0,once:!1,passive:!1}),this._domElement.addEventListener("touchstart",this._handlers.onTouchStart,{capture:!0,once:!1,passive:!1}),this.dispatchEvent({type:"impose"})}dispose(){this._domElement.removeEventListener("keydown",this._handlers.onKeyDown,!1),this._domElement.removeEventListener("keyup",this._handlers.onKeyUp,!1),this._domElement.removeEventListener("dblclick",this._handlers.onDblClick,!1),this._domElement.removeEventListener("mousedown",this._handlers.onMouseDown,!1),this._domElement.removeEventListener("mousemove",this._handlers.onMouseMove,!1),this._domElement.removeEventListener("mouseup",this._handlers.onMouseUp,!1),this._domElement.removeEventListener("wheel",this._handlers.onMouseWheel,{capture:!0,once:!1,passive:!1}),this._domElement.removeEventListener("touchcancel",this._handlers.onTouchCancel,!1),this._domElement.removeEventListener("touchend",this._handlers.onTouchEnd,!1),this._domElement.removeEventListener("touchleave",this._handlers.onTouchLeave,!1),this._domElement.removeEventListener("touchmove",this._handlers.onTouchMove,{capture:!0,once:!1,passive:!1}),this._domElement.removeEventListener("touchstart",this._handlers.onTouchStart,{capture:!0,once:!1,passive:!1}),this.dispatchEvent({type:"dispose"})}update(){}setCameraPosition(e){return this._camera.position.copy(e),this._camera.lookAt(this._target.position),this}setTargetPosition(e){return this._target.position.copy(e),this._camera.lookAt(this._target.position),this}_preventEvent(e){e.preventDefault&&e.preventDefault()}_consumeEvent(e){e.cancelable&&e.stopImmediatePropagation&&e.stopImmediatePropagation()}_onKeyDown(e){if(!this.enabled)return;this._preventEvent(e);const t=this.actionsMap,r=e.keyCode;t.front.includes(r)?(this._front(),this._consumeEvent(e)):t.back.includes(r)?(this._back(),this._consumeEvent(e)):t.up.includes(r)?(this._up(),this._consumeEvent(e)):t.down.includes(r)?(this._down(),this._consumeEvent(e)):t.left.includes(r)?(this._left(),this._consumeEvent(e)):t.right.includes(r)?(this._right(),this._consumeEvent(e)):t.rotate.includes(r)?this._rotate(1):t.pan.includes(r)?(this._pan(1),this._consumeEvent(e)):t.roll.left.includes(r)?(this._roll(1),this._consumeEvent(e)):t.roll.right.includes(r)?(this._roll(-1),this._consumeEvent(e)):t.zoom.includes(r)?(this._zoom(1),this._consumeEvent(e)):t.lookAtFront.includes(r)?(this._lookAt(Ou),this._consumeEvent(e)):t.lookAtFrontLeft.includes(r)?(this._lookAt(new D(-1,0,-1).normalize()),this._consumeEvent(e)):t.lookAtFrontRight.includes(r)?(this._lookAt(new D(1,0,-1).normalize()),this._consumeEvent(e)):t.lookAtBack.includes(r)?(this._lookAt(Au),this._consumeEvent(e)):t.lookAtBackLeft.includes(r)?(this._lookAt(new D(-1,0,1).normalize()),this._consumeEvent(e)):t.lookAtBackRight.includes(r)?(this._lookAt(new D(1,0,1).normalize()),this._consumeEvent(e)):t.lookAtUp.includes(r)?(this._lookAt(Gu),this._consumeEvent(e)):t.lookAtDown.includes(r)?(this._lookAt(Iu),this._consumeEvent(e)):t.lookAtLeft.includes(r)?(this._lookAt(Lu),this._consumeEvent(e)):t.lookAtRight.includes(r)&&(this._lookAt(zu),this._consumeEvent(e))}_onKeyUp(e){this.enabled&&this._preventEvent(e)}_onTouchStart(e){this.enabled&&(this._preventEvent(e),this.previousTouches=e.touches)}_onTouchEnd(e){this.enabled&&(this._preventEvent(e),this.previousTouches=[],this._state=ku.None)}_onTouchCancel(e){this.enabled&&(this._preventEvent(e),this.previousTouches=[],this._state=ku.None)}_onTouchLeave(e){this.enabled&&(this._preventEvent(e),this.previousTouches=[],this._state=ku.None)}_onTouchMove(e){if(!this.enabled)return;this._preventEvent(e);const t=this.previousTouches,r=e.changedTouches,n=t.length,i=r.length;if(2===n&&2===i){const n=new j(t[0].clientX,t[0].clientY),i=new j(t[1].clientX,t[1].clientY),o=n.distanceTo(i),a=(new j).addVectors(n,i).divideScalar(2),s=(new j).subVectors(n,i).normalize(),c=new j(r[0].clientX,r[0].clientY),h=new j(r[1].clientX,r[1].clientY),l=c.distanceTo(h),u=(new j).addVectors(c,h).divideScalar(2),d=(new j).subVectors(n,i).normalize(),m=(new j).subVectors(u,a),f=l-o,p=d.dot(s);this._pan(m),this._zoom(f),this._roll(p),this._consumeEvent(e)}else if(1===n&&1===i){const n=new j(r[0].clientX-t[0].clientX,r[0].clientY-t[0].clientY).divideScalar(10);this._rotate(n),this._consumeEvent(e)}else this.logger.warn("Ignoring inconsistent touches event.");this.previousTouches=r}_onMouseEnter(e){this.enabled&&(this._preventEvent(e),this.impose(),e.target.constructor!==HTMLDocument&&this._domElement.focus())}_onMouseLeave(e){this.enabled&&(this._preventEvent(e),e.target.constructor!==HTMLDocument&&this._domElement.blur(),this.dispose(),this._state=ku.None)}_onMouseDown(e){if(!this.enabled)return;this._preventEvent(e);const t=this.actionsMap,r=e.button;t.front.includes(r)?(this._state=ku.Moving,this._front(),this._consumeEvent(e)):t.back.includes(r)?(this._state=ku.Moving,this._back(),this._consumeEvent(e)):t.up.includes(r)?(this._state=ku.Moving,this._up(),this._consumeEvent(e)):t.down.includes(r)?(this._state=ku.Moving,this._down(),this._consumeEvent(e)):t.left.includes(r)?(this._state=ku.Moving,this._left(),this._consumeEvent(e)):t.right.includes(r)?(this._state=ku.Moving,this._right(),this._consumeEvent(e)):t.rotate.includes(r)?(this._state=ku.Rotating,this._consumeEvent(e)):t.pan.includes(r)?(this._state=ku.Panning,this._consumeEvent(e)):t.roll.left.includes(r)||t.roll.right.includes(r)?(this._state=ku.Rolling,this._consumeEvent(e)):t.zoom.includes(r)?(this._state=ku.Zooming,this._consumeEvent(e)):this._state=ku.None}_onMouseMove(e){if(!this.enabled||this._state===ku.None)return;this._preventEvent(e);const t=this._state,r={x:e.movementX||e.mozMovementX||e.webkitMovementX||0,y:e.movementY||e.mozMovementY||e.webkitMovementY||0};switch(t){case ku.Moving:break;case ku.Rotating:this._rotate(r),this._consumeEvent(e);break;case ku.Panning:this._pan(r),this._consumeEvent(e);break;case ku.Rolling:this._roll(r),this._consumeEvent(e);break;case ku.Zooming:this._zoom(r),this._consumeEvent(e);break;default:throw new RangeError(`Unknown state: ${t}`)}}_onMouseWheel(e){if(!this.enabled)return;this._preventEvent(e);const t=e.wheelDelta||e.deltaY;this._zoom(t),this._consumeEvent(e)}_onMouseUp(e){this.enabled&&(this._preventEvent(e),this._state=ku.None,this._consumeEvent(e))}_onDblClick(e){this.enabled&&(this._preventEvent(e),this.logger.warn("CameraControls: Double click events is not implemented yet, sorry for the disagreement."))}_front(){if(this.canMove&&this.canFront){if(this._camera.isPerspectiveCamera){const e=Ou.clone().applyQuaternion(this._camera.quaternion),t=this._trackPath?this._getPathDisplacement(e):e.multiplyScalar(this.frontSpeed);this._camera.position.add(t),this._target.position.add(t)}else if(this._camera.isOrthographicCamera){const e=Ou.clone().applyQuaternion(this._camera.quaternion),t=this._trackPath?this._getPathDisplacement(e):e.multiplyScalar(this.frontSpeed);this._camera.position.add(t),this._target.position.add(t);const r=this.frontSpeed*this.zoomSpeed;this._camera.zoom+=r,this._camera.updateProjectionMatrix()}else this.logger.error(`Unmanaged displacement for camera of type ${this._camera.type}`);this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_back(){if(this.canMove&&this.canBack){if(this._camera.isPerspectiveCamera){const e=Au.clone().applyQuaternion(this._camera.quaternion),t=this._trackPath?this._getPathDisplacement(e):e.multiplyScalar(this.backSpeed);this._camera.position.add(t),this._target.position.add(t)}else if(this._camera.isOrthographicCamera){const e=Au.clone().applyQuaternion(this._camera.quaternion),t=this._trackPath?this._getPathDisplacement(e):e.multiplyScalar(this.backSpeed);this._camera.position.add(t),this._target.position.add(t);const r=this.backSpeed*this.zoomSpeed;this._camera.zoom-r<=0?this._camera.zoom=.01:this._camera.zoom-=r,this._camera.updateProjectionMatrix()}else this.logger.error(`Unmanaged displacement for camera of type ${this._camera.type}`);this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_up(){if(this.canMove&&this.canUp){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const e=Gu.clone().applyQuaternion(this._camera.quaternion).multiplyScalar(this.upSpeed);this._camera.position.add(e),this._target.position.add(e)}else this.logger.error(`Unmanaged displacement for camera of type ${this._camera.type}`);this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_down(){if(this.canMove&&this.canDown){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const e=Iu.clone().applyQuaternion(this._camera.quaternion).multiplyScalar(this.downSpeed);this._camera.position.add(e),this._target.position.add(e)}else this.logger.error(`Unmanaged displacement for camera of type ${this._camera.type}`);this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_left(){if(this.canMove&&this.canLeft){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const e=Lu.clone().applyQuaternion(this._camera.quaternion).multiplyScalar(this.leftSpeed);this._camera.position.add(e),this._target.position.add(e)}else this.logger.error(`Unmanaged displacement for camera of type ${this._camera.type}`);this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_right(){if(this.canMove&&this.canRight){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const e=zu.clone().applyQuaternion(this._camera.quaternion).multiplyScalar(this.rightSpeed);this._camera.position.add(e),this._target.position.add(e)}this.dispatchEvent({type:"move"}),this.dispatchEvent({type:"change"})}}_rotate(e){if(this.canRotate){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const t=this._camera.position,r=this._target.position,n=t.distanceTo(r),i=(new D).subVectors(t,r).normalize(),o=this.rotateSpeed;switch(this._mode){case Nu.FirstPerson:{const n=e.x,i=e.y,a=new D(-n,i,0).applyQuaternion(this._camera.quaternion).multiplyScalar(o).add(r),s=(new D).subVectors(a,t).normalize(),c=Gu.clone().dot(s),h=zu.clone().dot(s),l=.97;if(c<-l||c>l||h<-2||h>2)return;const u=s.multiplyScalar(1).add(t);this.setTargetPosition(u)}break;case Nu.Orbit:{const t=(new V).setFromVector3(i),a=t.theta+Ht(-e.x)*o,s=t.phi+Ht(-e.y)*o;t.theta=Math.max(this.minAzimuthAngle,Math.min(this.maxAzimuthAngle,a)),t.phi=Math.max(this.minPolarAngle,Math.min(this.maxPolarAngle,s));const c=(new D).setFromSpherical(t).multiplyScalar(n).add(r);this.setCameraPosition(c)}break;default:throw new RangeError(`Unamanaged rotation for camera mode ${this._mode}`)}}this.dispatchEvent({type:"rotate"}),this.dispatchEvent({type:"change"})}}_pan(e){if(this.canPan){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const t=this._camera.position,r=this._target.position,n=t.distanceTo(r),i=new D(-e.x,e.y,0).applyQuaternion(this._camera.quaternion).multiplyScalar(this.panSpeed*n);this._camera.position.add(i),this._target.position.add(i)}this.dispatchEvent({type:"pan"}),this.dispatchEvent({type:"change"})}}_roll(e){if(this.canRoll){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const t=this._camera.position,r=this._target.position,n=(new D).subVectors(t,r).normalize(),i=e*this.rollSpeed;this._camera.up.applyAxisAngle(n,i),this._camera.lookAt(r)}this.dispatchEvent({type:"roll"}),this.dispatchEvent({type:"change"})}}_zoom(e){if(this.canZoom){if(this._camera.isPerspectiveCamera)switch(this._mode){case Nu.FirstPerson:e>0?this._camera.fov--:this._camera.fov++,this._camera.updateProjectionMatrix();break;case Nu.Orbit:{const t=this._camera.position,r=this._target.position,n=t.distanceTo(r),i=Ou.clone().applyQuaternion(this._camera.quaternion).multiplyScalar(e*this.zoomSpeed*n);let o=t.clone().add(i);const a=(new D).subVectors(o,t).normalize(),s=(new D).subVectors(t,r).normalize(),c=(new D).subVectors(o,r).normalize(),h=a.dot(s),l=a.dot(c),u=o.distanceToSquared(r);h<0&&(u<this.zoomMinimum*this.zoomMinimum||l>0)&&(o=s.clone().multiplyScalar(this.zoomMinimum).add(r)),this._camera.position.copy(o)}break;default:throw new RangeError(`Invalid camera control mode parameter: ${this._mode}`)}else if(this._camera.isOrthographicCamera){const t=this.domElement.offsetWidth/this.domElement.offsetHeight,r=this._camera.position,n=this._target.position,i=r.distanceTo(n),o=(e>0?Ou.clone():Au.clone()).applyQuaternion(this._camera.quaternion).normalize().multiplyScalar(this.zoomSpeed*i);r.add(o);const a=r.distanceTo(n),s=a/2,c=a*t/2;this._camera.top=s,this._camera.bottom=-s,this._camera.right=c,this._camera.left=-c,this._camera.updateProjectionMatrix()}this.dispatchEvent({type:"zoom"}),this.dispatchEvent({type:"change"})}}_lookAt(e){if(this.canLookAt){if(this._camera.isPerspectiveCamera||this._camera.isOrthographicCamera){const t=e.clone(),r=this._camera.position,n=this._target.position,i=r.distanceTo(n);switch(this.mode){case Nu.FirstPerson:{t.y=-t.y;const e=t.multiplyScalar(i).add(r);this.setTargetPosition(e)}break;case Nu.Orbit:{const e=t.multiplyScalar(i).add(n);this.setCameraPosition(e)}break;default:throw new RangeError(`Invalid camera control mode parameter: ${this._mode}`)}}this.dispatchEvent({type:"lookAt"}),this.dispatchEvent({type:"change"})}}_initPathDisplacement(){if(h(this._paths))this.logger.warn("Try to init path displacement without any paths");else switch(a(this._currentPath)&&(this._currentPathIndex=0,this._currentPathOffset=0,this._currentPath=this._paths[0]),this._currentPathPosition=this._currentPath.getPointAt(this._currentPathOffset),this._mode){case Nu.FirstPerson:if(this._lockedTarget){const e=(new D).subVectors(this._currentPathPosition,this.camera.position);this._camera.position.add(e),this._target.position.add(e)}else this.setCameraPosition(this._currentPathPosition);break;case Nu.Orbit:if(this._lockedTarget){const e=(new D).subVectors(this._currentPathPosition,this.target.position);this._camera.position.add(e),this._target.position.add(e)}else this.setTargetPosition(this._currentPathPosition);break;default:throw new RangeError(`Invalid camera control _mode parameter: ${this._mode}`)}}_getPathDisplacement(e){let t=null;const r=this._currentPathPosition,n=this._currentPathOffset+this._cameraJump,i=n<1?n:1,o=this._currentPath.getPointAt(i),a=(new D).subVectors(o,r),s=a.clone().normalize(),c=e.dot(s),h=this._currentPathOffset-this._cameraJump,l=h>0?h:0,u=this._currentPath.getPointAt(l),d=(new D).subVectors(u,r),m=d.clone().normalize(),f=e.dot(m);if(0===c&&f<0){const r=this._getDirectionsMap();let n,i,o,a=-1;r.forEach(t=>{const r=t.index,s=t.startDisplacement;if(s){const t=s.clone().normalize(),c=e.dot(t);c>a&&(n=r,i=s,a=c,o=!0)}const c=t.endDisplacement;if(c){const t=c.clone().normalize(),s=e.dot(t);s>a&&(n=r,i=c,a=s,o=!1)}}),void 0!==n?(this._currentPathIndex=n,this._currentPath=this._paths[this._currentPathIndex],this._currentPathOffset=o?this._cameraJump:1-this._cameraJump,this._currentPathPosition=this._currentPath.getPointAt(this._currentPathOffset),t=i):(this.logger.warn("Reach path end."),t=new D)}else if(c>0&&f<=0)t=a,this._currentPathOffset=i,this._currentPathPosition=o;else if(c<=0&&f>0)t=d,this._currentPathOffset=l,this._currentPathPosition=u;else if(c<0&&0===f){const r=this._getDirectionsMap();let n,i,o,a=-1;r.forEach(t=>{const r=t.index,s=t.startDisplacement;if(s){const t=s.clone().normalize(),c=e.dot(t);c>a&&(n=r,i=s,a=c,o=!0)}const c=t.endDisplacement;if(c){const t=c.clone().normalize(),s=e.dot(t);s>a&&(n=r,i=c,a=s,o=!1)}}),void 0!==n?(this._currentPathIndex=n,this._currentPath=this._paths[this._currentPathIndex],this._currentPathOffset=o?this._cameraJump:1-this._cameraJump,this._currentPathPosition=this._currentPath.getPointAt(this._currentPathOffset),t=i):(this.logger.warn("Reach path start."),t=new D)}else c<0&&f<0||c>0&&f>0?c>f?(t=a,this._currentPathOffset=i,this._currentPathPosition=o):(t=d,this._currentPathOffset=l,this._currentPathPosition=u):(this.logger.warn("Unable to find correct next path position."),t=new D);return t}_getDirectionsMap(){const e=this._currentPathPosition,t=this._currentPathIndex,r=this._cameraJump,n=this._maxJump;return this._paths.reduce((i,o,a)=>{if(a===t)return i;const s=o.getPointAt(0);let c;e.distanceToSquared(s)<n&&(c=(new D).subVectors(o.getPointAt(r),s));const h=o.getPointAt(1);let l;return e.distanceToSquared(h)<n&&(l=(new D).subVectors(o.getPointAt(1-r),h)),(c||l)&&i.push({index:a,startDisplacement:c,endDisplacement:l}),i},[])}}
 /**

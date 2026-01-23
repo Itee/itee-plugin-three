@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Itee Plugin Three v1.7.0 Index</title>
+	<title>Itee Plugin-three v2.0.0 Index</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -20,7 +20,7 @@
 <div class="navbar navbar-default navbar-fixed-top ">
 <div class="container">
 	<div class="navbar-header">
-		<a class="navbar-brand" href="index.html">Itee Plugin Three v1.7.0</a>
+		<a class="navbar-brand" href="index.html">Itee Plugin-three v2.0.0</a>
 		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
 			<span class="icon-bar"></span>
 			<span class="icon-bar"></span>
@@ -195,7 +195,7 @@ with this program.  If not, see <a href="https://opensource.org/licenses/BSD-3-C
 <header>
     
         <h2>
-        sources/plugin.js
+        sources/plugin-three.js
         </h2>
         
     
@@ -259,8 +259,8 @@ One is design for backend usage under nodejs process as autoregistering plugins,
 	<dd class="tag-source">
 		<ul class="dummy">
 			<li>
-				<a href="plugin.js.html">plugin.js</a>,
-				 <a href="plugin.js.html#sunlight-1-line-1">line 1</a>
+				<a href="plugin-three.js.html">plugin-three.js</a>,
+				 <a href="plugin-three.js.html#sunlight-1-line-1">line 1</a>
 			</li>
 		</ul>
 	</dd>
@@ -279,7 +279,7 @@ One is design for backend usage under nodejs process as autoregistering plugins,
             
     <pre class="sunlight-highlight-javascript">
 // For nodejs usage you just need to declare plugin in itee.config.js like this:
-// It will automatically performe a require(&#x27;itee-plugin-three&#x27;) of itee-plugin-three.cjs build
+// It will automatically performe a require(&#x27;@itee/plugin-three&#x27;) of @itee/plugin-three.cjs build
 
 databases: [
      {
@@ -293,7 +293,7 @@ databases: [
              useFindAndModify:   false
          },
          plugins:         {
-             &#x27;itee-plugin-three&#x27;: {}
+             &#x27;@itee/plugin-three&#x27;: {}
          }
      }
 ]</pre>
@@ -301,7 +301,7 @@ databases: [
     <pre class="sunlight-highlight-javascript">
 // In case you are bundling your package you should use import statement
 
-import { ObjectsManager } from &#x27;itee-plugin-three&#x27;
+import { ObjectsManager } from &#x27;@itee/plugin-three&#x27;
 
 var objectsManager = new ObjectsManager( options )
 objectsManager.read( query, projection, onSuccess, onProgress, onError )</pre>
@@ -309,7 +309,7 @@ objectsManager.read( query, projection, onSuccess, onProgress, onError )</pre>
     <pre class="sunlight-highlight-xml">
 &lt;!-- For client usage you could directly import iife script using script tag like this --&gt;
 
-&lt;script src=&quot;resources/scripts/itee-plugin-three.iife.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</pre>
+&lt;script src=&quot;resources/scripts/@itee/plugin-three.iife.min.js&quot; type=&quot;text/javascript&quot;&gt;&lt;/script&gt;</pre>
 
 
         

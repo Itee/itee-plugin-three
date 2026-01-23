@@ -1,7 +1,7 @@
 /**
- * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ━┓ ┏┓      ┏┓            ┏┳ 
- * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃  ┃ ┃┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
- * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻• ╹•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
+ * ┳      ┏┓┓    •     ┓           ┏┓ ┏┓ ┏┓      ┏┓            ┏┳ 
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓━━╋┣┓┏┓┏┓┏┓  ┓┏┏┛ ┃┫ ┃┫  ━━  ┃ ┏┓┏┳┓┏┳┓┏┓┏┓ ┃┏
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗  ┗┛┗┛ ┗ ┗   ┗┛┗━•┗┛•┗┛      ┗┛┗┛┛┗┗┛┗┗┗┛┛┗┗┛┛
  *              ┛                                                 
  * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
  * @author  [Itee (Tristan Valcke)]{@link https://github.com/Itee}
@@ -10,13 +10,13 @@
  */
 'use strict';
 
-var iteeDatabase = require('itee-database');
-var iteeMongodb = require('itee-mongodb');
-var require$$0$3 = require('itee-validators');
+var database = require('@itee/database');
+var mongodb = require('@itee/mongodb');
+var require$$0$3 = require('@itee/validators');
 var threeFull = require('three-full');
-var iteeClient = require('itee-client');
-var iteeCore = require('itee-core');
-var iteeUtils = require('itee-utils');
+var client = require('@itee/client');
+var core = require('@itee/core');
+var utils = require('@itee/utils');
 var node_module = require('node:module');
 var bson = require('bson');
 
@@ -34,7 +34,7 @@ var require$$0__default = /*#__PURE__*/_interopDefault(require$$0$3);
  */
 
 
-class TObjects3DController extends iteeMongodb.TMongooseController {
+class TObjects3DController extends mongodb.TMongooseController {
 
     constructor( parameters = {} ) {
         super( parameters );
@@ -202,7 +202,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
                     this._deleteDocuments( 'Materials', cleanResults.materials )
                 ] );
 
-                iteeMongodb.TMongooseController.returnData( {
+                mongodb.TMongooseController.returnData( {
                     deletedObjectsCount,
                     deletedGeometriesResult,
                     deletedMaterialsResult
@@ -212,7 +212,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
 
         } catch ( error ) {
 
-            iteeMongodb.TMongooseController.returnError( error, response );
+            mongodb.TMongooseController.returnError( error, response );
 
         }
 
@@ -388,7 +388,7 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
  * @module Converters/ColladaToThree
  * @desc Export JsonToThree converter class about .dae files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -404,14 +404,14 @@ class TObjects3DController extends iteeMongodb.TMongooseController {
  * @class
  * @augments TAbstractFileConverter
  */
-class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
+class ColladaToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+            dumpType: database.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
@@ -463,7 +463,7 @@ class ColladaToThree extends iteeDatabase.TAbstractFileConverter {
  *
  * @type {Object}
  */
-const DBFVersion = /*#__PURE__*/iteeUtils.toEnum( {
+const DBFVersion = /*#__PURE__*/utils.toEnum( {
     FoxPro:               0x30,
     FoxPro_Autoincrement: 0x31,
 
@@ -488,7 +488,7 @@ const DBFVersion = /*#__PURE__*/iteeUtils.toEnum( {
  *
  * @type {Object}
  */
-const DataType = /*#__PURE__*/iteeUtils.toEnum( {
+const DataType = /*#__PURE__*/utils.toEnum( {
     Binary:        'B',
     Character:     'C',
     Date:          'D',
@@ -525,8 +525,8 @@ class DBFLoader {
         const _parameters = {
             ...{
                 manager: threeFull.DefaultLoadingManager,
-                logger:  iteeCore.DefaultLogger,
-                reader:  new iteeClient.TBinaryReader()
+                logger:  core.DefaultLogger,
+                reader:  new client.TBinaryReader()
             }, ...parameters
         };
 
@@ -604,7 +604,7 @@ class DBFLoader {
     parse( arrayBuffer ) {
 
         this.reader
-            .setEndianess( iteeClient.Endianness.Big )
+            .setEndianess( client.Endianness.Big )
             .setBuffer( arrayBuffer );
 
         const version = this.reader.getInt8();
@@ -746,11 +746,11 @@ class DBFLoader {
         const month = this.reader.getInt8();
         const day   = this.reader.getInt8();
 
-        this.reader.setEndianess( iteeClient.Endianness.Little );
+        this.reader.setEndianess( client.Endianness.Little );
         const numberOfRecords      = this.reader.getInt32();
         const numberOfByteInHeader = this.reader.getInt16();
         const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( iteeClient.Endianness.Big );
+        this.reader.setEndianess( client.Endianness.Big );
         this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
 
         // Field descriptor array
@@ -810,11 +810,11 @@ class DBFLoader {
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
         const day   = this.reader.getInt8();
-        this.reader.setEndianess( iteeClient.Endianness.Little );
+        this.reader.setEndianess( client.Endianness.Little );
         const numberOfRecords      = this.reader.getInt32();
         const numberOfByteInHeader = this.reader.getInt16();
         const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( iteeClient.Endianness.Big );
+        this.reader.setEndianess( client.Endianness.Big );
         this.reader.skipOffsetOf( 2 ); // Reserved
         const incompleteTransactionFlag = this.reader.getInt8();
         const encryptionFlag            = this.reader.getInt8();
@@ -882,11 +882,11 @@ class DBFLoader {
         const year  = this.reader.getInt8() + DBFLoader.YearOffset;
         const month = this.reader.getInt8();
         const day   = this.reader.getInt8();
-        this.reader.setEndianess( iteeClient.Endianness.Little );
+        this.reader.setEndianess( client.Endianness.Little );
         const numberOfRecords      = this.reader.getInt32();
         const numberOfByteInHeader = this.reader.getInt16();
         const numberOfByteInRecord = this.reader.getInt16();
-        this.reader.setEndianess( iteeClient.Endianness.Big );
+        this.reader.setEndianess( client.Endianness.Big );
         this.reader.skipOffsetOf( 2 ); // Reserved
         const incompleteTransactionFlag = this.reader.getInt8();
         const encryptionFlag            = this.reader.getInt8();
@@ -1218,7 +1218,7 @@ DBFLoader.YearOffset    = 1900;
  * @module Converters/DbfToThree
  * @desc Export JsonToThree converter class about .dbf files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/DBFLoader Loader/DBFLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1232,13 +1232,13 @@ DBFLoader.YearOffset    = 1900;
  * @class
  * @augments TAbstractFileConverter
  */
-class DbfToThree extends iteeDatabase.TAbstractFileConverter {
+class DbfToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
-        super( { dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer } );
+        super( { dumpType: database.TAbstractFileConverter.DumpType.ArrayBuffer } );
     }
 
     /**
@@ -1275,7 +1275,7 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/FbxToThree
  * @desc Export JsonToThree converter class about .fbx files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1291,14 +1291,14 @@ class DbfToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class FbxToThree extends iteeDatabase.TAbstractFileConverter {
+class FbxToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+            dumpType: database.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
@@ -1336,7 +1336,7 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/JsonToThree
  * @desc Export JsonToThree converter class about .json files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1352,14 +1352,14 @@ class FbxToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class JsonToThree extends iteeDatabase.TAbstractFileConverter {
+class JsonToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
+            dumpType: database.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
@@ -1397,7 +1397,7 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/MtlToThree
  * @desc Export JsonToThree converter class about .mtl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1413,14 +1413,14 @@ class JsonToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class MtlToThree extends iteeDatabase.TAbstractFileConverter {
+class MtlToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.String
+            dumpType: database.TAbstractFileConverter.DumpType.String
         } );
     }
 
@@ -1457,7 +1457,7 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/Obj2ToThree
  * @desc Export JsonToThree converter class about .obj files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1473,14 +1473,14 @@ class MtlToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
+class Obj2ToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
+            dumpType: database.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
@@ -1518,8 +1518,8 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Loader/SHPLoader
  * @desc Export SHPLoader to load .shp files
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/utils @itee/utils}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1533,7 +1533,7 @@ class Obj2ToThree extends iteeDatabase.TAbstractFileConverter {
  *
  * @type {Object}
  */
-const ShapeType = /*#__PURE__*/iteeUtils.toEnum( {
+const ShapeType = /*#__PURE__*/utils.toEnum( {
     NullShape:   0,
     Point:       1,
     Polyline:    3,
@@ -1575,8 +1575,8 @@ class SHPLoader {
         const _parameters = {
             ...{
                 manager:      threeFull.DefaultLoadingManager,
-                logger:       iteeCore.DefaultLogger,
-                reader:       new iteeClient.TBinaryReader(),
+                logger:       core.DefaultLogger,
+                reader:       new client.TBinaryReader(),
                 globalOffset: new threeFull.Vector3( 0, 0, 0 ),
                 worldAxis:    {
                     from: 'zUp',
@@ -1687,7 +1687,7 @@ class SHPLoader {
     parse( arrayBuffer ) {
 
         this._reader
-            .setEndianess( iteeClient.Endianness.Big )
+            .setEndianess( client.Endianness.Big )
             .setBuffer( arrayBuffer );
 
         const header = this._parseHeader();
@@ -1729,7 +1729,7 @@ class SHPLoader {
         this._reader.skipOffsetOf( 20 );
         const fileLength = this._reader.getInt32();
 
-        this._reader.setEndianess( iteeClient.Endianness.Little );
+        this._reader.setEndianess( client.Endianness.Little );
 
         const version         = this._reader.getInt32();
         const shapeType       = this._reader.getInt32();
@@ -1782,7 +1782,7 @@ class SHPLoader {
             endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
 
             // All parsing methods use little below
-            this._reader.setEndianess( iteeClient.Endianness.Little );
+            this._reader.setEndianess( client.Endianness.Little );
 
             switch ( header.shapeType ) {
 
@@ -1884,7 +1884,7 @@ class SHPLoader {
      */
     _parseRecordHeader() {
 
-        this._reader.setEndianess( iteeClient.Endianness.Big );
+        this._reader.setEndianess( client.Endianness.Big );
 
         const recordNumber  = this._reader.getInt32();
         const contentLength = this._reader.getInt32();
@@ -2014,7 +2014,7 @@ class SHPLoader {
 
             const ring = points.slice( value, parts[ index + 1 ] );
 
-            if ( iteeUtils.ringClockwise( ring ) ) {
+            if ( utils.ringClockwise( ring ) ) {
 
                 polygons.push( ring );
                 //					polygons.push( [ ring ] );
@@ -2031,7 +2031,7 @@ class SHPLoader {
 
             polygons.some( polygon => {
 
-                if ( iteeUtils.ringContainsSome( polygon[ 0 ], hole ) ) {
+                if ( utils.ringContainsSome( polygon[ 0 ], hole ) ) {
                     polygon.push( hole );
                     return true
                 }
@@ -2181,7 +2181,7 @@ SHPLoader.MinVersion    = 1000;
  * @module Converters/ShpToThree
  * @desc Export JsonToThree converter class about .shp files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/SHPLoader Loader/SHPLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2195,14 +2195,14 @@ SHPLoader.MinVersion    = 1000;
  * @class
  * @augments TAbstractFileConverter
  */
-class ShpToThree extends iteeDatabase.TAbstractFileConverter {
+class ShpToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+            dumpType: database.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
@@ -2240,7 +2240,7 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/StlToThree
  * @desc Export JsonToThree converter class about .stl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2256,14 +2256,14 @@ class ShpToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class StlToThree extends iteeDatabase.TAbstractFileConverter {
+class StlToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.JSON
+            dumpType: database.TAbstractFileConverter.DumpType.JSON
         } );
     }
 
@@ -2301,7 +2301,7 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Converters/TdsToThree
  * @desc Export JsonToThree converter class about .3ds files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2317,14 +2317,14 @@ class StlToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractFileConverter
  */
-class TdsToThree extends iteeDatabase.TAbstractFileConverter {
+class TdsToThree extends database.TAbstractFileConverter {
 
     /**
      * @constructor
      */
     constructor() {
         super( {
-            dumpType: iteeDatabase.TAbstractFileConverter.DumpType.ArrayBuffer
+            dumpType: database.TAbstractFileConverter.DumpType.ArrayBuffer
         } );
     }
 
@@ -2362,9 +2362,9 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-database itee-database}
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -2377,7 +2377,7 @@ class TdsToThree extends iteeDatabase.TAbstractFileConverter {
  * @class
  * @augments TAbstractDataInserter
  */
-class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
+class ThreeToMongoDB extends database.TAbstractDataInserter {
 
     /**
      * @constructor
@@ -2388,7 +2388,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
 
         const _parameters = {
             ...{
-                logger: iteeCore.DefaultLogger
+                logger: core.DefaultLogger
             }, ...parameters
         };
         super( _parameters );
@@ -2432,7 +2432,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
      */
     async _save( data, parameters, onSuccess, onProgress, onError ) {
 
-        const dataToParse = iteeUtils.toArray( data );
+        const dataToParse = utils.toArray( data );
         if ( require$$0$3.isEmptyArray( dataToParse ) ) {
             onError( 'No data to save in database. Abort insert !' );
             return
@@ -2529,7 +2529,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _parseObjects( objects = [], parentId = null ) {
         this.logger.debug( `_parseObjects(...)` );
 
-        const _objects = iteeUtils.toArray( objects );
+        const _objects = utils.toArray( objects );
         if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
@@ -2562,8 +2562,8 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
         const objectType      = object.type;
         const objectName      = object.name;
         const objectGeometry  = object.geometry;
-        const objectChildren  = iteeUtils.toArray( object.children );
-        const objectMaterials = iteeUtils.toArray( object.material );
+        const objectChildren  = utils.toArray( object.children );
+        const objectMaterials = utils.toArray( object.material );
 
         // If it is a terminal object ( No children ) with an empty geometry
         if ( require$$0$3.isDefined( objectGeometry ) && require$$0$3.isEmptyArray( objectChildren ) ) {
@@ -2731,7 +2731,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _getOrCreateDocuments( objects = [] ) {
         this.logger.debug( `_getOrCreateDocuments(...)` );
 
-        const _objects = iteeUtils.toArray( objects );
+        const _objects = utils.toArray( objects );
         if ( require$$0$3.isEmptyArray( _objects ) ) {
             return null
         }
@@ -2784,7 +2784,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _createDocuments( datas = [] ) {
         this.logger.debug( `_createDocuments(...)` );
 
-        const _datas = iteeUtils.toArray( datas );
+        const _datas = utils.toArray( datas );
         if ( require$$0$3.isEmptyArray( _datas ) ) {
             return null
         }
@@ -2901,7 +2901,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _updateDocuments( documents = [], updateQuery, queryOptions ) {
         this.logger.debug( `_updateDocuments(...)` );
 
-        const _documents = iteeUtils.toArray( documents );
+        const _documents = utils.toArray( documents );
         if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
@@ -2957,7 +2957,7 @@ class ThreeToMongoDB extends iteeDatabase.TAbstractDataInserter {
     async _deleteDocuments( documents = [] ) {
         this.logger.debug( `_deleteDocuments(...)` );
 
-        const _documents = iteeUtils.toArray( documents );
+        const _documents = utils.toArray( documents );
         if ( require$$0$3.isEmptyArray( _documents ) ) {
             return null
         }
@@ -3922,14 +3922,14 @@ var PerspectiveCameraExports = requirePerspectiveCamera();
 
 var BufferAttribute = {};
 
-const require$1 = node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('plugin.cjs', document.baseURI).href)));
+const require$1 = node_module.createRequire((typeof document === 'undefined' ? require('u' + 'rl').pathToFileURL(__filename).href : (_documentCurrentScript && _documentCurrentScript.tagName.toUpperCase() === 'SCRIPT' && _documentCurrentScript.src || new URL('plugin-three.cjs', document.baseURI).href)));
 function __require() { return require$1("node:buffer"); }
 
 /**
  * @module Schemas/Core/BufferAttribute
  * @desc Export the ThreeJs BufferAttribute Model and Schema for Mongoose.
  *
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15140,7 +15140,7 @@ var VideoTextureExports = requireVideoTexture();
  * @module Types/Color
  * @desc Export the three js Color type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15234,7 +15234,7 @@ function ColorType( Mongoose ) {
  * @module Types/Euler
  * @desc Export the three js Euler type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
@@ -15335,7 +15335,7 @@ function EulerType( Mongoose ) {
  * @module Types/Matrix3
  * @desc Export the three js Matrix3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15439,7 +15439,7 @@ function Matrix3Type( Mongoose ) {
  * @module Types/Matrix4
  * @desc Export the three js Matrix4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15543,7 +15543,7 @@ function Matrix4Type( Mongoose ) {
  * @module Types/Quaternion
  * @desc Export the three js Quaternion type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15642,7 +15642,7 @@ function QuaternionType( Mongoose ) {
  * @module Types/Vector2
  * @desc Export the three js Vector2 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15729,7 +15729,7 @@ function Vector2Type( Mongoose ) {
  * @module Types/Vector3
  * @desc Export the three js Vector3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15822,7 +15822,7 @@ function Vector3Type( Mongoose ) {
  * @module Types/Vector4
  * @desc Export the three js Vector4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15931,7 +15931,7 @@ function Vector4Type( Mongoose ) {
 
 function registerPlugin( parameters ) {
 
-    return new iteeMongodb.TMongoDBPlugin( parameters )
+    return new mongodb.TMongoDBPlugin( parameters )
         .addType( ColorType )
         .addType( EulerType )
         .addType( Matrix3Type )
@@ -16143,7 +16143,7 @@ function registerPlugin( parameters ) {
                 }
             }
         } )
-        .addController( iteeMongodb.TMongooseController )
+        .addController( mongodb.TMongooseController )
         .addDescriptor( {
             route:      '/curves',
             controller: {
@@ -16252,7 +16252,7 @@ function registerPlugin( parameters ) {
                 }
             }
         } )
-        .addController( iteeDatabase.TAbstractConverterManager )
+        .addController( database.TAbstractConverterManager )
         .addDescriptor( {
             route:      '/uploads',
             controller: {
@@ -18824,7 +18824,7 @@ if ( typeof window !== 'undefined' ) {
  */
 
 
-const Colors = /*#__PURE__*/iteeUtils.toEnum( {
+const Colors = /*#__PURE__*/utils.toEnum( {
     Black:                /*#__PURE__*/new Color( '#000000' ),
     Navy:                 /*#__PURE__*/new Color( '#000080' ),
     DarkBlue:             /*#__PURE__*/new Color( '#00008b' ),
@@ -19074,21 +19074,21 @@ const Right_Up_Front   = /*#__PURE__*/new Vector3( 1, 1, 1 ).normalize();
  */
 const Cardinales = {
     North:            Back,
-    North_North_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
-    North_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-    East_North_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+    North_North_East: /*#__PURE__*/new Vector3( core.OneHalf, 0, -( core.SquareRootOfThreeOnTwo ) ).normalize(),
+    North_East:       /*#__PURE__*/new Vector3( core.SquareRootOfTwoOnTwo, 0, -( core.SquareRootOfTwoOnTwo ) ).normalize(),
+    East_North_East:  /*#__PURE__*/new Vector3( core.SquareRootOfThreeOnTwo, 0, -( core.OneHalf ) ).normalize(),
     East:             Right,
-    East_South_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
-    South_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-    South_South_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+    East_South_East:  /*#__PURE__*/new Vector3( core.SquareRootOfThreeOnTwo, 0, -( -core.OneHalf ) ).normalize(),
+    South_East:       /*#__PURE__*/new Vector3( core.SquareRootOfTwoOnTwo, 0, -( -core.SquareRootOfTwoOnTwo ) ).normalize(),
+    South_South_East: /*#__PURE__*/new Vector3( core.OneHalf, 0, -( -core.SquareRootOfThreeOnTwo ) ).normalize(),
     South:            Front,
-    South_South_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
-    South_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-    West_South_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+    South_South_West: /*#__PURE__*/new Vector3( -core.OneHalf, 0, -( -core.SquareRootOfThreeOnTwo ) ).normalize(),
+    South_West:       /*#__PURE__*/new Vector3( -core.SquareRootOfTwoOnTwo, 0, -( -core.SquareRootOfTwoOnTwo ) ).normalize(),
+    West_South_West:  /*#__PURE__*/new Vector3( -core.SquareRootOfThreeOnTwo, 0, -( -core.OneHalf ) ).normalize(),
     West:             Left,
-    West_North_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
-    North_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-    North_North_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize()
+    West_North_West:  /*#__PURE__*/new Vector3( -core.SquareRootOfThreeOnTwo, 0, -( core.OneHalf ) ).normalize(),
+    North_West:       /*#__PURE__*/new Vector3( -core.SquareRootOfTwoOnTwo, 0, -( core.SquareRootOfTwoOnTwo ) ).normalize(),
+    North_North_West: /*#__PURE__*/new Vector3( -core.OneHalf, 0, -( core.SquareRootOfThreeOnTwo ) ).normalize()
 };
 
 const Directions = {
@@ -19127,14 +19127,14 @@ const Directions = {
  * @module Loader/ASCLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { ASCLoader } from 'itee-plugin-three'
+ * import { ASCLoader } from '@itee/plugin-three'
  *
  * const loader = new ASCLoader();
  *
@@ -19168,7 +19168,7 @@ class ASCLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = core.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
@@ -19953,14 +19953,14 @@ class ASCLoader {
  * @module Loader/LASLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { LASLoader } from 'itee-plugin-three'
+ * import { LASLoader } from '@itee/plugin-three'
  *
  * const loader = new LASLoader();
  *
@@ -19993,7 +19993,7 @@ class ASCLoader {
 
 const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
 
-const PointClasses = /*#__PURE__*/iteeUtils.toEnum( {
+const PointClasses = /*#__PURE__*/utils.toEnum( {
     Created:          0,
     Unclassified:     1,
     Ground:           2,
@@ -20020,12 +20020,12 @@ class LASLoader {
      * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
      * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
      */
-    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+    constructor( manager = threeFull.DefaultLoadingManager, logger = core.DefaultLogger ) {
 
         this.manager = manager;
         this.logger  = logger;
 
-        this._reader         = new iteeClient.TBinaryReader();
+        this._reader         = new client.TBinaryReader();
         this._fullVersion    = '';
         this._boundingBox    = new threeFull.Box3();
         this._points         = [];
@@ -20205,7 +20205,7 @@ class LASLoader {
 
         return {
             FileSignature:                 this._reader.getString( 4 ),
-            Reserved:                      this._reader.skipOffsetOf( iteeClient.Byte.Four ),
+            Reserved:                      this._reader.skipOffsetOf( client.Byte.Four ),
             GUID_1:                        this._reader.getUint32(),
             GUID_2:                        this._reader.getUint16(),
             GUID_3:                        this._reader.getUint16(),
@@ -20244,7 +20244,7 @@ class LASLoader {
         return {
             FileSignature:                 this._reader.getString( 4 ),
             FileSourceId:                  this._reader.getUint16(),
-            Reserved:                      this._reader.skipOffsetOf( iteeClient.Byte.Two ) && null,
+            Reserved:                      this._reader.skipOffsetOf( client.Byte.Two ) && null,
             GUID_1:                        this._reader.getUint32(),
             GUID_2:                        this._reader.getUint16(),
             GUID_3:                        this._reader.getUint16(),
@@ -20534,7 +20534,7 @@ class LASLoader {
 
     _parseGeoDoubleParamsTag( recordLength ) {
 
-        const numberOfEntries = recordLength / iteeClient.Byte.Height;
+        const numberOfEntries = recordLength / client.Byte.Height;
         const params          = [];
 
         for ( let i = 0 ; i < numberOfEntries ; i++ ) {
@@ -21499,4 +21499,4 @@ exports.PointClasses = PointClasses;
 exports.SHPLoader = SHPLoader;
 exports.ShapeType = ShapeType;
 exports.registerPlugin = registerPlugin;
-//# sourceMappingURL=plugin.cjs.map
+//# sourceMappingURL=plugin-three.cjs.map
