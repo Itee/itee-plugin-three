@@ -8,14 +8,14 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager }  from 'itee-client'
+import { TDataBaseManager }  from '@itee/client'
 import {
     isDefined,
     isNotBoolean,
     isNotEmptyArray,
     isNull,
     isUndefined
-}                            from 'itee-validators'
+}                            from '@itee/validators'
 //import { OrthographicCamera } from 'three-full/sources/cameras/OrthographicCamera'
 //import { PerspectiveCamera }  from 'three-full/sources/cameras/PerspectiveCamera'
 //import { Object3D }           from 'three-full/sources/core/Object3D'

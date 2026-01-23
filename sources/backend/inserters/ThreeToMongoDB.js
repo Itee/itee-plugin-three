@@ -2,23 +2,23 @@
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-database itee-database}
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { DefaultLogger }         from 'itee-core'
-import { TAbstractDataInserter } from 'itee-database'
-import { toArray }               from 'itee-utils'
+import { DefaultLogger }         from '@itee/core'
+import { TAbstractDataInserter } from '@itee/database'
+import { toArray }               from '@itee/utils'
 import {
     isDefined,
     isEmptyArray,
     isNotDefined,
     isNull
-}                                from 'itee-validators'
+}                                from '@itee/validators'
 
 /**
  * This class allow to insert ThreeJs stuff in MongoDB database.

@@ -1,8 +1,10 @@
-.idea/
-/.releaserc
-/.travis.yml
-/configs/
+/.github/
+/.idea/
+/.reports/
+/.tasks/
 /docs/
-/gulpfile.mjs
 /tests/
 /tutorials/
+.czrc
+.releaserc.mjs
+gulpfile.mjs

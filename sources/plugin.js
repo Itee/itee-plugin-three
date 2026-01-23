@@ -19,7 +19,7 @@
  *
  * @example {@lang javascript}
  * // For nodejs usage you just need to declare plugin in itee.config.js like this:
- * // It will automatically performe a require('itee-plugin-three') of itee-plugin-three.cjs build
+ * // It will automatically performe a require('@itee/plugin-three') of @itee/plugin-three.cjs build
  *
  * databases: [
  *      {
@@ -33,7 +33,7 @@
  *              useFindAndModify:   false
  *          },
  *          plugins:         {
- *              'itee-plugin-three': {}
+ *              '@itee/plugin-three': {}
  *          }
  *      }
  * ]
@@ -41,7 +41,7 @@
  * @example {@lang javascript}
  * // In case you are bundling your package you should use import statement
  *
- * import { ObjectsManager } from 'itee-plugin-three'
+ * import { ObjectsManager } from '@itee/plugin-three'
  *
  * var objectsManager = new ObjectsManager( options )
  * objectsManager.read( query, projection, onSuccess, onProgress, onError )
@@ -49,7 +49,7 @@
  * @example {@lang xml}
  * <!-- For client usage you could directly import iife script using script tag like this -->
  *
- * <script src="resources/scripts/itee-plugin-three.iife.min.js" type="text/javascript"></script>
+ * <script src="resources/scripts/@itee/plugin-three.iife.min.js" type="text/javascript"></script>
  *
  */
 
@@ -68,38 +68,38 @@
  */
 
 /**
- * The itee-client package.
+ * The @itee/client package.
  *
  * @external "Itee.Client"
- * @see {@link https://github.com/Itee/itee-client/|Itee.Client}
+ * @see {@link https://github.com/Itee/@itee/client/|Itee.Client}
  */
 
 /**
- * The itee-database package.
+ * The @itee/database package.
  *
  * @external "Itee.Database"
- * @see {@link https://github.com/Itee/itee-database/|Itee.Database}
+ * @see {@link https://github.com/Itee/@itee/database/|Itee.Database}
  */
 
 /**
- * The itee-mongodb package.
+ * The @itee/mongodb package.
  *
  * @external "Itee.MongoDB"
- * @see {@link https://github.com/Itee/itee-mongodb/|Itee.MongoDB}
+ * @see {@link https://github.com/Itee/@itee/mongodb/|Itee.MongoDB}
  */
 
 /**
- * The itee-utils package.
+ * The @itee/utils package.
  *
  * @external "Itee.Utils"
- * @see {@link https://github.com/Itee/itee-utils/|Itee.Utils}
+ * @see {@link https://github.com/Itee/@itee/utils/|Itee.Utils}
  */
 
 /**
- * The itee-validators package.
+ * The @itee/validators package.
  *
  * @external "Itee.Validators"
- * @see {@link https://github.com/Itee/itee-validators/|Itee.Validators}
+ * @see {@link https://github.com/Itee/@itee/validators/|Itee.Validators}
  */
 
 /**
@@ -122,7 +122,7 @@
  * @interface Enum
  * @description Act as an Enum value with some helpers function
  * @example
- * import { toEnum } from 'itee-utils'
+ * import { toEnum } from '@itee/utils'
  * const MyEnum = toEnum( {
  *     Foo: 0,
  *     Bar: 1,

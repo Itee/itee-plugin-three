@@ -2,14 +2,14 @@
  * @module Converters/Obj2ToThree
  * @desc Export JsonToThree converter class about .obj files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TAbstractFileConverter } from 'itee-database'
+import { TAbstractFileConverter } from '@itee/database'
 import { OBJLoader2 }             from 'three-full'
 
 //import { OBJLoader2 }             from 'three-full/sources/loaders/OBJLoader2'

@@ -2,7 +2,7 @@
  * @module Types/Euler
  * @desc Export the three js Euler type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
@@ -13,7 +13,7 @@ import {
     isNotNumber,
     isNotObject,
     isNotString
-}                           from 'itee-validators'
+}                           from '@itee/validators'
 
 /**
  * The type registering function.

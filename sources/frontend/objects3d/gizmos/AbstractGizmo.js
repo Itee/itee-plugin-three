@@ -3,7 +3,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { isNotArray } from 'itee-validators'
+import { isNotArray } from '@itee/validators'
 import {
     DoubleSide,
     Mesh,

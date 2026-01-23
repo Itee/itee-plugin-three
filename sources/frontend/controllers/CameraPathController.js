@@ -9,12 +9,12 @@
 
 // TODO: The path displacement logic need to be implemented under CameraControls
 
-import { Keys }                     from 'itee-client'
-import { DefaultLogger as TLogger } from 'itee-core'
+import { Keys }                     from '@itee/client'
+import { DefaultLogger as TLogger } from '@itee/core'
 import {
     isNull,
     isUndefined
-}                                   from 'itee-validators'
+}                                   from '@itee/validators'
 import {
     Camera,
     EventDispatcher,

@@ -2,9 +2,9 @@
  * @module Controllers/CameraControls
  * @desc This module export CameraControls class and CameraControlMode enum values.
  *
- * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
- * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/client]{@link https://github.com/Itee/@itee/client}}
+ * @requires {@link module: [@itee/utils]{@link https://github.com/Itee/@itee/utils}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -12,26 +12,26 @@
  *
  * @example
  *
- * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
+ * import { CameraControls, CameraControlMode } from '@itee/plugin-three'
  *
  */
 
 import {
     Keys,
     Mouse
-}                        from 'itee-client'
-import { DefaultLogger } from 'itee-core'
+}                        from '@itee/client'
+import { DefaultLogger } from '@itee/core'
 import {
     degreesToRadians,
     toEnum
-}                        from 'itee-utils'
+}                        from '@itee/utils'
 import {
     isEmptyArray,
     isNotBoolean,
     isNotDefined,
     isNull,
     isUndefined
-}                        from 'itee-validators'
+}                        from '@itee/validators'
 //import { EventDispatcher } from 'three-full/sources/core/EventDispatcher'
 //import { Object3D }        from 'three-full/sources/core/Object3D'
 //import { Spherical }       from 'three-full/sources/math/Spherical'

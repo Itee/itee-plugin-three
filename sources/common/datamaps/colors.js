@@ -3,7 +3,7 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { toEnum } from 'itee-utils'
+import { toEnum } from '@itee/utils'
 import { Color }  from 'three'
 
 const Colors = /*#__PURE__*/toEnum( {

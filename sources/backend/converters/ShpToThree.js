@@ -2,14 +2,14 @@
  * @module Converters/ShpToThree
  * @desc Export JsonToThree converter class about .shp files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/SHPLoader Loader/SHPLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TAbstractFileConverter } from 'itee-database'
+import { TAbstractFileConverter } from '@itee/database'
 import { SHPLoader }              from '../../common/loaders/SHPLoader.js'
 
 /**

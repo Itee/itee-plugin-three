@@ -8,8 +8,8 @@
  *
  */
 
-import { TDataBaseManager } from 'itee-client'
-import { isObject }         from 'itee-validators'
+import { TDataBaseManager } from '@itee/client'
+import { isObject }         from '@itee/validators'
 //import { CurvePath }             from 'three-full/sources/core/CurvePath'
 //import { Path }                  from 'three-full/sources/core/Path'
 //import { Shape }                 from 'three-full/sources/core/Shape'

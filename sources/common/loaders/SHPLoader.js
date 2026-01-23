@@ -2,8 +2,8 @@
  * @module Loader/SHPLoader
  * @desc Export SHPLoader to load .shp files
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/utils @itee/utils}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -17,13 +17,13 @@
 import {
     Endianness,
     TBinaryReader
-}                        from 'itee-client'
-import { DefaultLogger } from 'itee-core'
+}                        from '@itee/client'
+import { DefaultLogger } from '@itee/core'
 import {
     ringClockwise,
     ringContainsSome,
     toEnum
-}                        from 'itee-utils'
+}                        from '@itee/utils'
 //import { Shape }                 from 'three-full/sources/core/Shape'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'
 //import { DefaultLoadingManager } from 'three-full/sources/loaders/LoadingManager'

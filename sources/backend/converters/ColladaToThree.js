@@ -2,14 +2,14 @@
  * @module Converters/ColladaToThree
  * @desc Export JsonToThree converter class about .dae files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TAbstractFileConverter } from 'itee-database'
+import { TAbstractFileConverter } from '@itee/database'
 import { ColladaLoader }          from 'three-full'
 
 //import { ColladaLoader }          from 'three-full/sources/loaders/ColladaLoader'

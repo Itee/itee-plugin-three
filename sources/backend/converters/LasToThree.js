@@ -2,14 +2,14 @@
  * @module Converters/LasToThree
  * @desc Export LasToThree converter class about .las files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/LASLoader Loader/LASLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TAbstractFileConverter } from 'itee-database'
+import { TAbstractFileConverter } from '@itee/database'
 import { LASLoader }              from '../../common/loaders/LASLoader.js'
 
 /**

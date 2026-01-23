@@ -2,7 +2,7 @@
  * @module Schemas/Core/BufferAttribute
  * @desc Export the ThreeJs BufferAttribute Model and Schema for Mongoose.
  *
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -20,7 +20,7 @@ const {
           isUint32Array,
           isBigInt64Array,
           isBigUint64Array
-      } = require( 'itee-validators' )
+      } = require( '@itee/validators' )
 const { Buffer } = require( 'node:buffer' )
 
 let _schema = undefined

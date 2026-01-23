@@ -11,15 +11,15 @@
 import {
     Keys,
     Mouse
-}                         from 'itee-client'
-import { toEnum }         from 'itee-utils'
+}                         from '@itee/client'
+import { toEnum }         from '@itee/utils'
 import {
     isArray,
     isDefined,
     isNotDefined,
     isNull,
     isUndefined
-}                         from 'itee-validators'
+}                         from '@itee/validators'
 // Waiting three-shaking fix
 import {
     Box3,
