@@ -402,12 +402,12 @@ function registerPlugin( parameters ) {
                 options: {
                     schemaName: 'Objects3D'
                 },
-                can:     {
+                can: {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read:   {
+                    read: {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -430,12 +430,12 @@ function registerPlugin( parameters ) {
                 options: {
                     schemaName: 'Curves'
                 },
-                can:     {
+                can: {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read:   {
+                    read: {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -457,12 +457,12 @@ function registerPlugin( parameters ) {
                 options: {
                     schemaName: 'Geometries'
                 },
-                can:     {
+                can: {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read:   {
+                    read: {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -484,12 +484,12 @@ function registerPlugin( parameters ) {
                 options: {
                     schemaName: 'Materials'
                 },
-                can:     {
+                can: {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read:   {
+                    read: {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -511,12 +511,12 @@ function registerPlugin( parameters ) {
                 options: {
                     schemaName: 'Textures'
                 },
-                can:     {
+                can: {
                     create: {
                         on:   'put',
                         over: '/(:id)?'
                     },
-                    read:   {
+                    read: {
                         on:   'post',
                         over: '/(:id)?'
                     },
@@ -549,7 +549,7 @@ function registerPlugin( parameters ) {
                         MtlToThree:     new MtlToThree(),
                         ObjToThree:     new Obj2ToThree()
                     },
-                    rules:      [
+                    rules: [
                         {
                             on:  '.json',
                             use: 'JsonToThree'
@@ -585,9 +585,9 @@ function registerPlugin( parameters ) {
                             use: [ 'MtlToThree', 'ObjToThree' ]
                         }
                     ],
-                    inserter:   ThreeToMongoDB
+                    inserter: ThreeToMongoDB
                 },
-                can:     {
+                can: {
                     processFiles: {
                         on:   'post',
                         over: '/'

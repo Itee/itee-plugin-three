@@ -1,0 +1,1435 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Itee Plugin Three v1.7.0 Source: frontend/controllers/ClippingControls.js</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.dark.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.cyborg.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Itee Plugin Three v1.7.0</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Controllers_CameraControls.html">Controllers/CameraControls</a></li><li><a href="module-Controllers_CameraPathController.html">Controllers/CameraPathController</a></li><li><a href="module-Controllers_ClippingController.html">Controllers/ClippingController</a></li><li><a href="module-Converters_AscToThree.html">Converters/AscToThree</a></li><li><a href="module-Converters_ColladaToThree.html">Converters/ColladaToThree</a></li><li><a href="module-Converters_DbfToThree.html">Converters/DbfToThree</a></li><li><a href="module-Converters_FbxToThree.html">Converters/FbxToThree</a></li><li><a href="module-Converters_JsonToThree.html">Converters/JsonToThree</a></li><li><a href="module-Converters_LasToThree.html">Converters/LasToThree</a></li><li><a href="module-Converters_MtlToThree.html">Converters/MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree.html">Converters/Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree.html">Converters/ObjToThree</a></li><li><a href="module-Converters_ShpToThree.html">Converters/ShpToThree</a></li><li><a href="module-Converters_StlToThree.html">Converters/StlToThree</a></li><li><a href="module-Converters_TdsToThree.html">Converters/TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB.html">Inserters/ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader.html">Loader/ASCLoader</a></li><li><a href="module-Loader_DBFLoader.html">Loader/DBFLoader</a></li><li><a href="module-Loader_LASLoader.html">Loader/LASLoader</a></li><li><a href="module-Loader_SHPLoader.html">Loader/SHPLoader</a></li><li><a href="module-Managers_CurvesManager.html">Managers/CurvesManager</a></li><li><a href="module-Managers_GeometriesManager.html">Managers/GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager.html">Managers/MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager.html">Managers/ObjectsManager</a></li><li><a href="module-Managers_TexturesManager.html">Managers/TexturesManager</a></li><li><a href="module-MongoDBThreePlugin.html">MongoDBThreePlugin</a></li><li><a href="module-Objects3D_OrbitControlsHelper.html">Objects3D/OrbitControlsHelper</a></li><li><a href="module-Schemas_Animation_AnimationAction.html">Schemas/Animation/AnimationAction</a></li><li><a href="module-Schemas_Animation_AnimationClip.html">Schemas/Animation/AnimationClip</a></li><li><a href="module-Schemas_Animation_AnimationClipCreator.html">Schemas/Animation/AnimationClipCreator</a></li><li><a href="module-Schemas_Animation_AnimationMixer.html">Schemas/Animation/AnimationMixer</a></li><li><a href="module-Schemas_Animation_AnimationObjectGroup.html">Schemas/Animation/AnimationObjectGroup</a></li><li><a href="module-Schemas_Animation_Tracks_BooleanKeyframeTrack.html">Schemas/Animation/Tracks/BooleanKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_ColorKeyframeTrack.html">Schemas/Animation/Tracks/ColorKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_KeyframeTrack.html">Schemas/Animation/Tracks/KeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_NumberKeyframeTrack.html">Schemas/Animation/Tracks/NumberKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_QuaternionKeyframeTrack.html">Schemas/Animation/Tracks/QuaternionKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_StringKeyframeTrack.html">Schemas/Animation/Tracks/StringKeyframeTrack</a></li><li><a href="module-Schemas_Animation_Tracks_VectorKeyframeTrack.html">Schemas/Animation/Tracks/VectorKeyframeTrack</a></li><li><a href="module-Schemas_Audio_AudioAnalyser.html">Schemas/Audio/AudioAnalyser</a></li><li><a href="module-Schemas_Audio_AudioContext.html">Schemas/Audio/AudioContext</a></li><li><a href="module-Schemas_Audio_VolumeSlice.html">Schemas/Audio/VolumeSlice</a></li><li><a href="module-Schemas_Camera_CinematiqueCamera.html">Schemas/Camera/CinematiqueCamera</a></li><li><a href="module-Schemas_Camera_StereoCamera.html">Schemas/Camera/StereoCamera</a></li><li><a href="module-Schemas_Core_BufferGeometry.html">Schemas/Core/BufferGeometry</a></li><li><a href="module-Schemas_Core_Clock.html">Schemas/Core/Clock</a></li><li><a href="module-Schemas_Core_DirectGeometry.html">Schemas/Core/DirectGeometry</a></li><li><a href="module-Schemas_Core_EventDispatcher.html">Schemas/Core/EventDispatcher</a></li><li><a href="module-Schemas_Core_Font.html">Schemas/Core/Font</a></li><li><a href="module-Schemas_Core_Geometry.html">Schemas/Core/Geometry</a></li><li><a href="module-Schemas_Core_InstancedBufferAttribute.html">Schemas/Core/InstancedBufferAttribute</a></li><li><a href="module-Schemas_Core_InstancedBufferGeometry.html">Schemas/Core/InstancedBufferGeometry</a></li><li><a href="module-Schemas_Core_InstancedInterleavedBuffer.html">Schemas/Core/InstancedInterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBuffer.html">Schemas/Core/InterleavedBuffer</a></li><li><a href="module-Schemas_Core_InterleavedBufferAttribute.html">Schemas/Core/InterleavedBufferAttribute</a></li><li><a href="module-Schemas_Core_Interpolations.html">Schemas/Core/Interpolations</a></li><li><a href="module-Schemas_Core_Layers.html">Schemas/Core/Layers</a></li><li><a href="module-Schemas_Core_Raycaster.html">Schemas/Core/Raycaster</a></li><li><a href="module-Schemas_Core_ShapePath.html">Schemas/Core/ShapePath</a></li><li><a href="module-Schemas_Core_Uniform.html">Schemas/Core/Uniform</a></li><li><a href="module-Schemas_Lights_DirectionalLightShadow.html">Schemas/Lights/DirectionalLightShadow</a></li><li><a href="module-Schemas_Lights_LightShadow.html">Schemas/Lights/LightShadow</a></li><li><a href="module-Schemas_Lights_SpotLightShadow.html">Schemas/Lights/SpotLightShadow</a></li><li><a href="module-Schemas_Maths_ColorConverter.html">Schemas/Maths/ColorConverter</a></li><li><a href="module-Schemas_Maths_Cylindrical.html">Schemas/Maths/Cylindrical</a></li><li><a href="module-Schemas_Maths_Frustum.html">Schemas/Maths/Frustum</a></li><li><a href="module-Schemas_Maths_Interpolant.html">Schemas/Maths/Interpolant</a></li><li><a href="module-Schemas_Maths_Lut.html">Schemas/Maths/Lut</a></li><li><a href="module-Schemas_Maths_Math.html">Schemas/Maths/Math</a></li><li><a href="module-Schemas_Object3D.html">Schemas/Object3D</a></li><li><a href="module-Schemas_Objects_Car.html">Schemas/Objects/Car</a></li><li><a href="module-Schemas_Objects_GPUParticleSystem.html">Schemas/Objects/GPUParticleSystem</a></li><li><a href="module-Schemas_Objects_Group.html">Schemas/Objects/Group</a></li><li><a href="module-Schemas_Objects_Gyroscope.html">Schemas/Objects/Gyroscope</a></li><li><a href="module-Schemas_Objects_MD2Character.html">Schemas/Objects/MD2Character</a></li><li><a href="module-Schemas_Objects_MD2CharacterComplex.html">Schemas/Objects/MD2CharacterComplex</a></li><li><a href="module-Schemas_Objects_MarchingCubes.html">Schemas/Objects/MarchingCubes</a></li><li><a href="module-Schemas_Objects_MorphAnimMesh.html">Schemas/Objects/MorphAnimMesh</a></li><li><a href="module-Schemas_Objects_MorphBlendMesh.html">Schemas/Objects/MorphBlendMesh</a></li><li><a href="module-Schemas_Objects_Ocean.html">Schemas/Objects/Ocean</a></li><li><a href="module-Schemas_Objects_Reflector.html">Schemas/Objects/Reflector</a></li><li><a href="module-Schemas_Objects_ReflectorRTT.html">Schemas/Objects/ReflectorRTT</a></li><li><a href="module-Schemas_Objects_Refractor.html">Schemas/Objects/Refractor</a></li><li><a href="module-Schemas_Objects_RollerCoaster.html">Schemas/Objects/RollerCoaster</a></li><li><a href="module-Schemas_Objects_ShadowMesh.html">Schemas/Objects/ShadowMesh</a></li><li><a href="module-Schemas_Objects_Sky.html">Schemas/Objects/Sky</a></li><li><a href="module-Schemas_Objects_UCSCharacter.html">Schemas/Objects/UCSCharacter</a></li><li><a href="module-Schemas_Objects_Water.html">Schemas/Objects/Water</a></li><li><a href="module-Schemas_Objects_Water2.html">Schemas/Objects/Water2</a></li><li><a href="module-Schemas_Scenes_FogExp2.html">Schemas/Scenes/FogExp2</a></li><li><a href="module-Types_Color.html">Types/Color</a></li><li><a href="module-Types_Euler.html">Types/Euler</a></li><li><a href="module-Types_Matrix3.html">Types/Matrix3</a></li><li><a href="module-Types_Matrix4.html">Types/Matrix4</a></li><li><a href="module-Types_Quaternion.html">Types/Quaternion</a></li><li><a href="module-Types_Vector2.html">Types/Vector2</a></li><li><a href="module-Types_Vector3.html">Types/Vector3</a></li><li><a href="module-Types_Vector4.html">Types/Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="AbstractMongooseModel.html">AbstractMongooseModel</a></li><li><a href="BitManager.html">BitManager</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html">Controllers/CameraControls~CameraControls</a></li><li><a href="module-Controllers_CameraPathController-CameraPathController.html">Controllers/CameraPathController~CameraPathController</a></li><li><a href="module-Converters_AscToThree-AscToThree.html">Converters/AscToThree~AscToThree</a></li><li><a href="module-Converters_ColladaToThree-ColladaToThree.html">Converters/ColladaToThree~ColladaToThree</a></li><li><a href="module-Converters_DbfToThree-DbfToThree.html">Converters/DbfToThree~DbfToThree</a></li><li><a href="module-Converters_FbxToThree-FbxToThree.html">Converters/FbxToThree~FbxToThree</a></li><li><a href="module-Converters_JsonToThree-JsonToThree.html">Converters/JsonToThree~JsonToThree</a></li><li><a href="module-Converters_LasToThree-LasToThree.html">Converters/LasToThree~LasToThree</a></li><li><a href="module-Converters_MtlToThree-MtlToThree.html">Converters/MtlToThree~MtlToThree</a></li><li><a href="module-Converters_Obj2ToThree-Obj2ToThree.html">Converters/Obj2ToThree~Obj2ToThree</a></li><li><a href="module-Converters_ObjToThree-ObjToThree.html">Converters/ObjToThree~ObjToThree</a></li><li><a href="module-Converters_ShpToThree-ShpToThree.html">Converters/ShpToThree~ShpToThree</a></li><li><a href="module-Converters_StlToThree-StlToThree.html">Converters/StlToThree~StlToThree</a></li><li><a href="module-Converters_TdsToThree-TdsToThree.html">Converters/TdsToThree~TdsToThree</a></li><li><a href="module-Inserters_ThreeToMongoDB-ThreeToMongoDB.html">Inserters/ThreeToMongoDB~ThreeToMongoDB</a></li><li><a href="module-Loader_ASCLoader-ASCLoader.html">Loader/ASCLoader~ASCLoader</a></li><li><a href="module-Loader_DBFLoader-DBFLoader.html">Loader/DBFLoader~DBFLoader</a></li><li><a href="module-Loader_LASLoader-LASLoader.html">Loader/LASLoader~LASLoader</a></li><li><a href="module-Loader_SHPLoader-SHPLoader.html">Loader/SHPLoader~SHPLoader</a></li><li><a href="module-Managers_GeometriesManager-GeometriesManager.html">Managers/GeometriesManager~GeometriesManager</a></li><li><a href="module-Managers_MaterialsManager-MaterialsManager.html">Managers/MaterialsManager~MaterialsManager</a></li><li><a href="module-Managers_ObjectsManager-ObjectsManager.html">Managers/ObjectsManager~ObjectsManager</a></li><li><a href="module-Managers_TexturesManager-TexturesManager.html">Managers/TexturesManager~TexturesManager</a></li><li><a href="module-Objects3D_OrbitControlsHelper-OrbitControlsHelper.html">Objects3D/OrbitControlsHelper~OrbitControlsHelper</a></li><li><a href="module-Types_Color-Color.html">Types/Color~Color</a></li><li><a href="module-Types_Euler-Euler.html">Types/Euler~Euler</a></li><li><a href="module-Types_Matrix3-Matrix3.html">Types/Matrix3~Matrix3</a></li><li><a href="module-Types_Matrix4-Matrix4.html">Types/Matrix4~Matrix4</a></li><li><a href="module-Types_Quaternion-Quaternion.html">Types/Quaternion~Quaternion</a></li><li><a href="module-Types_Vector2-Vector2.html">Types/Vector2~Vector2</a></li><li><a href="module-Types_Vector3-Vector3.html">Types/Vector3~Vector3</a></li><li><a href="module-Types_Vector4-Vector4.html">Types/Vector4~Vector4</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="events.list.html" class="dropdown-toggle" data-toggle="dropdown">Events<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="module-Controllers_CameraControls-CameraControls.html#event:change">Controllers/CameraControls~CameraControls#event:change</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:move">Controllers/CameraControls~CameraControls#event:move</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:rotate">Controllers/CameraControls~CameraControls#event:rotate</a></li><li><a href="module-Controllers_CameraControls-CameraControls.html#event:scale">Controllers/CameraControls~CameraControls#event:scale</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="Enum.html">Enum</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="global.html" class="dropdown-toggle" data-toggle="dropdown">Global<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="global.html#Left_Down_Back">Left_Down_Back</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="externals.list.html" class="dropdown-toggle" data-toggle="dropdown">Externals<b class="caret"></b></a>
+				<ul class="dropdown-menu inline">
+					<li><a href="external-_Itee.Client_.html">Itee.Client</a></li><li><a href="external-_Itee.Database_.html">Itee.Database</a></li><li><a href="external-_Itee.MongoDB_.html">Itee.MongoDB</a></li><li><a href="external-_Itee.Utils_.html">Itee.Utils</a></li><li><a href="external-_Itee.Validators_.html">Itee.Validators</a></li><li><a href="external-_Three%2520Full_.html">Three Full</a></li><li><a href="external-_mongodb_js-bson_.html">mongodb/js-bson</a></li><li><a href="external-Mongoose.html">Mongoose</a></li><li><a href="external-THREE.html">THREE</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+        
+            <div class="col-sm-3 col-md-3">
+                <form class="navbar-form" role="search">
+                    <div class="input-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                        <div class="input-group-btn">
+                            <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-12">
+	
+		<div id="main">
+			
+
+		<h1 class="page-title">Source: frontend/controllers/ClippingControls.js</h1>
+    
+<section>
+    <article>
+        <pre
+            class="sunlight-highlight-javascript linenums">/**
+ * @module Controllers/ClippingController
+ *
+ * @author [Ahmed DCHAR]{@link https://github.com/Dragoneel}
+ * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
+ *
+ * @example Todo
+ *
+ */
+
+import {
+    Keys,
+    Mouse
+}                         from 'itee-client'
+import { toEnum }         from 'itee-utils'
+import {
+    isArray,
+    isDefined,
+    isNotDefined,
+    isNull,
+    isUndefined
+}                         from 'itee-validators'
+// Waiting three-shaking fix
+import {
+    Box3,
+    BoxBufferGeometry,
+    EdgesGeometry,
+    Euler,
+    LineBasicMaterial,
+    LineSegments,
+    Object3D,
+    Plane,
+    Raycaster,
+    Vector2,
+    Vector3
+}                         from 'three-full'
+import { ScaleGizmo }     from '../objects3d/gizmos/ScaleGizmo.js'
+import { TranslateGizmo } from '../objects3d/gizmos/TranslateGizmo.js'
+
+// Basic Geometries
+class ClippingBox extends LineSegments {
+
+    constructor() {
+        super()
+
+        this.margin = 0.01
+
+        this.geometry         = new EdgesGeometry( new BoxBufferGeometry( 2, 2, 2 ) )
+        this.material         = new LineBasicMaterial( {
+            color: 0xffffff
+        } )
+        this.matrixAutoUpdate = false
+
+        // Planes
+        this.normalPlanes = {
+            normalRightSide:  new Vector3( -1, 0, 0 ),
+            normalLeftSide:   new Vector3( 1, 0, 0 ),
+            normalFrontSide:  new Vector3( 0, -1, 0 ),
+            normalBackSide:   new Vector3( 0, 1, 0 ),
+            normalTopSide:    new Vector3( 0, 0, -1 ),
+            normalBottomSide: new Vector3( 0, 0, 1 )
+        }
+
+        this.planes = {
+            rightSidePlane:  new Plane( this.normalPlanes.normalRightSide.clone(), 0 ),
+            leftSidePlane:   new Plane( this.normalPlanes.normalLeftSide.clone(), 0 ),
+            frontSidePlane:  new Plane( this.normalPlanes.normalFrontSide.clone(), 0 ),
+            backSidePlane:   new Plane( this.normalPlanes.normalBackSide.clone(), 0 ),
+            topSidePlane:    new Plane( this.normalPlanes.normalTopSide.clone(), 0 ),
+            bottomSidePlane: new Plane( this.normalPlanes.normalBottomSide.clone(), 0 )
+        }
+
+        this._boundingBox = new Box3()
+
+    }
+
+    getBoundingSphere() {
+
+        this.geometry.computeBoundingSphere()
+        this.geometry.boundingSphere.applyMatrix4( this.matrixWorld )
+
+        return this.geometry.boundingSphere
+
+    }
+
+    setColor( color ) {
+
+        this.material.color.set( color )
+
+    }
+
+    applyClippingTo( state, objects ) {
+
+        if ( isNotDefined( objects ) ) { return }
+
+        let planes = []
+        for ( let i in this.planes ) {
+            planes.push( this.planes[ i ] )
+        }
+
+        objects.traverse( ( object ) => {
+
+            if ( isNotDefined( object ) ) { return }
+            if ( isNotDefined( object.geometry ) ) { return }
+            if ( isNotDefined( object.material ) ) { return }
+
+            const materials = isArray( object.material ) ? object.material : [ object.material ]
+
+            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex &lt; numberOfMaterial ; materialIndex++ ) {
+                let material = materials[ materialIndex ]
+                if ( !material.clippingPlanes ) {
+                    material.clippingPlanes = []
+                }
+                material.clippingPlanes = ( state ) ? planes : []
+            }
+
+        } )
+
+    }
+
+    updateSize( size ) {
+
+        this.scale.set( size.x, size.y, size.z )
+
+    }
+
+    update() {
+
+        this._boundingBox.setFromObject( this )
+
+        const margin = this.margin
+        const min    = this._boundingBox.min
+        const max    = this._boundingBox.max
+
+        this.planes.rightSidePlane.constant  = max.x + margin
+        this.planes.leftSidePlane.constant   = -min.x + margin
+        this.planes.frontSidePlane.constant  = max.y + margin
+        this.planes.backSidePlane.constant   = -min.y + margin
+        this.planes.topSidePlane.constant    = max.z + margin
+        this.planes.bottomSidePlane.constant = -min.z + margin
+
+    }
+
+}
+
+// Controller
+const ClippingModes = /*#__PURE__*/toEnum( {
+    None:      'None',
+    Translate: 'Translate',
+    Rotate:    'Rotate',
+    Scale:     'Scale'
+} )
+
+class ClippingControls extends Object3D {
+
+    constructor( parameters = {} ) {
+
+        const _parameters = {
+            ...{
+                camera:        null,
+                domElement:    window,
+                mode:          ClippingModes.None,
+                objectsToClip: new Object3D()
+            }, ...parameters
+        }
+
+        super()
+
+        // Need to be defined before domElement to make correct binding events
+        this._handlers = {
+            onMouseEnter:  this._onMouseEnter.bind( this ),
+            onMouseLeave:  this._onMouseLeave.bind( this ),
+            onMouseDown:   this._onMouseDown.bind( this ),
+            onMouseMove:   this._onMouseMove.bind( this ),
+            onMouseWheel:  this._onMouseWheel.bind( this ),
+            onMouseUp:     this._onMouseUp.bind( this ),
+            onDblClick:    this._onDblClick.bind( this ),
+            onTouchStart:  this._onTouchStart.bind( this ),
+            onTouchEnd:    this._onTouchEnd.bind( this ),
+            onTouchCancel: this._onTouchCancel.bind( this ),
+            onTouchLeave:  this._onTouchLeave.bind( this ),
+            onTouchMove:   this._onTouchMove.bind( this ),
+            onKeyDown:     this._onKeyDown.bind( this ),
+            onKeyUp:       this._onKeyUp.bind( this )
+        }
+
+        this._events = {
+            impose:     { type: 'impose' },
+            dispose:    { type: 'dispose' },
+            change:     { type: 'change' },
+            translate:  { type: 'translate' },
+            rotate:     { type: 'rotate' },
+            scale:      { type: 'scale' },
+            mouseEnter: { type: 'mouseEnter' },
+            mouseLeave: { type: 'mouseLeave' },
+            mouseDown:  { type: 'mouseDown' },
+            mouseUp:    { type: 'mouseUp' }
+        }
+
+        // Could/Should(?) use the objectsToClip boundingbox if exist ! [only in case we are sure that boundingbox (is/must be) implemented for each object3D.]
+        this._objectsToClipBoundingBox = new Box3()
+        this._objectsToClipSize        = new Vector3()
+        this._objectsToClipCenter      = new Vector3()
+
+        this._clippingBox = new ClippingBox()
+        this.add( this._clippingBox )
+
+        this.camera           = _parameters.camera
+        this.domElement       = _parameters.domElement
+        this.mode             = _parameters.mode
+        this.objectsToClip    = _parameters.objectsToClip
+        this.translationSnap  = 0.1
+        this.scaleSnap        = 0.1
+        this.rotationSnap     = 0.1
+        this.matrixAutoUpdate = false
+
+        this.enabled = false // Should be true by default
+
+        this.size = 1
+
+        this._dragging          = false
+        this._firstPoint        = new Vector3()
+        this._secondPoint       = new Vector3()
+        this._mouseDisplacement = new Vector3()
+        this._offset            = new Vector3()
+        this._raycaster         = new Raycaster()
+        this._pointerVector     = new Vector2()
+        this._directionToMouse  = new Vector3()
+        this._cameraPosition    = new Vector3()
+        this._cameraDirection   = new Vector3()
+        this._worldPosition     = new Vector3()
+        this._worldRotation     = new Euler()
+
+        this._gizmos = {
+            //            'None':      null,
+            'Translate': new TranslateGizmo(),
+            'Scale':     new ScaleGizmo()
+            //            'Rotate':    new RotateGizmo(),
+        }
+        for ( let mode in this._gizmos ) {
+            this.add( this._gizmos[ mode ] )
+        }
+        this._currentGizmo  = null
+        this._currentHandle = null
+
+        // The actions map about input events
+        this.actionsMap = {
+            setMode: {
+                translate: [ Keys.T.value ],
+                rotate:    [ Keys.R.value ],
+                scale:     [ Keys.S.value ]
+            },
+            translate: {
+                front: [ Keys.Z.value, Keys.UP_ARROW.value ],
+                back:  [ Keys.S.value, Keys.DOWN_ARROW.value ],
+                up:    [ Keys.A.value, Keys.PAGE_UP.value ],
+                down:  [ Keys.E.value, Keys.PAGE_DOWN.value ],
+                left:  [ Keys.Q.value, Keys.LEFT_ARROW.value ],
+                right: [ Keys.D.value, Keys.RIGHT_ARROW.value ]
+            },
+            scale: {
+                widthPlus:   [ Keys.LEFT_ARROW.value ],
+                widthMinus:  [ Keys.RIGHT_ARROW.value ],
+                heightPlus:  [ Keys.PAGE_UP.value ],
+                heightMinus: [ Keys.PAGE_DOWN.value ],
+                depthPlus:   [ Keys.UP_ARROW.value ],
+                depthMinus:  [ Keys.DOWN_ARROW.value ]
+            },
+            rotate: {
+                xAxis: [ Keys.X.value ],
+                yAxis: [ Keys.Y.value ],
+                zAxis: [ Keys.Z.value ]
+            }
+        }
+
+    }
+
+    get objectsToClip() {
+        return this._objectsToClip
+    }
+
+    set objectsToClip( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
+        if ( !( value instanceof Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
+
+        this._objectsToClip = value
+        this.updateClipping()
+
+    }
+
+    get camera() {
+        return this._camera
+    }
+
+    set camera( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
+        if ( !value.isCamera &amp;&amp; !value.isPerspectiveCamera &amp;&amp; !value.isOrthographicCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera, PerspectiveCamera, or OrthographicCamera.` ) }
+
+        this._camera = value
+
+    }
+
+    get domElement() {
+        return this._domElement
+    }
+
+    set domElement( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
+
+        // Clear previous element
+        if ( this._domElement ) {
+            this._domElement.removeEventListener( 'mouseenter', this._handlers.onMouseEnter, false )
+            this._domElement.removeEventListener( 'mouseleave', this._handlers.onMouseLeave, false )
+            this.dispose()
+        }
+
+        this._domElement = value
+        this._domElement.addEventListener( 'mouseenter', this._handlers.onMouseEnter, false )
+        this._domElement.addEventListener( 'mouseleave', this._handlers.onMouseLeave, false )
+        this.impose()
+
+    }
+
+    get mode() {
+        return this._mode
+    }
+
+    set mode( value ) {
+
+        if ( isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
+        if ( isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
+        //        if ( !( value instanceof ClippingModes ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TClippingModes enum.` ) }
+
+        this._mode = value
+
+        // Reset gizmos visibility
+        for ( let mode in this._gizmos ) {
+            this._gizmos[ mode ].visible = false
+        }
+
+        if ( this._mode === ClippingModes.None ) {
+
+            this._currentGizmo = null
+
+        } else {
+
+            this._currentGizmo         = this._gizmos[ this._mode ]
+            this._currentGizmo.visible = true
+
+        }
+
+        this.updateGizmo()
+
+    }
+
+    setCamera( value ) {
+
+        this.camera = value
+        return this
+
+    }
+
+    setDomElement( value ) {
+
+        this.domElement = value
+        return this
+
+    }
+
+    setMode( value ) {
+
+        this.mode = value
+        return this
+
+    }
+
+    setObjectsToClip( objects ) {
+
+        this.objectsToClip = objects
+        return this
+
+    }
+
+    impose() {
+
+        this._domElement.addEventListener( 'keydown', this._handlers.onKeyDown, false )
+        this._domElement.addEventListener( 'keyup', this._handlers.onKeyUp, false )
+
+        this._domElement.addEventListener( 'dblclick', this._handlers.onDblClick, false )
+        this._domElement.addEventListener( 'mousedown', this._handlers.onMouseDown, false )
+        this._domElement.addEventListener( 'mousemove', this._handlers.onMouseMove, false )
+        this._domElement.addEventListener( 'mouseup', this._handlers.onMouseUp, false )
+        this._domElement.addEventListener( 'wheel', this._handlers.onMouseWheel, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this._domElement.addEventListener( 'touchcancel', this._handlers.onTouchCancel, false )
+        this._domElement.addEventListener( 'touchend', this._handlers.onTouchEnd, false )
+        this._domElement.addEventListener( 'touchleave', this._handlers.onTouchLeave, false )
+        this._domElement.addEventListener( 'touchmove', this._handlers.onTouchMove, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+        this._domElement.addEventListener( 'touchstart', this._handlers.onTouchStart, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this.dispatchEvent( this._events.impose )
+
+    }
+
+    dispose() {
+
+        this._domElement.removeEventListener( 'keydown', this._handlers.onKeyDown, false )
+        this._domElement.removeEventListener( 'keyup', this._handlers.onKeyUp, false )
+
+        this._domElement.removeEventListener( 'dblclick', this._handlers.onDblClick, false )
+        this._domElement.removeEventListener( 'mousedown', this._handlers.onMouseDown, false )
+        this._domElement.removeEventListener( 'mousemove', this._handlers.onMouseMove, false )
+        this._domElement.removeEventListener( 'mouseup', this._handlers.onMouseUp, false )
+        this._domElement.removeEventListener( 'wheel', this._handlers.onMouseWheel, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this._domElement.removeEventListener( 'touchcancel', this._handlers.onTouchCancel, false )
+        this._domElement.removeEventListener( 'touchend', this._handlers.onTouchEnd, false )
+        this._domElement.removeEventListener( 'touchleave', this._handlers.onTouchLeave, false )
+        this._domElement.removeEventListener( 'touchmove', this._handlers.onTouchMove, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+        this._domElement.removeEventListener( 'touchstart', this._handlers.onTouchStart, {
+            capture: true,
+            once:    false,
+            passive: false
+        } )
+
+        this.dispatchEvent( this._events.dispose )
+
+    }
+
+    setTranslationSnap( translationSnap ) {
+        this.translationSnap = translationSnap
+    }
+
+    setRotationSnap( rotationSnap ) {
+        this.rotationSnap = rotationSnap
+    }
+
+    enable() {
+
+        this.visible = true
+        this.enabled = true
+
+        // Init size and position
+        if ( isDefined( this._objectsToClip ) ) {
+
+            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip )
+
+            this._objectsToClipBoundingBox.getSize( this._objectsToClipSize )
+            this._objectsToClipSize.divideScalar( 2 )
+            this.scale.set( this._objectsToClipSize.x, this._objectsToClipSize.y, this._objectsToClipSize.z )
+
+            this._objectsToClipBoundingBox.getCenter( this._objectsToClipCenter )
+            this.position.set( this._objectsToClipCenter.x, this._objectsToClipCenter.y, this._objectsToClipCenter.z )
+
+            // update...
+            this.updateMatrix()
+            this.updateMatrixWorld()
+        }
+
+        this.updateClipping()
+        this.updateGizmo()
+
+    }
+
+    disable() {
+
+        this.visible = false
+        this.enabled = false
+        this.updateClipping()
+
+    }
+
+    updateClipping() {
+
+        if ( isNotDefined( this._objectsToClip ) ) { return }
+
+        this._clippingBox.update()
+        this._clippingBox.applyClippingTo( this.enabled, this._objectsToClip )
+
+    }
+
+    updateGizmo() {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( isNotDefined( this._currentGizmo ) ) { return }
+
+        this._camera.getWorldPosition( this._cameraPosition )
+        this._camera.getWorldDirection( this._cameraDirection )
+        this._currentGizmo.update( this._cameraPosition, this._cameraDirection )
+
+    }
+
+    /// Handlers
+    _consumeEvent( event ) {
+
+        if ( !event.cancelable ) {
+            return
+        }
+
+        event.stopImmediatePropagation()
+
+    }
+
+    // Keyboard
+    _onKeyDown( keyEvent ) {
+
+        if ( !this.enabled ) { return }
+        keyEvent.preventDefault()
+
+        const actionMap  = this.actionsMap
+        const key        = keyEvent.keyCode
+        //        const altActive   = keyEvent.altKey
+        const ctrlActive = keyEvent.ctrlKey
+        //        const metaActive  = keyEvent.metaKey
+        //        const shiftActive = keyEvent.shiftKey
+
+        /* if ( altActive ) {
+
+         } else */
+        if ( ctrlActive ) {
+
+            switch ( this._mode ) {
+
+                case ClippingModes.Translate:
+
+                    if ( actionMap.translate.front.includes( key ) ) {
+
+                        this._translateZ( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.back.includes( key ) ) {
+
+                        this._translateZ( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.right.includes( key ) ) {
+
+                        this._translateX( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.left.includes( key ) ) {
+
+                        this._translateX( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.up.includes( key ) ) {
+
+                        this._translateY( this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.translate.down.includes( key ) ) {
+
+                        this._translateY( -this.translationSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    }
+
+                    break
+
+                case ClippingModes.Rotate:
+
+                    break
+
+                case ClippingModes.Scale:
+
+                    if ( actionMap.scale.depthPlus.includes( key ) ) {
+
+                        this._scaleZ( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.depthMinus.includes( key ) ) {
+
+                        this._scaleZ( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.widthPlus.includes( key ) ) {
+
+                        this._scaleX( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.widthMinus.includes( key ) ) {
+
+                        this._scaleX( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.heightPlus.includes( key ) ) {
+
+                        this._scaleY( this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    } else if ( actionMap.scale.heightMinus.includes( key ) ) {
+
+                        this._scaleY( -this.scaleSnap )
+                        this.updateClipping()
+                        this._consumeEvent( keyEvent )
+                        this.dispatchEvent( this._events.change )
+
+                    }
+
+                    break
+
+                default:
+                    break
+
+            }
+
+            //        } else if ( metaActive ) {
+            //        } else if ( shiftActive ) {
+        } else if ( actionMap.setMode.translate.includes( key ) ) {
+
+            this.setMode( ClippingModes.Translate )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        } else if ( actionMap.setMode.rotate.includes( key ) ) {
+
+            this.setMode( ClippingModes.Rotate )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        } else if ( actionMap.setMode.scale.includes( key ) ) {
+
+            this.setMode( ClippingModes.Scale )
+            this.updateClipping()
+            this._consumeEvent( keyEvent )
+
+        }
+
+    }
+
+    _onKeyUp( keyEvent ) {
+
+        if ( !this.enabled || keyEvent.defaultPrevented ) { return }
+        keyEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    // Mouse
+    _onDblClick( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onMouseDown( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
+        if ( isNotDefined( this._currentHandle ) ) { return }
+
+        mouseEvent.preventDefault()
+
+        this._dragging = true
+
+        // Set the current plane to intersect with mouse
+        // Add first reference to mouse position for next usage under mouse move
+        const planeIntersect = this.intersectObjects( mouseEvent, [ this._currentGizmo.intersectPlane ] )
+        if ( planeIntersect ) {
+            this._firstPoint = planeIntersect.point
+        }
+
+        this._consumeEvent( mouseEvent )
+        this.dispatchEvent( this._events.mouseDown )
+
+    }
+
+    _onMouseEnter( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        this.impose()
+        if ( mouseEvent.target.constructor !== HTMLDocument ) {
+            this._domElement.focus()
+        }
+
+    }
+
+    _onMouseLeave( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        mouseEvent.preventDefault()
+
+        this._dragging = false
+
+        if ( mouseEvent.target.constructor !== HTMLDocument ) {
+            this._domElement.blur()
+        }
+        this.dispose()
+
+    }
+
+    _onMouseMove( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+
+        mouseEvent.preventDefault()
+
+        // Check for hovering or not
+        if ( this._dragging === false ) {
+
+            // Check mouseIn
+            const intersect = this.intersectObjects( mouseEvent, [ this._currentGizmo ] )
+            //            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+            //            const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+            if ( intersect ) {
+
+                const handle = intersect.object
+
+                // Check if a previous handle is already selected
+                if ( this._currentHandle &amp;&amp; handle !== this._currentHandle ) {
+                    this._currentHandle.highlight( false )
+                    this.dispatchEvent( this._events.mouseLeave )
+                }
+
+                this._currentHandle = handle
+                this._currentHandle.highlight( true )
+                this.dispatchEvent( this._events.mouseEnter )
+
+                this._consumeEvent( mouseEvent )
+
+            } else if ( isDefined( this._currentHandle ) ) {
+
+                this._currentHandle.highlight( false )
+                this._currentHandle = null
+                this.dispatchEvent( this._events.mouseLeave )
+
+            }
+
+        } else {
+
+            const currentHandle     = this._currentHandle
+            const currentHandleName = currentHandle.name
+
+            const planeIntersect = this.intersectObjects( mouseEvent, [ this._currentGizmo.intersectPlane ] )
+            if ( planeIntersect ) {
+
+                this._secondPoint = planeIntersect.point
+
+            }
+
+            // Update the mouse displacement in world coordinates
+            this._mouseDisplacement.subVectors( this._secondPoint, this._firstPoint )
+            this._firstPoint.copy( this._secondPoint )
+
+            // Apply change
+            switch ( this._mode ) {
+
+                case ClippingModes.Translate:
+
+                    if ( currentHandleName === 'X' ) {
+
+                        this._offset.set( 1, 0, 0 )
+
+                    } else if ( currentHandleName === 'Y' ) {
+
+                        this._offset.set( 0, 1, 0 )
+
+                    } else if ( currentHandleName === 'Z' ) {
+
+                        this._offset.set( 0, 0, 1 )
+
+                    } else if ( currentHandleName === 'XY' ) {
+
+                        this._offset.set( 1, 1, 0 )
+
+                    } else if ( currentHandleName === 'YZ' ) {
+
+                        this._offset.set( 0, 1, 1 )
+
+                    } else if ( currentHandleName === 'XZ' ) {
+
+                        this._offset.set( 1, 0, 1 )
+
+                    } else if ( currentHandleName === 'XYZ' ) {
+
+                        this._offset.set( 1, 1, 1 )
+
+                    }
+
+                    this._offset.multiply( this._mouseDisplacement )
+                    this._translate( this._offset )
+                    break
+
+                case ClippingModes.Rotate:
+                    /*
+                     if ( currentHandle.isRotateHandle ) {
+
+                     } else if ( currentHandle.isPlaneHandle ) {
+
+                     } else if ( currentHandle.isOmnidirectionalHandle ) {
+
+                     }
+                     */
+                    break
+
+                case ClippingModes.Scale:
+
+                    if ( currentHandle.isScaleHandle ) {
+
+                        this._offset
+                            .copy( this._currentHandle.direction )
+                            .multiply( this._mouseDisplacement )
+
+                    } else if ( currentHandle.isPlaneHandle ) {
+
+                        const xDot = this._currentHandle.xDirection.dot( this._mouseDisplacement )
+                        if ( xDot > 0 ) {
+                            this._offset.setX( Math.abs( this._mouseDisplacement.x ) )
+                        } else if ( xDot &lt; 0 ) {
+                            this._offset.setX( -Math.abs( this._mouseDisplacement.x ) )
+                        } else {
+                            this._offset.setX( 0 )
+                        }
+
+                        const yDot = this._currentHandle.yDirection.dot( this._mouseDisplacement )
+                        if ( yDot > 0 ) {
+                            this._offset.setY( Math.abs( this._mouseDisplacement.y ) )
+                        } else if ( yDot &lt; 0 ) {
+                            this._offset.setY( -Math.abs( this._mouseDisplacement.y ) )
+                        } else {
+                            this._offset.setY( 0 )
+                        }
+
+                        const zDot = this._currentHandle.zDirection.dot( this._mouseDisplacement )
+                        if ( zDot > 0 ) {
+                            this._offset.setZ( Math.abs( this._mouseDisplacement.z ) )
+                        } else if ( zDot &lt; 0 ) {
+                            this._offset.setZ( -Math.abs( this._mouseDisplacement.z ) )
+                        } else {
+                            this._offset.setZ( 0 )
+                        }
+
+                    } else if ( currentHandle.isOmnidirectionalHandle ) {
+
+                        this.getWorldPosition( this._worldPosition )
+                        this._directionToMouse.subVectors( this._firstPoint, this._worldPosition )
+                        const worldDot = this._directionToMouse.dot( this._mouseDisplacement )
+                        const length   = ( worldDot > 0 ) ? this._mouseDisplacement.length() : -this._mouseDisplacement.length()
+                        this._offset.set( length, length, length )
+
+                    }
+
+                    this._scale( this._offset )
+                    break
+
+                default:
+                    throw new RangeError( `Invalid switch parameter: ${ this._mode }` )
+
+            }
+
+            this.updateClipping()
+            this._consumeEvent( mouseEvent )
+            this.dispatchEvent( this._events.change )
+
+        }
+
+    }
+
+    _onMouseUp( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        if ( this._mode === ClippingModes.None ) { return }
+        if ( mouseEvent.button !== Mouse.Left.value ) { return }
+        // todo isActive when mouse enter
+
+        mouseEvent.preventDefault()
+
+        this._dragging = false
+        this.dispatchEvent( this._events.mouseUp )
+
+        // Check mouseIn
+        const intersect = this.intersectObjects( mouseEvent, [ this._currentGizmo ] )
+        //        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.children )
+        //        const intersect = this.intersectObjects( mouseEvent, this._currentGizmo.handles.children )
+        if ( intersect ) {
+
+            this._currentHandle = intersect.object
+            this._currentHandle.highlight( true )
+
+            this._consumeEvent( mouseEvent )
+            this.dispatchEvent( this._events.mouseEnter )
+
+        } else if ( isDefined( this._currentHandle ) ) {
+
+            this._currentHandle.highlight( false )
+            this._currentHandle = null
+
+            this.dispatchEvent( this._events.mouseLeave )
+
+        }
+
+        this.updateGizmo()
+
+    }
+
+    _onMouseWheel( mouseEvent ) {
+
+        if ( !this.enabled ) { return }
+        mouseEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    // Touche
+    _onTouchCancel( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchEnd( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchLeave( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchMove( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    _onTouchStart( touchEvent ) {
+
+        if ( !this.enabled ) { return }
+        touchEvent.preventDefault()
+
+        // Todo...
+
+    }
+
+    /// Utils
+    // eslint-disable-next-line no-unused-vars
+    getActiveHandle( pointer ) {
+
+    }
+
+    intersectObjects( pointer, objects ) {
+
+        // calculate mouse position in normalized device coordinates
+        // (-1 to +1) for both components
+        /*
+         const mousePositionX  = mouseEvent.layerX || mouseEvent.offsetX || 1
+         const mousePositionY  = mouseEvent.layerY || mouseEvent.offsetY || 1
+         const containerWidth  = this._domElement.offsetWidth
+         const containerHeight = this._domElement.offsetHeight
+         const x               = ( mousePositionX / containerWidth ) * 2 - 1
+         const y               = -( mousePositionY / containerHeight ) * 2 + 1
+         */
+
+        const clientRect = this._domElement.getBoundingClientRect()
+        const x          = ( ( ( pointer.clientX - clientRect.left ) / clientRect.width ) * 2 ) - 1
+        const y          = ( -( ( pointer.clientY - clientRect.top ) / clientRect.height ) * 2 ) + 1
+
+        this._pointerVector.set( x, y )
+        this._raycaster.setFromCamera( this._pointerVector, this._camera )
+
+        const intersections = this._raycaster.intersectObjects( objects, false )
+        return intersections[ 0 ] ? intersections[ 0 ] : null
+
+    }
+
+    // Methods
+
+    // Moving
+    _translate( displacement ) {
+
+        this.position.add( displacement )
+        this.updateMatrix()
+
+    }
+
+    _translateX( deltaX ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.updateMatrix()
+
+    }
+
+    _translateY( deltaY ) {
+
+        this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _translateZ( deltaZ ) {
+
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateXY( deltaX, deltaY ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.position.setY( this.position.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _translateXZ( deltaX, deltaZ ) {
+
+        this.position.setX( this.position.x + deltaX )
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateYZ( deltaY, deltaZ ) {
+
+        this.position.setY( this.position.y + deltaY )
+        this.position.setZ( this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _translateXYZ( deltaX, deltaY, deltaZ ) {
+
+        this.position.set( this.position.x + deltaX, this.position.y + deltaY, this.position.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    // Rotating
+    // eslint-disable-next-line no-unused-vars
+    _rotateX( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateY( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateZ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXY( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXZ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateYZ( delta ) {}
+
+    // eslint-disable-next-line no-unused-vars
+    _rotateXYZ( delta ) {}
+
+    // Scaling
+    _scale( changeAmout ) {
+
+        this.scale.add( changeAmout )
+        this.updateMatrix()
+
+    }
+
+    _scaleX( deltaX ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.updateMatrix()
+
+    }
+
+    _scaleY( deltaY ) {
+
+        this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _scaleZ( deltaZ ) {
+
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleXY( deltaX, deltaY ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.scale.setY( this.scale.y + deltaY )
+        this.updateMatrix()
+
+    }
+
+    _scaleXZ( deltaX, deltaZ ) {
+
+        this.scale.setX( this.scale.x + deltaX )
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleYZ( deltaY, deltaZ ) {
+
+        this.scale.setY( this.scale.y + deltaY )
+        this.scale.setZ( this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+    _scaleXYZ( deltaX, deltaY, deltaZ ) {
+
+        this.scale.set( this.scale.x + deltaX, this.scale.y + deltaY, this.scale.z + deltaZ )
+        this.updateMatrix()
+
+    }
+
+}
+
+export {
+    ClippingBox,
+    ClippingControls,
+    ClippingModes
+}
+</pre>
+    </article>
+</section>
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+
+</div>
+</div>
+
+
+    <div class="modal fade" id="searchResults">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Search results</h4>
+          </div>
+          <div class="modal-body"></div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div>
+
+
+<footer>
+
+
+	<span class="copyright">
+	Copyright 2015-Present <a href="https://github.com/Itee">Itee (Tristan Valcke)</a>
+	</span>
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 4.0.5</a>
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+
+    <script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre, pre.prettyprint.source" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : true,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			return $( heading ).attr( "id" ) || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            SearcherDisplay.init();
+        });
+    </script>
+
+
+</body>
+</html>

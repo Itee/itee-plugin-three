@@ -21,6 +21,7 @@ const {
           isBigInt64Array,
           isBigUint64Array
       } = require( 'itee-validators' )
+const { Buffer } = require( 'node:buffer' )
 
 let _schema = undefined
 

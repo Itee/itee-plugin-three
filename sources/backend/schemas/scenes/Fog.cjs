@@ -8,6 +8,8 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
+const { Buffer } = require( 'node:buffer' )
+
 let _schema = undefined
 
 function getSchemaFrom( Mongoose ) {

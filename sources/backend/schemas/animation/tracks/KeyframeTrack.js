@@ -5,6 +5,8 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 import { AbstractMongooseModel } from '../../AbstractMongooseModel.js'
+import { Buffer } from 'node:buffer'
+
 
 class KeyframeTrack extends AbstractMongooseModel {
 
