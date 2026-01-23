@@ -2,14 +2,14 @@
  * @module Loader/ASCLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { ASCLoader } from 'itee-plugin-three'
+ * import { ASCLoader } from '@itee/plugin-three'
  *
  * const loader = new ASCLoader();
  *
@@ -31,7 +31,7 @@
 
 /* eslint-env browser */
 
-import { DefaultLogger } from 'itee-core'
+import { DefaultLogger } from '@itee/core'
 //import { BufferAttribute }       from 'three-full/sources/core/BufferAttribute'
 //import { BufferGeometry }        from 'three-full/sources/core/BufferGeometry'
 //import { FileLoader }            from 'three-full/sources/loaders/FileLoader'

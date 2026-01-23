@@ -2,14 +2,14 @@
  * @module Converters/JsonToThree
  * @desc Export JsonToThree converter class about .json files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TAbstractFileConverter } from 'itee-database'
+import { TAbstractFileConverter } from '@itee/database'
 import { ObjectLoader }           from 'three-full'
 
 //import { ObjectLoader }           from 'three-full/sources/loaders/ObjectLoader'

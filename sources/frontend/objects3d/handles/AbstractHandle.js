@@ -6,7 +6,7 @@
 import {
     isNull,
     isUndefined
-} from 'itee-validators'
+} from '@itee/validators'
 import {
     Object3D,
     Quaternion

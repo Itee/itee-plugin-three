@@ -2,7 +2,7 @@
  * @module Types/Vector2
  * @desc Export the three js Vector2 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -13,7 +13,7 @@ import {
     isNotDefined,
     isNotNumber,
     isNotObject
-}                           from 'itee-validators'
+}                           from '@itee/validators'
 
 /**
  * The type registering function.

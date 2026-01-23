@@ -10,7 +10,7 @@
 
 /* eslint-env browser */
 
-import { TDataBaseManager } from 'itee-client'
+import { TDataBaseManager } from '@itee/client'
 import {
     isBlankString,
     isDefined,
@@ -23,7 +23,7 @@ import {
     isObject,
     isString,
     isUndefined
-}                           from 'itee-validators'
+}                           from '@itee/validators'
 //import { LinearFilter }        from 'three-full/sources/constants'
 //import { ImageLoader }         from 'three-full/sources/loaders/ImageLoader'
 //import { TextureLoader }       from 'three-full/sources/loaders/TextureLoader'

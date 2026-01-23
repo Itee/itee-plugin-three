@@ -2,11 +2,11 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-import { degreesToRadians }          from 'itee-utils'
+import { degreesToRadians }          from '@itee/utils'
 import {
     isNull,
     isUndefined
-}                                    from 'itee-validators'
+}                                    from '@itee/validators'
 import {
     ArrowHelper,
     BufferGeometry,

@@ -2,7 +2,7 @@ import {
     OneHalf,
     SquareRootOfThreeOnTwo,
     SquareRootOfTwoOnTwo
-}                  from 'itee-core'
+}                  from '@itee/core'
 import { Vector3 } from 'three'
 
 

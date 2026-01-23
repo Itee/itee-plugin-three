@@ -2,14 +2,14 @@
  * @module Loader/LASLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { LASLoader } from 'itee-plugin-three'
+ * import { LASLoader } from '@itee/plugin-three'
  *
  * const loader = new LASLoader();
  *
@@ -34,10 +34,10 @@
 import {
     Byte,
     TBinaryReader
-}                        from 'itee-client'
-import { DefaultLogger } from 'itee-core'
-import { toEnum }        from 'itee-utils'
-import { isDefined }     from 'itee-validators'
+}                        from '@itee/client'
+import { DefaultLogger } from '@itee/core'
+import { toEnum }        from '@itee/utils'
+import { isDefined }     from '@itee/validators'
 import {
     Box3,
     BufferAttribute,

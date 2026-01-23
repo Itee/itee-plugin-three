@@ -6,13 +6,13 @@
  *
  */
 
-import { TMongooseController } from 'itee-mongodb'
+import { TMongooseController } from '@itee/mongodb'
 import {
     isArray,
     isDefined,
     isEmptyArray,
     isNotDefined
-}                              from 'itee-validators'
+}                              from '@itee/validators'
 
 class TObjects3DController extends TMongooseController {
 

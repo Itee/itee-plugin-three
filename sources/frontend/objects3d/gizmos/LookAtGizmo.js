@@ -2,7 +2,7 @@
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
-import { degreesToRadians } from 'itee-utils'
+import { degreesToRadians } from '@itee/utils'
 import { Vector3 }          from 'three-full'
 import { BoxHandle }        from '../handles/BoxHandle.js'
 import { ConeHandle }       from '../handles/ConeHandle.js'

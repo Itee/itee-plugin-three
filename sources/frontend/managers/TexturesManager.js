@@ -5,8 +5,8 @@
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
 
-import { TDataBaseManager } from 'itee-client'
-import { isObject }         from 'itee-validators'
+import { TDataBaseManager } from '@itee/client'
+import { isObject }         from '@itee/validators'
 
 /**
  * @class

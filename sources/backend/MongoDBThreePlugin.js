@@ -9,11 +9,11 @@
  * @license [MIT]{@link https://opensource.org/licenses/MIT}
  */
 
-import { TAbstractConverterManager } from 'itee-database'
+import { TAbstractConverterManager } from '@itee/database'
 import {
     TMongoDBPlugin,
     TMongooseController
-}                                    from 'itee-mongodb'
+}                                    from '@itee/mongodb'
 import { TObjects3DController }      from './controllers/TObjects3DController.js'
 import { ColladaToThree }            from './converters/ColladaToThree.js'
 import { DbfToThree }                from './converters/DbfToThree.js'
