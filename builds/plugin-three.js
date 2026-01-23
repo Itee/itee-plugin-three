@@ -1,7 +1,7 @@
 /**
- * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ━┓ ┏┓      ┏┓      ┓  ┓      
- * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃  ┃ ┃┫  ━━  ┗┓╋┏┓┏┓┏┫┏┓┃┏┓┏┓┏┓
- * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻• ╹•┗┛      ┗┛┗┗┻┛┗┗┻┗┻┗┗┛┛┗┗ 
+ * ┳      ┏┓┓    •     ┓           ┏┓ ┏┓ ┏┓      ┏┓      ┓  ┓      
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓━━╋┣┓┏┓┏┓┏┓  ┓┏┏┛ ┃┫ ┃┫  ━━  ┗┓╋┏┓┏┓┏┫┏┓┃┏┓┏┓┏┓
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗  ┗┛┗┛ ┗ ┗   ┗┛┗━•┗┛•┗┛      ┗┛┗┗┻┛┗┗┻┗┻┗┗┛┛┗┗ 
  *              ┛                                                  
  * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
  * @author  [Itee (Tristan Valcke)]{@link https://github.com/Itee}
@@ -9,8 +9,7 @@
  * 
  */
 this.Itee = this.Itee || {};
-this.Itee.Plugin = this.Itee.Plugin || {};
-this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, iteeClient, iteeValidators) {
+this.Itee["Plugin-three"] = (function (exports, utils, core, threeFull, client, validators) {
 	'use strict';
 
 	/**
@@ -2130,7 +2129,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 */
 
 
-	const Colors = /*#__PURE__*/iteeUtils.toEnum( {
+	const Colors = /*#__PURE__*/utils.toEnum( {
 	    Black:                /*#__PURE__*/new Color( '#000000' ),
 	    Navy:                 /*#__PURE__*/new Color( '#000080' ),
 	    DarkBlue:             /*#__PURE__*/new Color( '#00008b' ),
@@ -2380,21 +2379,21 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 */
 	const Cardinales = {
 	    North:            Back,
-	    North_North_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
-	    North_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-	    East_North_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
+	    North_North_East: /*#__PURE__*/new Vector3( core.OneHalf, 0, -( core.SquareRootOfThreeOnTwo ) ).normalize(),
+	    North_East:       /*#__PURE__*/new Vector3( core.SquareRootOfTwoOnTwo, 0, -( core.SquareRootOfTwoOnTwo ) ).normalize(),
+	    East_North_East:  /*#__PURE__*/new Vector3( core.SquareRootOfThreeOnTwo, 0, -( core.OneHalf ) ).normalize(),
 	    East:             Right,
-	    East_South_East:  /*#__PURE__*/new Vector3( iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
-	    South_East:       /*#__PURE__*/new Vector3( iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-	    South_South_East: /*#__PURE__*/new Vector3( iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
+	    East_South_East:  /*#__PURE__*/new Vector3( core.SquareRootOfThreeOnTwo, 0, -( -core.OneHalf ) ).normalize(),
+	    South_East:       /*#__PURE__*/new Vector3( core.SquareRootOfTwoOnTwo, 0, -( -core.SquareRootOfTwoOnTwo ) ).normalize(),
+	    South_South_East: /*#__PURE__*/new Vector3( core.OneHalf, 0, -( -core.SquareRootOfThreeOnTwo ) ).normalize(),
 	    South:            Front,
-	    South_South_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( -iteeCore.SquareRootOfThreeOnTwo ) ).normalize(),
-	    South_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( -iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-	    West_South_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( -iteeCore.OneHalf ) ).normalize(),
+	    South_South_West: /*#__PURE__*/new Vector3( -core.OneHalf, 0, -( -core.SquareRootOfThreeOnTwo ) ).normalize(),
+	    South_West:       /*#__PURE__*/new Vector3( -core.SquareRootOfTwoOnTwo, 0, -( -core.SquareRootOfTwoOnTwo ) ).normalize(),
+	    West_South_West:  /*#__PURE__*/new Vector3( -core.SquareRootOfThreeOnTwo, 0, -( -core.OneHalf ) ).normalize(),
 	    West:             Left,
-	    West_North_West:  /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfThreeOnTwo, 0, -( iteeCore.OneHalf ) ).normalize(),
-	    North_West:       /*#__PURE__*/new Vector3( -iteeCore.SquareRootOfTwoOnTwo, 0, -( iteeCore.SquareRootOfTwoOnTwo ) ).normalize(),
-	    North_North_West: /*#__PURE__*/new Vector3( -iteeCore.OneHalf, 0, -( iteeCore.SquareRootOfThreeOnTwo ) ).normalize()
+	    West_North_West:  /*#__PURE__*/new Vector3( -core.SquareRootOfThreeOnTwo, 0, -( core.OneHalf ) ).normalize(),
+	    North_West:       /*#__PURE__*/new Vector3( -core.SquareRootOfTwoOnTwo, 0, -( core.SquareRootOfTwoOnTwo ) ).normalize(),
+	    North_North_West: /*#__PURE__*/new Vector3( -core.OneHalf, 0, -( core.SquareRootOfThreeOnTwo ) ).normalize()
 	};
 
 	const Directions = {
@@ -2433,14 +2432,14 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @module Loader/ASCLoader
 	 * @desc A loader for ASC cloud point files.
 	 *
-	 * @requires {@link https://github.com/Itee/itee-client itee-client}
+	 * @requires {@link https://github.com/Itee/@itee/client @itee/client}
 	 * @requires {@link https://github.com/Itee/three-full three-full}
 	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 * @example
 	 *
-	 * import { ASCLoader } from 'itee-plugin-three'
+	 * import { ASCLoader } from '@itee/plugin-three'
 	 *
 	 * const loader = new ASCLoader();
 	 *
@@ -2474,7 +2473,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+	    constructor( manager = threeFull.DefaultLoadingManager, logger = core.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
@@ -3273,7 +3272,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 *
 	 * @type {Object}
 	 */
-	const DBFVersion = /*#__PURE__*/iteeUtils.toEnum( {
+	const DBFVersion = /*#__PURE__*/utils.toEnum( {
 	    FoxPro:               0x30,
 	    FoxPro_Autoincrement: 0x31,
 
@@ -3298,7 +3297,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 *
 	 * @type {Object}
 	 */
-	const DataType = /*#__PURE__*/iteeUtils.toEnum( {
+	const DataType = /*#__PURE__*/utils.toEnum( {
 	    Binary:        'B',
 	    Character:     'C',
 	    Date:          'D',
@@ -3335,8 +3334,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const _parameters = {
 	            ...{
 	                manager: threeFull.DefaultLoadingManager,
-	                logger:  iteeCore.DefaultLogger,
-	                reader:  new iteeClient.TBinaryReader()
+	                logger:  core.DefaultLogger,
+	                reader:  new client.TBinaryReader()
 	            }, ...parameters
 	        };
 
@@ -3414,7 +3413,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    parse( arrayBuffer ) {
 
 	        this.reader
-	            .setEndianess( iteeClient.Endianness.Big )
+	            .setEndianess( client.Endianness.Big )
 	            .setBuffer( arrayBuffer );
 
 	        const version = this.reader.getInt8();
@@ -3556,11 +3555,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const month = this.reader.getInt8();
 	        const day   = this.reader.getInt8();
 
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        this.reader.setEndianess( client.Endianness.Little );
 	        const numberOfRecords      = this.reader.getInt32();
 	        const numberOfByteInHeader = this.reader.getInt16();
 	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.setEndianess( client.Endianness.Big );
 	        this.reader.skipOffsetOf( 3 + 13 + 4 ); // Reserved
 
 	        // Field descriptor array
@@ -3620,11 +3619,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
 	        const month = this.reader.getInt8();
 	        const day   = this.reader.getInt8();
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        this.reader.setEndianess( client.Endianness.Little );
 	        const numberOfRecords      = this.reader.getInt32();
 	        const numberOfByteInHeader = this.reader.getInt16();
 	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.setEndianess( client.Endianness.Big );
 	        this.reader.skipOffsetOf( 2 ); // Reserved
 	        const incompleteTransactionFlag = this.reader.getInt8();
 	        const encryptionFlag            = this.reader.getInt8();
@@ -3692,11 +3691,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const year  = this.reader.getInt8() + DBFLoader.YearOffset;
 	        const month = this.reader.getInt8();
 	        const day   = this.reader.getInt8();
-	        this.reader.setEndianess( iteeClient.Endianness.Little );
+	        this.reader.setEndianess( client.Endianness.Little );
 	        const numberOfRecords      = this.reader.getInt32();
 	        const numberOfByteInHeader = this.reader.getInt16();
 	        const numberOfByteInRecord = this.reader.getInt16();
-	        this.reader.setEndianess( iteeClient.Endianness.Big );
+	        this.reader.setEndianess( client.Endianness.Big );
 	        this.reader.skipOffsetOf( 2 ); // Reserved
 	        const incompleteTransactionFlag = this.reader.getInt8();
 	        const encryptionFlag            = this.reader.getInt8();
@@ -4028,14 +4027,14 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @module Loader/LASLoader
 	 * @desc A loader for ASC cloud point files.
 	 *
-	 * @requires {@link https://github.com/Itee/itee-client itee-client}
+	 * @requires {@link https://github.com/Itee/@itee/client @itee/client}
 	 * @requires {@link https://github.com/Itee/three-full three-full}
 	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
 	 * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
 	 * @example
 	 *
-	 * import { LASLoader } from 'itee-plugin-three'
+	 * import { LASLoader } from '@itee/plugin-three'
 	 *
 	 * const loader = new LASLoader();
 	 *
@@ -4068,7 +4067,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	const NullCharRegex = /*#__PURE__*/new RegExp( '\0', 'g' ); // eslint-disable-line no-control-regex
 
-	const PointClasses = /*#__PURE__*/iteeUtils.toEnum( {
+	const PointClasses = /*#__PURE__*/utils.toEnum( {
 	    Created:          0,
 	    Unclassified:     1,
 	    Ground:           2,
@@ -4095,12 +4094,12 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	     * @param {LoadingManager} [manager=Itee.Client.DefaultLoadingManager] - A loading manager
 	     * @param {TLogger} [logger=Itee.Client.DefaultLogger] - A logger for any log/errors output
 	     */
-	    constructor( manager = threeFull.DefaultLoadingManager, logger = iteeCore.DefaultLogger ) {
+	    constructor( manager = threeFull.DefaultLoadingManager, logger = core.DefaultLogger ) {
 
 	        this.manager = manager;
 	        this.logger  = logger;
 
-	        this._reader         = new iteeClient.TBinaryReader();
+	        this._reader         = new client.TBinaryReader();
 	        this._fullVersion    = '';
 	        this._boundingBox    = new threeFull.Box3();
 	        this._points         = [];
@@ -4280,7 +4279,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        return {
 	            FileSignature:                 this._reader.getString( 4 ),
-	            Reserved:                      this._reader.skipOffsetOf( iteeClient.Byte.Four ),
+	            Reserved:                      this._reader.skipOffsetOf( client.Byte.Four ),
 	            GUID_1:                        this._reader.getUint32(),
 	            GUID_2:                        this._reader.getUint16(),
 	            GUID_3:                        this._reader.getUint16(),
@@ -4319,7 +4318,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        return {
 	            FileSignature:                 this._reader.getString( 4 ),
 	            FileSourceId:                  this._reader.getUint16(),
-	            Reserved:                      this._reader.skipOffsetOf( iteeClient.Byte.Two ) && null,
+	            Reserved:                      this._reader.skipOffsetOf( client.Byte.Two ) && null,
 	            GUID_1:                        this._reader.getUint32(),
 	            GUID_2:                        this._reader.getUint16(),
 	            GUID_3:                        this._reader.getUint16(),
@@ -4609,7 +4608,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    _parseGeoDoubleParamsTag( recordLength ) {
 
-	        const numberOfEntries = recordLength / iteeClient.Byte.Height;
+	        const numberOfEntries = recordLength / client.Byte.Height;
 	        const params          = [];
 
 	        for ( let i = 0 ; i < numberOfEntries ; i++ ) {
@@ -5288,7 +5287,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                } else {
 
 	                    const colorPointClass = this.colorForPointClass[ classPointReverseMap[ point.Classification.Class ] ];
-	                    if ( iteeValidators.isDefined( colorPointClass ) ) {
+	                    if ( validators.isDefined( colorPointClass ) ) {
 
 	                        colors[ bufferIndex ]     = colorPointClass.r / 255;
 	                        colors[ bufferIndex + 1 ] = colorPointClass.g / 255;
@@ -5384,8 +5383,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @module Loader/SHPLoader
 	 * @desc Export SHPLoader to load .shp files
 	 *
-	 * @requires {@link https://github.com/Itee/itee-client itee-client}
-	 * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+	 * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+	 * @requires {@link https://github.com/Itee/@itee/utils @itee/utils}
 	 * @requires {@link https://github.com/Itee/three-full three-full}
 	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -5399,7 +5398,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 *
 	 * @type {Object}
 	 */
-	const ShapeType = /*#__PURE__*/iteeUtils.toEnum( {
+	const ShapeType = /*#__PURE__*/utils.toEnum( {
 	    NullShape:   0,
 	    Point:       1,
 	    Polyline:    3,
@@ -5441,8 +5440,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const _parameters = {
 	            ...{
 	                manager:      threeFull.DefaultLoadingManager,
-	                logger:       iteeCore.DefaultLogger,
-	                reader:       new iteeClient.TBinaryReader(),
+	                logger:       core.DefaultLogger,
+	                reader:       new client.TBinaryReader(),
 	                globalOffset: new threeFull.Vector3( 0, 0, 0 ),
 	                worldAxis:    {
 	                    from: 'zUp',
@@ -5553,7 +5552,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    parse( arrayBuffer ) {
 
 	        this._reader
-	            .setEndianess( iteeClient.Endianness.Big )
+	            .setEndianess( client.Endianness.Big )
 	            .setBuffer( arrayBuffer );
 
 	        const header = this._parseHeader();
@@ -5595,7 +5594,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        this._reader.skipOffsetOf( 20 );
 	        const fileLength = this._reader.getInt32();
 
-	        this._reader.setEndianess( iteeClient.Endianness.Little );
+	        this._reader.setEndianess( client.Endianness.Little );
 
 	        const version         = this._reader.getInt32();
 	        const shapeType       = this._reader.getInt32();
@@ -5648,7 +5647,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            endOfRecord  = this._reader.getOffset() + ( recordHeader.contentLength * 2 );
 
 	            // All parsing methods use little below
-	            this._reader.setEndianess( iteeClient.Endianness.Little );
+	            this._reader.setEndianess( client.Endianness.Little );
 
 	            switch ( header.shapeType ) {
 
@@ -5750,7 +5749,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	     */
 	    _parseRecordHeader() {
 
-	        this._reader.setEndianess( iteeClient.Endianness.Big );
+	        this._reader.setEndianess( client.Endianness.Big );
 
 	        const recordNumber  = this._reader.getInt32();
 	        const contentLength = this._reader.getInt32();
@@ -5880,7 +5879,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	            const ring = points.slice( value, parts[ index + 1 ] );
 
-	            if ( iteeUtils.ringClockwise( ring ) ) {
+	            if ( utils.ringClockwise( ring ) ) {
 
 	                polygons.push( ring );
 	                //					polygons.push( [ ring ] );
@@ -5897,7 +5896,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	            polygons.some( polygon => {
 
-	                if ( iteeUtils.ringContainsSome( polygon[ 0 ], hole ) ) {
+	                if ( utils.ringContainsSome( polygon[ 0 ], hole ) ) {
 	                    polygon.push( hole );
 	                    return true
 	                }
@@ -6229,9 +6228,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @module Controllers/CameraControls
 	 * @desc This module export CameraControls class and CameraControlMode enum values.
 	 *
-	 * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
-	 * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
-	 * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+	 * @requires {@link module: [@itee/client]{@link https://github.com/Itee/@itee/client}}
+	 * @requires {@link module: [@itee/utils]{@link https://github.com/Itee/@itee/utils}}
+	 * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
 	 * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
 	 *
 	 * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -6239,7 +6238,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 *
 	 * @example
 	 *
-	 * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
+	 * import { CameraControls, CameraControlMode } from '@itee/plugin-three'
 	 *
 	 */
 
@@ -6265,7 +6264,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @constant
 	 * @private
 	 */
-	const State = /*#__PURE__*/iteeUtils.toEnum( {
+	const State = /*#__PURE__*/utils.toEnum( {
 	    None:     0,
 	    Rotating: 1,
 	    Panning:  2,
@@ -6285,7 +6284,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @constant
 	 * @public
 	 */
-	const CameraControlMode = /*#__PURE__*/iteeUtils.toEnum( {
+	const CameraControlMode = /*#__PURE__*/utils.toEnum( {
 	    FirstPerson: 1,
 	    Orbit:       2,
 	    Fly:         3,
@@ -6350,7 +6349,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        const _parameters = {
 	            ...{
-	                logger:     iteeCore.DefaultLogger,
+	                logger:     core.DefaultLogger,
 	                camera:     null,
 	                target:     new threeFull.Object3D(),
 	                mode:       CameraControlMode.Orbit,
@@ -6503,29 +6502,29 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        // The actions map about input events
 	        this.actionsMap = {
-	            front:  [ iteeClient.Keys.Z.value, iteeClient.Keys.UP_ARROW.value ],
-	            back:   [ iteeClient.Keys.S.value, iteeClient.Keys.DOWN_ARROW.value ],
-	            up:     [ iteeClient.Keys.A.value, iteeClient.Keys.PAGE_UP.value ],
-	            down:   [ iteeClient.Keys.E.value, iteeClient.Keys.PAGE_DOWN.value ],
-	            left:   [ iteeClient.Keys.Q.value, iteeClient.Keys.LEFT_ARROW.value ],
-	            right:  [ iteeClient.Keys.D.value, iteeClient.Keys.RIGHT_ARROW.value ],
-	            rotate: [ iteeClient.Mouse.Left.value ],
-	            pan:    [ iteeClient.Mouse.Middle.value ],
+	            front:  [ client.Keys.Z.value, client.Keys.UP_ARROW.value ],
+	            back:   [ client.Keys.S.value, client.Keys.DOWN_ARROW.value ],
+	            up:     [ client.Keys.A.value, client.Keys.PAGE_UP.value ],
+	            down:   [ client.Keys.E.value, client.Keys.PAGE_DOWN.value ],
+	            left:   [ client.Keys.Q.value, client.Keys.LEFT_ARROW.value ],
+	            right:  [ client.Keys.D.value, client.Keys.RIGHT_ARROW.value ],
+	            rotate: [ client.Mouse.Left.value ],
+	            pan:    [ client.Mouse.Middle.value ],
 	            roll:   {
-	                left:  [ iteeClient.Keys.R.value ],
-	                right: [ iteeClient.Keys.T.value ]
+	                left:  [ client.Keys.R.value ],
+	                right: [ client.Keys.T.value ]
 	            },
-	            zoom:             [ iteeClient.Mouse.Wheel.value ],
-	            lookAtFront:      [ iteeClient.Keys.NUMPAD_2.value ],
-	            lookAtFrontLeft:  [ iteeClient.Keys.NUMPAD_3.value ],
-	            lookAtFrontRight: [ iteeClient.Keys.NUMPAD_1.value ],
-	            lookAtBack:       [ iteeClient.Keys.NUMPAD_8.value ],
-	            lookAtBackLeft:   [ iteeClient.Keys.NUMPAD_9.value ],
-	            lookAtBackRight:  [ iteeClient.Keys.NUMPAD_7.value ],
-	            lookAtUp:         [ iteeClient.Keys.NUMPAD_5.value ],
-	            lookAtDown:       [ iteeClient.Keys.NUMPAD_0.value ],
-	            lookAtLeft:       [ iteeClient.Keys.NUMPAD_6.value ],
-	            lookAtRight:      [ iteeClient.Keys.NUMPAD_4.value ]
+	            zoom:             [ client.Mouse.Wheel.value ],
+	            lookAtFront:      [ client.Keys.NUMPAD_2.value ],
+	            lookAtFrontLeft:  [ client.Keys.NUMPAD_3.value ],
+	            lookAtFrontRight: [ client.Keys.NUMPAD_1.value ],
+	            lookAtBack:       [ client.Keys.NUMPAD_8.value ],
+	            lookAtBackLeft:   [ client.Keys.NUMPAD_9.value ],
+	            lookAtBackRight:  [ client.Keys.NUMPAD_7.value ],
+	            lookAtUp:         [ client.Keys.NUMPAD_5.value ],
+	            lookAtDown:       [ client.Keys.NUMPAD_0.value ],
+	            lookAtLeft:       [ client.Keys.NUMPAD_6.value ],
+	            lookAtRight:      [ client.Keys.NUMPAD_4.value ]
 	        };
 
 	        // The current internal state of controller
@@ -6552,8 +6551,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	     */
 	    set camera( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
 	        if ( !value.isCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera.` ) }
 
 	        this._camera = value;
@@ -6573,8 +6572,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set target( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Target cannot be null ! Expect an instance of Object3D.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Target cannot be undefined ! Expect an instance of Object3D.' ) }
 	        if ( !value.isObject3D ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
 	        this._target = value;
@@ -6591,8 +6590,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set mode( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from CameraControlMode enum.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from CameraControlMode enum.' ) }
 	        if ( !CameraControlMode.includes( value ) ) { throw new Error( `Mode cannot be an instance of ${ value.constructor.name }. Expect a value from TCameraControlMode enum.` ) }
 
 	        this._mode = value;
@@ -6619,7 +6618,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set trackPath( value ) {
 
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new Error( `Track path cannot be an instance of ${ value.constructor.name }. Expect a boolean.` ) }
 
 	        this._trackPath = value;
 
@@ -6637,8 +6636,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set domElement( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of HTMLDocument.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of HTMLDocument.' ) }
 	        if ( ![
 	            'Window',
 	            'HTMLDocument',
@@ -7507,8 +7506,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                    // restrict theta and phi between desired limits
 	                    const spherical = new threeFull.Spherical().setFromVector3( targetToCamera );
 
-	                    const newTheta  = spherical.theta + ( iteeUtils.degreesToRadians( -delta.x ) * rotateSpeed );
-	                    const newPhi    = spherical.phi + ( iteeUtils.degreesToRadians( -delta.y ) * rotateSpeed );
+	                    const newTheta  = spherical.theta + ( utils.degreesToRadians( -delta.x ) * rotateSpeed );
+	                    const newPhi    = spherical.phi + ( utils.degreesToRadians( -delta.y ) * rotateSpeed );
 	                    spherical.theta = Math.max( this.minAzimuthAngle, Math.min( this.maxAzimuthAngle, newTheta ) );
 	                    spherical.phi   = Math.max( this.minPolarAngle, Math.min( this.maxPolarAngle, newPhi ) );
 
@@ -7759,12 +7758,12 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        //todo: project on closest path position
 	        //todo: move on path in the FRONT camera direction
 
-	        if ( iteeValidators.isEmptyArray( this._paths ) ) {
+	        if ( validators.isEmptyArray( this._paths ) ) {
 	            this.logger.warn( 'Try to init path displacement without any paths' );
 	            return
 	        }
 
-	        if ( iteeValidators.isNotDefined( this._currentPath ) ) {
+	        if ( validators.isNotDefined( this._currentPath ) ) {
 
 	            this._currentPathIndex  = 0;
 	            this._currentPathOffset = 0;
@@ -8481,8 +8480,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set color( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Color cannot be null ! Expect an instance of Color.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Color cannot be undefined ! Expect an instance of Color.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Color cannot be null ! Expect an instance of Color.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Color cannot be undefined ! Expect an instance of Color.' ) }
 	        //        if ( !( value instanceof Color ) ) { throw new Error( `Color cannot be an instance of ${value.constructor.name}. Expect an instance of Color.` ) }
 
 	        this.traverse( ( child ) => {
@@ -8536,7 +8535,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            if ( child.isHitbox ) { continue }
 
 	            const childMaterial = child.material;
-	            if ( iteeValidators.isUndefined( childMaterial ) || !childMaterial.isHighlightableMaterial ) { continue }
+	            if ( validators.isUndefined( childMaterial ) || !childMaterial.isHighlightableMaterial ) { continue }
 
 	            childMaterial.highlight( value );
 	        }
@@ -8762,8 +8761,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set direction( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
 	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
@@ -8787,28 +8786,28 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // XY Plane
 	        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 	            this.xDirection.setX( -1 );
 	            this.yDirection.setY( -1 );
 	            this.zDirection.setZ( 0 );
 
 	        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 	            this.xDirection.setX( -1 );
 	            this.yDirection.setY( 1 );
 	            this.zDirection.setZ( 0 );
 
 	        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 	            this.xDirection.setX( 1 );
 	            this.yDirection.setY( -1 );
 	            this.zDirection.setZ( 0 );
 
 	        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 	            this.xDirection.setX( 1 );
 	            this.yDirection.setY( 1 );
 	            this.zDirection.setZ( 0 );
@@ -8818,28 +8817,28 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // XZ Plane
 	        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 	            this.xDirection.setX( -1 );
 	            this.yDirection.setY( 0 );
 	            this.zDirection.setZ( -1 );
 
 	        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 	            this.xDirection.setX( -1 );
 	            this.yDirection.setY( 0 );
 	            this.zDirection.setZ( 1 );
 
 	        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 	            this.xDirection.setX( 1 );
 	            this.yDirection.setY( 0 );
 	            this.zDirection.setZ( -1 );
 
 	        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 	            this.xDirection.setX( 1 );
 	            this.yDirection.setY( 0 );
 	            this.zDirection.setZ( 1 );
@@ -8849,28 +8848,28 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // YZ Plane
 	        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 	            this.xDirection.setX( 0 );
 	            this.yDirection.setY( -1 );
 	            this.zDirection.setZ( -1 );
 
 	        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 	            this.xDirection.setX( 0 );
 	            this.yDirection.setY( -1 );
 	            this.zDirection.setZ( 1 );
 
 	        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 	            this.xDirection.setX( 0 );
 	            this.yDirection.setY( 1 );
 	            this.zDirection.setZ( -1 );
 
 	        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 	            this.xDirection.setX( 0 );
 	            this.yDirection.setY( 1 );
 	            this.zDirection.setZ( 1 );
@@ -9005,8 +9004,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set direction( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
 	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
@@ -9123,7 +9122,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        for ( let name in handlesMap ) {
 
 	            const element = handlesMap[ name ];
-	            if ( iteeValidators.isNotArray( element ) ) {
+	            if ( validators.isNotArray( element ) ) {
 
 	                element.name        = name;
 	                element.renderOrder = Infinity;
@@ -9245,13 +9244,13 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                color:     0x00aaaa,
 	                direction: new threeFull.Vector3( 0, 1, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), utils.degreesToRadians( -90 ) ),
 
 	            XZ: new PlaneHandle( {
 	                color:     0xaa00aa,
 	                direction: new threeFull.Vector3( 1, 0, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), utils.degreesToRadians( 90 ) ),
 
 	            X: new ScaleHandle( {
 	                color:     0xaa0000,
@@ -9406,8 +9405,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set direction( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
 	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
@@ -9427,57 +9426,57 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // XY Plane
 	        if ( xDot > 0 && yDot > 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 
 	        } else if ( xDot > 0 && yDot < 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 
 	        } else if ( xDot < 0 && yDot > 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 
 	        } else if ( xDot < 0 && yDot < 0 && zDot === 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 
 	        }
 
 	        // XZ Plane
 	        else if ( xDot > 0 && yDot === 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 
 	        } else if ( xDot > 0 && yDot === 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 
 	        } else if ( xDot < 0 && yDot === 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 
 	        } else if ( xDot < 0 && yDot === 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 
 	        }
 
 	        // YZ Plane
 	        else if ( xDot === 0 && yDot > 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 180 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 180 ) );
 
 	        } else if ( xDot === 0 && yDot > 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 270 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 270 ) );
 
 	        } else if ( xDot === 0 && yDot < 0 && zDot > 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 90 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 90 ) );
 
 	        } else if ( xDot === 0 && yDot < 0 && zDot < 0 ) {
 
-	            this.rotateOnAxis( this.zAxis, iteeUtils.degreesToRadians( 0 ) );
+	            this.rotateOnAxis( this.zAxis, utils.degreesToRadians( 0 ) );
 
 	        }
 
@@ -9569,8 +9568,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set direction( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Direction cannot be null ! Expect an instance of Color.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Direction cannot be undefined ! Expect an instance of Color.' ) }
 	        if ( !( value instanceof threeFull.Vector3 ) ) { throw new Error( `Direction cannot be an instance of ${ value.constructor.name }. Expect an instance of Vector3.` ) }
 
 	        this._direction = value;
@@ -9663,13 +9662,13 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                color:     0x00aaaa,
 	                direction: new threeFull.Vector3( 0, 1, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), iteeUtils.degreesToRadians( -90 ) ),
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 1, 0 ), utils.degreesToRadians( -90 ) ),
 
 	            XZ: new LozengeHandle( {
 	                color:     0xaa00aa,
 	                direction: new threeFull.Vector3( 1, 0, 1 )
 	            } ).setScale( 0.33, 0.33, 1.0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) ),
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), utils.degreesToRadians( 90 ) ),
 
 	            XYZ: new OctahedricalHandle( {
 	                color: 0xaaaaaa
@@ -9760,7 +9759,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    applyClippingTo( state, objects ) {
 
-	        if ( iteeValidators.isNotDefined( objects ) ) { return }
+	        if ( validators.isNotDefined( objects ) ) { return }
 
 	        let planes = [];
 	        for ( let i in this.planes ) {
@@ -9769,11 +9768,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        objects.traverse( ( object ) => {
 
-	            if ( iteeValidators.isNotDefined( object ) ) { return }
-	            if ( iteeValidators.isNotDefined( object.geometry ) ) { return }
-	            if ( iteeValidators.isNotDefined( object.material ) ) { return }
+	            if ( validators.isNotDefined( object ) ) { return }
+	            if ( validators.isNotDefined( object.geometry ) ) { return }
+	            if ( validators.isNotDefined( object.material ) ) { return }
 
-	            const materials = iteeValidators.isArray( object.material ) ? object.material : [ object.material ];
+	            const materials = validators.isArray( object.material ) ? object.material : [ object.material ];
 
 	            for ( let materialIndex = 0, numberOfMaterial = materials.length ; materialIndex < numberOfMaterial ; materialIndex++ ) {
 	                let material = materials[ materialIndex ];
@@ -9813,7 +9812,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	}
 
 	// Controller
-	const ClippingModes = /*#__PURE__*/iteeUtils.toEnum( {
+	const ClippingModes = /*#__PURE__*/utils.toEnum( {
 	    None:      'None',
 	    Translate: 'Translate',
 	    Rotate:    'Rotate',
@@ -9915,30 +9914,30 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // The actions map about input events
 	        this.actionsMap = {
 	            setMode: {
-	                translate: [ iteeClient.Keys.T.value ],
-	                rotate:    [ iteeClient.Keys.R.value ],
-	                scale:     [ iteeClient.Keys.S.value ]
+	                translate: [ client.Keys.T.value ],
+	                rotate:    [ client.Keys.R.value ],
+	                scale:     [ client.Keys.S.value ]
 	            },
 	            translate: {
-	                front: [ iteeClient.Keys.Z.value, iteeClient.Keys.UP_ARROW.value ],
-	                back:  [ iteeClient.Keys.S.value, iteeClient.Keys.DOWN_ARROW.value ],
-	                up:    [ iteeClient.Keys.A.value, iteeClient.Keys.PAGE_UP.value ],
-	                down:  [ iteeClient.Keys.E.value, iteeClient.Keys.PAGE_DOWN.value ],
-	                left:  [ iteeClient.Keys.Q.value, iteeClient.Keys.LEFT_ARROW.value ],
-	                right: [ iteeClient.Keys.D.value, iteeClient.Keys.RIGHT_ARROW.value ]
+	                front: [ client.Keys.Z.value, client.Keys.UP_ARROW.value ],
+	                back:  [ client.Keys.S.value, client.Keys.DOWN_ARROW.value ],
+	                up:    [ client.Keys.A.value, client.Keys.PAGE_UP.value ],
+	                down:  [ client.Keys.E.value, client.Keys.PAGE_DOWN.value ],
+	                left:  [ client.Keys.Q.value, client.Keys.LEFT_ARROW.value ],
+	                right: [ client.Keys.D.value, client.Keys.RIGHT_ARROW.value ]
 	            },
 	            scale: {
-	                widthPlus:   [ iteeClient.Keys.LEFT_ARROW.value ],
-	                widthMinus:  [ iteeClient.Keys.RIGHT_ARROW.value ],
-	                heightPlus:  [ iteeClient.Keys.PAGE_UP.value ],
-	                heightMinus: [ iteeClient.Keys.PAGE_DOWN.value ],
-	                depthPlus:   [ iteeClient.Keys.UP_ARROW.value ],
-	                depthMinus:  [ iteeClient.Keys.DOWN_ARROW.value ]
+	                widthPlus:   [ client.Keys.LEFT_ARROW.value ],
+	                widthMinus:  [ client.Keys.RIGHT_ARROW.value ],
+	                heightPlus:  [ client.Keys.PAGE_UP.value ],
+	                heightMinus: [ client.Keys.PAGE_DOWN.value ],
+	                depthPlus:   [ client.Keys.UP_ARROW.value ],
+	                depthMinus:  [ client.Keys.DOWN_ARROW.value ]
 	            },
 	            rotate: {
-	                xAxis: [ iteeClient.Keys.X.value ],
-	                yAxis: [ iteeClient.Keys.Y.value ],
-	                zAxis: [ iteeClient.Keys.Z.value ]
+	                xAxis: [ client.Keys.X.value ],
+	                yAxis: [ client.Keys.Y.value ],
+	                zAxis: [ client.Keys.Z.value ]
 	            }
 	        };
 
@@ -9950,8 +9949,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set objectsToClip( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Objects to clip cannot be null ! Expect an instance of Object3D' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Objects to clip cannot be undefined ! Expect an instance of Object3D' ) }
 	        if ( !( value instanceof threeFull.Object3D ) ) { throw new Error( `Objects to clip cannot be an instance of ${ value.constructor.name }. Expect an instance of Object3D.` ) }
 
 	        this._objectsToClip = value;
@@ -9965,8 +9964,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set camera( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Camera cannot be null ! Expect an instance of Camera' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Camera cannot be undefined ! Expect an instance of Camera' ) }
 	        if ( !value.isCamera && !value.isPerspectiveCamera && !value.isOrthographicCamera ) { throw new Error( `Camera cannot be an instance of ${ value.constructor.name }. Expect an instance of Camera, PerspectiveCamera, or OrthographicCamera.` ) }
 
 	        this._camera = value;
@@ -9979,8 +9978,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set domElement( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'DomElement cannot be null ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'DomElement cannot be undefined ! Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.' ) }
 	        if ( !( ( value instanceof Window ) || ( value instanceof HTMLDocument ) || ( value instanceof HTMLDivElement ) || ( value instanceof HTMLCanvasElement ) ) ) { throw new Error( `Target cannot be an instance of ${ value.constructor.name }. Expect an instance of Window, HTMLDocument, HTMLDivElement or HTMLCanvasElement.` ) }
 
 	        // Clear previous element
@@ -10003,8 +10002,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set mode( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
+	        if ( validators.isNull( value ) ) { throw new Error( 'Mode cannot be null ! Expect a value from ClippingModes enum.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new Error( 'Mode cannot be undefined ! Expect a value from ClippingModes enum.' ) }
 	        //        if ( !( value instanceof ClippingModes ) ) { throw new Error( `Mode cannot be an instance of ${value.constructor.name}. Expect a value from TClippingModes enum.` ) }
 
 	        this._mode = value;
@@ -10137,7 +10136,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        this.enabled = true;
 
 	        // Init size and position
-	        if ( iteeValidators.isDefined( this._objectsToClip ) ) {
+	        if ( validators.isDefined( this._objectsToClip ) ) {
 
 	            this._objectsToClipBoundingBox.setFromObject( this._objectsToClip );
 
@@ -10168,7 +10167,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    updateClipping() {
 
-	        if ( iteeValidators.isNotDefined( this._objectsToClip ) ) { return }
+	        if ( validators.isNotDefined( this._objectsToClip ) ) { return }
 
 	        this._clippingBox.update();
 	        this._clippingBox.applyClippingTo( this.enabled, this._objectsToClip );
@@ -10179,7 +10178,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
-	        if ( iteeValidators.isNotDefined( this._currentGizmo ) ) { return }
+	        if ( validators.isNotDefined( this._currentGizmo ) ) { return }
 
 	        this._camera.getWorldPosition( this._cameraPosition );
 	        this._camera.getWorldDirection( this._cameraDirection );
@@ -10368,8 +10367,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
-	        if ( mouseEvent.button !== iteeClient.Mouse.Left.value ) { return }
-	        if ( iteeValidators.isNotDefined( this._currentHandle ) ) { return }
+	        if ( mouseEvent.button !== client.Mouse.Left.value ) { return }
+	        if ( validators.isNotDefined( this._currentHandle ) ) { return }
 
 	        mouseEvent.preventDefault();
 
@@ -10445,7 +10444,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	                this._consumeEvent( mouseEvent );
 
-	            } else if ( iteeValidators.isDefined( this._currentHandle ) ) {
+	            } else if ( validators.isDefined( this._currentHandle ) ) {
 
 	                this._currentHandle.highlight( false );
 	                this._currentHandle = null;
@@ -10587,7 +10586,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        if ( !this.enabled ) { return }
 	        if ( this._mode === ClippingModes.None ) { return }
-	        if ( mouseEvent.button !== iteeClient.Mouse.Left.value ) { return }
+	        if ( mouseEvent.button !== client.Mouse.Left.value ) { return }
 	        // todo isActive when mouse enter
 
 	        mouseEvent.preventDefault();
@@ -10607,7 +10606,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            this._consumeEvent( mouseEvent );
 	            this.dispatchEvent( this._events.mouseEnter );
 
-	        } else if ( iteeValidators.isDefined( this._currentHandle ) ) {
+	        } else if ( validators.isDefined( this._currentHandle ) ) {
 
 	            this._currentHandle.highlight( false );
 	            this._currentHandle = null;
@@ -10863,7 +10862,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 */
 
 
-	class CurvesManager extends iteeClient.TDataBaseManager {
+	class CurvesManager extends client.TDataBaseManager {
 
 	    constructor( parameters = {} ) {
 
@@ -10961,7 +10960,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
-	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+	        const datas   = ( validators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
 	        const results = {};
 
 	        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
@@ -10998,7 +10997,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 */
 
 
-	const ArrayType = /*#__PURE__*/iteeUtils.toEnum( {
+	const ArrayType = /*#__PURE__*/utils.toEnum( {
 	    Int8Array:         0,
 	    Uint8Array:        1,
 	    Uint8ClampedArray: 2,
@@ -11015,7 +11014,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @classdesc Todo...
 	 * @example Todo...
 	 */
-	class GeometriesManager extends iteeClient.TDataBaseManager {
+	class GeometriesManager extends client.TDataBaseManager {
 
 	    /**
 	     *
@@ -11050,9 +11049,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    }
 
 	    set computeBoundingBox( value ) {
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Compute bounding box cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding box cannot be undefined ! Expect a boolean.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding box cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
 	        this._computeBoundingBox = value;
 	    }
@@ -11062,9 +11061,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    }
 
 	    set computeBoundingSphere( value ) {
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Compute bounding sphere cannot be undefined ! Expect a boolean.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( `Compute bounding sphere cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
 	        this._computeBoundingSphere = value;
 	    }
@@ -11074,9 +11073,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    }
 
 	    set computeNormals( value ) {
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Compute normals cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Compute normals cannot be undefined ! Expect a boolean.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( `Compute normals cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
 	        this._computeNormals = value;
 	    }
@@ -11087,8 +11086,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set projectionSystem( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
 
 	        this._projectionSystem = value;
 
@@ -11100,8 +11099,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set globalScale( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
 
 	        this._globalScale = value;
 
@@ -11145,7 +11144,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
-	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+	        const datas   = ( validators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
 	        const results = {};
 
 	        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
@@ -11549,17 +11548,17 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        }
 
-	        if ( iteeValidators.isDefined( data.groups ) ) {
+	        if ( validators.isDefined( data.groups ) ) {
 	            bufferGeometry.groups = data.groups;
 	        }
 
 	        // Need to set null because only checked vs undefined data.boundingBox
-	        if ( iteeValidators.isDefined( data.boundingBox ) ) {
+	        if ( validators.isDefined( data.boundingBox ) ) {
 	            bufferGeometry.boundingBox = data.boundingBox;
 	        }
 
 	        // idem... data.boundingSphere
-	        if ( iteeValidators.isDefined( data.boundingSphere ) ) {
+	        if ( validators.isDefined( data.boundingSphere ) ) {
 	            bufferGeometry.boundingSphere = data.boundingSphere;
 	        }
 
@@ -11721,7 +11720,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @classdesc Todo...
 	 * @example Todo...
 	 */
-	class TexturesManager extends iteeClient.TDataBaseManager {
+	class TexturesManager extends client.TDataBaseManager {
 
 	    constructor( parameters = {} ) {
 
@@ -11762,7 +11761,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
-	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+	        const datas   = ( validators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
 	        const results = {};
 
 	        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
@@ -11803,7 +11802,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @classdesc Todo...
 	 * @example Todo...
 	 */
-	class MaterialsManager extends iteeClient.TDataBaseManager {
+	class MaterialsManager extends client.TDataBaseManager {
 
 	    /**
 	     *
@@ -11842,11 +11841,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set texturesPath( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
-	        if ( iteeValidators.isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
-	        if ( iteeValidators.isEmptyString( value ) ) { throw new TypeError( 'Textures path cannot be empty ! Expect a non empty string.' ) }
-	        if ( iteeValidators.isBlankString( value ) ) { throw new TypeError( 'Textures path cannot contain only whitespace ! Expect a non empty string.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Textures path cannot be null ! Expect a non empty string.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Textures path cannot be undefined ! Expect a non empty string.' ) }
+	        if ( validators.isNotString( value ) ) { throw new TypeError( `Textures path cannot be an instance of ${ value.constructor.name } ! Expect a non empty string.` ) }
+	        if ( validators.isEmptyString( value ) ) { throw new TypeError( 'Textures path cannot be empty ! Expect a non empty string.' ) }
+	        if ( validators.isBlankString( value ) ) { throw new TypeError( 'Textures path cannot contain only whitespace ! Expect a non empty string.' ) }
 
 	        this._texturesPath = value;
 
@@ -11858,8 +11857,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set texturesProvider( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Textures provider cannot be null ! Expect an instance of TextureLoader.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Textures provider cannot be undefined ! Expect an instance of TextureLoader.' ) }
 	        if ( !( value instanceof TexturesManager ) && !( value instanceof threeFull.TextureLoader ) ) { throw new TypeError( `Textures provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TTexturesManager.` ) }
 
 	        this._texturesProvider = value;
@@ -11872,9 +11871,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set generateMipmap( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Generate mipmap cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Generate mipmap cannot be undefined ! Expect a boolean.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( `Generate mipmap cannot be an instance of ${ value.constructor.name } ! Expect a boolean.` ) }
 
 	        this._generateMipmap = value;
 	    }
@@ -11885,9 +11884,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set autoFillTextures( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
 
 	        this._autoFillTextures = value;
 
@@ -11926,7 +11925,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    _onJson( jsonData, onSuccess, onProgress, onError ) {
 
 	        // Normalize to array
-	        const datas   = ( iteeValidators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
+	        const datas   = ( validators.isObject( jsonData ) ) ? [ jsonData ] : jsonData;
 	        const results = {};
 
 	        for ( let dataIndex = 0, numberOfDatas = datas.length, data = undefined ; dataIndex < numberOfDatas ; dataIndex++ ) {
@@ -11976,157 +11975,157 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
-	                if ( iteeValidators.isDefined( color ) ) {
+	                if ( validators.isDefined( color ) ) {
 	                    material.color = this._setColor( color );
 	                }
 
 	                const specular = data.specular;
-	                if ( iteeValidators.isDefined( specular ) ) {
+	                if ( validators.isDefined( specular ) ) {
 	                    material.specular = this._setColor( specular );
 	                }
 
 	                const shininess = data.shininess;
-	                if ( iteeValidators.isDefined( shininess ) ) {
+	                if ( validators.isDefined( shininess ) ) {
 	                    material.shininess = shininess;
 	                }
 
 	                const map = data.map;
-	                if ( iteeValidators.isDefined( map ) ) {
+	                if ( validators.isDefined( map ) ) {
 	                    material.map = map;
 	                }
 
 	                const lightMap = data.lightMap;
-	                if ( iteeValidators.isDefined( lightMap ) ) {
+	                if ( validators.isDefined( lightMap ) ) {
 	                    material.lightMap = lightMap;
 	                }
 
 	                const lightMapIntensity = data.lightMapIntensity;
-	                if ( iteeValidators.isDefined( lightMapIntensity ) ) {
+	                if ( validators.isDefined( lightMapIntensity ) ) {
 	                    material.lightMapIntensity = lightMapIntensity;
 	                }
 
 	                const aoMap = data.aoMap;
-	                if ( iteeValidators.isDefined( aoMap ) ) {
+	                if ( validators.isDefined( aoMap ) ) {
 	                    material.aoMap = aoMap;
 	                }
 
 	                const aoMapIntensity = data.aoMapIntensity;
-	                if ( iteeValidators.isDefined( aoMapIntensity ) ) {
+	                if ( validators.isDefined( aoMapIntensity ) ) {
 	                    material.aoMapIntensity = aoMapIntensity;
 	                }
 
 	                const emissive = data.emissive;
-	                if ( iteeValidators.isDefined( emissive ) ) {
+	                if ( validators.isDefined( emissive ) ) {
 	                    material.emissive = this._setColor( emissive );
 	                }
 
 	                const emissiveIntensity = data.emissiveIntensity;
-	                if ( iteeValidators.isDefined( emissiveIntensity ) ) {
+	                if ( validators.isDefined( emissiveIntensity ) ) {
 	                    material.emissiveIntensity = emissiveIntensity;
 	                }
 
 	                const emissiveMap = data.emissiveMap;
-	                if ( iteeValidators.isDefined( emissiveMap ) ) {
+	                if ( validators.isDefined( emissiveMap ) ) {
 	                    material.emissiveMap = emissiveMap;
 	                }
 
 	                const bumpMap = data.bumpMap;
-	                if ( iteeValidators.isDefined( bumpMap ) ) {
+	                if ( validators.isDefined( bumpMap ) ) {
 	                    material.bumpMap = bumpMap;
 	                }
 
 	                const bumpScale = data.bumpScale;
-	                if ( iteeValidators.isDefined( bumpScale ) ) {
+	                if ( validators.isDefined( bumpScale ) ) {
 	                    material.bumpScale = bumpScale;
 	                }
 
 	                const normalMap = data.normalMap;
-	                if ( iteeValidators.isDefined( normalMap ) ) {
+	                if ( validators.isDefined( normalMap ) ) {
 	                    material.normalMap = normalMap;
 	                }
 
 	                const normalScale = data.normalScale;
-	                if ( iteeValidators.isDefined( normalScale ) ) {
+	                if ( validators.isDefined( normalScale ) ) {
 	                    material.normalScale = this._setVector2( normalScale );
 	                }
 
 	                const displacementMap = data.displacementMap;
-	                if ( iteeValidators.isDefined( displacementMap ) ) {
+	                if ( validators.isDefined( displacementMap ) ) {
 	                    material.displacementMap = displacementMap;
 	                }
 
 	                const displacementScale = data.displacementScale;
-	                if ( iteeValidators.isDefined( displacementScale ) ) {
+	                if ( validators.isDefined( displacementScale ) ) {
 	                    material.displacementScale = displacementScale;
 	                }
 
 	                const displacementBias = data.displacementBias;
-	                if ( iteeValidators.isDefined( displacementBias ) ) {
+	                if ( validators.isDefined( displacementBias ) ) {
 	                    material.displacementBias = displacementBias;
 	                }
 
 	                const specularMap = data.specularMap;
-	                if ( iteeValidators.isDefined( specularMap ) ) {
+	                if ( validators.isDefined( specularMap ) ) {
 	                    material.specularMap = specularMap;
 	                }
 
 	                const alphaMap = data.alphaMap;
-	                if ( iteeValidators.isDefined( alphaMap ) ) {
+	                if ( validators.isDefined( alphaMap ) ) {
 	                    material.alphaMap = alphaMap;
 	                }
 
 	                const envMap = data.envMap;
-	                if ( iteeValidators.isDefined( envMap ) ) {
+	                if ( validators.isDefined( envMap ) ) {
 	                    material.envMap = envMap;
 	                }
 
 	                const combine = data.combine;
-	                if ( iteeValidators.isDefined( combine ) ) {
+	                if ( validators.isDefined( combine ) ) {
 	                    material.combine = combine;
 	                }
 
 	                const reflectivity = data.reflectivity;
-	                if ( iteeValidators.isDefined( reflectivity ) ) {
+	                if ( validators.isDefined( reflectivity ) ) {
 	                    material.reflectivity = reflectivity;
 	                }
 
 	                const refractionRatio = data.refractionRatio;
-	                if ( iteeValidators.isDefined( refractionRatio ) ) {
+	                if ( validators.isDefined( refractionRatio ) ) {
 	                    material.refractionRatio = refractionRatio;
 	                }
 
 	                const wireframe = data.wireframe;
-	                if ( iteeValidators.isDefined( wireframe ) ) {
+	                if ( validators.isDefined( wireframe ) ) {
 	                    material.wireframe = wireframe;
 	                }
 
 	                const wireframeLinewidth = data.wireframeLinewidth;
-	                if ( iteeValidators.isDefined( wireframeLinewidth ) ) {
+	                if ( validators.isDefined( wireframeLinewidth ) ) {
 	                    material.wireframeLinewidth = wireframeLinewidth;
 	                }
 
 	                const wireframeLinecap = data.wireframeLinecap;
-	                if ( iteeValidators.isDefined( wireframeLinecap ) ) {
+	                if ( validators.isDefined( wireframeLinecap ) ) {
 	                    material.wireframeLinecap = wireframeLinecap;
 	                }
 
 	                const wireframeLinejoin = data.wireframeLinejoin;
-	                if ( iteeValidators.isDefined( wireframeLinejoin ) ) {
+	                if ( validators.isDefined( wireframeLinejoin ) ) {
 	                    material.wireframeLinejoin = wireframeLinejoin;
 	                }
 
 	                const skinning = data.skinning;
-	                if ( iteeValidators.isDefined( skinning ) ) {
+	                if ( validators.isDefined( skinning ) ) {
 	                    material.skinning = skinning;
 	                }
 
 	                const morphTargets = data.morphTargets;
-	                if ( iteeValidators.isDefined( morphTargets ) ) {
+	                if ( validators.isDefined( morphTargets ) ) {
 	                    material.morphTargets = morphTargets;
 	                }
 
 	                const morphNormals = data.morphNormals;
-	                if ( iteeValidators.isDefined( morphNormals ) ) {
+	                if ( validators.isDefined( morphNormals ) ) {
 	                    material.morphNormals = morphNormals;
 	                }
 
@@ -12138,112 +12137,112 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
-	                if ( iteeValidators.isDefined( color ) ) {
+	                if ( validators.isDefined( color ) ) {
 	                    material.color = this._setColor( color );
 	                }
 
 	                const map = data.map;
-	                if ( iteeValidators.isDefined( map ) ) {
+	                if ( validators.isDefined( map ) ) {
 	                    material.map = map;
 	                }
 
 	                const lightMap = data.lightMap;
-	                if ( iteeValidators.isDefined( lightMap ) ) {
+	                if ( validators.isDefined( lightMap ) ) {
 	                    material.lightMap = lightMap;
 	                }
 
 	                const lightMapIntensity = data.lightMapIntensity;
-	                if ( iteeValidators.isDefined( lightMapIntensity ) ) {
+	                if ( validators.isDefined( lightMapIntensity ) ) {
 	                    material.lightMapIntensity = lightMapIntensity;
 	                }
 
 	                const aoMap = data.aoMap;
-	                if ( iteeValidators.isDefined( aoMap ) ) {
+	                if ( validators.isDefined( aoMap ) ) {
 	                    material.aoMap = aoMap;
 	                }
 
 	                const aoMapIntensity = data.aoMapIntensity;
-	                if ( iteeValidators.isDefined( aoMapIntensity ) ) {
+	                if ( validators.isDefined( aoMapIntensity ) ) {
 	                    material.aoMapIntensity = aoMapIntensity;
 	                }
 
 	                const emissive = data.emissive;
-	                if ( iteeValidators.isDefined( emissive ) ) {
+	                if ( validators.isDefined( emissive ) ) {
 	                    material.emissive = this._setColor( emissive );
 	                }
 
 	                const emissiveIntensity = data.emissiveIntensity;
-	                if ( iteeValidators.isDefined( emissiveIntensity ) ) {
+	                if ( validators.isDefined( emissiveIntensity ) ) {
 	                    material.emissiveIntensity = emissiveIntensity;
 	                }
 
 	                const emissiveMap = data.emissiveMap;
-	                if ( iteeValidators.isDefined( emissiveMap ) ) {
+	                if ( validators.isDefined( emissiveMap ) ) {
 	                    material.emissiveMap = emissiveMap;
 	                }
 
 	                const specularMap = data.specularMap;
-	                if ( iteeValidators.isDefined( specularMap ) ) {
+	                if ( validators.isDefined( specularMap ) ) {
 	                    material.specularMap = specularMap;
 	                }
 
 	                const alphaMap = data.alphaMap;
-	                if ( iteeValidators.isDefined( alphaMap ) ) {
+	                if ( validators.isDefined( alphaMap ) ) {
 	                    material.alphaMap = alphaMap;
 	                }
 
 	                const envMap = data.envMap;
-	                if ( iteeValidators.isDefined( envMap ) ) {
+	                if ( validators.isDefined( envMap ) ) {
 	                    material.envMap = envMap;
 	                }
 
 	                const combine = data.combine;
-	                if ( iteeValidators.isDefined( combine ) ) {
+	                if ( validators.isDefined( combine ) ) {
 	                    material.combine = combine;
 	                }
 
 	                const reflectivity = data.reflectivity;
-	                if ( iteeValidators.isDefined( reflectivity ) ) {
+	                if ( validators.isDefined( reflectivity ) ) {
 	                    material.reflectivity = reflectivity;
 	                }
 
 	                const refractionRatio = data.refractionRatio;
-	                if ( iteeValidators.isDefined( refractionRatio ) ) {
+	                if ( validators.isDefined( refractionRatio ) ) {
 	                    material.refractionRatio = refractionRatio;
 	                }
 
 	                const wireframe = data.wireframe;
-	                if ( iteeValidators.isDefined( wireframe ) ) {
+	                if ( validators.isDefined( wireframe ) ) {
 	                    material.wireframe = wireframe;
 	                }
 
 	                const wireframeLinewidth = data.wireframeLinewidth;
-	                if ( iteeValidators.isDefined( wireframeLinewidth ) ) {
+	                if ( validators.isDefined( wireframeLinewidth ) ) {
 	                    material.wireframeLinewidth = wireframeLinewidth;
 	                }
 
 	                const wireframeLinecap = data.wireframeLinecap;
-	                if ( iteeValidators.isDefined( wireframeLinecap ) ) {
+	                if ( validators.isDefined( wireframeLinecap ) ) {
 	                    material.wireframeLinecap = wireframeLinecap;
 	                }
 
 	                const wireframeLinejoin = data.wireframeLinejoin;
-	                if ( iteeValidators.isDefined( wireframeLinejoin ) ) {
+	                if ( validators.isDefined( wireframeLinejoin ) ) {
 	                    material.wireframeLinejoin = wireframeLinejoin;
 	                }
 
 	                const skinning = data.skinning;
-	                if ( iteeValidators.isDefined( skinning ) ) {
+	                if ( validators.isDefined( skinning ) ) {
 	                    material.skinning = skinning;
 	                }
 
 	                const morphTargets = data.morphTargets;
-	                if ( iteeValidators.isDefined( morphTargets ) ) {
+	                if ( validators.isDefined( morphTargets ) ) {
 	                    material.morphTargets = morphTargets;
 	                }
 
 	                const morphNormals = data.morphNormals;
-	                if ( iteeValidators.isDefined( morphNormals ) ) {
+	                if ( validators.isDefined( morphNormals ) ) {
 	                    material.morphNormals = morphNormals;
 	                }
 
@@ -12255,7 +12254,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
-	                if ( iteeValidators.isDefined( color ) ) {
+	                if ( validators.isDefined( color ) ) {
 	                    material.color = this._setColor( color );
 	                }
 
@@ -12267,27 +12266,27 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                this._fillBaseMaterialData( material, data );
 
 	                const color = data.color;
-	                if ( iteeValidators.isDefined( color ) ) {
+	                if ( validators.isDefined( color ) ) {
 	                    material.color = this._setColor( color );
 	                }
 
 	                const map = data.map;
-	                if ( iteeValidators.isDefined( map ) ) {
+	                if ( validators.isDefined( map ) ) {
 	                    material.map = map;
 	                }
 
 	                const morphTargets = data.morphTargets;
-	                if ( iteeValidators.isDefined( morphTargets ) ) {
+	                if ( validators.isDefined( morphTargets ) ) {
 	                    material.morphTargets = morphTargets;
 	                }
 
 	                const size = data.size;
-	                if ( iteeValidators.isDefined( size ) ) {
+	                if ( validators.isDefined( size ) ) {
 	                    material.size = size;
 	                }
 
 	                const sizeAttenuation = data.sizeAttenuation;
-	                if ( iteeValidators.isDefined( sizeAttenuation ) ) {
+	                if ( validators.isDefined( sizeAttenuation ) ) {
 	                    material.sizeAttenuation = sizeAttenuation;
 	                }
 
@@ -12306,177 +12305,177 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	    _fillBaseMaterialData( material, data ) {
 
 	        const _id = data._id;
-	        if ( iteeValidators.isDefined( _id ) && iteeValidators.isString( _id ) ) {
+	        if ( validators.isDefined( _id ) && validators.isString( _id ) ) {
 	            material._id = _id;
 	        }
 
 	        const uuid = data.uuid;
-	        if ( iteeValidators.isDefined( uuid ) && iteeValidators.isString( uuid ) ) {
+	        if ( validators.isDefined( uuid ) && validators.isString( uuid ) ) {
 	            material.uuid = uuid;
 	        }
 
 	        const name = data.name;
-	        if ( iteeValidators.isDefined( name ) && iteeValidators.isString( name ) ) {
+	        if ( validators.isDefined( name ) && validators.isString( name ) ) {
 	            material.name = name;
 	        }
 
 	        const fog = data.fog;
-	        if ( iteeValidators.isDefined( fog ) ) {
+	        if ( validators.isDefined( fog ) ) {
 	            material.fog = fog;
 	        }
 
 	        const lights = data.lights;
-	        if ( iteeValidators.isDefined( lights ) ) {
+	        if ( validators.isDefined( lights ) ) {
 	            material.lights = lights;
 	        }
 
 	        const blending = data.blending;
-	        if ( iteeValidators.isDefined( blending ) ) {
+	        if ( validators.isDefined( blending ) ) {
 	            material.blending = blending;
 	        }
 
 	        const side = data.side;
-	        if ( iteeValidators.isDefined( side ) ) {
+	        if ( validators.isDefined( side ) ) {
 	            material.side = side;
 	        }
 
 	        const flatShading = data.flatShading;
-	        if ( iteeValidators.isDefined( flatShading ) ) {
+	        if ( validators.isDefined( flatShading ) ) {
 	            material.flatShading = flatShading;
 	        }
 
 	        const vertexColors = data.vertexColors;
-	        if ( iteeValidators.isDefined( vertexColors ) ) {
+	        if ( validators.isDefined( vertexColors ) ) {
 	            material.vertexColors = vertexColors;
 	        }
 
 	        const opacity = data.opacity;
-	        if ( iteeValidators.isDefined( opacity ) ) {
+	        if ( validators.isDefined( opacity ) ) {
 	            material.opacity = opacity;
 	        }
 
 	        const transparent = data.transparent;
-	        if ( iteeValidators.isDefined( transparent ) ) {
+	        if ( validators.isDefined( transparent ) ) {
 	            material.transparent = transparent;
 	        }
 
 	        const blendSrc = data.blendSrc;
-	        if ( iteeValidators.isDefined( blendSrc ) ) {
+	        if ( validators.isDefined( blendSrc ) ) {
 	            material.blendSrc = blendSrc;
 	        }
 
 	        const blendDst = data.blendDst;
-	        if ( iteeValidators.isDefined( blendDst ) ) {
+	        if ( validators.isDefined( blendDst ) ) {
 	            material.blendDst = blendDst;
 	        }
 
 	        const blendEquation = data.blendEquation;
-	        if ( iteeValidators.isDefined( blendEquation ) ) {
+	        if ( validators.isDefined( blendEquation ) ) {
 	            material.blendEquation = blendEquation;
 	        }
 
 	        const blendSrcAlpha = data.blendSrcAlpha;
-	        if ( iteeValidators.isDefined( blendSrcAlpha ) ) {
+	        if ( validators.isDefined( blendSrcAlpha ) ) {
 	            material.blendSrcAlpha = blendSrcAlpha;
 	        }
 
 	        const blendDstAlpha = data.blendDstAlpha;
-	        if ( iteeValidators.isDefined( blendDstAlpha ) ) {
+	        if ( validators.isDefined( blendDstAlpha ) ) {
 	            material.blendDstAlpha = blendDstAlpha;
 	        }
 
 	        const blendEquationAlpha = data.blendEquationAlpha;
-	        if ( iteeValidators.isDefined( blendEquationAlpha ) ) {
+	        if ( validators.isDefined( blendEquationAlpha ) ) {
 	            material.blendEquationAlpha = blendEquationAlpha;
 	        }
 
 	        const depthFunc = data.depthFunc;
-	        if ( iteeValidators.isDefined( depthFunc ) ) {
+	        if ( validators.isDefined( depthFunc ) ) {
 	            material.depthFunc = depthFunc;
 	        }
 
 	        const depthTest = data.depthTest;
-	        if ( iteeValidators.isDefined( depthTest ) ) {
+	        if ( validators.isDefined( depthTest ) ) {
 	            material.depthTest = depthTest;
 	        }
 
 	        const depthWrite = data.depthWrite;
-	        if ( iteeValidators.isDefined( depthWrite ) ) {
+	        if ( validators.isDefined( depthWrite ) ) {
 	            material.depthWrite = depthWrite;
 	        }
 
 	        const clippingPlanes = data.clippingPlanes;
-	        if ( iteeValidators.isDefined( clippingPlanes ) ) {
+	        if ( validators.isDefined( clippingPlanes ) ) {
 	            material.clippingPlanes = clippingPlanes;
 	        }
 
 	        const clipIntersection = data.clipIntersection;
-	        if ( iteeValidators.isDefined( clipIntersection ) ) {
+	        if ( validators.isDefined( clipIntersection ) ) {
 	            material.clipIntersection = clipIntersection;
 	        }
 
 	        const clipShadows = data.clipShadows;
-	        if ( iteeValidators.isDefined( clipShadows ) ) {
+	        if ( validators.isDefined( clipShadows ) ) {
 	            material.clipShadows = clipShadows;
 	        }
 
 	        const colorWrite = data.colorWrite;
-	        if ( iteeValidators.isDefined( colorWrite ) ) {
+	        if ( validators.isDefined( colorWrite ) ) {
 	            material.colorWrite = colorWrite;
 	        }
 
 	        const precision = data.precision;
-	        if ( iteeValidators.isDefined( precision ) ) {
+	        if ( validators.isDefined( precision ) ) {
 	            material.precision = precision;
 	        }
 
 	        const polygonOffset = data.polygonOffset;
-	        if ( iteeValidators.isDefined( polygonOffset ) ) {
+	        if ( validators.isDefined( polygonOffset ) ) {
 	            material.polygonOffset = polygonOffset;
 	        }
 
 	        const polygonOffsetFactor = data.polygonOffsetFactor;
-	        if ( iteeValidators.isDefined( polygonOffsetFactor ) ) {
+	        if ( validators.isDefined( polygonOffsetFactor ) ) {
 	            material.polygonOffsetFactor = polygonOffsetFactor;
 	        }
 
 	        const polygonOffsetUnits = data.polygonOffsetUnits;
-	        if ( iteeValidators.isDefined( polygonOffsetUnits ) ) {
+	        if ( validators.isDefined( polygonOffsetUnits ) ) {
 	            material.polygonOffsetUnits = polygonOffsetUnits;
 	        }
 
 	        const dithering = data.dithering;
-	        if ( iteeValidators.isDefined( dithering ) ) {
+	        if ( validators.isDefined( dithering ) ) {
 	            material.dithering = dithering;
 	        }
 
 	        const alphaTest = data.alphaTest;
-	        if ( iteeValidators.isDefined( alphaTest ) ) {
+	        if ( validators.isDefined( alphaTest ) ) {
 	            material.alphaTest = alphaTest;
 	        }
 
 	        const premultipliedAlpha = data.premultipliedAlpha;
-	        if ( iteeValidators.isDefined( premultipliedAlpha ) ) {
+	        if ( validators.isDefined( premultipliedAlpha ) ) {
 	            material.premultipliedAlpha = premultipliedAlpha;
 	        }
 
 	        const overdraw = data.overdraw;
-	        if ( iteeValidators.isDefined( overdraw ) ) {
+	        if ( validators.isDefined( overdraw ) ) {
 	            material.overdraw = overdraw;
 	        }
 
 	        const visible = data.visible;
-	        if ( iteeValidators.isDefined( visible ) ) {
+	        if ( validators.isDefined( visible ) ) {
 	            material.visible = visible;
 	        }
 
 	        const userData = data.userData;
-	        if ( iteeValidators.isDefined( userData ) ) {
+	        if ( validators.isDefined( userData ) ) {
 	            material.userData = userData;
 	        }
 
 	        const needsUpdate = data.needsUpdate;
-	        if ( iteeValidators.isDefined( needsUpdate ) ) {
+	        if ( validators.isDefined( needsUpdate ) ) {
 	            material.needsUpdate = needsUpdate;
 	        }
 
@@ -12486,7 +12485,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        const x = vec2.x;
 	        const y = vec2.y;
-	        if ( iteeValidators.isNotDefined( x ) || iteeValidators.isNotDefined( y ) ) {
+	        if ( validators.isNotDefined( x ) || validators.isNotDefined( y ) ) {
 	            throw new Error( 'MaterialsManager: Unable to convert null or undefined vector 2 !' )
 	        }
 
@@ -12499,7 +12498,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        const r = color.r;
 	        const g = color.g;
 	        const b = color.b;
-	        if ( iteeValidators.isNotDefined( r ) || iteeValidators.isNotDefined( g ) || iteeValidators.isNotDefined( b ) ) {
+	        if ( validators.isNotDefined( r ) || validators.isNotDefined( g ) || validators.isNotDefined( b ) ) {
 	            throw new Error( 'MaterialsManager: Unable to convert null or undefined color !' )
 	        }
 
@@ -12543,12 +12542,12 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                let mapType = availableTextures[ i ];
 
 	                const map = material[ mapType ];
-	                if ( iteeValidators.isDefined( map ) && iteeValidators.isString( map ) && iteeValidators.isNotEmptyString( map ) ) {
+	                if ( validators.isDefined( map ) && validators.isString( map ) && validators.isNotEmptyString( map ) ) {
 
 	                    const texturePath  = `${ this._texturesPath }/${ map }`;
 	                    const cachedResult = localCache[ texturePath ];
 
-	                    if ( iteeValidators.isDefined( cachedResult ) ) {
+	                    if ( validators.isDefined( cachedResult ) ) {
 
 	                        textures[ mapType ] = cachedResult;
 
@@ -12608,7 +12607,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	 * @classdesc Todo...
 	 * @example Todo...
 	 */
-	class ObjectsManager extends iteeClient.TDataBaseManager {
+	class ObjectsManager extends client.TDataBaseManager {
 
 	    /**
 	     *
@@ -12645,8 +12644,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set geometriesProvider( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Geometries provider cannot be null ! Expect an instance of GeometriesManager.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Geometries provider cannot be undefined ! Expect an instance of GeometriesManager.' ) }
 	        if ( !( value instanceof GeometriesManager ) ) { throw new TypeError( `Geometries provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TGeometriesManager.` ) }
 
 	        this._geometriesProvider = value;
@@ -12659,8 +12658,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set materialsProvider( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Materials provider cannot be null ! Expect an instance of MaterialsManager.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Materials provider cannot be undefined ! Expect an instance of MaterialsManager.' ) }
 	        if ( !( value instanceof MaterialsManager ) ) { throw new TypeError( `Materials provider cannot be an instance of ${ value.constructor.name } ! Expect an instance of TMaterialsManager.` ) }
 
 	        this._materialsProvider = value;
@@ -12673,8 +12672,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set projectionSystem( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Projection system cannot be null ! Expect a positive number.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Projection system cannot be undefined ! Expect a positive number.' ) }
 
 	        this._projectionSystem = value;
 
@@ -12686,8 +12685,8 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set globalScale( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a positive number.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
 
 	        this._globalScale = value;
 
@@ -12699,9 +12698,9 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	    set autoFillObjects3D( value ) {
 
-	        if ( iteeValidators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
-	        if ( iteeValidators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
-	        if ( iteeValidators.isNotBoolean( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isNull( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
+	        if ( validators.isUndefined( value ) ) { throw new TypeError( 'Global scale cannot be undefined ! Expect a positive number.' ) }
+	        if ( validators.isNotBoolean( value ) ) { throw new TypeError( 'Global scale cannot be null ! Expect a boolean.' ) }
 
 	        this._autoFillObjects3D = value;
 
@@ -12809,7 +12808,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            case 'Scene':
 	                object = new threeFull.Scene();
 	                this._fillBaseObjectsData( object, data );
-	                if ( iteeValidators.isDefined( data.background ) ) {
+	                if ( validators.isDefined( data.background ) ) {
 
 	                    if ( Number.isInteger( data.background ) ) {
 
@@ -12818,7 +12817,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                    }
 
 	                }
-	                if ( iteeValidators.isDefined( data.fog ) ) {
+	                if ( validators.isDefined( data.fog ) ) {
 
 	                    if ( data.fog.type === 'Fog' ) {
 
@@ -12842,19 +12841,19 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	                object.aspect = data.aspect;
 	                object.near   = data.near;
 	                object.far    = data.far;
-	                if ( iteeValidators.isDefined( data.focus ) ) {
+	                if ( validators.isDefined( data.focus ) ) {
 	                    object.focus = data.focus;
 	                }
-	                if ( iteeValidators.isDefined( data.zoom ) ) {
+	                if ( validators.isDefined( data.zoom ) ) {
 	                    object.zoom = data.zoom;
 	                }
-	                if ( iteeValidators.isDefined( data.filmGauge ) ) {
+	                if ( validators.isDefined( data.filmGauge ) ) {
 	                    object.filmGauge = data.filmGauge;
 	                }
-	                if ( iteeValidators.isDefined( data.filmOffset ) ) {
+	                if ( validators.isDefined( data.filmOffset ) ) {
 	                    object.filmOffset = data.filmOffset;
 	                }
-	                if ( iteeValidators.isDefined( data.view ) ) {
+	                if ( validators.isDefined( data.view ) ) {
 	                    object.view = Object.assign( {}, data.view );
 	                }
 	                break
@@ -12976,11 +12975,11 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        // Common object properties
 	        object._id = data._id;
 
-	        if ( iteeValidators.isDefined( data.uuid ) ) {
+	        if ( validators.isDefined( data.uuid ) ) {
 	            object.uuid = data.uuid;
 	        }
 
-	        if ( iteeValidators.isDefined( data.name ) ) {
+	        if ( validators.isDefined( data.name ) ) {
 	            object.name = data.name;
 	        }
 
@@ -12989,21 +12988,21 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	        //            object.type = data.type
 	        //        }
 
-	        if ( iteeValidators.isDefined( data.parent ) ) {
+	        if ( validators.isDefined( data.parent ) ) {
 	            object.parent = data.parent;
 	        }
 
-	        if ( iteeValidators.isNotEmptyArray( data.children ) ) {
+	        if ( validators.isNotEmptyArray( data.children ) ) {
 	            object.children = data.children;
 	        }
 
-	        if ( iteeValidators.isDefined( data.up ) ) {
+	        if ( validators.isDefined( data.up ) ) {
 	            object.up.x = data.up.x;
 	            object.up.y = data.up.y;
 	            object.up.z = data.up.z;
 	        }
 
-	        if ( iteeValidators.isDefined( data.position ) ) {
+	        if ( validators.isDefined( data.position ) ) {
 
 	            if ( this._projectionSystem === 'zBack' ) {
 
@@ -13021,7 +13020,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        }
 
-	        if ( iteeValidators.isDefined( data.rotation ) ) {
+	        if ( validators.isDefined( data.rotation ) ) {
 
 	            if ( this._projectionSystem === 'zBack' ) {
 
@@ -13041,7 +13040,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        }
 
-	        if ( iteeValidators.isDefined( data.quaternion ) ) {
+	        if ( validators.isDefined( data.quaternion ) ) {
 
 	            if ( this._projectionSystem === 'zBack' ) {
 
@@ -13061,7 +13060,7 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        }
 
-	        if ( iteeValidators.isDefined( data.scale ) ) {
+	        if ( validators.isDefined( data.scale ) ) {
 
 	            if ( data.scale.x !== 0 && data.scale.y !== 0 && data.scale.z !== 0 ) {
 	                object.scale.x = data.scale.x;
@@ -13073,55 +13072,55 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	        }
 
-	        if ( iteeValidators.isDefined( data.modelViewMatrix ) && iteeValidators.isNotEmptyArray( data.modelViewMatrix ) ) {
+	        if ( validators.isDefined( data.modelViewMatrix ) && validators.isNotEmptyArray( data.modelViewMatrix ) ) {
 	            object.modelViewMatrix.fromArray( data.modelViewMatrix );
 	        }
 
-	        if ( iteeValidators.isDefined( data.normalMatrix ) && iteeValidators.isNotEmptyArray( data.normalMatrix ) ) {
+	        if ( validators.isDefined( data.normalMatrix ) && validators.isNotEmptyArray( data.normalMatrix ) ) {
 	            object.normalMatrix.fromArray( data.normalMatrix );
 	        }
 
-	        if ( iteeValidators.isDefined( data.matrix ) && iteeValidators.isNotEmptyArray( data.matrix ) ) {
+	        if ( validators.isDefined( data.matrix ) && validators.isNotEmptyArray( data.matrix ) ) {
 	            object.matrix.fromArray( data.matrix );
 	        }
 
-	        if ( iteeValidators.isDefined( data.matrixWorld ) && iteeValidators.isNotEmptyArray( data.matrixWorld ) ) {
+	        if ( validators.isDefined( data.matrixWorld ) && validators.isNotEmptyArray( data.matrixWorld ) ) {
 	            object.matrixWorld.fromArray( data.matrixWorld );
 	        }
 
-	        if ( iteeValidators.isDefined( data.matrixAutoUpdate ) ) {
+	        if ( validators.isDefined( data.matrixAutoUpdate ) ) {
 	            object.matrixAutoUpdate = data.matrixAutoUpdate;
 	        }
 
-	        if ( iteeValidators.isDefined( data.matrixWorldNeedsUpdate ) ) {
+	        if ( validators.isDefined( data.matrixWorldNeedsUpdate ) ) {
 	            object.matrixWorldNeedsUpdate = data.matrixWorldNeedsUpdate;
 	        }
 
-	        if ( iteeValidators.isDefined( data.layers ) ) {
+	        if ( validators.isDefined( data.layers ) ) {
 	            object.layers.mask = data.layers;
 	        }
 
-	        if ( iteeValidators.isDefined( data.visible ) ) {
+	        if ( validators.isDefined( data.visible ) ) {
 	            object.visible = data.visible;
 	        }
 
-	        if ( iteeValidators.isDefined( data.castShadow ) ) {
+	        if ( validators.isDefined( data.castShadow ) ) {
 	            object.castShadow = data.castShadow;
 	        }
 
-	        if ( iteeValidators.isDefined( data.receiveShadow ) ) {
+	        if ( validators.isDefined( data.receiveShadow ) ) {
 	            object.receiveShadow = data.receiveShadow;
 	        }
 
-	        if ( iteeValidators.isDefined( data.frustumCulled ) ) {
+	        if ( validators.isDefined( data.frustumCulled ) ) {
 	            object.frustumCulled = data.frustumCulled;
 	        }
 
-	        if ( iteeValidators.isDefined( data.renderOrder ) ) {
+	        if ( validators.isDefined( data.renderOrder ) ) {
 	            object.renderOrder = data.renderOrder;
 	        }
 
-	        if ( iteeValidators.isDefined( data.userData ) ) {
+	        if ( validators.isDefined( data.userData ) ) {
 	            object.userData = data.userData;
 	        }
 
@@ -14058,19 +14057,19 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            FACE_RIGHT: new ConeHandle( {
 	                coneColor: 0xdd0000
 	            } ).setPosition( +( 4 + this.explodeFactor ), 0, 0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( 90 ) )
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), utils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_LEFT: new ConeHandle( {
 	                coneColor: 0x550000
 	            } ).setPosition( -( 4 + this.explodeFactor ), 0, 0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), iteeUtils.degreesToRadians( -90 ) )
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 0, 0, 1 ), utils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_TOP: new ConeHandle( {
 	                coneColor: 0x0000dd
 	            } ).setPosition( 0, +( 4 + this.explodeFactor ), 0 )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 180 ) )
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), utils.degreesToRadians( 180 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BOTTOM: new ConeHandle( {
@@ -14081,13 +14080,13 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 	            FACE_FRONT: new ConeHandle( {
 	                coneColor: 0x005500
 	            } ).setPosition( 0, 0, +( 4 + this.explodeFactor ) )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( -90 ) )
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), utils.degreesToRadians( -90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            FACE_BACK: new ConeHandle( {
 	                coneColor: 0x00dd00
 	            } ).setPosition( 0, 0, -( 4 + this.explodeFactor ) )
-	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), iteeUtils.degreesToRadians( 90 ) )
+	               .setRotationFromAxisAndAngle( new threeFull.Vector3( 1, 0, 0 ), utils.degreesToRadians( 90 ) )
 	               .setScale( 1, 4, 1 ),
 
 	            // Planar faces
@@ -14267,5 +14266,5 @@ this.Itee.Plugin.Three = (function (exports, iteeUtils, iteeCore, threeFull, ite
 
 	return exports;
 
-})({}, iteeUtils, iteeCore, threeFull, iteeClient, iteeValidators);
-//# sourceMappingURL=plugin.js.map
+})({}, utils, core, threeFull, client, validators);
+//# sourceMappingURL=plugin-three.js.map

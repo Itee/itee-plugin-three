@@ -1,3 +1,12 @@
+# [v3.0.0](https://github.com/Itee/plugin-three/compare/v2.0.0...v3.0.0) (2026-01-23)
+
+## 🐛 Bug Fixes
+- [`9309f16`](https://github.com/Itee/plugin-three/commit/9309f16)  (package) apply package override to fix trust publishing 
+- [`9ffcb2b`](https://github.com/Itee/plugin-three/commit/9ffcb2b)  (index) fix index name for build task 
+
+## 💥 Breaking Changes
+- [`9542c92`](https://github.com/Itee/plugin-three/commit/9542c92)  (package) change package name itee-plugin-three to scoped version @itee/plugin-three
+
 # [v2.0.0](https://github.com/Itee/plugin-three/compare/v1.7.0...v2.0.0) (2026-01-23)
 
 ## ✨ New Features

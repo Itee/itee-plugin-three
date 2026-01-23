@@ -1,20 +1,20 @@
 /**
- * ┳      ┏┓┓    •   ┏┳┓┓           ┓ ━┓ ┏┓      ┏┓ ┳┳┓   ┓  ┓  
- * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓  ┃ ┣┓┏┓┏┓┏┓  ┓┏┃  ┃ ┃┫  ━━  ┣ ┏┃┃┃┏┓┏┫┓┏┃┏┓
- * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗• ┻ ┛┗┛ ┗ ┗   ┗┛┻• ╹•┗┛      ┗┛┛┛ ┗┗┛┗┻┗┻┗┗ 
+ * ┳      ┏┓┓    •     ┓           ┏┓ ┏┓ ┏┓      ┏┓ ┳┳┓   ┓  ┓  
+ * ┃╋┏┓┏┓ ┃┃┃┓┏┏┓┓┏┓━━╋┣┓┏┓┏┓┏┓  ┓┏┏┛ ┃┫ ┃┫  ━━  ┣ ┏┃┃┃┏┓┏┫┓┏┃┏┓
+ * ┻┗┗ ┗ •┣┛┗┗┻┗┫┗┛┗  ┗┛┗┛ ┗ ┗   ┗┛┗━•┗┛•┗┛      ┗┛┛┛ ┗┗┛┗┻┗┻┗┗ 
  *              ┛                                               
  * @desc    This itee plugin allow to use three js content from end to end in an itee client-server-database architecture
  * @author  [Itee (Tristan Valcke)]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses}
  * 
  */
-import { TAbstractFileConverter, TAbstractDataInserter, TAbstractConverterManager } from 'itee-database';
-import { TMongooseController, TMongoDBPlugin } from 'itee-mongodb';
-import require$$0$3, { isNotDefined, isDefined, isArray, isEmptyArray, isNull, isNotObject, isNotNumber, isNotString, isNotArray, isNaN as isNaN$1, isUndefined, isNotBoolean, isObject, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from 'itee-validators';
+import { TAbstractFileConverter, TAbstractDataInserter, TAbstractConverterManager } from '@itee/database';
+import { TMongooseController, TMongoDBPlugin } from '@itee/mongodb';
+import require$$0$3, { isNotDefined, isDefined, isArray, isEmptyArray, isNull, isNotObject, isNotNumber, isNotString, isNotArray, isNaN as isNaN$1, isUndefined, isNotBoolean, isObject, isEmptyString, isBlankString, isString, isNotEmptyString, isNotEmptyArray } from '@itee/validators';
 import { ColladaLoader, DefaultLoadingManager, FileLoader, FBXLoader, ObjectLoader, MTLLoader, OBJLoader2, Vector3 as Vector3$1, Shape as Shape$1, STLLoader, TDSLoader, Box3 as Box3$1, Group as Group$1, BufferGeometry as BufferGeometry$2, BufferAttribute as BufferAttribute$1, PointsMaterial as PointsMaterial$1, Points as Points$1, EventDispatcher, Object3D as Object3D$2, Vector2, Spherical as Spherical$1, LineBasicMaterial as LineBasicMaterial$1, MeshBasicMaterial as MeshBasicMaterial$1, DoubleSide, Mesh as Mesh$1, OctahedronBufferGeometry as OctahedronBufferGeometry$1, Quaternion as Quaternion$1, EdgesGeometry as EdgesGeometry$1, LineSegments as LineSegments$1, Float32BufferAttribute, Line as Line$1, ArrowHelper as ArrowHelper$1, CylinderBufferGeometry as CylinderBufferGeometry$1, BoxBufferGeometry as BoxBufferGeometry$1, PlaneBufferGeometry as PlaneBufferGeometry$1, ConeBufferGeometry as ConeBufferGeometry$1, Plane as Plane$1, Raycaster, Euler, SplineCurve as SplineCurve$1, QuadraticBezierCurve3 as QuadraticBezierCurve3$1, QuadraticBezierCurve as QuadraticBezierCurve$1, Path as Path$1, LineCurve3 as LineCurve3$1, LineCurve as LineCurve$1, EllipseCurve as EllipseCurve$1, CurvePath as CurvePath$1, Curve as Curve$1, CubicBezierCurve3 as CubicBezierCurve3$1, CubicBezierCurve as CubicBezierCurve$1, CatmullRomCurve3 as CatmullRomCurve3$1, ArcCurve as ArcCurve$1, WireframeGeometry as WireframeGeometry$1, SphereGeometry as SphereGeometry$1, TubeGeometry as TubeGeometry$1, TorusKnotGeometry as TorusKnotGeometry$1, TorusGeometry as TorusGeometry$1, TextGeometry as TextGeometry$1, TetrahedronGeometry as TetrahedronGeometry$1, ShapeGeometry as ShapeGeometry$1, RingGeometry as RingGeometry$1, PolyhedronGeometry as PolyhedronGeometry$1, PlaneGeometry as PlaneGeometry$1, ParametricGeometry as ParametricGeometry$1, OctahedronGeometry as OctahedronGeometry$1, LatheGeometry as LatheGeometry$1, IcosahedronGeometry as IcosahedronGeometry$1, Geometry as Geometry$2, ExtrudeGeometry as ExtrudeGeometry$1, DodecahedronGeometry as DodecahedronGeometry$1, ConeGeometry as ConeGeometry$1, CylinderGeometry as CylinderGeometry$1, CircleGeometry as CircleGeometry$1, BoxGeometry as BoxGeometry$1, Face3 as Face3$1, InstancedBufferGeometry as InstancedBufferGeometry$1, SphereBufferGeometry as SphereBufferGeometry$1, TubeBufferGeometry as TubeBufferGeometry$1, TorusKnotBufferGeometry as TorusKnotBufferGeometry$1, TorusBufferGeometry as TorusBufferGeometry$1, TextBufferGeometry as TextBufferGeometry$1, TetrahedronBufferGeometry as TetrahedronBufferGeometry$1, RingBufferGeometry as RingBufferGeometry$1, PolyhedronBufferGeometry as PolyhedronBufferGeometry$1, ParametricBufferGeometry as ParametricBufferGeometry$1, LatheBufferGeometry as LatheBufferGeometry$1, IcosahedronBufferGeometry as IcosahedronBufferGeometry$1, ExtrudeBufferGeometry as ExtrudeBufferGeometry$1, DodecahedronBufferGeometry, CircleBufferGeometry as CircleBufferGeometry$1, TextureLoader, MeshLambertMaterial as MeshLambertMaterial$1, MeshPhongMaterial as MeshPhongMaterial$1, Color as Color$1, LinearFilter, ImageLoader, Sprite as Sprite$1, LineLoop as LineLoop$1, LOD as LOD$1, SkinnedMesh as SkinnedMesh$1, HemisphereLight as HemisphereLight$1, SpotLight as SpotLight$1, RectAreaLight as RectAreaLight$1, PointLight as PointLight$1, DirectionalLight as DirectionalLight$1, AmbientLight as AmbientLight$1, OrthographicCamera as OrthographicCamera$1, PerspectiveCamera as PerspectiveCamera$1, Scene as Scene$1, Fog as Fog$1, FogExp2, VertexColors } from 'three-full';
-import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from 'itee-client';
-import { DefaultLogger, OneHalf, SquareRootOfThreeOnTwo, SquareRootOfTwoOnTwo } from 'itee-core';
-import { toEnum, ringClockwise, ringContainsSome, toArray, degreesToRadians } from 'itee-utils';
+import { TBinaryReader, Endianness, Byte, Keys, Mouse, TDataBaseManager } from '@itee/client';
+import { DefaultLogger, OneHalf, SquareRootOfThreeOnTwo, SquareRootOfTwoOnTwo } from '@itee/core';
+import { toEnum, ringClockwise, ringContainsSome, toArray, degreesToRadians } from '@itee/utils';
 import { createRequire } from 'node:module';
 import { BSON_DATA_OBJECT, BSON_DATA_ARRAY } from 'bson';
 
@@ -381,7 +381,7 @@ class TObjects3DController extends TMongooseController {
  * @module Converters/ColladaToThree
  * @desc Export JsonToThree converter class about .dae files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1211,7 +1211,7 @@ DBFLoader.YearOffset    = 1900;
  * @module Converters/DbfToThree
  * @desc Export JsonToThree converter class about .dbf files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/DBFLoader Loader/DBFLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1268,7 +1268,7 @@ class DbfToThree extends TAbstractFileConverter {
  * @module Converters/FbxToThree
  * @desc Export JsonToThree converter class about .fbx files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1329,7 +1329,7 @@ class FbxToThree extends TAbstractFileConverter {
  * @module Converters/JsonToThree
  * @desc Export JsonToThree converter class about .json files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1390,7 +1390,7 @@ class JsonToThree extends TAbstractFileConverter {
  * @module Converters/MtlToThree
  * @desc Export JsonToThree converter class about .mtl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1450,7 +1450,7 @@ class MtlToThree extends TAbstractFileConverter {
  * @module Converters/Obj2ToThree
  * @desc Export JsonToThree converter class about .obj files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -1511,8 +1511,8 @@ class Obj2ToThree extends TAbstractFileConverter {
  * @module Loader/SHPLoader
  * @desc Export SHPLoader to load .shp files
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-utils itee-utils}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/utils @itee/utils}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2174,7 +2174,7 @@ SHPLoader.MinVersion    = 1000;
  * @module Converters/ShpToThree
  * @desc Export JsonToThree converter class about .shp files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link module:Loader/SHPLoader Loader/SHPLoader}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2233,7 +2233,7 @@ class ShpToThree extends TAbstractFileConverter {
  * @module Converters/StlToThree
  * @desc Export JsonToThree converter class about .stl files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2294,7 +2294,7 @@ class StlToThree extends TAbstractFileConverter {
  * @module Converters/TdsToThree
  * @desc Export JsonToThree converter class about .3ds files
 
- * @requires {@link https://github.com/Itee/itee-database itee-database}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -2355,9 +2355,9 @@ class TdsToThree extends TAbstractFileConverter {
  * @module Inserters/ThreeToMongoDB
  * @desc Export ThreeToMongoDB mongodb inserter class.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
- * @requires {@link https://github.com/Itee/itee-database itee-database}
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
+ * @requires {@link https://github.com/Itee/@itee/database @itee/database}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -3922,7 +3922,7 @@ function __require() { return require$1("node:buffer"); }
  * @module Schemas/Core/BufferAttribute
  * @desc Export the ThreeJs BufferAttribute Model and Schema for Mongoose.
  *
- * @requires {@link https://github.com/Itee/itee-validators itee-validators}
+ * @requires {@link https://github.com/Itee/@itee/validators @itee/validators}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15133,7 +15133,7 @@ var VideoTextureExports = requireVideoTexture();
  * @module Types/Color
  * @desc Export the three js Color type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15227,7 +15227,7 @@ function ColorType( Mongoose ) {
  * @module Types/Euler
  * @desc Export the three js Euler type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  */
@@ -15328,7 +15328,7 @@ function EulerType( Mongoose ) {
  * @module Types/Matrix3
  * @desc Export the three js Matrix3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15432,7 +15432,7 @@ function Matrix3Type( Mongoose ) {
  * @module Types/Matrix4
  * @desc Export the three js Matrix4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15536,7 +15536,7 @@ function Matrix4Type( Mongoose ) {
  * @module Types/Quaternion
  * @desc Export the three js Quaternion type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15635,7 +15635,7 @@ function QuaternionType( Mongoose ) {
  * @module Types/Vector2
  * @desc Export the three js Vector2 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15722,7 +15722,7 @@ function Vector2Type( Mongoose ) {
  * @module Types/Vector3
  * @desc Export the three js Vector3 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -15815,7 +15815,7 @@ function Vector3Type( Mongoose ) {
  * @module Types/Vector4
  * @desc Export the three js Vector4 type for Mongoose.
  *
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [bson]{@link https://github.com/mongodb/js-bson}}
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
@@ -19120,14 +19120,14 @@ const Directions = {
  * @module Loader/ASCLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { ASCLoader } from 'itee-plugin-three'
+ * import { ASCLoader } from '@itee/plugin-three'
  *
  * const loader = new ASCLoader();
  *
@@ -19946,14 +19946,14 @@ class ASCLoader {
  * @module Loader/LASLoader
  * @desc A loader for ASC cloud point files.
  *
- * @requires {@link https://github.com/Itee/itee-client itee-client}
+ * @requires {@link https://github.com/Itee/@itee/client @itee/client}
  * @requires {@link https://github.com/Itee/three-full three-full}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
  * @license [BSD-3-Clause]{@link https://opensource.org/licenses/BSD-3-Clause}
  * @example
  *
- * import { LASLoader } from 'itee-plugin-three'
+ * import { LASLoader } from '@itee/plugin-three'
  *
  * const loader = new LASLoader();
  *
@@ -21484,9 +21484,9 @@ class BitManager {
  * @module Controllers/CameraControls
  * @desc This module export CameraControls class and CameraControlMode enum values.
  *
- * @requires {@link module: [itee-client]{@link https://github.com/Itee/itee-client}}
- * @requires {@link module: [itee-utils]{@link https://github.com/Itee/itee-utils}}
- * @requires {@link module: [itee-validators]{@link https://github.com/Itee/itee-validators}}
+ * @requires {@link module: [@itee/client]{@link https://github.com/Itee/@itee/client}}
+ * @requires {@link module: [@itee/utils]{@link https://github.com/Itee/@itee/utils}}
+ * @requires {@link module: [@itee/validators]{@link https://github.com/Itee/@itee/validators}}
  * @requires {@link module: [three-full]{@link https://github.com/Itee/three-full}}
  *
  * @author [Tristan Valcke]{@link https://github.com/Itee}
@@ -21494,7 +21494,7 @@ class BitManager {
  *
  * @example
  *
- * import { CameraControls, CameraControlMode } from 'itee-plugin-three'
+ * import { CameraControls, CameraControlMode } from '@itee/plugin-three'
  *
  */
 
@@ -29478,4 +29478,4 @@ class HighlightableMesh extends Mesh$1 {
 }
 
 export { ASCLoader, AbstractGizmo, AbstractHandle, AbstractHitbox, BitArray, BitManager, CameraControlMode, CameraControls, ClippingBox, ClippingControls, ClippingModes, ColorPalette, Colors, CurvesManager, CylindricaHitbox, DBFLoader, Directions, GeometriesManager, HighlightableMesh, LASLoader, LookAtGizmo, LozengeHandle, LozengeHitbox, MaterialsManager, ObjectsManager, OctahedricalHandle, OctahedricalHitbox, OrbitControlsHelper, PlanarHitbox, PlaneHandle, PointClasses, RotateGizmo, RotateHandle, SHPLoader, ScaleGizmo, ScaleHandle, ShapeType, SphericalHitbox, TexturesManager, TorusHitbox, TranslateGizmo, TranslateHandle, registerPlugin };
-//# sourceMappingURL=plugin.mjs.map
+//# sourceMappingURL=plugin-three.mjs.map
