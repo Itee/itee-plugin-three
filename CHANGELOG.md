@@ -1,3 +1,5 @@
+# [v3.0.1](https://github.com/Itee/plugin-three/compare/v3.0.0...v3.0.1) (2026-01-23)
+
 # [v3.0.0](https://github.com/Itee/plugin-three/compare/v2.0.0...v3.0.0) (2026-01-23)
 
 ## 🐛 Bug Fixes
