@@ -78,6 +78,6 @@
     "three-full": "^28.0.2"
   },
   "devDependencies": {
-    "@itee/tasks": "^1.4.4"
+    "@itee/tasks": "^1.4.6"
   }
 }
