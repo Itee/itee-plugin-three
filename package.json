@@ -65,13 +65,13 @@
     "semantic-release": "semantic-release --dry-run --no-ci"
   },
   "dependencies": {
-    "bson": "^6.10.4",
-    "itee-client": "^9.0.0",
-    "itee-core": "^2.0.0",
-    "itee-database": "^9.0.0",
-    "itee-mongodb": "^2.0.0",
-    "itee-utils": "^6.0.6",
-    "itee-validators": "^6.1.3"
+    "@itee/client": "^10.0.1",
+    "@itee/core": "^3.0.1",
+    "@itee/database": "^10.0.1",
+    "@itee/mongodb": "^3.0.1",
+    "@itee/utils": "^7.0.1",
+    "@itee/validators": "^7.0.1",
+    "bson": "^6.10.4"
   },
   "peerDependencies": {
     "three": "^0.149.0",
