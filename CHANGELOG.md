@@ -1,3 +1,22 @@
+# [v2.0.0](https://github.com/Itee/plugin-three/compare/v1.7.0...v2.0.0) (2026-01-23)
+
+## ✨ New Features
+- [`d2d6321`](https://github.com/Itee/plugin-three/commit/d2d6321)  (datamaps) add colors and directions datamaps from itee-core 
+- [`acce2e9`](https://github.com/Itee/plugin-three/commit/acce2e9)  (tasks) upgrade tasks to latest itee and gulp standards 
+- [`1b5a528`](https://github.com/Itee/plugin-three/commit/1b5a528)  (tasks) update default tasks to latest itee standards 
+- [`8520c33`](https://github.com/Itee/plugin-three/commit/8520c33)  (tests) remove the need to build backend file to run unit and benches tests 
+
+## 🐛 Bug Fixes
+- [`7997dd6`](https://github.com/Itee/plugin-three/commit/7997dd6)  (gulpfile) fix broken import links 
+- [`482bd38`](https://github.com/Itee/plugin-three/commit/482bd38)  (gulpfile-refresh) use external script that do not require gulp to be loaded for refreshing it 
+- [`037b333`](https://github.com/Itee/plugin-three/commit/037b333)  (compute-unit-tests-task) fix default template for empty units 
+- [`7978f08`](https://github.com/Itee/plugin-three/commit/7978f08)  (tasks) fix frontend task run on empty test generation 
+- [`e964303`](https://github.com/Itee/plugin-three/commit/e964303)  (directions) fixing wrong imports 
+- [`1a72845`](https://github.com/Itee/plugin-three/commit/1a72845)  (release) fix release task and update others to latest standards 
+
+## 💥 Breaking Changes
+- [`afc03f5`](https://github.com/Itee/plugin-three/commit/afc03f5)  (node) drop nodejs v18 support and introduce nodejs v24
+
 # [v1.7.0](https://github.com/Itee/itee-plugin-three/compare/v1.6.1...v1.7.0) (2025-10-20)
 
 ## ✨ New Features
